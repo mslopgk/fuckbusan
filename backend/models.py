@@ -83,6 +83,7 @@ class User(Base):
     nickname = Column(String(100))
     phone_num = Column(String)
     created_at = Column(DateTime, default=datetime.now)
+    district_code = Column(String)
 
 class ChecklistResult(Base):
     __tablename__ = "checklist_result"

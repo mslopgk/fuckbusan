@@ -46,6 +46,11 @@
     display: flex;
     flex-direction: column;
     gap: 50px;
+    margin-top: 0px;
+    /* Mobile: Moved down further (no overlap) */
+    position: relative;
+    z-index: 10;
+    /* Ensure grid is clickable and above map bg */
 }
 
 /* Action Cards */
@@ -377,15 +382,11 @@
     position: relative;
     background-color: transparent;
     width: 100%;
-    /* Full width directly */
-    padding: 20px 20px 180px;
-    /* Large bottom padding for BG extension */
+    padding: 60px 20px 150px;
+    /* Increased top padding, kept bottom for bg */
     margin: 0;
-    /* No negative margin needed at root */
     overflow: visible;
-    /* Ensure content isn't clipped */
     min-height: auto;
-    /* Allow content to dictate height + padding */
 }
 
 /* Hero Inner Layout (Mobile Base) */
@@ -429,16 +430,23 @@
 
 .hero-map-container {
     position: relative;
-    /* Changed from absolute for mobile flow */
     width: 100%;
     height: auto;
-    /* Auto height to fit image */
     z-index: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
-    /* Space from text */
+    margin-top: -30px;
+    /* Mobile: Moved UP based on user request */
+    pointer-events: none;
+}
+
+.hero-map-bg-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 0;
     pointer-events: none;
 }
 
@@ -456,10 +464,13 @@
     top: auto;
     left: auto;
     transform: none;
-    width: 90%;
-    max-width: 400px;
-    height: auto;
+    width: 100%;
+    max-width: 500px;
+    height: 400px;
+    /* Fixed height for map visibility */
     z-index: 2;
+    margin-left: -20px;
+    margin-right: -20px;
 }
 
 
@@ -1124,20 +1135,34 @@
 
     /* --- Hero Section --- */
     .hero-section {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        display: block;
+        /* Removed flex, since inner is the flex container */
         margin: 0;
         padding: 60px 0 0;
         min-height: 500px;
         overflow: visible;
+        position: relative;
+    }
+
+    /* Apply Flex to the Inner Wrapper */
+    .hero-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        height: 100%;
+        min-height: 500px;
+        /* Ensure height for children */
     }
 
     .hero-text {
         flex: 1;
-        max-width: 50%;
+        max-width: 40%;
+        /* Reduced from 50% */
         margin-bottom: 0;
         padding-top: 0;
+        z-index: 10;
+        /* Ensure text is above map if overlap */
     }
 
     .hero-title {
@@ -1153,10 +1178,14 @@
 
     .hero-map-container {
         position: relative;
-        width: 50%;
-        height: 600px;
+        width: 60%;
+        /* Increased from 50% */
+        height: 700px;
+        /* Increased from 500px */
         top: auto;
         left: auto;
+        margin-top: 0;
+        overflow: visible;
     }
 
     .hero-map-bg {
@@ -1165,10 +1194,16 @@
     }
 
     .hero-map-overlay {
+        position: absolute;
+        /* Explicitly set absolute for desktop positioning */
         top: 50%;
         left: 55%;
+        transform: translate(-50%, -50%);
+        /* Center it properly */
         width: 100%;
         max-width: 550px;
+        height: 100%;
+        /* Fill the container */
     }
 
     /* --- Category Grid (Horizontal) --- */
@@ -1802,6 +1837,12 @@
         /* Use block, inner uses flex */
     }
 
+    /* Restore Desktop Spacing */
+    .content-wrapper {
+        margin-top: -120px;
+        /* Keep desktop overlap strong */
+    }
+
     /* [Hero Inner: Centered Content] */
     .hero-inner {
         max-width: 1280px;
@@ -1971,6 +2012,7 @@
 
 .btn-header.login {
     background-color: transparent;
+    font-size: 0.8rem;
     color: #333;
 }
 
@@ -1980,6 +2022,7 @@
 
 .btn-header.signup {
     background-color: #E6235A;
+    font-size: 0.8rem;
     color: white;
 }
 

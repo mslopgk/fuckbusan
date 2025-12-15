@@ -81,6 +81,7 @@ class UserCreate(BaseModel):
     nickname: Optional[str] = None
     phone_num: str
     created_at: Optional[datetime] = None
+    district_code: str
 
 class UserLogin(BaseModel):
     ID: str

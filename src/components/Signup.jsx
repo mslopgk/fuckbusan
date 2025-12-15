@@ -3,6 +3,8 @@ import './Signup.css';
 import './Login.css'; // Reuse common button/input styles
 
 const Signup = ({ onBack }) => {
+    const [userType, setUserType] = useState('general'); // 'general' | 'expert'
+
     const [formData, setFormData] = useState({
         id: '',
         password: '',
@@ -10,6 +12,8 @@ const Signup = ({ onBack }) => {
         nickname: '',
         phone: ''
     });
+
+    const isFormValid = formData.id && formData.password && formData.name && formData.phone;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -19,16 +23,12 @@ const Signup = ({ onBack }) => {
         }));
     };
 
-    const isFormValid =
-        formData.id.length > 0 &&
-        formData.password.length > 0 &&
-        formData.name.length > 0 &&
-        formData.phone.length > 0;
+    // ...
 
     return (
         <div className="signup-container">
             {/* Header */}
-            <div className="signup-header">
+            <div className="login-header">
                 <button className="back-btn" onClick={onBack}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -38,15 +38,11 @@ const Signup = ({ onBack }) => {
             </div>
 
             {/* Title */}
-            <div className="signup-title-section">
-                <div className="signup-title">회원가입</div>
-                <div className="signup-subtitle-main">
-                    더 나은 부산을 위한 첫 걸음
-                </div>
-                <div className="signup-subtitle-desc">
-                    아직 계정이 없다면 회원가입을 진행해주세요.
-                </div>
+            <div className="login-title-section">
+                <div className="login-title">회원가입</div>
             </div>
+
+
 
             {/* Form */}
             <div className="signup-form">
@@ -132,6 +128,42 @@ const Signup = ({ onBack }) => {
                         value={formData.phone}
                         onChange={handleChange}
                     />
+                </div>
+
+                {/* User Type Toggle */}
+                <div className="user-type-toggle-container" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                    <button
+                        className={`user-type-btn ${userType === 'general' ? 'active' : ''}`}
+                        onClick={() => setUserType('general')}
+                        style={{
+                            flex: 1,
+                            padding: '12px',
+                            border: userType === 'general' ? '1px solid #E6235A' : '1px solid #eee',
+                            backgroundColor: userType === 'general' ? '#FFF0F5' : '#fff',
+                            color: userType === 'general' ? '#E6235A' : '#888',
+                            borderRadius: '12px',
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        일반 시민
+                    </button>
+                    <button
+                        className={`user-type-btn ${userType === 'expert' ? 'active' : ''}`}
+                        onClick={() => setUserType('expert')}
+                        style={{
+                            flex: 1,
+                            padding: '12px',
+                            border: userType === 'expert' ? '1px solid #542AA3' : '1px solid #eee',
+                            backgroundColor: userType === 'expert' ? '#F3E5F5' : '#fff',
+                            color: userType === 'expert' ? '#542AA3' : '#888',
+                            borderRadius: '12px',
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        전문가
+                    </button>
                 </div>
             </div>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Home.css';
+import InteractiveMap from './InteractiveMap';
 
 const Home = ({ onNavigate }) => {
     const [activeTab, setActiveTab] = useState('home');
@@ -65,7 +66,9 @@ const Home = ({ onNavigate }) => {
                     </div>
                     <div className="hero-map-container">
                         {/* Interactive Map Overlay */}
-                        <img src="/assets/busan_map.png" alt="Busan Map" className="hero-map-overlay" />
+                        <div className="hero-map-overlay">
+                            <InteractiveMap />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -236,14 +239,14 @@ const Home = ({ onNavigate }) => {
                     </svg>
                     <span className="nav-text">홈</span>
                 </div>
-                <div className={`nav-item ${activeTab === 'report' ? 'active' : ''}`} onClick={() => setActiveTab('report')}>
+                <div className={`nav-item ${activeTab === 'report' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('report')}>
                     <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'report' ? '#E6007E' : '#999'} strokeWidth="2">
                         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                         <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                     </svg>
                     <span className="nav-text">제보/제안</span>
                 </div>
-                <div className={`nav-item ${activeTab === 'stats' ? 'active' : ''}`} onClick={() => setActiveTab('stats')}>
+                <div className={`nav-item ${activeTab === 'stats' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('diagnosis')}>
                     <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'stats' ? '#E6007E' : '#999'} strokeWidth="2">
                         <line x1="12" y1="20" x2="12" y2="10"></line>
                         <line x1="18" y1="20" x2="18" y2="4"></line>
@@ -251,7 +254,7 @@ const Home = ({ onNavigate }) => {
                     </svg>
                     <span className="nav-text">진단하기</span>
                 </div>
-                <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('login')}>
+                <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} style={{ cursor: 'default' }}>
                     <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'mypage' ? '#E6007E' : '#999'} strokeWidth="2">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>

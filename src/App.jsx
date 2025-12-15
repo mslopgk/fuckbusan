@@ -94,6 +94,8 @@ function App() {
     const navigateFromHome = (target) => {
         if (target === 'checkList') {
             setView('diagnosis');
+        } else if (target === 'diagnosis') {
+            setView('diagnosis');
         } else if (target === 'login') {
             setView('login');
         } else if (target === 'signup') {

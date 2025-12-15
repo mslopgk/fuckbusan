@@ -21,15 +21,70 @@ const ReportForm = ({ onBack, onSubmit }) => {
         setLocation(address);
     };
 
-    const handleFileChange = (e) => {
-        if (e.target.files && e.target.files.length > 0) {
-            const newFiles = Array.from(e.target.files);
-            setFiles([...files, ...newFiles]);
+    const createCompressedPreview = (file) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    resolve(dataUrl);
+                };
+            };
+        });
+    };
+
+    const handleFileChange = async (e) => {
+        const newFileList = Array.from(e.target.files);
+        if (newFileList.length === 0) return;
+
+        // Single file mode: Use the first file selected
+        const file = newFileList[0];
+        let previewUrl = null;
+
+        if (file.type.startsWith('image/')) {
+            previewUrl = await createCompressedPreview(file);
+        }
+
+        // Replace existing files with just this one
+        setFiles([{
+            file,
+            preview: previewUrl,
+            name: file.name
+        }]);
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
     };
 
     const removeFile = (index) => {
-        setFiles(files.filter((_, i) => i !== index));
+        setFiles([]); // Clear all files to show upload box again
     };
 
     const triggerFileUpload = () => {
@@ -46,7 +101,7 @@ const ReportForm = ({ onBack, onSubmit }) => {
                 location,
                 title,
                 content,
-                files: files.map(f => f.name) // Sending filenames for now
+                files: files.map(f => f.file.name) // Sending filenames for now
             };
 
             const response = await fetch('/api/reports/report', {
@@ -176,53 +231,57 @@ const ReportForm = ({ onBack, onSubmit }) => {
 
                 {/* File Upload */}
                 <div className="form-group">
-                    <label className="form-label">파일 첨부</label>
+                    <label className="form-label">사진 첨부</label>
 
                     <input
                         type="file"
                         ref={fileInputRef}
                         style={{ display: 'none' }}
-                        multiple
+                        accept=".png, .jpg, .jpeg, .pdf"
                         onChange={handleFileChange}
                     />
 
-                    {files.length > 0 && (
-                        <div className="file-list">
-                            {files.map((file, index) => (
-                                <div key={index} className="file-item">
-                                    <div className="file-icon">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    {/* Conditional Render: Single Large Preview OR Upload Box */}
+                    {files.length > 0 ? (
+                        <div className="preview-single-large">
+                            {files[0].preview ? (
+                                <img src={files[0].preview} alt="preview" className="preview-single-img" />
+                            ) : (
+                                <div className="file-placeholder-large">
+                                    <div className="file-icon-large">
+                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
                                         </svg>
                                     </div>
-                                    <div className="file-name">{file.name}</div>
-                                    <button className="file-delete-btn" onClick={() => removeFile(index)}>
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                                        </svg>
-                                    </button>
+                                    <span className="file-name-large">{files[0].name}</span>
                                 </div>
-                            ))}
+                            )}
+                            <div className="preview-delete-large" onClick={() => removeFile(0)}>
+                                ×
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="file-upload-box" onClick={triggerFileUpload}>
+                            <div className="upload-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <div className="upload-text">첨부할 파일을 선택해 주세요</div>
                         </div>
                     )}
 
-                    <div className="file-upload-box" onClick={triggerFileUpload}>
-                        <div className="upload-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="17 8 12 3 7 8"></polyline>
-                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                            </svg>
-                        </div>
-                        <div className="upload-text">첨부할 파일을 선택해 주세요</div>
-                    </div>
                     <div className="upload-info">
                         *사진, 문서 각 30MB, 동영상 각 130MB, 총 합 180MB까지 첨부 가능합니다.
                     </div>
                 </div>
             </div>
-
             {/* Fixed Bottom Button - Unified Design */}
             <footer className="footer-bar">
                 <button className="btn-prev" onClick={onBack}>이전</button>
