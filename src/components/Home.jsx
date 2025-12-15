@@ -311,9 +311,6 @@ const CategoryGrid = () => {
 };
 
 const CitizenCards = () => {
-    const scrollRef = useRef(null);
-    const [isPaused, setIsPaused] = useState(false);
-
     // Mock Data
     const citizens = [
         {
@@ -358,43 +355,13 @@ const CitizenCards = () => {
         }
     ];
 
-    // Duplicate data for infinite scroll effect (Triple to allow smooth reset)
-    const displayCitizens = [...citizens, ...citizens, ...citizens];
-
-    useEffect(() => {
-        const scrollContainer = scrollRef.current;
-        if (!scrollContainer) return;
-
-        let animationId;
-        const speed = 1; // Pixels per frame
-
-        const scroll = () => {
-            if (!isPaused && scrollContainer) {
-                // Allow 1px buffer for sub-pixel rendering differences
-                if (scrollContainer.scrollLeft >= (scrollContainer.scrollWidth / 3) - 1) {
-                    scrollContainer.scrollLeft = 0;
-                } else {
-                    scrollContainer.scrollLeft += speed;
-                }
-            }
-            animationId = requestAnimationFrame(scroll);
-        };
-
-        animationId = requestAnimationFrame(scroll);
-
-        return () => cancelAnimationFrame(animationId);
-    }, [isPaused]);
+    // Double data for simple 50% scroll loop
+    const displayCitizens = [...citizens, ...citizens];
 
     return (
         <div className="citizen-card-section">
-            <div
-                className="citizen-card-scroll"
-                ref={scrollRef}
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-            >
+            <div className="marquee-track">
                 {displayCitizens.map((p, index) => (
-                    // Use index in key because IDs are duplicated
                     <div className="citizen-card" key={`${p.id}-${index}`}>
                         <div className="citizen-header">
                             <div className="citizen-profile">
@@ -587,9 +554,6 @@ const StatsContent = () => {
 };
 
 const ArchiveCards = () => {
-    const scrollRef = useRef(null);
-    const [isPaused, setIsPaused] = useState(false);
-
     const archives = [
         {
             id: 1,
@@ -629,31 +593,8 @@ const ArchiveCards = () => {
         }
     ];
 
-    // Duplicate data for infinite scroll effect (Triple to allow smooth reset)
-    const displayArchives = [...archives, ...archives, ...archives];
-
-    useEffect(() => {
-        const scrollContainer = scrollRef.current;
-        if (!scrollContainer) return;
-
-        let animationId;
-        const speed = 1;
-
-        const scroll = () => {
-            if (!isPaused && scrollContainer) {
-                // Allow 1px buffer for sub-pixel rendering differences
-                if (scrollContainer.scrollLeft >= (scrollContainer.scrollWidth / 3) - 1) {
-                    scrollContainer.scrollLeft = 0;
-                } else {
-                    scrollContainer.scrollLeft += speed;
-                }
-            }
-            animationId = requestAnimationFrame(scroll);
-        };
-
-        animationId = requestAnimationFrame(scroll);
-        return () => cancelAnimationFrame(animationId);
-    }, [isPaused]);
+    // Double data for simple 50% scroll loop
+    const displayArchives = [...archives, ...archives];
 
     return (
         <div className="archive-section">
@@ -665,10 +606,7 @@ const ArchiveCards = () => {
             </div>
 
             <div
-                className="archive-list"
-                ref={scrollRef}
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
+                className="marquee-track"
             >
                 {displayArchives.map((item, index) => (
                     // Use index in key because IDs are duplicated
