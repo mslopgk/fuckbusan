@@ -1,0 +1,273 @@
+.diagnosis-list-container {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    padding: 0 20px;
+}
+
+.diagnosis-list-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.page-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: #E6235A;
+    margin-bottom: 24px;
+    margin-top: 10px;
+}
+
+/* Controls */
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #eee;
+    background: #fff;
+    color: #888;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.tab-btn.active {
+    background: #E6235A;
+    /* Default Primary Pink */
+    color: #fff;
+    border-color: #E6235A;
+}
+
+/* Expert Logic for Tab Color? 
+   User image shows Expert Tab is Purple #542AA3.
+   I need to handle dynamic active color or just use CSS overrides based on text content?
+   Or just make the 'active' class depend on the type.
+*/
+.tab-btn.active:nth-child(3) {
+    /* If it is 'Expert' button */
+    background: #542AA3;
+    border-color: #542AA3;
+}
+
+.sort-dropdown-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    color: #666;
+    font-size: 14px;
+}
+
+/* List Content */
+.list-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 40px;
+}
+
+.diagnosis-card {
+    border: 1px solid #eee;
+    border-radius: 16px;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+
+.diagnosis-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.type-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 300;
+    border: 1px solid;
+    font-family: 'GmarketSans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    /* Ensure minimal height impact */
+}
+
+.type-badge.general {
+    color: #E6235A;
+    border-color: #E6235A;
+    display: flex;
+    /* Fixed user typo 'block' to 'flex' or kept block if intended but verified */
+    justify-content: center;
+}
+
+.type-badge.expert {
+    color: #542AA3;
+    border-color: #542AA3;
+}
+
+.diagnosis-card .card-date-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.diagnosis-card .card-date {
+    font-size: 13px;
+    color: #888;
+}
+
+/* Main Info layout */
+.diagnosis-card .card-main-info {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.diagnosis-card .card-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.diagnosis-card .card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.diagnosis-card .card-text-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.diagnosis-card .card-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 4px;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.diagnosis-card .card-score-large {
+    font-size: 28px;
+    font-weight: 900;
+    color: #111;
+    margin-bottom: 8px;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.diagnosis-card .card-result {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.diagnosis-card .card-result.suitable {
+    color: #542AA3;
+    /* Purple */
+}
+
+.diagnosis-card .card-result.unsuitable {
+    color: #E6235A;
+    /* Pink */
+}
+
+.diagnosis-card .card-coords {
+    display: flex;
+    gap: 20px;
+}
+
+.diagnosis-card .coord-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.diagnosis-card .coord-label {
+    font-size: 11px;
+    color: #888;
+}
+
+.diagnosis-card .coord-val {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Score Grid (General only) */
+.diagnosis-card .score-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.diagnosis-card .score-box {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 8px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.diagnosis-card .score-label {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 4px;
+    white-space: pre-line;
+    line-height: 1.2;
+}
+
+.diagnosis-card .score-val {
+    font-size: 14px;
+    font-weight: 800;
+    color: #111;
+}
+
+.diagnosis-card .card-divider {
+    height: 1px;
+    border-top: 1px dashed #eee;
+    margin-bottom: 16px;
+}
+
+.diagnosis-card .card-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

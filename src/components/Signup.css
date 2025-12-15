@@ -1,0 +1,96 @@
+/* Signup Page Styles - Extending common styles */
+.signup-container {
+    padding: 20px 24px;
+    min-height: 100vh;
+    background-color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.signup-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Title Section */
+.signup-title-section {
+    margin-bottom: 40px;
+}
+
+.signup-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #E6235A;
+    margin-bottom: 24px;
+}
+
+.signup-subtitle-main {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #242424;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    word-break: keep-all;
+}
+
+.signup-subtitle-desc {
+    font-size: 1rem;
+    color: #888;
+    font-weight: 400;
+}
+
+/* Form Section */
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.input-label-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.input-label {
+    font-size: 1rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.required-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #E6235A;
+    border-radius: 50%;
+    margin-bottom: 8px;
+    /* Lift slightly to align with text top */
+}
+
+/* Helper Text */
+.helper-text {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+/* Divider */
+.form-divider {
+    height: 1px;
+    border-top: 1px dashed #ddd;
+    margin: 10px 0;
+}
+
+/* Button */
+.signup-btn-container {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}

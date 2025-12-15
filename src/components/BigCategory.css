@@ -1,0 +1,240 @@
+/* Main Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-bottom: 80px;
+    /* Space for footer */
+    background-color: #fff;
+    max-width: 480px;
+    /* Mobile width constraint */
+    margin: 0 auto;
+    position: relative;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Header */
+/* Unified Layout Styles (match DiagnosisStep1.css) */
+.step-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    background-color: #fff;
+}
+
+.step-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.step-top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    margin-top: 10px;
+}
+
+.step-main-title {
+    font-size: 28px;
+    font-weight: 900;
+    color: #E6235A;
+    margin: 0;
+    line-height: 1;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.progress-bar-container {
+    width: 100px;
+    height: 8px;
+    background-color: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: #8B1F54;
+    /* width is set inline */
+}
+
+.step-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #242424;
+    margin-bottom: 12px;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+/* Legacy styles kept below if needed, but overridden by above structure */
+
+.description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 32px;
+}
+
+.form-group {
+    margin-bottom: 32px;
+}
+
+.midi-group {
+    margin-bottom: 24px;
+}
+
+.label {
+    display: block;
+    font-size: 13px;
+    color: #666666;
+    margin-bottom: 8px;
+}
+
+/* Select Box */
+.select-wrapper {
+    position: relative;
+}
+
+.select-box {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    border: 1px solid #111;
+    border-radius: 8px;
+    appearance: none;
+    background-color: #fff;
+    font-weight: 500;
+    color: #111;
+    cursor: pointer;
+}
+
+.select-box.placeholder {
+    color: #999;
+}
+
+.select-arrow {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* Grid */
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.card {
+    border: 1px solid #EEEEEE;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    position: relative;
+    /* For check icon positioning if needed, though check icon is inside image-box */
+}
+
+.card.selected {
+    border: 3px solid #070707;
+    /* Thick black border */
+    background-color: #070707;
+    /* Dark background */
+}
+
+.card-image-box {
+    width: 100%;
+    aspect-ratio: 1;
+    /* Keep square */
+    background-color: #F8F9FA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    /* Reduced padding to make image larger */
+    position: relative;
+}
+
+.check-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+}
+
+.card-image-box img {
+    width: 100%;
+    height: 100%;
+    /* Fill the box */
+    object-fit: contain;
+}
+
+.card-name {
+    padding: 16px 0;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    border-top: 1px solid #eee;
+    background-color: #fff;
+    transition: all 0.2s ease;
+}
+
+.card.selected .card-name {
+    color: #ffffff !important;
+    /* White text */
+    background-color: #070707;
+    /* Black background */
+    font-weight: 700;
+    border-top: 1px solid #070707;
+}
+
+/* Footer */
+.sticky-footer {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    gap: 8px;
+    padding: 16px 24px 30px;
+    background: #fff;
+    border-top: 1px solid #fff;
+    z-index: 100;
+}
+
+.btn {
+    flex: 1;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-prev {
+    background-color: #fff;
+    color: #666;
+    border: 1px solid #ddd;
+}
+
+.btn-next {
+    background-color: #DDE0E3;
+    color: #fff;
+    transition: background-color 0.2s;
+}
+
+.btn-next.active {
+    background-color: #E6235A;
+    /* Active Pink Color */
+}
+
+/* If selected, maybe change next button color? Leaving as gray for now unless logic added */

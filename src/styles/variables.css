@@ -1,0 +1,64 @@
+:root {
+    /* BDP Platform Theme Colors (Reference Image) */
+
+    /* Backgrounds: Deep Midnight Blue tones */
+    --bg-body: #0f172a;
+    /* Main Background (Dark Navy) */
+    --bg-card: #1e293b;
+    /* Card Background (Lighter Navy) */
+    --bg-sidebar: #0f172a;
+    /* Sidebar Background */
+
+    /* Text Colors */
+    --text-primary: #f8fafc;
+    /* White/Light Gray */
+    --text-secondary: #94a3b8;
+    /* Muted Slate */
+    --text-tertiary: #64748b;
+    /* Darker Slate */
+
+    /* Accents */
+    --primary: #3b82f6;
+    /* Bright Blue */
+    --secondary: #10b981;
+    /* Emerald Green (Reference '양호') */
+    --danger: #ef4444;
+    /* Red (Reference '위험') */
+    --warning: #f59e0b;
+    /* Amber (Reference '주의') */
+
+    /* Gradients or Special Accents */
+    --accent-glow: rgba(59, 130, 246, 0.5);
+    /* Blue Glow */
+
+    /* Sidebar Category Colors (Specific to the Grid Menu) */
+    --cat-housing: #3b82f6;
+    --cat-env: #10b981;
+    --cat-transport: #ef4444;
+    --cat-safety: #f59e0b;
+    --cat-education: #8b5cf6;
+    --cat-industry: #ec4899;
+    --cat-culture: #f97316;
+    --cat-wellness: #14b8a6;
+
+    /* Metrics & Spacing */
+    --header-height: 4rem;
+    --sidebar-width: 18rem;
+    /* Slightly wider for grid */
+    --radius-card: 16px;
+    /* Rounded corners as seen in image */
+
+    /* Shadows */
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Force Dark Mode styles by default as base */
+html,
+body {
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+}

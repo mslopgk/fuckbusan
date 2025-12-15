@@ -1,0 +1,292 @@
+.expert-detail-container {
+    padding: 24px 20px 80px;
+    background-color: white;
+    min-height: 100vh;
+    font-family: 'Pretendard Variable', sans-serif;
+    color: #333;
+}
+
+
+
+.theme-purple .expert-page-title {
+    color: #E6235A;
+}
+
+/* Reusing Pink/Red for Facility as per Image? No, Image shows Pink/Red */
+/* Wait, in DiagnosisDetail: Facility=Purple(#542AA3), Zone=Blue, Person=Green.
+   But user image for "Facility Detail" shows RED title.
+   General Result has Facility=Purple.
+   The uploaded image 0 says "시설물별 세부 정보" and is PINK/RED (#E6235A).
+   Let's follow the Image instructions.
+   Image 1: "구역별 세부 정보" is BLUE.
+   Image 2: "인원별 세부 정보" is GREEN. (Correction: Image 3 says Person but title is Green).
+
+   Actually, let's align with the existing Expert Result page buttons:
+   Facility: Pink/Red (#E6235A) ? No, Expert Result Button Facility was #FD4F63 (Pinkish). 
+   Let's Stick to the provided Image colors.
+   Facility Image Title: Pink #E6235A
+   Zone Image Title: Blue #2196F3
+   Person Image Title: Green #009688
+*/
+
+.theme-pink .expert-page-title {
+    color: #E6235A;
+}
+
+.theme-blue .expert-page-title {
+    color: #2196F3;
+}
+
+.theme-green .expert-page-title {
+    color: #009688;
+}
+
+/* Header (Shared with Expert Result) */
+.expert-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 56px;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin: -24px -20px 24px -20px;
+    padding: 0 10px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Page Title with Dropdown Arrow */
+.expert-page-title {
+    font-size: 24px;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 700;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Address & Big Dropdown Stacking */
+.title-block {
+    margin-bottom: 30px;
+}
+
+.main-address {
+    font-size: 18px;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.big-dropdown-trigger {
+    font-size: 18px;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.big-dropdown-trigger svg {
+    margin-left: 6px;
+}
+
+.theme-pink .big-dropdown-trigger {
+    color: #E6235A;
+    text-decoration: underline;
+    text-decoration-color: rgba(230, 35, 90, 0.3);
+}
+
+.theme-blue .big-dropdown-trigger {
+    color: #2196F3;
+    text-decoration: underline;
+    text-decoration-color: rgba(33, 150, 243, 0.3);
+}
+
+.theme-green .big-dropdown-trigger {
+    color: #009688;
+    text-decoration: underline;
+    text-decoration-color: rgba(0, 150, 136, 0.3);
+}
+
+.instruction-text {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #888;
+    font-weight: 700;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+/* Stats Card */
+.expert-stats-card {
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 24px 20px;
+    margin-bottom: 40px;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.expert-card-title {
+    font-size: 16px;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.stats-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.detail-stat-box {
+    flex: 1;
+    border-radius: 8px;
+    padding: 16px 4px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #333;
+}
+
+/* Box Themes */
+.theme-pink .detail-stat-box {
+    background-color: #FFF6F9;
+}
+
+/* Light Pink */
+.theme-blue .detail-stat-box {
+    background-color: #EEF5FF;
+}
+
+/* Light Blue */
+.theme-green .detail-stat-box {
+    background-color: #E7F8F5;
+}
+
+/* Light Green */
+
+/* Middle Category Section */
+.middle-section-title {
+    font-size: 18px;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.empty-state {
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    border: 1px solid #eee;
+    border-radius: 12px;
+}
+
+.empty-state svg {
+    margin-bottom: 10px;
+}
+
+/* Dropdown Menu Styles (Reused logic) */
+.dropdown-overlay {
+    position: absolute;
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 2000;
+    padding: 8px 0;
+    min-width: 160px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.dropdown-item {
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+/* Slider Styles (Reused from DiagnosisDetail but styled for Expert) */
+.category-slider {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    scrollbar-width: none;
+}
+
+.category-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.cat-chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #eee;
+    font-size: 14px;
+    color: #888;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.theme-pink .cat-chip.active {
+    background-color: #E6235A;
+    color: white;
+    border-color: #E6235A;
+}
+
+.theme-blue .cat-chip.active {
+    background-color: #2196F3;
+    color: white;
+    border-color: #2196F3;
+}
+
+.theme-green .cat-chip.active {
+    background-color: #009688;
+    color: white;
+    border-color: #009688;
+}

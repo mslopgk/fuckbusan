@@ -1,0 +1,323 @@
+.survey-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+/* Unified Layout Styles (match DiagnosisStep1.css & CheckList.css) */
+.step-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    background-color: #fff;
+}
+
+.step-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 24px 120px;
+    /* Increased bottom padding for sticky footer */
+}
+
+.step-top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    margin-top: 10px;
+}
+
+.step-main-title {
+    font-size: 28px;
+    font-weight: 900;
+    color: #E6235A;
+    margin: 0;
+    line-height: 1;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.progress-bar-container {
+    width: 100px;
+    height: 8px;
+    background-color: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: #8B1F54;
+}
+
+.step-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #242424;
+    margin-bottom: 12px;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.question-text {
+    display: flex;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #111;
+    margin-bottom: 24px;
+    word-break: keep-all;
+}
+
+/* Overwrite old classes if they exist or just rely on these new ones */
+
+/* Scale 5 Logic */
+.scale-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    margin-top: 40px;
+    padding: 0 10px;
+}
+
+/* Scale Track Fix: Connect centers of first and last item */
+.scale-track {
+    position: absolute;
+    top: 10px;
+    left: 30px;
+    /* Half of item width (60px) */
+    right: 30px;
+    /* Half of item width */
+    height: 2px;
+    background: #e0e0e0;
+    z-index: 0;
+}
+
+.scale-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    cursor: pointer;
+    width: 60px;
+}
+
+.scale-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid #e0e0e0;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+}
+
+.scale-item:hover .scale-circle {
+    border-color: #E6235A;
+}
+
+.scale-circle.selected {
+    background: #E6235A;
+    border-color: #E6235A;
+}
+
+.scale-label {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    white-space: pre-line;
+    /* Handle newlines if needed */
+}
+
+/* Multi Select Grid */
+.multi-select-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.multi-select-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.multi-select-card.selected {
+    border-color: #E6235A;
+    background: #FEF2F5;
+    /* Very light pink */
+}
+
+.checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #fff;
+}
+
+.checkbox.checked {
+    background: #E6235A;
+    border-color: #E6235A;
+}
+
+.option-text {
+    font-size: 15px;
+    color: #333;
+}
+
+/* Reference Reason Style */
+.ref-section {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.ref-bar {
+    width: 4px;
+    background: #333;
+    margin-right: 12px;
+}
+
+.ref-content {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+
+.ref-item {
+    margin-bottom: 4px;
+}
+
+.red-text {
+    color: #E6235A;
+    font-weight: 700;
+}
+
+.question-text-sub {
+    font-size: 16px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+/* Sub Questions */
+.sub-questions-area {
+    margin-top: 40px;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.sub-question-block {
+    margin-bottom: 30px;
+}
+
+.sub-q-text {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* Footer (Copied from CheckList.css for consistency) */
+.sticky-footer {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    gap: 8px;
+    padding: 16px 24px 30px;
+    background: #fff;
+    border-top: 1px solid #fff;
+    z-index: 100;
+}
+
+.btn {
+    flex: 1;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.btn-prev {
+    background-color: #fff;
+    color: #666;
+    border: 1px solid #ddd;
+}
+
+.btn-next {
+    background-color: #DDE0E3;
+    color: #fff;
+    transition: background-color 0.2s;
+}
+
+.btn-next.active {
+    background-color: #E6235A;
+}
+
+.btn-next:disabled {
+    cursor: not-allowed;
+    background-color: #DDE0E3;
+}
+
+/* Highlight Text (Newly Added) */
+.text-highlight {
+    color: #E6235A;
+    font-weight: 500;
+}
+
+/* Q9 Grid Layout (Newly Added) */
+.q9-grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.q9-btn {
+    border: 1px solid #ddd;
+    background: #fff;
+    padding: 14px 4px;
+    border-radius: 8px;
+    text-align: center;
+    color: #666;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.q9-btn:hover {
+    border-color: #E6235A;
+}
+
+.q9-btn.selected {
+    border-color: #E6235A;
+    background: #FEF2F5;
+    color: #E6235A;
+    font-weight: 700;
+    box-shadow: 0 0 0 1px #E6235A inset;
+}

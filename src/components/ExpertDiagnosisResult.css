@@ -1,0 +1,211 @@
+/* ExpertDiagnosisResult.css */
+.expert-result-container {
+    padding: 24px 20px 80px;
+    background-color: white;
+    min-height: 100vh;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+.expert-result-container.embedded {
+    min-height: auto;
+    padding-top: 0;
+    /* Remove padding that accounts for header or separate page spacing if needed */
+}
+
+.expert-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    margin: -24px -20px 24px -20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.expert-page-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 500;
+    font-size: 24px;
+    color: #542AA3;
+    /* Purple title */
+    margin-bottom: 24px;
+}
+
+.expert-address-block {
+    margin-bottom: 40px;
+}
+
+.expert-address {
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.expert-desc {
+    font-size: 14px;
+    color: #888;
+}
+
+/* Overall Result Card */
+.overall-result-card {
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card-main-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.stats-row {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.stat-box {
+    flex: 1;
+    background-color: #F8F9FA;
+    border-radius: 8px;
+    padding: 16px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Box Color Variants based on parent or direct class */
+.stat-box.box-purple {
+    background-color: #F5F1FD;
+}
+
+/* Light Purple */
+.stat-box.box-blue {
+    background-color: #EEF5FF;
+}
+
+/* Light Blue */
+.stat-box.box-green {
+    background-color: #E7F8F5;
+}
+
+/* Light Green */
+.stat-box.box-gray {
+    background-color: #F8F9FA;
+}
+
+/* Default */
+
+.stat-label {
+    font-size: 13px;
+    color: #666;
+    font-weight: 600;
+}
+
+.stat-value {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #242424;
+}
+
+/* Detail Section */
+.detail-section-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    color: #242424;
+    margin-bottom: 8px;
+}
+
+.detail-section-desc {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.expert-detail-card {
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.detail-card-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.nav-button-container {
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.detail-nav-btn {
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'GmarketSans', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border-width: 1px;
+    border-style: solid;
+}
+
+/* Facility Button (Pink/Red theme) */
+.btn-facility {
+    color: #E6235A;
+    border-color: #E6235A;
+}
+
+/* Zone Button (Blue) */
+.btn-zone {
+    color: #2196F3;
+    border-color: #2196F3;
+}
+
+/* Person Button (Green) */
+.btn-person {
+    color: #009688;
+    border-color: #009688;
+}
+
+.box-purple {
+    background-color: #FFF6F9;
+}
+
+.box-blue {
+    background-color: #EEF5FF;
+}
+
+.box-green {
+    background-color: #E7F8F5;
+}

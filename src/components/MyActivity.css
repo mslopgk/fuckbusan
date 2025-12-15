@@ -1,0 +1,343 @@
+.my-activity-container {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    padding: 0 20px;
+}
+
+.activity-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.page-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: #E6235A;
+    margin-bottom: 24px;
+    margin-top: 10px;
+}
+
+/* Profile Section */
+.profile-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.profile-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.user-types {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.user-badge {
+    font-size: 13px;
+    font-weight: 700;
+    color: #555;
+}
+
+.user-name {
+    font-size: 18px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.name-bold {
+    font-weight: 900;
+    color: #111;
+    font-size: 20px;
+    /* Make name prominent */
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.name-suffix {
+    font-size: 14px;
+    color: #333;
+}
+
+.user-email {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.user-stats {
+    font-size: 13px;
+    color: #666;
+}
+
+.stat-count {
+    font-weight: 700;
+    color: #333;
+}
+
+
+/* Controls (Tabs + Sort) - Reuse similar styles from DiagnosisList but tweaked */
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #eee;
+    background: #fff;
+    color: #888;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.tab-btn.active {
+    background: #fff;
+    color: #111;
+    border-color: #eee;
+    /* Assuming user image shows simple text active or pills? */
+    /* User image 1 shows "북마크" button is dark #242424 from previous request logic? 
+       Actually user image shows "나의 진단" tab is NOT selected (white), Bookmark is selected (Black). 
+       Wait, let's look at user image 1 (uploaded_image_0_...). 
+       Top left "나의 활동". 
+       Tabs: "북마크" (Black bg, White text), "나의 진단" (White bg, Light text).
+    */
+}
+
+.tab-btn.active {
+    background: #242424;
+    /* Black active */
+    color: #fff;
+    border-color: #242424;
+}
+
+.sort-dropdown-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    color: #666;
+    font-size: 13px;
+}
+
+/* Reuse Diagnosis Card Styles - Scoped to MyActivity to avoid leaks if defined here */
+/* Or rely on DiagnosisList.css if globally loaded? 
+   Better to copy-paste relevant styles scoped here to be safe and independent. 
+   Or use shared class names if `DiagnosisList.css` is always loaded. 
+   I will replicate the SCOPED styles here for `.diagnosis-card` inside `.my-activity-container` 
+   or just `.my-activity-container .diagnosis-card` 
+*/
+
+.list-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 40px;
+}
+
+.diagnosis-card {
+    border: 1px solid #eee;
+    border-radius: 16px;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.type-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 300;
+    border: 1px solid;
+    font-family: 'GmarketSans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.type-badge.general {
+    color: #E6235A;
+    border-color: #E6235A;
+}
+
+.type-badge.expert {
+    color: #542AA3;
+    border-color: #542AA3;
+}
+
+.card-date-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-date {
+    font-size: 13px;
+    color: #888;
+}
+
+/* Main Info layout */
+.card-main-info {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.card-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-text-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 4px;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.card-score-large {
+    font-size: 28px;
+    font-weight: 900;
+    color: #111;
+    margin-bottom: 8px;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.card-result {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.card-result.suitable {
+    color: #542AA3;
+    /* Purple */
+}
+
+.card-result.unsuitable {
+    color: #E6235A;
+    /* Pink */
+}
+
+.card-coords {
+    display: flex;
+    gap: 20px;
+}
+
+.coord-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.coord-label {
+    font-size: 11px;
+    color: #888;
+}
+
+.coord-val {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Score Grid (General only) */
+.score-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.score-box {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 8px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.score-label {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 4px;
+    white-space: pre-line;
+    line-height: 1.2;
+}
+
+.score-val {
+    font-size: 14px;
+    font-weight: 800;
+    color: #111;
+}
+
+.card-divider {
+    height: 1px;
+    border-top: 1px dashed #eee;
+    margin-bottom: 16px;
+}
+
+.card-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

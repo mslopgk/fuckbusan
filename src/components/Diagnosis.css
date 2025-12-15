@@ -1,0 +1,266 @@
+/* Diagnosis Page Styles */
+.diagnosis-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Pretendard Variable', sans-serif;
+    position: relative;
+    overflow: hidden;
+    background-color: #f5f5f5;
+}
+
+/* Header */
+.diagnosis-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background-color: #fff;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.diagnosis-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.diagnosis-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #E6235A;
+}
+
+.dropdown-arrow {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s;
+}
+
+.dropdown-arrow.open {
+    transform: rotate(180deg);
+}
+
+.header-right {
+    display: flex;
+    gap: 8px;
+}
+
+.header-action-btn {
+    padding: 10px 14px;
+    /* Updated height */
+    font-size: 0.8rem;
+    color: #666;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 300;
+    /* Light */
+}
+
+/* Dropdown Menu */
+.diagnosis-dropdown {
+    position: absolute;
+    top: 60px;
+    left: 45px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    width: 120px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-item {
+    padding: 12px 16px;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 500;
+}
+
+.dropdown-item.selected {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+/* Map Section */
+.diagnosis-map-container {
+    flex: 1;
+    position: relative;
+    background-color: #ddd;
+    overflow: hidden;
+}
+
+.diagnosis-map-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Selected Marker Animation */
+.map-marker {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    transform: translate(-50%, -100%);
+}
+
+.map-marker.selected svg {
+    /* fill: #E6235A; Removed to allow inline style to control color */
+    stroke: #fff;
+    transform: scale(1.2);
+}
+
+/* Bottom Panel Overlay */
+/* Bottom Panel Overlay Wrapper */
+.diagnosis-bottom-panel {
+    position: absolute;
+    bottom: 30px;
+    left: 20px;
+    right: 20px;
+    background-color: transparent;
+    /* Changed from #fff */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    /* Align bottom */
+    gap: 12px;
+    pointer-events: none;
+    /* Let clicks pass through empty areas if needed, but children need events */
+}
+
+.diagnosis-bottom-panel>* {
+    pointer-events: auto;
+}
+
+.diagnosis-info-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.diagnosis-bottom-panel.selected {
+    /* No specific changes needed for wrapper usually, just flex behavior */
+    height: auto;
+    padding: 0;
+    /* Wrapper doesn't need padding if positioned */
+    gap: 12px;
+}
+
+/* Override alignment for selected state inner card if needed */
+.diagnosis-info-card.selected {
+    align-items: flex-start;
+    text-align: left;
+}
+
+
+
+.panel-icon {
+    color: #666;
+}
+
+.panel-text {
+    font-size: 1rem;
+    color: #aaa;
+    font-weight: 400;
+}
+
+.panel-content-wrapper {
+    width: 100%;
+}
+
+.panel-address-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.panel-address-text {
+    font-size: 1.1rem;
+    color: #242424;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 500;
+    /* Medium */
+}
+
+.panel-detail-row {
+    display: flex;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+    align-items: center;
+    border-top: 1px dotted #ddd;
+    /* Gray line */
+    padding-top: 12px;
+    margin-top: 8px;
+    width: 100%;
+    /* Ensure line spans width */
+}
+
+.badge {
+    padding: 2px 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.panel-place-name {
+    font-size: 1.2rem;
+    color: #242424;
+    margin-top: 17px;
+    margin-bottom: 0;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 500;
+    /* Medium */
+}
+
+.btn-diagnose {
+    width: 100%;
+    padding: 16px;
+    background-color: #E6235A;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.3);
+    transition: background-color 0.2s;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 700;
+    /* Bold */
+}
+
+.btn-diagnose:active {
+    background-color: #d01b4c;
+}

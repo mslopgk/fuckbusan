@@ -1,0 +1,137 @@
+/* Login Page Styles */
+.login-container {
+    padding: 20px 24px;
+    min-height: 100vh;
+    background-color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header (Back Button) */
+.login-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+/* Title Section */
+.login-title-section {
+    margin-bottom: 60px;
+}
+
+.login-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #E6235A;
+    margin-bottom: 24px;
+}
+
+.login-subtitle-main {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #242424;
+    line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+.login-subtitle-desc {
+    font-size: 1rem;
+    color: #888;
+    font-weight: 400;
+}
+
+/* Form Section */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.input-label {
+    font-size: 1rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.login-input {
+    width: 100%;
+    padding: 16px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    color: #333;
+    transition: border-color 0.2s;
+}
+
+.login-input::placeholder {
+    color: #ccc;
+}
+
+.login-input:focus {
+    border-color: #E6235A;
+}
+
+/* Submit Button */
+.login-btn-container {
+    margin-top: 50px;
+}
+
+.login-submit-btn {
+    width: 100%;
+    padding: 18px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'GmarketSans', sans-serif;
+    transition: background-color 0.2s;
+}
+
+.login-submit-btn.disabled {
+    background-color: #ddd;
+    color: #fff;
+    cursor: not-allowed;
+}
+
+.login-submit-btn.active {
+    background-color: #E6235A;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.3);
+}
+
+/* Footer Links */
+.login-footer-links {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.text-link {
+    background: none;
+    border: none;
+    color: #666;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+}

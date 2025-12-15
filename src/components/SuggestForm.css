@@ -1,0 +1,297 @@
+/* Copy of ReportForm.css with modified class names for SuggestForm if needed, 
+   but keeping values identical for consistency */
+
+.suggest-form-container {
+    padding: 20px 24px;
+    min-height: 100vh;
+    background-color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 120px;
+}
+
+.suggest-form-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.suggest-form-title-section {
+    margin-bottom: 40px;
+}
+
+.suggest-form-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #E6235A;
+    margin-bottom: 20px;
+}
+
+.suggest-form-subtitle {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #242424;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.suggest-form-desc {
+    font-size: 1rem;
+    color: #888;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* Form Styles */
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #242424;
+}
+
+/* Select */
+.form-select {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #242424;
+    appearance: none;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.form-select.placeholder {
+    color: #aaa;
+}
+
+/* Input */
+.form-input {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #242424;
+}
+
+.form-input::placeholder {
+    color: #aaa;
+}
+
+/* Textarea */
+.form-textarea {
+    width: 100%;
+    height: 160px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #242424;
+    resize: none;
+    font-family: inherit;
+}
+
+.form-textarea::placeholder {
+    color: #aaa;
+}
+
+.char-count {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 4px;
+}
+
+/* Location Row */
+.location-row {
+    display: flex;
+    gap: 8px;
+}
+
+.location-row .form-input {
+    flex: 1;
+}
+
+.search-btn {
+    padding: 0 20px;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    color: #aaa;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.search-btn.active {
+    background-color: #E6235A;
+    color: #fff;
+}
+
+/* Map Preview */
+.map-preview {
+    width: 100%;
+    height: 160px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.map-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* File Upload */
+.file-upload-box {
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    background-color: #fafafa;
+    transition: all 0.2s;
+}
+
+.file-upload-box:hover {
+    border-color: #E6235A;
+    background-color: #fff5f7;
+}
+
+.upload-icon {
+    color: #aaa;
+}
+
+.upload-text {
+    color: #aaa;
+    font-size: 0.95rem;
+}
+
+.upload-info {
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 8px;
+}
+
+.file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #fff;
+    gap: 12px;
+}
+
+.file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-name {
+    flex: 1;
+    font-size: 0.9rem;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-delete-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 4px;
+}
+
+/* Divider */
+.section-divider {
+    height: 1px;
+    background-color: #eee;
+    /* Changed from border-bottom to background for divider div */
+    margin: 8px 0;
+    border: none;
+}
+
+/* Fixed Bottom Bar */
+/* Fixed Bottom Bar - Unified Design */
+.footer-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    gap: 8px;
+    padding: 16px 24px 30px;
+    background: #fff;
+    border-top: 1px solid #fff;
+    z-index: 100;
+}
+
+.footer-bar .btn-prev {
+    flex: 1;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    color: #666;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.footer-bar .btn-next {
+    flex: 1;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background-color: #DDE0E3;
+    color: #fff;
+    transition: background-color 0.2s;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.footer-bar .btn-next.ready {
+    background-color: #E6235A;
+}

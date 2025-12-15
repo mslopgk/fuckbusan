@@ -1,0 +1,138 @@
+/* DiagnosisResult.css */
+.diagnosis-result-container {
+    padding: 24px 20px 80px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.result-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    color: #E6235A;
+    margin-bottom: 12px;
+}
+
+.result-address {
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: #242424;
+    margin-bottom: 8px;
+}
+
+.result-desc {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+/* Main Card */
+.result-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-header-score {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.main-chart-score {
+    font-size: 18px;
+}
+
+/* Sub Section */
+.sub-info-section {
+    margin-bottom: 24px;
+}
+
+.sub-info-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: #242424;
+    margin-bottom: 8px;
+}
+
+.sub-info-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+/* Sub Card */
+.sub-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sub-card-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.action-btn {
+    margin-top: 20px;
+    padding: 12px 24px;
+    border-radius: 30px;
+    background: white;
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+/* Theme Colors for Buttons */
+.btn-purple {
+    border: 1px solid #9C27B0;
+    color: #9C27B0;
+}
+
+.btn-blue {
+    border: 1px solid #2196F3;
+    color: #2196F3;
+}
+
+.btn-green {
+    border: 1px solid #009688;
+    color: #009688;
+}

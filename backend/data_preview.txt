@@ -1,0 +1,42 @@
+--- Inspecting 2차진단_일반인_251210.xlsx ---
+Columns: ['진단지역', 'ID', '그룹', 'Data No.', '유형', 'Category 1 type', 'Category 2 type', '등록일시', '위도', '경도', '대분류', '중분류', '질문_Num', '질문_기준', '질문_내용', '점수', '리뷰', '이미지경로']
+Head:
+  진단지역        ID   그룹  Data No.  유형  Category 1 type  Category 2 type                 등록일시         위도          경도        대분류 중분류  질문_Num 질문_기준                                             질문_내용  점수                                        리뷰                                                                                    이미지경로
+0  부산역  NYJ76300  1.0      5040   2                2                2  2025.12.10 09:01:58  35.159495  129.058488  보도 (공공공간)  보도       1   접근성       보행로는 시설물이나 차량진입로 등으로 인해 단절되지 않고 접근하기 편리한가요?   3  고보조명이 길 중앙이 아니라 가게 측면을 비추고 있음. 방향 수정 필요.  https://tndl-nextchain.s3.ap-northeast-2.amazonaws.com/5040_NYJ76300_20251210_91_98.jpg
+1  부산역  NYJ76300  1.0      5040   2                2                2  2025.12.10 09:01:58  35.159495  129.058488  보도 (공공공간)  보도       2   이동성  보행로는 보행이동 동선 상에 마감재 포장 등으로 인한 단차가 없이 이동하기 편안한가요?   3  고보조명이 길 중앙이 아니라 가게 측면을 비추고 있음. 방향 수정 필요.  https://tndl-nextchain.s3.ap-northeast-2.amazonaws.com/5040_NYJ76300_20251210_91_98.jpg
+
+--- Inspecting 2차진단_전문가_251210.xlsx ---
+Columns: ['진단지역', 'ID', '그룹', 'Data No.', '유형', 'Category 1 type', 'Category 2 type', '등록일시', '위도', '경도', '대분류', '중분류', '질문_Num', '질문_기준', '질문_내용', '점수', '리뷰', '이미지경로']
+Head:
+  진단지역        ID  그룹  Data No.  유형  Category 1 type  Category 2 type                 등록일시         위도          경도   대분류  중분류  질문_Num 질문_기준                                  질문_내용  점수                             리뷰                                                                                    이미지경로
+0  부산역  NYJ76300   1      5042   1                1                1  2025.12.10 09:10:02  35.159179  129.059784  위생시설  휴지통       1   휴지통        휴게시설물 인접설치시 900mm 이상 거리를 확보했나요?  적합  깨진창문효과마냥 불법투기감시 설치물이 불법투기 유발함  https://tndl-nextchain.s3.ap-northeast-2.amazonaws.com/5042_NYJ76300_20251210_21_73.jpg
+1  부산역  NYJ76300   1      5042   1                1                1  2025.12.10 09:10:02  35.159179  129.059784  위생시설  휴지통       2   휴지통  바닥 마감처리부는 볼트 등이 노출되지 않도록 정밀하게 설치되었나요?  적합  깨진창문효과마냥 불법투기감시 설치물이 불법투기 유발함  https://tndl-nextchain.s3.ap-northeast-2.amazonaws.com/5042_NYJ76300_20251210_21_73.jpg
+
+--- Inspecting users_rows.csv ---
+Columns: ['idx', 'id', 'pw', 'name', 'gender', 'age', 'group', 'created_at', 'grade', 'review_count', 'address_1', 'address_2', 'job', 'active', 'deleted_at', 'type', 'birthday']
+Head:
+   idx                    id                                                            pw             name gender  age  group                  created_at  grade  review_count address_1  address_2  job  active                  deleted_at  type  birthday
+0    8            pzcuong189  $2b$10$hP8TI12N57o37lK6JKS9.u3KRPb1vpL0XzOtqD6OkS.pNQKvAGtPC  Pham Quoc Cuong   male  NaN    2.0   2025-01-10 03:20:35.75219      1             0   Thủ Đức        NaN  NaN       0  2025-02-02 04:19:17.335447     1  990501.0
+1    9  khoi.vu@nextchain.kr  $2b$10$l8LmxTEg4vMTQuObQOtHfuHxWvmFckKhx1AGXL942t.nYOP5V8fGW          Khoi Vu   male  NaN    1.0  2025-01-10 03:21:37.359266      1             0     Seoul        NaN  NaN       0  2025-02-02 04:19:06.506463     1  990501.0
+
+--- Inspecting questions_rows.csv ---
+Columns: ['idx', 'parent_category_id', 'text', 'active', 'created_at', 'deleted_at', 'criteria', 'park_id', 'user_type']
+Head:
+   idx  parent_category_id                                      text  active                     created_at  deleted_at criteria  park_id  user_type
+0    1                  25            보도의 횡단 기울기는 1.15°(1/50) 이하인가요?       1  2024-02-04 14:53:39.554344+00         NaN       보도        3          1
+1    2                  25  보도의 종단 기울기(진행방향 기울기)는 3.18°(1/18) 이하인가요?       1  2024-02-04 14:53:39.554344+00         NaN       보도        3          1
+
+--- Inspecting category_rows.csv ---
+Columns: ['idx', 'park_id', 'user_type', 'depth', 'parent_category_id', 'text', 'created_at', 'icon_path']
+Head:
+   idx  park_id  user_type  depth  parent_category_id   text                    created_at icon_path
+0    1        3          1      1                 NaN   공공공간  2024-02-04 13:50:02.09223+00       NaN
+1    2        3          1      1                 NaN  공공시설물  2024-02-04 13:50:02.09223+00       NaN
+
+--- Inspecting criteria_rows.csv ---
+Columns: ['idx', 'criteria_name', 'park_id', 'average_score', 'category_id', 'category_name', 'created_at', 'updated_at']
+Head:
+   idx criteria_name  park_id  average_score  category_id category_name                     created_at                     updated_at
+0    1           안전성        3            3.4            1          진입공간  2023-12-13 14:52:44.369868+00  2023-12-15 04:07:37.808238+00
+1    2         정보제공성        3            3.6            1          진입공간   2023-12-13 14:52:44.36287+00  2023-12-15 04:07:37.808583+00
+

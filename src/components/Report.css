@@ -1,0 +1,110 @@
+/* Report Page Styles */
+.report-container {
+    padding: 20px 24px;
+    min-height: 100vh;
+    background-color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 120px;
+    /* Space for fixed button, matching ReportForm */
+}
+
+/* Reuse header styles from Login/Signup via shared classes or re-declare */
+.report-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* Title Section */
+.report-title-section {
+    margin-bottom: 40px;
+}
+
+.report-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #E6235A;
+    margin-bottom: 20px;
+}
+
+.report-subtitle-main {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #242424;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.report-subtitle-desc {
+    font-size: 1rem;
+    color: #888;
+    font-weight: 400;
+}
+
+/* Selection Section */
+.selection-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.selection-group {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
+.select-btn {
+    flex: 1;
+    padding: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #888;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 500;
+}
+
+.select-btn.selected {
+    border-color: #E6235A;
+    color: #E6235A;
+    font-weight: 700;
+    background-color: rgba(230, 35, 90, 0.02);
+}
+
+/* Footer Button - Fixed Position to match ReportForm */
+.report-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0 24px 34px;
+    background: transparent;
+    pointer-events: none;
+    /* Removed margin-top: auto since it is fixed now */
+}
+
+/* Wrapper matching ReportForm button style if mostly shared, 
+   but specific class logic is in Login.css for .login-submit-btn in JSX */
+.report-footer button {
+    pointer-events: auto;
+    width: 100%;
+    /* other styles usually come from .login-submit-btn in JSX */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    /* Add shadow if floating */
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 500;
+}
+
+.report-footer button.active {
+    box-shadow: 0 8px 20px rgba(230, 35, 90, 0.3);
+}
