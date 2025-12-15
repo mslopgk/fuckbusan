@@ -165,8 +165,9 @@ const CustomPane = ({ name, zIndex, children }) => {
 
     useEffect(() => {
         if (!map.getPane(name)) {
-            map.createPane(name);
-            map.getPane(name).style.zIndex = zIndex;
+            const pane = map.createPane(name);
+            pane.style.zIndex = zIndex;
+            pane.style.pointerEvents = 'none'; // Critical: Allow clicks to pass through empty pane areas
         }
         setIsReady(true);
     }, [map, name, zIndex]);
@@ -276,6 +277,7 @@ const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDis
             mouseout: () => setHoveredDistrict(null),
             click: (e) => {
                 L.DomEvent.stopPropagation(e); // Prevent map click
+                console.log("District Clicked:", feature.properties.code); // Debug log
                 if (onSelectDistricts) {
                     const code = feature.properties.code;
                     // Toggle selection logic:
@@ -337,9 +339,11 @@ const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDis
                 {/* Choropleth Layer */}
                 {!isLoading && geoJsonData &&
                     <GeoJSON
+                        key={`${selectedDistricts.join(',')}-${analysisData.length}`}
                         data={geoJsonData}
                         style={districtStyle}
                         onEachFeature={onEachDistrict}
+                        interactive={true}
                     />
                 }
 

@@ -165,10 +165,8 @@ export default function Dashboard({ onNavigate }) {
                                         onSelectDistricts={setSelectedDistricts}
                                         insights={dashboardData.insights}
                                         analysisData={dashboardData.analysis}
-                                        onViewDetail={setSelectedInsight}
                                     />
                                 </ErrorBoundary>
-                                <div className="map-hover-overlay"></div>
                             </div>
 
 

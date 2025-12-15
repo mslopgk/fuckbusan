@@ -98,6 +98,7 @@ export default function Sidebar({
                         </div>
 
                         <MultiSelectDropdown
+                            key={selectedDistricts.length}
                             label="지역 선택"
                             options={DISTRICT_OPTIONS}
                             selectedValues={selectedDistricts}
