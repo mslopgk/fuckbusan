@@ -277,7 +277,6 @@ const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDis
             mouseout: () => setHoveredDistrict(null),
             click: (e) => {
                 L.DomEvent.stopPropagation(e); // Prevent map click
-                console.log("District Clicked:", feature.properties.code); // Debug log
                 if (onSelectDistricts) {
                     const code = feature.properties.code;
                     // Toggle selection logic:

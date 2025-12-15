@@ -36,16 +36,16 @@ export default function PersonaDetailModal({ persona, onClose }) {
                             ) : (
                                 // Smart Fallback Logic
                                 (() => {
-                                    const age = persona.age;
+                                    const age = parseInt(persona.age); // Parse "60" from "60" or "60세"
                                     const gender = persona.gender;
                                     let assetName = null;
 
                                     if (age >= 60) {
-                                        assetName = gender === '남성' ? 'persona_70m.png' : 'persona_70f.png';
+                                        assetName = (gender === '남성' || gender === 'Male') ? 'persona_70m.png' : 'persona_70f.png';
                                     } else if (age >= 40) {
-                                        assetName = gender === '남성' ? 'persona_40m.png' : 'persona_40f.png';
+                                        assetName = (gender === '남성' || gender === 'Male') ? 'persona_40m.png' : 'persona_40f.png';
                                     } else {
-                                        assetName = gender === '남성' ? 'persona_20m.png' : 'persona_20f.png';
+                                        assetName = (gender === '남성' || gender === 'Male') ? 'persona_20m.png' : 'persona_20f.png';
                                     }
 
                                     if (assetName) {
