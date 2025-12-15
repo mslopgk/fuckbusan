@@ -716,6 +716,8 @@
     font-size: 1.875rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s;
+    overflow: hidden;
+    /* Added to ensure circular mask */
 }
 
 .persona-card:hover .persona-avatar {
@@ -831,8 +833,10 @@
 
 .chat-window {
     margin-bottom: 16px;
-    width: 350px;
-    height: 500px;
+    width: 500px;
+    /* Widened from 350px */
+    height: 600px;
+    /* Increased height as well for better fit */
     background-color: white;
     border-radius: 16px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -890,6 +894,8 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    /* Added to ensure circular mask */
 }
 
 .chat-avatar-icon {
@@ -1876,7 +1882,7 @@
     border-radius: 24px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     width: 100%;
-    max-width: 960px;
+    max-width: 95vw;
     /* Reduced specific to user request */
     height: 92vh;
     /* Increased vertical space to show full content */
@@ -1950,6 +1956,8 @@
     font-size: 6rem;
     margin-bottom: 16px;
     position: relative;
+    overflow: hidden;
+    /* Added to ensure circular mask */
 }
 
 .modal-district-badge {

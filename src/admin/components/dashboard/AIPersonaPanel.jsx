@@ -49,7 +49,11 @@ export default function AIPersonaPanel({ personas = [], onSelectPersona, onChatC
                         {/* Profile Header */}
                         <div className="persona-profile-header">
                             <div className="persona-avatar">
-                                {persona.image_emoji}
+                                {persona.image_url ? (
+                                    <img src={persona.image_url} alt={persona.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    persona.image_emoji
+                                )}
                             </div>
                             <div className="persona-info">
                                 <div className="persona-name-row">

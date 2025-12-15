@@ -1995,60 +1995,51 @@
     /* Hide scrollbar but allow JS scroll */
 }
 
-.citizen-card-scroll {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    padding: 20px;
-    /* Add padding for shadow visibility */
-    /* scroll-behavior: smooth;  REMOVED to prevent conflict with JS auto-scroll */
-    -ms-overflow-style: none;
-    /* IE and Edge */
-    scrollbar-width: none;
-    /* Firefox */
+/* Marquee Animation Support */
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
-.citizen-card-scroll::-webkit-scrollbar {
-    display: none;
-    /* Chrome, Safari, Opera */
-}
-
-/* Archive Carousel Styles (Reuse citizen styles logic) */
-.archive-list {
-    display: flex;
-    flex-direction: row;
-    /* Change to row for slide */
-    gap: 16px;
-    overflow-x: auto;
-    padding: 4px 20px 20px;
-    /* Padding for shadow */
-    /* scroll-behavior: smooth; REMOVED */
-    margin-top: 24px;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.archive-list::-webkit-scrollbar {
-    display: none;
-}
-
-.archive-item {
-    min-width: 280px;
-    /* Fixed width for carousel */
-    max-width: 280px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    background: white;
-    border-radius: 12px;
+.citizen-card-section {
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease;
+    width: 100%;
+    position: relative;
+    /* Mask edges for fade effect (optional) */
 }
 
-.archive-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+.marquee-track {
+    display: flex;
+    gap: 16px;
+    width: max-content;
+    /* Ensure it doesn't wrap */
+    animation: scroll-left 60s linear infinite;
+    /* Adjust speed as needed */
+    padding: 20px;
+    /* Padding for shadow */
+}
+
+/* Pause on hover */
+.citizen-card-section:hover .marquee-track,
+.archive-section:hover .marquee-track {
+    animation-play-state: paused;
+}
+
+/* Archive overrides if needed, otherwise reuse marquee-track */
+.archive-section {
+    overflow: hidden;
+    width: 100%;
+}
+
+/* Ensure cards don't shrink */
+.citizen-card,
+.archive-item {
+    flex-shrink: 0;
 }
 
 .citizen-card {

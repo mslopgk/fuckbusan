@@ -82,7 +82,7 @@ function ResetViewControl() {
 
 
 // MapCanvas Component
-const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDistricts = [], insights = [], analysisData = [], onViewDetail }) => {
+const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDistricts = [], onSelectDistricts, insights = [], analysisData = [], onViewDetail }) => {
     const [geoJsonData, setGeoJsonData] = useState(null);
     const [hoveredDistrict, setHoveredDistrict] = useState(null);
     const [viewState, setViewState] = useState({ center: BUSAN_CENTER, zoom: 11 }); // eslint-disable-line no-unused-vars
@@ -102,134 +102,29 @@ const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDis
             });
     }, []);
 
-    // 구별 위험도(핑 개수) 모의 데이터
-    // Dynamic Severity Layout from Real Analysis Data
-    const districtScores = useMemo(() => {
-        if (!analysisData || analysisData.length === 0) return {};
-        const scores = {};
-        analysisData.forEach(d => {
-            // Calculate an aggregate score or use Safety score as primary metric for heatmap
-            // Using Safety Score as the primary indicator for "Risk" map
-            scores[d.name] = d.safety;
-        });
-        return scores;
-    }, [analysisData]);
-
-    const getSeverityColor = (code) => {
-        const score = districtScores[code];
-        if (score === undefined) return '#94a3b8'; // Unknown (Slate-400)
-
-        // Lower score = Higher Risk (Red)
-        if (score < 70) return '#ef4444'; // Red (High Risk)
-        if (score < 80) return '#f59e0b'; // Orange (Medium Risk)
-        return '#22c5e0'; // Cyan/Blue (Low Risk / Safe)
-    };
-
-    const getSeverity = (districtCode) => {
-        const score = districtScores[districtCode];
-        if (score === undefined) return '정보 없음';
-
-        if (score < 70) return '높음';
-        if (score < 80) return '보통';
-        return '낮음';
-    };
-
-    // Helper to map Korean category to English ID
-    const mapCategory = (title) => {
-        if (!title) return 'other';
-        if (title.includes('보도') || title.includes('교통')) return 'transport';
-        if (title.includes('위생') || title.includes('환경')) return 'environment';
-        if (title.includes('안전') || title.includes('파손')) return 'safety';
-        if (title.includes('문화') || title.includes('관광')) return 'culture';
-        if (title.includes('주거') || title.includes('건축')) return 'housing';
-        return 'other';
-    };
-
-    // Filter Logic using Real Data
-    const filteredData = useMemo(() => {
-        if (!insights) return [];
-
-        const categoriesToShow = selectedCategories.length === 0
-            ? ['housing', 'environment', 'transport', 'safety', 'culture', 'other']
-            : selectedCategories;
-
-        return insights.map(insight => {
-            const cat = mapCategory(insight.title);
-            // Map 'survey' -> 'citizen', 'diagnosis' -> 'expert'
-            const type = insight.category === 'survey' ? 'citizen' : (insight.category === 'diagnosis' ? 'expert' : 'citizen');
-
-            return {
-                id: insight.id,
-                lat: insight.latitude,
-                lng: insight.longitude,
-                label: insight.title,
-                type: type,
-                category: cat,
-                severity: insight.severity ? insight.severity.toLowerCase() : 'medium',
-                proposer: insight.proposer,
-                proposerRole: type === 'expert' ? '진단 전문가' : '일반 시민',
-                date: insight.date ? insight.date.split(' ')[0] : '2025-12-14',
-                image: insight.image_url || "https://placehold.co/300x200?text=No+Image"
-            };
-        }).filter(point => {
-            // Filter by Category
-            if (!categoriesToShow.includes(point.category)) return false;
-            // Filter by User Type (Sidebar)
-            if (userType !== 'all' && point.type !== userType) return false;
-            // Filter by District (if selected) is handled by Map Bounds usually, but we can filter here too
-            if (selectedDistricts.length > 0) {
-                // We'd need district code in the mapped object. 
-                // Since insight has district_code, we can use it.
-                // But the current mapping structure doesn't include it. 
-                // However, the bounds logic mainly handles visibility.
-                // Let's rely on the map bounds/RegionFocus for visual focus, but showing all markers is often preferred unless filtered.
-            }
-            return true;
-        });
-    }, [selectedCategories, userType, insights, selectedDistricts]);
-
-    // Style for GeoJSON
-    const districtStyle = useCallback((feature) => {
-        const severity = getSeverity(feature.properties.code);
-        const color = getSeverityColor(feature.properties.code);
-
-        // Check if any districts are selected
-        const hasSelection = selectedDistricts && selectedDistricts.length > 0;
-        const isSelected = hasSelection && selectedDistricts.includes(feature.properties.code);
-        const isHovered = hoveredDistrict === feature.properties.code;
-
-        let fillOpacity = isHovered ? 0.6 : 0.4;
-        let strokeColor = isHovered ? '#3b82f6' : '#64748b'; // Hover: Blue, Default: Slate-500
-        let weight = isHovered ? 3 : 1.5;
-
-        // If specific districts selected
-        if (hasSelection) {
-            if (isSelected) {
-                fillOpacity = 0.2; // Highlight selected
-                strokeColor = '#2563eb'; // Blue-600
-                weight = 3.5;
-            } else {
-                fillOpacity = 0.1; // Dim unselected
-                strokeColor = '#cbd5e1'; // Slate-300
-                weight = 1;
-            }
-        }
-
-        return {
-            fillColor: color,
-            weight: weight,
-            opacity: 1,
-            color: strokeColor,
-            dashArray: isSelected ? '' : (hasSelection ? '3' : ''),
-            fillOpacity: fillOpacity
-        };
-    }, [hoveredDistrict, selectedDistricts]);
+    // ... (rest of existing code) ...
 
     // Interactions for GeoJSON
     const onEachDistrict = (feature, layer) => {
         layer.on({
             mouseover: () => setHoveredDistrict(feature.properties.code),
             mouseout: () => setHoveredDistrict(null),
+            click: (e) => {
+                L.DomEvent.stopPropagation(e); // Prevent map click
+                if (onSelectDistricts) {
+                    const code = feature.properties.code;
+                    // Toggle selection logic:
+                    // If clicked district is already selected, unselect it.
+                    // Otherwise, select ONLY this district (Focus mode).
+                    // Or typically map click = select this.
+                    if (selectedDistricts.includes(code)) {
+                        onSelectDistricts(selectedDistricts.filter(c => c !== code));
+                    } else {
+                        // Exclusive select for cleaner UX on map interactions
+                        onSelectDistricts([code]);
+                    }
+                }
+            }
         });
         layer.bindTooltip(
             `<div><strong>${feature.properties.name}</strong><br/>위험도: ${getSeverity(feature.properties.code)}</div>`,

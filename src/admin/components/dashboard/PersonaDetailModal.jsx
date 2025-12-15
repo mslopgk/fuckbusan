@@ -1,5 +1,6 @@
 import { X, MapPin, Activity, Heart, Quote, PieChart as PieIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
+import { DISTRICTS } from '../../data/constants';
 import '../../styles/admin.css';
 
 export default function PersonaDetailModal({ persona, onClose }) {
@@ -30,14 +31,33 @@ export default function PersonaDetailModal({ persona, onClose }) {
                     {/* Header Info */}
                     <div className="modal-profile-header">
                         <div className="modal-avatar-wrapper">
-                            {persona.image_emoji}
-                            <div className="modal-district-badge">
-                                {persona.district_code}
-                            </div>
+                            {persona.image_url ? (
+                                <img src={persona.image_url} alt={persona.name} className="w-full h-full object-cover" />
+                            ) : (
+                                // Smart Fallback Logic
+                                (() => {
+                                    const age = parseInt(persona.age); // Parse "60" from "60" or "60세"
+                                    const gender = persona.gender;
+                                    let assetName = null;
+
+                                    if (age >= 60) {
+                                        assetName = (gender === '남성' || gender === 'Male') ? 'persona_70m.png' : 'persona_70f.png';
+                                    } else if (age >= 40) {
+                                        assetName = (gender === '남성' || gender === 'Male') ? 'persona_40m.png' : 'persona_40f.png';
+                                    } else {
+                                        assetName = (gender === '남성' || gender === 'Male') ? 'persona_20m.png' : 'persona_20f.png';
+                                    }
+
+                                    if (assetName) {
+                                        return <img src={`/assets/personas/${assetName}`} alt={persona.name} className="w-full h-full object-cover" />;
+                                    }
+                                    return persona.image_emoji;
+                                })()
+                            )}
                         </div>
                         <h2 className="modal-name-title">{persona.name} <span className="modal-age-sub">{persona.age}세</span></h2>
                         <div className="modal-location">
-                            <MapPin className="w-4 h-4" /> {persona.district_code}
+                            <MapPin className="w-4 h-4" /> {DISTRICTS.find(d => d.id === persona.district_code)?.name || persona.district_code}
                         </div>
                         <div className="modal-tags">
                             {persona.tags && persona.tags.map((tag, idx) => (

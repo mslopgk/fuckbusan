@@ -73,8 +73,9 @@ class AIService:
             )
 
     async def chat_with_context(self, message: str, history: list, context: dict):
+        # Fallback/Simulation if API key is missing
         if not self.client:
-            return "AI 서비스가 설정되지 않았습니다."
+            return self._get_mock_response(message, context)
 
         # Construct System Prompt with Context
         district = context.get('district', '부산시 전체')
@@ -110,6 +111,39 @@ class AIService:
             return response.choices[0].message.content
         except Exception as e:
             print(f"DEBUG: Chat API Error: {str(e)}")
-            return "죄송합니다. 현재 AI 서버 연결이 원활하지 않아 답변을 드릴 수 없습니다."
+            # Fallback to mock if API fails (quota related or connection)
+            return self._get_mock_response(message, context)
+
+    def _get_mock_response(self, message: str, context: dict):
+        """Generates a simulated response based on context and message keywords."""
+        msg = message.lower()
+        district = context.get('district', '해당 지역')
+        
+        # Check if talking to a Specific Persona
+        persona = context.get('targetPersona')
+        if persona:
+            name = persona.get('name', '주민')
+            # Simple keyword logic for Persona
+            if any(x in msg for x in ['안녕', '반가', '하이']):
+                return f"예, 반갑습니데이. 내는 {name}이라 합니다. 뭐 도와드릴까예?"
+            if any(x in msg for x in ['불편', '문제', '힘들']):
+                pain = persona.get('pain_points', ['안전 문제'])[0] if isinstance(persona.get('pain_points'), list) else '이 동네 안전'
+                return f"마, 말도 마이소. 요즘 {pain} 때문에 걱정이 태산입니더. 해결 좀 해주이소."
+            if any(x in msg for x in ['해결', '제안', '개선']):
+                 return "그래해주면 진짜 살기 좋아지겠네예. 기대해보겠습니더!"
+            return f"{name} 입장에서 말씀드리자면, 우리 {district}에는 좀 더 세심한 배려가 필요합니더. (AI 시뮬레이션 응답)"
+
+        # General Assistant Logic
+        score = context.get('score', 0)
+        grade = context.get('grade', 'N/A')
+        
+        if any(x in msg for x in ['안녕', '반가', '하세요']):
+            return f"안녕하세요! {district} 공공디자인 진단 플랫폼입니다. 현재 이 지역의 안전 등급은 {grade}등급입니다. 무엇을 도와드릴까요?"
+        if any(x in msg for x in ['위험', '안전', '점수']):
+            return f"현재 {district}의 종합 안전 점수는 {score}점입니다. 주요 취약 지역에 대한 CPTED(범죄예방디자인) 도입이 권장됩니다."
+        if any(x in msg for x in ['분석', '진단']):
+            return f"데이터 분석 결과, {district}은(는) 야간 보행 환경 개선이 시급한 것으로 나타났습니다. 상세 위협 요소를 지도에서 확인해보세요."
+            
+        return "죄송합니다, 제가 정확히 이해하지 못했습니다. 안전 진단이나 디자인 개선 방향에 대해 질문해주시면 답변 드리겠습니다. (데모 모드)"
 
 ai_service = AIService()

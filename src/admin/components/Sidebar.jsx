@@ -1,8 +1,8 @@
-import { Home, Leaf, Car, Shield, GraduationCap, Factory, Palette, Heart, RotateCcw } from 'lucide-react';
+import { Home, Leaf, Car, Shield, GraduationCap, Factory, Palette, Heart, RotateCcw, Footprints, Bike, Building, Trees, Info, Coffee, Siren, Lightbulb, User, Box, MapPin } from 'lucide-react';
 import MultiSelectDropdown from './common/MultiSelectDropdown';
 import '../styles/admin.css';
 
-import { DISTRICTS } from '../data/constants';
+import { DISTRICTS, MENU_ITEMS } from '../../data/constants';
 
 const DISTRICT_OPTIONS = DISTRICTS.filter(d => d.id !== 'all').map(d => ({
     value: d.id,
@@ -23,16 +23,33 @@ const DIAGNOSTICIAN_OPTIONS = [
     { value: 'public_official', label: '공무원' }
 ];
 
-const menuItems = [
-    { id: 'housing', label: '주거', icon: <Home size={18} />, color: 'cat-housing' },
-    { id: 'environment', label: '환경', icon: <Leaf size={18} />, color: 'cat-env' },
-    { id: 'transport', label: '교통', icon: <Car size={18} />, color: 'cat-transport' },
-    { id: 'safety', label: '안전', icon: <Shield size={18} />, color: 'cat-safety' },
-    { id: 'education', label: '교육', icon: <GraduationCap size={18} />, color: 'cat-education' },
-    { id: 'industry', label: '산업/일자리', icon: <Factory size={18} />, color: 'cat-industry' },
-    { id: 'culture', label: '문화/여가', icon: <Palette size={18} />, color: 'cat-culture' },
-    { id: 'welfare', label: '보건/복지', icon: <Heart size={18} />, color: 'cat-wellness' },
-];
+// Helper to get icon for category
+const getCategoryIcon = (id) => {
+    switch (id) {
+        case 'sidewalk': return <Footprints size={18} />;
+        case 'bicycle_road': return <Bike size={18} />;
+        case 'car_road': return <Car size={18} />;
+        case 'underpass': return <Box size={18} />;
+        case 'overpass_under': return <Box size={18} />;
+        case 'plaza': return <MapPin size={18} />;
+        case 'waterfront': return <MapPin size={18} />;
+        case 'park_small': return <Trees size={18} />;
+        case 'greenery': return <Trees size={18} />;
+        case 'indoor_public': return <Building size={18} />;
+        case 'outdoor_public': return <Building size={18} />;
+        case 'public_facility': return <Building size={18} />;
+        case 'public_transport': return <Car size={18} />;
+        case 'metro_facility': return <Car size={18} />;
+        case 'info_sales': return <Info size={18} />;
+        case 'fire_facility': return <Siren size={18} />;
+        case 'rest_facility': return <Coffee size={18} />;
+        case 'lighting_security': return <Lightbulb size={18} />;
+        case 'sanitary': return <Heart size={18} />;
+        case 'traffic_media': return <Info size={18} />;
+        case 'pedestrian_media': return <User size={18} />;
+        default: return <Box size={18} />;
+    }
+};
 
 export default function Sidebar({
     selectedCategories,
@@ -81,6 +98,7 @@ export default function Sidebar({
                         </div>
 
                         <MultiSelectDropdown
+                            key={selectedDistricts.length}
                             label="지역 선택"
                             options={DISTRICT_OPTIONS}
                             selectedValues={selectedDistricts}
@@ -118,15 +136,16 @@ export default function Sidebar({
                     </div>
 
                     <div className="category-grid">
-                        {menuItems.map(item => {
+                        {MENU_ITEMS.map(item => {
                             const isActive = selectedCategories.includes(item.id);
                             return (
                                 <button
                                     key={item.id}
                                     className={`category-btn ${isActive ? 'active' : ''}`}
                                     onClick={() => onSelectCategory(item.id)}
+                                    title={item.label}
                                 >
-                                    <span className="category-icon">{item.icon}</span>
+                                    <span className="category-icon">{getCategoryIcon(item.id)}</span>
                                     <span className="category-label">{item.label}</span>
                                 </button>
                             );

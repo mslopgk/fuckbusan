@@ -64,6 +64,7 @@ class Persona(Base):
     gender = Column(String)
     job = Column(String)
     image_emoji = Column(String)
+    image_url = Column(String) # Added for avatar images
     quote = Column(String)
     full_quote = Column(String)
     tags = Column(JSON) # Changed to JSON
