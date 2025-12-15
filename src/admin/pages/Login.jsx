@@ -16,7 +16,9 @@ export default function Login({ onNavigate }) {
         try {
             // Mock login check or use dummy API
             // For now, allow any login or check specific
-            if (email === 'admin@busan.go.kr' && password === 'Busan2026!') {
+            // Simple credentials for dev convenience
+            if ((email === 'admin@busan.go.kr' && password === 'Busan2026!') ||
+                (email === 'admin' && password === 'password')) {
                 // Success
                 localStorage.setItem('access_token', 'dummy_token');
                 localStorage.setItem('user_info', JSON.stringify({ username: 'Admin User' }));

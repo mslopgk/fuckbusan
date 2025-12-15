@@ -1,12 +1,15 @@
 import * as XLSX from 'xlsx';
 import * as fs from 'fs';
+import * as path from 'path';
 
-const filePath = 'public/assets/categories/체크리스트(시민, 전문가)_251205_싱크앤두랩_수정.xlsx';
-const fileBuffer = fs.readFileSync(filePath);
-const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+const filePath = './busan_data/데이터리스트(대시보드, 공공데이터).xlsx';
+// const fileBuffer = fs.readFileSync(filePath);
+// const workbook = XLSX.read(fileBuffer, { type: 'buffer' }); 
+// Simplified read
+const workbook = XLSX.readFile(filePath);
 
-const targetSheetName = "시민 체크리스트(공유) ";
-if (workbook.SheetNames.includes(targetSheetName)) {
+const targetSheetName = workbook.SheetNames[0]; // Read first sheet
+if (targetSheetName) {
     const sheet = workbook.Sheets[targetSheetName];
     const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 

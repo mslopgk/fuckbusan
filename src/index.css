@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Global Styles */
 :root {
   font-family: 'Pretendard Variable', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

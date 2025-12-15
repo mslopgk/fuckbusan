@@ -150,6 +150,8 @@ def import_data():
             "남포": "21010",
             "사상": "21150", # Sasang-gu
             "덕천": "21080", # Buk-gu
+            "범일초": "21030", # Dong-gu
+            "범일": "21030",
         })
 
         def get_district_code(raw_name):
@@ -197,11 +199,21 @@ def import_data():
                 # Apply Spatial Correction
                 final_code = correct_district_by_coords(mapped_code, float(row['위도']), float(row['경도']))
 
+                # FORCE CORRECTION for key locations
+                if '부산역' in str(raw_district):
+                    final_code = '21030' # Dong-gu
+                elif '범일' in str(raw_district):
+                    final_code = '21030' # Dong-gu
+
+                # Enhance Title with Location Name
+                loc_name = str(raw_district) if pd.notna(raw_district) else ""
+                title_text = f"[{loc_name}] {row['대분류']} - {row['중분류']} 문제"
+
                 insight = models.DistrictInsight(
                     district_code=final_code,
                     year="2026", # Target Year
                     type='issue', # Default
-                    title=f"{row['대분류']} - {row['중분류']} 문제",
+                    title=title_text,
                     description=row['리뷰'] if pd.notna(row['리뷰']) else "내용 없음",
                     image_url=row['이미지경로'] if '이미지경로' in row and pd.notna(row['이미지경로']) else None,
                     severity='High' if is_high_severity else 'Medium',

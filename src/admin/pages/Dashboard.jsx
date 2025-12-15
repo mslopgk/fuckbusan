@@ -3,7 +3,8 @@ import { LogOut, User, Loader2, Home } from 'lucide-react';
 
 import Sidebar from '../components/Sidebar';
 // Lazy load MapCanvas
-const MapCanvas = lazy(() => import('../components/dashboard/MapCanvas'));
+// Static load MapCanvas to avoid suspense errors
+import MapCanvas from '../components/dashboard/MapCanvas';
 import AnalysisChart from '../components/dashboard/AnalysisChart';
 import AIPersonaPanel from '../components/dashboard/AIPersonaPanel';
 import ScoreGauge from '../components/dashboard/ScoreGauge';
@@ -12,6 +13,8 @@ import PersonaDetailModal from '../components/dashboard/PersonaDetailModal';
 const InsightDetailModal = lazy(() => import('../components/dashboard/InsightDetailModal'));
 // import { DISTRICTS } from '../data/constants'; // Unused import
 import { fetchDashboardData as fetchAnalysisData, fetchScore, fetchInsights, fetchPersonas } from '../api';
+import ErrorBoundary from '../../components/common/ErrorBoundary';
+import { DISTRICTS } from '../../data/constants';
 import '../styles/admin.css';
 
 export default function Dashboard({ onNavigate }) {
@@ -89,141 +92,147 @@ export default function Dashboard({ onNavigate }) {
     };
 
     return (
-        <div className="admin-container">
-            <Sidebar
-                selectedCategories={selectedCategories}
-                onSelectCategory={(id) => {
-                    setSelectedCategories(prev =>
-                        prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
-                    );
-                }}
-                onResetFilters={() => {
-                    setSelectedCategories([]);
-                    setSelectedDistricts([]);
-                    setSelectedFacilityTypes([]);
-                    setSelectedDiagnosticianClasses([]);
-                    setSelectedYear('2026');
-                }}
-                userType={userType}
-                onSelectUserType={setUserType}
-                selectedDistricts={selectedDistricts}
-                onSelectDistricts={setSelectedDistricts}
-                selectedYear={selectedYear}
-                onSelectYear={setSelectedYear}
-                facilityTypes={selectedFacilityTypes}
-                onSelectFacilityTypes={setSelectedFacilityTypes}
-                diagnosticianClasses={selectedDiagnosticianClasses}
-                onSelectDiagnosticianClasses={setSelectedDiagnosticianClasses}
-                onNavigate={onNavigate}
-            />
-
-            <main className="admin-main">
-                {/* Top Header Area */}
-                <header className="admin-header">
-                    <h1 className="header-title">
-                        <span className="text-rose">부산시</span> 지능형 공공디자인 통합 진단 플랫폼
-                        <span className="text-sm font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full" style={{ fontSize: '0.875rem', fontWeight: 400, color: '#64748b', backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '9999px', marginLeft: '8px' }}>({selectedYear}년 성과 전망)</span>
-                    </h1>
-                    <div className="header-user">
-                        <div className="user-badge">
-                            <User className="w-4 h-4 text-slate-500" />
-                            <span className="text-sm font-medium text-slate-700">{username}</span>
-                        </div>
-                        <button
-                            onClick={() => onNavigate && onNavigate('home')}
-                            className="bg-white p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200"
-                            title="홈으로 이동"
-                        >
-                            <Home className="w-4 h-4" />
-                        </button>
-                        <div className="w-px h-4 bg-slate-200 mx-1"></div>
-                        <button
-                            onClick={handleLogout}
-                            className="btn-logout"
-                        >
-                            <LogOut className="w-4 h-4" /> 로그아웃
-                        </button>
-                    </div>
-                </header>
-
-                <div className="admin-content">
-                    {/* Left Panel (Main Content: Map + Chart) */}
-                    <div className="panel-left">
-                        {/* Map Area */}
-                        <div className="admin-card map-card group">
-                            <Suspense fallback={
-                                <div className="map-loading">
-                                    <div className="loader-content">
-                                        <Loader2 className="map-loader-spinner" />
-                                        <span className="map-loader-text">지도 모듈 로딩 중...</span>
-                                    </div>
-                                </div>
-                            }>
-                                <MapCanvas
-                                    selectedCategories={selectedCategories}
-                                    userType={userType}
-                                    theme="light"
-                                    selectedDistricts={selectedDistricts}
-                                    insights={dashboardData.insights}
-                                    analysisData={dashboardData.analysis}
-                                    onViewDetail={setSelectedInsight}
-                                />
-                            </Suspense>
-                            <div className="map-hover-overlay"></div>
-                        </div>
-
-                        {/* Bottom Chart Area */}
-                        <div className="admin-card chart-card">
-                            <AnalysisChart data={dashboardData.analysis} selectedDistricts={selectedDistricts} />
-                        </div>
-                    </div>
-
-                    {/* Right Panel (Side Widgets: Score + Personas) */}
-                    <div className="panel-right custom-scrollbar">
-                        <div className="admin-card score-card">
-                            <ScoreGauge score={dashboardData.score} />
-                        </div>
-
-                        {/* Analysis Section Replaced with Persona Panel */}
-                        <div className="admin-card persona-panel-card">
-                            <AIPersonaPanel
-                                personas={dashboardData.personas}
-                                onSelectPersona={setSelectedPersona}
-                                onChatClick={handleChatWithPersona}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Modal Overlay for Persona */}
-                <PersonaDetailModal
-                    persona={selectedPersona}
-                    onClose={() => setSelectedPersona(null)}
-                />
-
-                {/* Insight Detail Modal */}
-                <Suspense fallback={null}>
-                    {selectedInsight && (
-                        <InsightDetailModal
-                            insight={selectedInsight}
-                            onClose={() => setSelectedInsight(null)}
-                        />
-                    )}
-                </Suspense>
-
-                {/* Floating Chat Widget */}
-                <FloatingChatWidget
-                    isOpen={isChatOpen}
-                    onToggle={toggleChat}
-                    targetPersona={activeChatPersona}
-                    context={{
-                        district: selectedDistricts.length > 0 ? selectedDistricts.join(', ') : '부산시 전체',
-                        year: selectedYear,
-                        score: dashboardData.score?.score || 0,
-                        grade: dashboardData.score?.grade || 'N/A'
+        <ErrorBoundary>
+            <div className="admin-container">
+                <Sidebar
+                    selectedCategories={selectedCategories}
+                    onSelectCategory={(id) => {
+                        setSelectedCategories(prev =>
+                            prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+                        );
                     }}
+                    onResetFilters={() => {
+                        setSelectedCategories([]);
+                        setSelectedDistricts([]);
+                        setSelectedFacilityTypes([]);
+                        setSelectedDiagnosticianClasses([]);
+                        setSelectedYear('2026');
+                    }}
+                    userType={userType}
+                    onSelectUserType={setUserType}
+                    selectedDistricts={selectedDistricts}
+                    onSelectDistricts={setSelectedDistricts}
+                    selectedYear={selectedYear}
+                    onSelectYear={setSelectedYear}
+                    facilityTypes={selectedFacilityTypes}
+                    onSelectFacilityTypes={setSelectedFacilityTypes}
+                    diagnosticianClasses={selectedDiagnosticianClasses}
+                    onSelectDiagnosticianClasses={setSelectedDiagnosticianClasses}
+                    onNavigate={onNavigate}
                 />
-            </main>
-        </div>
+
+                <main className="admin-main">
+                    {/* Top Header Area */}
+                    <header className="admin-header">
+                        <h1 className="header-title">
+                            <span className="text-rose">부산시</span> 지능형 공공디자인 통합 진단 플랫폼
+                            <span className="text-sm font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full" style={{ fontSize: '0.875rem', fontWeight: 400, color: '#64748b', backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '9999px', marginLeft: '8px' }}>({selectedYear}년 성과 전망)</span>
+                        </h1>
+                        <div className="header-user">
+                            <div className="user-badge">
+                                <User className="w-4 h-4 text-slate-500" />
+                                <span className="text-sm font-medium text-slate-700">{username}</span>
+                            </div>
+                            <button
+                                onClick={() => onNavigate && onNavigate('home')}
+                                className="bg-white p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200"
+                                title="홈으로 이동"
+                            >
+                                <Home className="w-4 h-4" />
+                            </button>
+                            <div className="w-px h-4 bg-slate-200 mx-1"></div>
+                            <button
+                                onClick={handleLogout}
+                                className="btn-logout"
+                            >
+                                <LogOut className="w-4 h-4" /> 로그아웃
+                            </button>
+                        </div>
+                    </header>
+
+                    <div className="admin-content">
+                        {/* Left Panel (Main Content: Map + Chart) */}
+                        <div className="panel-left">
+                            {/* Map Area */}
+
+                            <div className="admin-card map-card group">
+                                <ErrorBoundary>
+                                    <MapCanvas
+                                        selectedCategories={selectedCategories}
+                                        userType={userType}
+                                        theme="light"
+                                        selectedDistricts={selectedDistricts}
+                                        onSelectDistricts={setSelectedDistricts}
+                                        insights={dashboardData.insights}
+                                        analysisData={dashboardData.analysis}
+                                        onViewDetail={setSelectedInsight}
+                                    />
+                                </ErrorBoundary>
+                                <div className="map-hover-overlay"></div>
+                            </div>
+
+
+                            {/* Bottom Chart Area */}
+                            <div className="admin-card chart-card">
+                                <ErrorBoundary>
+                                    <AnalysisChart data={dashboardData.analysis} selectedDistricts={selectedDistricts} />
+                                </ErrorBoundary>
+                            </div>
+                        </div>
+
+                        {/* Right Panel (Side Widgets: Score + Personas) */}
+                        <div className="panel-right custom-scrollbar">
+                            <div className="admin-card score-card">
+                                <ErrorBoundary>
+                                    <ScoreGauge score={dashboardData.score} />
+                                </ErrorBoundary>
+                            </div>
+
+                            {/* Analysis Section Replaced with Persona Panel */}
+                            <div className="admin-card persona-panel-card">
+                                <ErrorBoundary>
+                                    <AIPersonaPanel
+                                        personas={dashboardData.personas}
+                                        onSelectPersona={setSelectedPersona}
+                                        onChatClick={handleChatWithPersona}
+                                    />
+                                </ErrorBoundary>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Modal Overlay for Persona */}
+                    <PersonaDetailModal
+                        persona={selectedPersona}
+                        onClose={() => setSelectedPersona(null)}
+                    />
+
+                    {/* Insight Detail Modal */}
+                    <Suspense fallback={null}>
+                        {selectedInsight && (
+                            <InsightDetailModal
+                                insight={selectedInsight}
+                                onClose={() => setSelectedInsight(null)}
+                            />
+                        )}
+                    </Suspense>
+
+                    {/* Floating Chat Widget */}
+                    <FloatingChatWidget
+                        isOpen={isChatOpen}
+                        onToggle={toggleChat}
+                        targetPersona={activeChatPersona}
+                        context={{
+                            district: selectedDistricts.length > 0
+                                ? selectedDistricts.map(d => DISTRICTS.find(item => item.id === d)?.name || d).join(', ')
+                                : '부산시 전체',
+                            year: selectedYear,
+                            score: dashboardData.score?.score || 0,
+                            grade: dashboardData.score?.grade || 'N/A'
+                        }}
+                    />
+                </main>
+            </div>
+        </ErrorBoundary>
     );
 }
