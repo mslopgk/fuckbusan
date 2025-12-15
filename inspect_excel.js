@@ -5,7 +5,7 @@ const filePath = 'public/assets/categories/체크리스트(시민, 전문가)_25
 const fileBuffer = fs.readFileSync(filePath);
 const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
 
-const targetSheetName = "시민 체크리스트(공유)";
+const targetSheetName = "시민 체크리스트(공유) ";
 if (workbook.SheetNames.includes(targetSheetName)) {
     const sheet = workbook.Sheets[targetSheetName];
     const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
