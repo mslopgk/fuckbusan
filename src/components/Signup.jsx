@@ -28,26 +28,41 @@ const Signup = ({ onBack, onNavigate }) => {
     };
 
     const handleSignup = async () => {
+        // [DEBUG]
+        console.log("Signup Attempt. API_URL:", API_URL);
+        console.log("Signup FormData:", formData);
+
+        if (!API_URL) {
+            alert("Error: VITE_API_URL is not defined");
+            return;
+        }
+
         if (!isFormValid || loading) return;
         setLoading(true);
         setError(null);
 
         try {
+            const payload = {
+                ID: formData.id,
+                PW: formData.password,
+                name: formData.name,
+                nickname: formData.nickname,
+                phone_num: formData.phone,
+                district_code: userType === 'expert' ? 'expert' : 'general'
+            };
+            console.log("Signup Payload:", payload);
+
             const response = await fetch(`${API_URL}/users/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ID: formData.id,
-                    PW: formData.password,
-                    name: formData.name,
-                    nickname: formData.nickname,
-                    phone_num: formData.phone,
-                    district_code: userType === 'expert' ? 'expert' : 'general'
-                })
+                body: JSON.stringify(payload)
             });
+
+            console.log("Signup Response Status:", response.status);
 
             if (!response.ok) {
                 const errData = await response.json();
+                console.error("Signup Error Data:", errData);
                 throw new Error(errData.detail || '회원가입에 실패했습니다.');
             }
 
@@ -63,7 +78,9 @@ const Signup = ({ onBack, onNavigate }) => {
 
         } catch (err) {
             console.error(err);
-            setError(err.message || '회원가입 에러 발생');
+            const msg = err.message || '회원가입 에러 발생';
+            setError(msg);
+            alert(`회원가입 오류: ${msg}`);
         } finally {
             setLoading(false);
         }
