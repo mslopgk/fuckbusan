@@ -79,11 +79,11 @@ const InteractiveMap = () => {
 
     // Manual offsets 
     const desktopOffsets = {
-        '강서구': [40, -50],
-        '사하구': [-10, -40],
-        '서구': [-5, -25],
+        '강서구': [100, -130], // Slightly down
+        '사하구': [-10, -90],  // Slightly down
+        '서구': [-5, -55],
         '영도구': [-20, 5],
-        '남구': [0, -30],
+        '남구': [-15, -40],
         '동구': [5, 0],
         '중구': [0, 10],
         '기장군': [-10, 10],
@@ -91,11 +91,11 @@ const InteractiveMap = () => {
     };
 
     const mobileOffsets = {
-        '강서구': [80, -110],
-        '사하구': [-10, -100],
-        '서구': [-5, -60],
+        '강서구': [140, -190], // Slightly down
+        '사하구': [-10, -150], // Slightly down
+        '서구': [-5, -90],
         '영도구': [-35, -5],
-        '남구': [-15, -40],
+        '남구': [-25, -50],
         '동구': [5, 0],
         '중구': [0, 5],
         '기장군': [-10, 10],
@@ -221,9 +221,10 @@ const InteractiveMap = () => {
                     onEachFeature={onEachDistrict}
                 />
 
-                {selectedCenter && (
+                {/* People icon hidden as requested */}
+                {/* {selectedCenter && (
                     <Marker position={selectedCenter} icon={isMobile ? peopleIconMobile : peopleIcon} interactive={false} />
-                )}
+                )} */}
             </MapContainer>
         </div>
     );

@@ -76,7 +76,7 @@ const Home = ({ onNavigate }) => {
             {/* Hero / Map Section (Moved OUTSIDE content-wrapper for full width) */}
             <div className="hero-section">
                 <picture className="hero-map-bg-wrapper">
-                    <source media="(min-width: 1024px)" srcSet="/assets/지도 배경 데스크탑.png" />
+                    <source media="(min-width: 1024px)" srcSet="/assets/지도%20배경%20데스크탑.png" />
                     <img src="/assets/지도 배경.png" alt="Map Background" className="hero-map-bg" />
                 </picture>
 
@@ -156,15 +156,9 @@ const Home = ({ onNavigate }) => {
 
 
                 <div className="stats-wrapper">
-                    {/* ... (stats content) ... */}
-                </div>
-                {/* We need to match lines correctly, so I will replace the Action Row part first */}
-
-
-                <div className="stats-wrapper">
                     {/* Stats Section Title */}
                     {/* Stats Section Title */}
-                    <div className="stats-header-section" style={{ marginTop: '0px' }}>
+                    <div className="stats-header-section">
                         <div>
                             <h2 className="section-title">내가 남긴 제보와 제안, <span className="highlight">지금 어떻게 진행되고 있을까요?</span></h2>
                             <p className="section-subtitle">등록한 내용의 검토·처리 상태를 쉽게 확인할 수 있습니다.</p>
@@ -202,7 +196,9 @@ const Home = ({ onNavigate }) => {
                             <button className="btn-more-news mobile-only">
                                 더보기 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                             </button>
-                            <div className="news-more desktop-only">더보기 &gt;</div>
+                            <button className="btn-more-news desktop-only">
+                                더보기 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </button>
                         </div>
                         <div className="news-list">
                             <div className="news-item">
@@ -248,30 +244,31 @@ const Home = ({ onNavigate }) => {
 
             {/* Footer */}
             <footer className="footer">
-                <div className="footer-links">
-                    <a href="#" className="footer-link">이용약관</a>
-                    <a href="#" className="footer-link">개인정보처리방침</a>
-                    <a href="#" className="footer-link">문의하기</a>
-                </div>
-
-                <div className="faq-btn">
-                    자주 묻는 질문(FAQ) →
-                </div>
-
-                <div className="footer-info">
-                    이메일 | support@busan-design.kr<br />
-                    전화 | 051-000-0000<br />
-                    운영시간 | 평일 09:00 - 18:00
-                </div>
-
-                {/* Divider and Centered Logo Section */}
-                <div className="footer-divider"></div>
-
-                <div className="footer-logo-container">
-                    <div className="footer-logo">
-                        <img src="/assets/logowhite.png" alt="부산참여플랫폼" style={{ height: '30px' }} />
+                <div className="footer-right">
+                    <div className="footer-links">
+                        <a href="#" className="footer-link">이용약관</a>
+                        <a href="#" className="footer-link">개인정보처리방침</a>
+                        <a href="#" className="footer-link">문의하기</a>
                     </div>
-                    <div style={{ marginTop: '4px', fontSize: '13px', fontWeight: 'lighter' }}>© 2025 Busan Public Design Platform. All rights reserved.</div>
+
+                    <div className="faq-btn">
+                        자주 묻는 질문(FAQ) →
+                    </div>
+                </div>
+
+                <div className="footer-left">
+                    <div className="footer-divider-mobile mobile-only"></div>
+                    <img src="/assets/logowhite.png" alt="Busan Platform" className="footer-logo-main" />
+
+                    <div className="footer-info">
+                        이메일 | support@busan-design.kr<br />
+                        전화 | 051-000-0000<br />
+                        운영시간 | 평일 09:00 - 18:00
+                    </div>
+
+                    <div className="footer-copyright">
+                        © 2025 Busan Public Design Platform. All rights reserved.
+                    </div>
                 </div>
             </footer>
 
