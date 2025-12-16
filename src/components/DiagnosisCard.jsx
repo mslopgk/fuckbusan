@@ -35,7 +35,7 @@ const DiagnosisCard = ({ item, onBookmark, onClick, style }) => {
             {/* Main Info Row */}
             <div className="dc-main-info">
                 <div className="dc-img">
-                    <img src={item.image || '/assets/placeholder.png'} alt="site" />
+                    <img src={(item && item.image) || '/assets/placeholder.png'} alt="site" />
                 </div>
                 <div className="dc-text-info">
                     <div className="dc-title">{item.title}</div>
@@ -48,13 +48,21 @@ const DiagnosisCard = ({ item, onBookmark, onClick, style }) => {
                     )}
 
                     <div className="dc-coords">
-                        <div className="dc-coord-col">
-                            <div className="dc-coord-label">위도</div>
-                            <div className="dc-coord-val">{item.lat}</div>
-                        </div>
-                        <div className="dc-coord-col">
-                            <div className="dc-coord-label">경도</div>
-                            <div className="dc-coord-val">{item.lng}</div>
+                        {/* Address Display */}
+                        {item.address && (
+                            <div className="dc-address" style={{ marginBottom: '4px', color: '#666', fontSize: '13px' }}>
+                                {item.address}
+                            </div>
+                        )}
+                        <div className="dc-coord-row" style={{ display: 'flex', gap: '8px' }}>
+                            <div className="dc-coord-col">
+                                <div className="dc-coord-label">위도</div>
+                                <div className="dc-coord-val">{item.lat}</div>
+                            </div>
+                            <div className="dc-coord-col">
+                                <div className="dc-coord-label">경도</div>
+                                <div className="dc-coord-val">{item.lng}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
