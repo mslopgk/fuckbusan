@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './DiagnosisList.css';
+import DiagnosisCard from './DiagnosisCard';
 
 const DiagnosisList = ({ onBack, onNavigate }) => {
     // 'all' | 'general' | 'expert'
@@ -7,6 +8,7 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
     const [sortOrder, setSortOrder] = useState('latest'); // 'latest'
     const [isSortOpen, setIsSortOpen] = useState(false);
 
+    // Mock Data based on images (moved outside or memoized if real)
     // Mock Data based on images (moved outside or memoized if real)
     const [listData, setListData] = useState([
         {
@@ -103,87 +105,77 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
                     </button>
                 </div>
 
-                <div className="sort-dropdown-wrapper" onClick={() => setIsSortOpen(!isSortOpen)}>
-                    <span className="sort-label">최신순</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
+                <div className="sort-wrapper" style={{ position: 'relative' }}>
+                    <div
+                        className="sort-dropdown-wrapper"
+                        onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); }}
+                        style={{ minWidth: '80px', justifyContent: 'space-between', cursor: 'pointer' }}
+                    >
+                        <span className="sort-label">
+                            {sortOrder === 'latest' ? '최신순' : '점수순'}
+                        </span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+
+                    {isSortOpen && (
+                        <div className="sort-menu" style={{
+                            position: 'absolute',
+                            top: '100%',
+                            right: 0,
+                            zIndex: 100,
+                            background: 'white',
+                            border: '1px solid #eee',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            width: '100px', // Fixed width to ensure it doesn't squish
+                            overflow: 'hidden'
+                        }}>
+                            <div
+                                className={`sort-option ${sortOrder === 'latest' ? 'active' : ''}`}
+                                onClick={(e) => { e.stopPropagation(); setSortOrder('latest'); setIsSortOpen(false); }}
+                                style={{ padding: '8px 12px', fontSize: '13px', cursor: 'pointer', color: sortOrder === 'latest' ? '#E6235A' : '#333', background: sortOrder === 'latest' ? '#fff0f5' : 'white' }}
+                            >
+                                최신순
+                            </div>
+                            <div
+                                className={`sort-option ${sortOrder === 'score' ? 'active' : ''}`}
+                                onClick={(e) => { e.stopPropagation(); setSortOrder('score'); setIsSortOpen(false); }}
+                                style={{ padding: '8px 12px', fontSize: '13px', cursor: 'pointer', color: sortOrder === 'score' ? '#E6235A' : '#333', background: sortOrder === 'score' ? '#fff0f5' : 'white' }}
+                            >
+                                점수순
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
             {/* List */}
             <div className="list-content">
-                {filteredData.map(item => (
-                    <div key={item.id} className="diagnosis-card">
-                        <div className="card-header">
-                            <div className={`type-badge ${item.type}`}>
-                                {item.type === 'general' ? '일반인' : '전문가'}
-                            </div>
-                            <div className="card-date-row">
-                                <span className="card-date">{item.date}</span>
-                                <svg
-                                    onClick={() => toggleBookmark(item.id)}
-                                    style={{ cursor: 'pointer' }}
-                                    width="20" height="20" viewBox="0 0 24 24"
-                                    fill={item.bookmarked ? "#242424" : "none"}
-                                    stroke={item.bookmarked ? "#242424" : "#ccc"}
-                                    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                                >
-                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                            </div>
-                        </div>
-
-                        {/* Main Info Row */}
-                        <div className="card-main-info">
-                            <div className="card-img">
-                                {/* Placeholder image logic */}
-                                <img src={item.image} alt="site" />
-                            </div>
-                            <div className="card-text-info">
-                                <div className="card-title">{item.title}</div>
-                                {item.type === 'general' ? (
-                                    <div className="card-score-large">{item.score}</div>
-                                ) : (
-                                    <div className={`card-result ${item.result}`}>
-                                        {item.result === 'suitable' ? '적합' : '부적합'}
-                                    </div>
-                                )}
-
-                                <div className="card-coords">
-                                    <div className="coord-col">
-                                        <div className="coord-label">위도</div>
-                                        <div className="coord-val">{item.lat}</div>
-                                    </div>
-                                    <div className="coord-col">
-                                        <div className="coord-label">경도</div>
-                                        <div className="coord-val">{item.lng}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* General Only: Score Grid */}
-                        {item.type === 'general' && (
-                            <div className="score-grid">
-                                {item.scores.map((s, idx) => (
-                                    <div key={idx} className="score-box">
-                                        <div className="score-label">{s.label}</div>
-                                        <div className="score-val">{s.val}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* Divider */}
-                        <div className="card-divider"></div>
-
-                        {/* Description */}
-                        <div className="card-desc">
-                            {item.desc}
-                        </div>
-                    </div>
-                ))}
+                {listData
+                    .filter(item => activeTab === 'all' || item.type === activeTab)
+                    .sort((a, b) => {
+                        if (sortOrder === 'latest') {
+                            // Date desc (String comparison for YY.MM.DD works)
+                            return b.date.localeCompare(a.date);
+                        } else {
+                            // Score desc
+                            // Expert items might not have score, treat as -1 to put at bottom or top?
+                            // Let's assume user wants to see high scores.
+                            const scoreA = parseFloat(a.score || 0);
+                            const scoreB = parseFloat(b.score || 0);
+                            return scoreB - scoreA;
+                        }
+                    })
+                    .map(item => (
+                        <DiagnosisCard
+                            key={item.id}
+                            item={item}
+                            onBookmark={toggleBookmark}
+                            onClick={() => console.log('Card clicked', item.id)}
+                        />
+                    ))}
             </div>
         </div>
     );

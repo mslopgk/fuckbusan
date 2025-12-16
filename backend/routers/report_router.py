@@ -1,22 +1,24 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-import models, schemas, database
 from typing import List
 
+# [수정] database에서 get_db 직접 import
+from database import get_db 
+import models, schemas
+
 router = APIRouter(
-    prefix="/api/reports", # Using a common prefix for reports and suggestions
+    prefix="/api/reports",
     tags=["reports"],
 )
 
 @router.post("/report", status_code=status.HTTP_201_CREATED)
-def create_report(report: schemas.ReportCreate, db: Session = Depends(database.get_db)):
-    # Create new report
+def create_report(report: schemas.ReportCreate, db: Session = Depends(get_db)):
     new_report = models.Report(
         type=report.type,
         location=report.location,
         title=report.title,
         content=report.content,
-        files=report.files # SQLAlchemy JSON type handles list automatically if using MariaDB/modern SQLite
+        files=report.files 
     )
     db.add(new_report)
     db.commit()
@@ -24,8 +26,7 @@ def create_report(report: schemas.ReportCreate, db: Session = Depends(database.g
     return {"message": "제보가 성공적으로 접수되었습니다.", "id": new_report.id}
 
 @router.post("/suggest", status_code=status.HTTP_201_CREATED)
-def create_suggestion(suggestion: schemas.SuggestionCreate, db: Session = Depends(database.get_db)):
-    # Create new suggestion
+def create_suggestion(suggestion: schemas.SuggestionCreate, db: Session = Depends(get_db)):
     new_suggestion = models.Suggestion(
         location=suggestion.location,
         title=suggestion.title,

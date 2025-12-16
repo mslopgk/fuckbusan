@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './Review.css';
+import { fetchWithLogout } from '../utils/api';
 
-const Review = ({ onPrev, onNext, color = '#E6235A', progressBarColor, diagnosisMode }) => {
+const Review = ({ onPrev, onNext, color = '#E6235A', progressBarColor, diagnosisMode, diagnosisPayload }) => {
     // Expert step is 5, General is 4
     const stepTitle = diagnosisMode === 'expert' ? "5) 리뷰" : "4) 리뷰";
 
     const [text, setText] = useState('');
     const [scrolled, setScrolled] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -24,6 +26,74 @@ const Review = ({ onPrev, onNext, color = '#E6235A', progressBarColor, diagnosis
     };
 
     const isValid = text.length >= 20;
+
+    const handleSubmit = async () => {
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+
+        try {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+            let imageUrl = '';
+
+            // 1. Upload Image if exists
+            if (diagnosisPayload?.photo?.original) {
+                const formData = new FormData();
+                formData.append('file', diagnosisPayload.photo.original);
+
+                const uploadRes = await fetchWithLogout(`${API_URL}/checklist/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (uploadRes.ok) {
+                    const uploadData = await uploadRes.json();
+                    imageUrl = uploadData.url;
+                } else {
+                    console.error("Image upload failed");
+                }
+            }
+
+            // 2. Submit Checklist
+            const token = localStorage.getItem('access_token');
+            const submitPayload = {
+                "진단지역": "부산", // Default location name if unknown
+                "district_code": diagnosisMode, // 'general' or 'expert'
+                "위도": diagnosisPayload?.location?.lat || 0,
+                "경도": diagnosisPayload?.location?.lng || 0,
+                "대분류": diagnosisPayload?.bigCategory || '',
+                "중분류": diagnosisPayload?.midCategory || '',
+                "질문기준": "default",
+                "answers": JSON.stringify(diagnosisPayload?.answers || {}),
+                "점수": diagnosisPayload?.satisfaction || 0, // Using satisfaction as 'score' for general, maybe calculate for expert?
+                "리뷰": text,
+                "만족도": diagnosisPayload?.satisfaction ? String(diagnosisPayload.satisfaction) : "0",
+                "이미지경로": imageUrl
+            };
+
+            const submitRes = await fetchWithLogout(`${API_URL}/checklist/submit`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(submitPayload)
+            });
+
+            if (!submitRes.ok) {
+                const errJson = await submitRes.json();
+                throw new Error(errJson.detail || '제출 실패');
+            }
+
+            // Success
+            onNext();
+
+        } catch (error) {
+            console.error("Submit Error:", error);
+            alert(`제출 중 오류가 발생했습니다: ${error.message}`);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div className="container">
@@ -66,14 +136,14 @@ const Review = ({ onPrev, onNext, color = '#E6235A', progressBarColor, diagnosis
 
             {/* Footer */}
             <footer className="sticky-footer">
-                <button className="btn btn-prev" onClick={onPrev}>이전</button>
+                <button className="btn btn-prev" onClick={onPrev} disabled={isSubmitting}>이전</button>
                 <button
                     className={`btn btn-next ${isValid ? 'active' : ''}`}
-                    disabled={!isValid}
-                    onClick={onNext}
-                    style={isValid ? { backgroundColor: color } : {}}
+                    disabled={!isValid || isSubmitting}
+                    onClick={handleSubmit}
+                    style={isValid && !isSubmitting ? { backgroundColor: color } : {}}
                 >
-                    다음
+                    {isSubmitting ? '제출 중...' : '다음'}
                 </button>
             </footer>
         </div>

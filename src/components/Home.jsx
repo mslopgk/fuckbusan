@@ -4,6 +4,20 @@ import InteractiveMap from './InteractiveMap';
 
 const Home = ({ onNavigate }) => {
     const [activeTab, setActiveTab] = useState('home');
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        setIsLoggedIn(!!token);
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('district_code');
+        setIsLoggedIn(false);
+        alert('로그아웃 되었습니다.');
+    };
 
     return (
         <div className="home-container">
@@ -17,8 +31,14 @@ const Home = ({ onNavigate }) => {
                     </div>
                 </div>
                 <div className="header-actions">
-                    <button className="btn-header login" onClick={() => onNavigate && onNavigate('login')}>로그인</button>
-                    <button className="btn-header signup" onClick={() => onNavigate && onNavigate('signup')}>회원가입</button>
+                    {!isLoggedIn ? (
+                        <>
+                            <button className="btn-header login" onClick={() => onNavigate && onNavigate('login')}>로그인</button>
+                            <button className="btn-header signup" onClick={() => onNavigate && onNavigate('signup')}>회원가입</button>
+                        </>
+                    ) : (
+                        <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
+                    )}
                 </div>
             </header>
 
@@ -41,8 +61,14 @@ const Home = ({ onNavigate }) => {
                     </nav>
 
                     <div className="header-actions">
-                        <button className="btn-header login" onClick={() => onNavigate && onNavigate('login')}>로그인</button>
-                        <button className="btn-header signup" onClick={() => onNavigate && onNavigate('signup')}>회원가입</button>
+                        {!isLoggedIn ? (
+                            <>
+                                <button className="btn-header login" onClick={() => onNavigate && onNavigate('login')}>로그인</button>
+                                <button className="btn-header signup" onClick={() => onNavigate && onNavigate('signup')}>회원가입</button>
+                            </>
+                        ) : (
+                            <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
+                        )}
                     </div>
                 </div>
             </header>
@@ -87,18 +113,26 @@ const Home = ({ onNavigate }) => {
                     {/* Survey Banner (As Card 1) */}
                     <div className="action-item survey-card" onClick={() => onNavigate && onNavigate('survey')}>
                         <div>
-                            <div className="card-title survey-title-text">설문조사</div>
+                            <div className="card-title survey-title-text" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                설문조사 <span className="card-arrow mobile-only" style={{ display: 'flex', alignItems: 'center' }}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </span>
+                            </div>
                             <div className="card-subtitle">공공디자인 설문에 참여해주세요<br />~ 2025.12.19까지</div>
                         </div>
-                        <div className="card-arrow mobile-only">→</div>
-                        {/* Desktop arrow/icon styling handled in CSS */}
+                        {/* Desktop Arrow (Hidden on mobile via CSS) */}
+                        <div className="card-arrow desktop-only">→</div>
                     </div>
 
                     <div className="action-item card report" onClick={() => onNavigate && onNavigate('report')}>
                         <div>
-                            <div className="card-title">제보/제안하기</div>
+                            <div className="card-title">
+                                제보/제안하기 <span className="card-arrow mobile-only" style={{ marginLeft: '6px', display: 'flex', alignItems: 'center' }}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </span>
+                            </div>
                             <div className="card-subtitle">당신의 아이디어가<br />도시를 더 멋지게!</div>
-                            <div className="card-arrow">→</div>
+                            <div className="card-arrow desktop-only">→</div>
                         </div>
                         <div className="card-icon">
                             <img src="/assets/suggest.png" alt="제보하기" />
@@ -106,9 +140,13 @@ const Home = ({ onNavigate }) => {
                     </div>
                     <div className="action-item card diagnose" onClick={() => onNavigate && onNavigate('checkList')}>
                         <div>
-                            <div className="card-title">진단하기</div>
+                            <div className="card-title">
+                                진단하기 <span className="card-arrow mobile-only" style={{ marginLeft: '6px', display: 'flex', alignItems: 'center' }}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </span>
+                            </div>
                             <div className="card-subtitle">우리 동네 디자인,<br />같이 검진해볼까요?</div>
-                            <div className="card-arrow">→</div>
+                            <div className="card-arrow desktop-only">→</div>
                         </div>
                         <div className="card-icon">
                             <img src="/assets/check.png" alt="진단하기" />
@@ -118,13 +156,21 @@ const Home = ({ onNavigate }) => {
 
 
                 <div className="stats-wrapper">
+                    {/* ... (stats content) ... */}
+                </div>
+                {/* We need to match lines correctly, so I will replace the Action Row part first */}
+
+
+                <div className="stats-wrapper">
+                    {/* Stats Section Title */}
                     {/* Stats Section Title */}
                     <div className="stats-header-section" style={{ marginTop: '0px' }}>
                         <div>
                             <h2 className="section-title">내가 남긴 제보와 제안, <span className="highlight">지금 어떻게 진행되고 있을까요?</span></h2>
                             <p className="section-subtitle">등록한 내용의 검토·처리 상태를 쉽게 확인할 수 있습니다.</p>
                         </div>
-                        <div className="stats-detail-btn-container">
+                        {/* Detail Button moved below for mobile re-ordering logic */}
+                        <div className="stats-detail-btn-container desktop-only">
                             <button className="btn-detail">
                                 자세히보기 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                             </button>
@@ -134,6 +180,13 @@ const Home = ({ onNavigate }) => {
                     {/* Stats Graphs */}
                     <div className="stats-content-row">
                         <StatsContent />
+                    </div>
+
+                    {/* Mobile Detail Button (Below Charts) */}
+                    <div className="stats-detail-btn-container mobile-only">
+                        <button className="btn-detail">
+                            자세히보기 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </button>
                     </div>
                 </div>
 
@@ -146,7 +199,10 @@ const Home = ({ onNavigate }) => {
                     <div className="news-section">
                         <div className="news-header">
                             <h2 className="section-title-sm">플랫폼 소식</h2>
-                            <div className="news-more">더보기 &gt;</div>
+                            <button className="btn-more-news mobile-only">
+                                더보기 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </button>
+                            <div className="news-more desktop-only">더보기 &gt;</div>
                         </div>
                         <div className="news-list">
                             <div className="news-item">

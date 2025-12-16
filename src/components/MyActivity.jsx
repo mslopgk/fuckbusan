@@ -1,58 +1,84 @@
 import React, { useState } from 'react';
 import './MyActivity.css';
+import DiagnosisCard from './DiagnosisCard';
+import { fetchWithLogout } from '../utils/api';
 
 const MyActivity = ({ onBack, onNavigate, onEdit }) => {
-    const [activeTab, setActiveTab] = useState('bookmark'); // 'bookmark' | 'my_diagnosis'
+    const [activeTab, setActiveTab] = useState('my_diagnosis'); // Default to my_diagnosis
     const [sortOrder, setSortOrder] = useState('latest');
+    const [myDiagnoses, setMyDiagnoses] = useState([]);
 
     // Mock User Data
     const user = {
-        name: '홍길동',
-        email: 'user123456@gmail.com',
+        name: localStorage.getItem('user_name') || '사용자', // Get from local storage if available
+        email: 'user@example.com',
         title: '열정적인 공간개척자',
-        count: 10
+        count: myDiagnoses.length
     };
 
-    // Mock Diagnosis Data (similar to DiagnosisList but for specific user tabs)
-    const mockData = [
-        {
-            id: 1,
-            type: 'general',
-            date: '25.12.20',
-            bookmarked: true,
-            title: '보도',
-            score: '2.0',
-            lat: '35.1717231',
-            lng: '129.1107443',
-            scores: [
-                { label: '접근성', val: '2.0' },
-                { label: '안전성', val: '2.0' },
-                { label: '정보\n제공성', val: '2.0' },
-                { label: '포용성', val: '2.0' },
-                { label: '이동성', val: '2.0' },
-                { label: '심미성', val: '2.0' }
-            ],
-            desc: '시설물 전반은 잘 관리되고 있는 것으로 보이나, 일부 구간의 바닥 상태가 고르지 않아 보행 시 불편함을 느꼈습니다. 특히 노약자나 어린이가 이용할 경우 안전사고...',
-            image: '/assets/diagnosis_street.png'
-        },
-        {
-            id: 2,
-            type: 'expert',
-            date: '25.12.20',
-            bookmarked: true,
-            title: '위생공간/화장실',
-            result: 'suitable',
-            lat: '35.1717231',
-            lng: '129.1107443',
-            desc: '시설물 전반은 잘 관리되고 있는 것으로 보이나, 일부 구간의 바닥 상태가 고르지 않아 보행 시 불편함을 느꼈습니다. 특히 노약자나 어린이가 이용할 경우 안전사고...',
-            image: '/assets/diagnosis_street.png'
-        }
-    ];
+    useEffect(() => {
+        if (activeTab === 'my_diagnosis') {
+            const fetchMyData = async () => {
+                try {
+                    const token = localStorage.getItem('access_token');
+                    if (!token) return;
 
-    // For demo, show same data for both tabs but filtered by 'bookmarked' logic if real
+                    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+                    console.log("Fetching: " + `${API_URL}/checklist/my`);
+                    // alert("Fetching: " + `${API_URL}/checklist/my`); // Debug
+
+                    const res = await fetchWithLogout(`${API_URL}/checklist/my`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        // Map to card format
+                        const mapped = data.map(item => {
+                            // Safe date parsing
+                            let dateStr = '23.01.01';
+                            try {
+                                if (item.created_at) {
+                                    dateStr = new Date(item.created_at).toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit' }).replace(/\./g, '').replace(/ /g, '.');
+                                }
+                            } catch (e) { console.warn("Date parse error", e); }
+
+                            // Determine result for expert (assuming answers has 'suitable' or 'unsuitable' logic, or derived from score?)
+                            // For now, if district_code is expert, we don't have a direct 'result' column in ChecklistResult (it has '만족도' or '점수').
+                            // Let's assume '만족도' stores 'suitable'/'unsuitable' for expert if backend saved it there.
+                            // In Review.jsx: "만족도": diagnosisPayload?.satisfaction ? String(diagnosisPayload.satisfaction) : "0",
+                            // In expert mode, answers might contain suitability.
+                            // Let's default to suitable if unknown.
+
+                            return {
+                                id: item.result_id,
+                                type: item.district_code === 'expert' ? 'expert' : 'general',
+                                date: dateStr,
+                                bookmarked: false,
+                                title: item.중분류 || item.대분류 || '진단 결과',
+                                score: String(item.점수 || 0),
+                                result: item.만족도 || 'suitable', // Start with satisfaction column, or logic needed
+                                lat: item.위도,
+                                lng: item.경도,
+                                scores: [],
+                                desc: item.리뷰,
+                                image: item.이미지경로 ? (item.이미지경로.startsWith('/') ? `${API_URL}${item.이미지경로}` : item.이미지경로) : '/assets/diagnosis_street.png'
+                            };
+                        });
+                        setMyDiagnoses(mapped);
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch my diagnoses", e);
+                }
+            };
+            fetchMyData();
+        }
+    }, [activeTab]);
+
     const displayData = activeTab === 'bookmark'
-        ? mockData.filter(d => d.bookmarked)
-        : mockData;
+        ? [] // No bookmarks implementation yet
+        : myDiagnoses;
 
     return (
         <div className="my-activity-container">
@@ -120,71 +146,21 @@ const MyActivity = ({ onBack, onNavigate, onEdit }) => {
 
             {/* List Content */}
             <div className="list-content">
-                {displayData.map(item => (
-                    <div
-                        key={item.id}
-                        className="diagnosis-card"
-                        onClick={() => activeTab === 'my_diagnosis' && onEdit && onEdit(item)}
-                        style={{ cursor: activeTab === 'my_diagnosis' ? 'pointer' : 'default' }}
-                    >
-                        <div className="card-header">
-                            <div className={`type-badge ${item.type}`}>
-                                {item.type === 'general' ? '일반인' : '전문가'}
-                            </div>
-                            <div className="card-date-row">
-                                <span className="card-date">{item.date}</span>
-                            </div>
-                        </div>
-
-                        {/* Main Info Row */}
-                        <div className="card-main-info">
-                            <div className="card-img">
-                                <img src={item.image} alt="site" />
-                            </div>
-                            <div className="card-text-info">
-                                <div className="card-title">{item.title}</div>
-                                {item.type === 'general' ? (
-                                    <div className="card-score-large">{item.score}</div>
-                                ) : (
-                                    <div className={`card-result ${item.result}`}>
-                                        {item.result === 'suitable' ? '적합' : '부적합'}
-                                    </div>
-                                )}
-
-                                <div className="card-coords">
-                                    <div className="coord-col">
-                                        <div className="coord-label">위도</div>
-                                        <div className="coord-val">{item.lat}</div>
-                                    </div>
-                                    <div className="coord-col">
-                                        <div className="coord-label">경도</div>
-                                        <div className="coord-val">{item.lng}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* General Only: Score Grid */}
-                        {item.type === 'general' && (
-                            <div className="score-grid">
-                                {item.scores.map((s, idx) => (
-                                    <div key={idx} className="score-box">
-                                        <div className="score-label">{s.label}</div>
-                                        <div className="score-val">{s.val}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* Divider */}
-                        <div className="card-divider"></div>
-
-                        {/* Description */}
-                        <div className="card-desc">
-                            {item.desc}
-                        </div>
+                {displayData.length === 0 ? (
+                    <div className="no-data" style={{ padding: '40px', textAlign: 'center', color: '#999', fontSize: '14px' }}>
+                        {activeTab === 'bookmark' ? '저장된 북마크가 없습니다.' : '아직 진단 내역이 없습니다.'}
                     </div>
-                ))}
+                ) : (
+                    displayData.map(item => (
+                        <DiagnosisCard
+                            key={item.id}
+                            item={item}
+                            onBookmark={() => { }} // No bookmark toggle logic in MyActivity mockup, but prop is required or can be safely ignored
+                            onClick={() => activeTab === 'my_diagnosis' && onEdit && onEdit(item)}
+                            style={{ cursor: activeTab === 'my_diagnosis' ? 'pointer' : 'default' }}
+                        />
+                    ))
+                )}
             </div>
         </div>
     );

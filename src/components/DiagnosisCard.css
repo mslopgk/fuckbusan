@@ -1,0 +1,189 @@
+/* DiagnosisCard.css */
+.diagnosis-card-component {
+    background-color: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Pretendard Variable', sans-serif;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.diagnosis-card-component:active {
+    transform: scale(0.99);
+}
+
+.dc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.dc-type-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.dc-type-badge.general {
+    background-color: #FFF0F5;
+    color: #E6235A;
+}
+
+.dc-type-badge.expert {
+    background-color: #F3E5F5;
+    color: #542AA3;
+}
+
+.dc-date-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dc-date {
+    font-size: 13px;
+    color: #999;
+}
+
+.dc-bookmark-icon {
+    cursor: pointer;
+}
+
+/* Main Info layout */
+.dc-main-info {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.dc-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: #f0f0f0;
+}
+
+.dc-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dc-text-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.dc-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: #242424;
+    margin-bottom: 6px;
+}
+
+.dc-score-large {
+    font-size: 24px;
+    font-weight: 900;
+    color: #E6235A;
+    font-family: 'GmarketSans', sans-serif;
+    margin-bottom: 8px;
+}
+
+.dc-result {
+    font-size: 16px;
+    font-weight: 800;
+    padding: 4px 0;
+    margin-bottom: 8px;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.dc-result.suitable {
+    color: #2196F3;
+    /* Blue */
+}
+
+.dc-result.unsuitable {
+    color: #F44336;
+    /* Red */
+}
+
+.dc-coords {
+    display: flex;
+    gap: 12px;
+}
+
+.dc-coord-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.dc-coord-label {
+    font-size: 10px;
+    color: #aaa;
+}
+
+.dc-coord-val {
+    font-size: 12px;
+    color: #666;
+    font-family: monospace;
+}
+
+/* Score Grid */
+.dc-score-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 16px;
+}
+
+.dc-score-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dc-score-label {
+    font-size: 10px;
+    color: #888;
+    text-align: center;
+    margin-bottom: 2px;
+    white-space: pre-wrap;
+    line-height: 1.1;
+}
+
+.dc-score-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+}
+
+/* Divider */
+.dc-divider {
+    height: 1px;
+    background-color: #eee;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.dc-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

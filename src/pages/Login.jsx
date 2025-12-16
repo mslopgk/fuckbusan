@@ -24,6 +24,9 @@ export default function Login() {
             if (response.data.username) {
                 localStorage.setItem('username', response.data.username);
             }
+            if (response.data.district_code) {
+                localStorage.setItem('district_code', response.data.district_code);
+            }
             navigate('/dashboard');
         } catch (err) {
             console.error("Login Error:", err);

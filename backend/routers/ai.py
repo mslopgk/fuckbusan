@@ -1,7 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any, List
-from ai_service import ai_service
+
+# [주의] ai_service.py 파일이 backend 폴더 안에 있어야 합니다!
+try:
+    from ai_service import ai_service
+except ImportError:
+    # 혹시 파일이 없어도 서버가 죽지는 않게 처리
+    ai_service = None 
 
 router = APIRouter(prefix="/api/ai", tags=["AI Analysis"])
 
@@ -17,6 +23,9 @@ class ChatRequest(BaseModel):
 
 @router.post("/analyze")
 async def analyze_data(request: AnalysisRequest):
+    if ai_service is None:
+        raise HTTPException(status_code=503, detail="AI 서비스 파일(ai_service.py)을 찾을 수 없습니다.")
+        
     try:
         if request.district == 'all':
             return {"analysis": "전체 지역에 대한 상세 AI 분석을 보려면 특정 구/군을 선택해주세요."}
@@ -32,6 +41,9 @@ async def analyze_data(request: AnalysisRequest):
 
 @router.post("/chat")
 async def chat(request: ChatRequest):
+    if ai_service is None:
+        raise HTTPException(status_code=503, detail="AI 서비스 파일(ai_service.py)을 찾을 수 없습니다.")
+
     try:
         response = await ai_service.chat_with_context(
             message=request.message,

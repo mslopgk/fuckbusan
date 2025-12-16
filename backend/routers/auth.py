@@ -18,6 +18,7 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     username: str # Add username to response
+    district_code: str = None # Add district_code to response
 
 @router.post("/signup", response_model=dict)
 def signup(user: UserCreate, db: Session = Depends(database.get_db)):
@@ -48,5 +49,16 @@ def login(user: UserCreate, db: Session = Depends(database.get_db)):
     access_token = utils.create_access_token(
         data={"sub": db_user.email}, expires_delta=access_token_expires
     )
-    # Return username as well
-    return {"access_token": access_token, "token_type": "bearer", "username": db_user.username}
+
+    # Fetch district_code from User table if it exists
+    # Assuming LegacyUser.email corresponds to User.ID
+    real_user = db.query(models.User).filter(models.User.ID == db_user.email).first()
+    district_code = real_user.district_code if real_user else None
+
+    # Return username and district_code as well
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer", 
+        "username": db_user.username,
+        "district_code": district_code
+    }

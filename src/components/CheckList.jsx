@@ -170,7 +170,7 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
                 <button
                     className={`btn btn-next ${allAnswered ? 'active' : ''}`}
                     disabled={!allAnswered}
-                    onClick={onNext}
+                    onClick={() => onNext(ratings)}
                     style={allAnswered ? { backgroundColor: color } : {}}
                 >
                     다음

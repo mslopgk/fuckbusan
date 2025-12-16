@@ -1,35 +1,23 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+# =========================================================
+# [설정 구역] 여기를 본인 HeidiSQL 정보로 바꿔주세요!
+# =========================================================
+DB_ID = "root"                # HeidiSQL 접속 아이디 (보통 root)
+DB_PW = "1234"                # HeidiSQL 접속 비밀번호 (본인이 설정한 거!)
+DB_HOST = "127.0.0.1"         # 주소 (그대로 두세요)
+DB_PORT = "3306"              # 포트 (HeidiSQL에 적힌 포트, 보통 3306)
+DB_NAME = "mydata"   # 데이터베이스 이름 (HeidiSQL에 만들어둔 것)
+# =========================================================
 
-# Configuration
-USE_MYSQL = os.getenv("USE_MYSQL", "False").lower() == "true"
+# MariaDB 연결 주소 만들기
+SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{DB_ID}:{DB_PW}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-if USE_MYSQL:
-    DB_USER = os.getenv("DB_USER", "user")
-    DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
-    DB_HOST = "127.0.0.1"
-    DB_PORT = os.getenv("DB_PORT", "3306")
-    DB_NAME = os.getenv("DB_NAME", "busan_design_db")
-    SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    connect_args = {}
-    pool_args = {"pool_recycle": 3600, "pool_pre_ping": True}
-else:
-    # SQLite Fallback
-    SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app_v2.db"
-    connect_args = {"check_same_thread": False}
-    pool_args = {}
-
-# Create Engine
+# 엔진 생성 (MySQL/MariaDB용 설정)
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args=connect_args,
-    **pool_args
+    SQLALCHEMY_DATABASE_URL
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -42,4 +30,3 @@ def get_db():
         yield db
     finally:
         db.close()
-

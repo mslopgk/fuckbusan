@@ -161,7 +161,31 @@ const DiagnosisStep1 = ({ onBack, onNext, color = '#E6235A', progressBarColor })
                 <button
                     className={`btn btn-next ${files.length > 0 ? 'active' : ''}`}
                     disabled={files.length === 0}
-                    onClick={() => onNext && onNext()}
+                    onClick={() => {
+                        if (files.length > 0 && onNext) {
+                            // Get location if possible, otherwise null
+                            if (navigator.geolocation) {
+                                navigator.geolocation.getCurrentPosition(
+                                    (position) => {
+                                        onNext({
+                                            photo: files[0],
+                                            location: {
+                                                lat: position.coords.latitude,
+                                                lng: position.coords.longitude
+                                            }
+                                        });
+                                    },
+                                    (error) => {
+                                        console.warn("Location error:", error);
+                                        // Pass without location
+                                        onNext({ photo: files[0], location: null });
+                                    }
+                                );
+                            } else {
+                                onNext({ photo: files[0], location: null });
+                            }
+                        }
+                    }}
                     style={files.length > 0 ? { backgroundColor: color } : {}}
                 >
                     다음

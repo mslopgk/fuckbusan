@@ -22,15 +22,57 @@ const BigCategory = ({ data, onNext, initialBig, initialMid, onBack, color = '#E
     const midCategories = bigCategory ? Object.keys(data[bigCategory] || {}) : [];
 
     // Map names to existing images if possible, else placeholder
+    // Map names to existing images
     const getImageForMid = (name) => {
-        // Excel Data Mapping
-        if (name.includes('보도') || name.includes('보행')) return '/assets/categories/pedestrian_space.png';
-        if (name.includes('차량') || name.includes('차도') || name.includes('진출입') || name.includes('진입구역')) return '/assets/categories/vehicle_entry.png';
-        if (name.includes('자전거')) return '/assets/categories/bicycle_path.png';
-        if (name.includes('광장') || name.includes('쉼터') || name.includes('공개공지')) return '/assets/categories/public_road.png';
-        // Note: Using public_road for Plaza/Shelter as placeholder logic, can be facility_zone too.
-        if (name.includes('시설')) return '/assets/categories/facility_zone.png';
+        // [Logic Refinement]
+        // If Big Category is '보도' (Sidewalk), use original legacy images.
+        if (bigCategory === '보도') {
+            if (name === '보행공간') return '/assets/categories/pedestrian_space.png';
+            if (name === '차량진입구역') return '/assets/categories/vehicle_entry.png';
+            if (name === '자전거도로') return '/assets/categories/bicycle_path.png';
+            if (name === '건물 앞 열린 광장, 쉼터(공개공지)') return '/assets/categories/public_road.png'; // Using public_road as per original mapping
+            if (name === '시설물구역') return '/assets/categories/facility_zone.png';
+            // Fallback for '보도' items just in case
+            return '/assets/categories/facility_zone.png';
+        }
 
+        // For all other categories, use the new specific images in 'middle' folder
+        const map = {
+            "생활도로(국지도로, 동네에서 차가 다니는 길)": "생활도로.png",
+            "횡단보도": "횡단보도.png",
+            "속도저감장치": "속도저감장치.png",
+            "진입공간(보행 접근로)": "진입공간(보행 접근로).png",
+            "산책로": "산책로.png",
+            "위생공간(화장실)": "위생공간(화장실).png",
+            "편의공간(편의시설, 안내시설)": "편의공간(편의시설).png",
+            "휴게공간": "휴게공간.png",
+            "안내시설": "안내 시설.png",
+            "가로등(보행등)": "가로등(보행등).png",
+            "신호등": "신호등.png",
+            "버스승차대": "버스승차대.png",
+            "택시승차대": "택시승차대.png",
+            "두리발승차대": "두리발승차대.png",
+            "지하철출입구": "지하철출입구.png",
+            "휴게(벤치)": "휴게(벤치).png",
+            "휴게(파고라)": "휴게(파고라).png",
+            "휴지통": "휴지통.png",
+            "음수대": "음수대.png",
+            "기타지원시설": "기타지원시설.png",
+            "접근공간": "접근공간.png",
+            "진입공간": "진입공간(진입).png",
+            "이동공간": "이동공간.png",
+            "위생공간": "위생공간.png"
+        };
+
+        if (map[name]) {
+            return `/assets/categories/middle/${map[name]}`;
+        }
+
+        // Fallback heuristics
+        if (name.includes('시설')) return '/assets/categories/middle/기타지원시설.png';
+        if (name.includes('위생') || name.includes('화장실')) return '/assets/categories/middle/위생공간(화장실).png';
+
+        // Default
         return '/assets/categories/facility_zone.png';
     };
 

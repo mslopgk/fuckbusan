@@ -10,8 +10,9 @@ from sqlalchemy import text
 
 # Routers
 from routers import auth, dashboard, ai, user_router, checklist_router, report_router
+from routers import user_router, checklist_router
 import models
-import database
+from database import engine
 
 # Configure Logging
 logging.basicConfig(level=logging.INFO)
@@ -25,12 +26,12 @@ async def lifespan(app: FastAPI):
     try:
         logger.info("Startup: Checking database connection...")
         # Test connection
-        with database.engine.connect() as conn:
+        with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         logger.info("Startup: Database connection successful.")
         
         logger.info("Startup: Creating tables...")
-        models.Base.metadata.create_all(bind=database.engine)
+        models.Base.metadata.create_all(bind=engine)
         logger.info("Startup: Tables created successfully.")
     except Exception as e:
         logger.error(f"Startup Error: Database connection failed. {e}")
@@ -53,6 +54,7 @@ origins = [
     "http://localhost:3000",
     "http://localhost:8501", 
     "http://0.0.0.0:8501",
+    "http://127.0.0.1:3000",
 ]
 
 app.add_middleware(
@@ -78,6 +80,16 @@ assets_dir = os.path.join(dist_dir, "assets")
 
 if os.path.exists(assets_dir):
     app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+# uploads folder
+uploads_dir = os.path.join(current_dir, "uploads")
+if not os.path.exists(uploads_dir):
+    os.makedirs(uploads_dir)
+app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
+
+@app.get("/")
+def read_root():
+    return {"message": "Busan Design Backend is Running!"}
 
 @app.get("/{full_path:path}")
 async def serve_react_app(full_path: str):

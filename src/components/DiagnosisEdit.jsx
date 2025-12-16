@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './DiagnosisEdit.css';
+import { fetchWithLogout } from '../utils/api';
 
 const DiagnosisEdit = ({ data, onBack, onComplete }) => {
     // Determine type from data (passed from MyActivity)
@@ -24,6 +25,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
         const fetchData = async () => {
             setLoading(true);
             try {
+                // 1. Load Questions Structure
                 const fileName = type === 'expert'
                     ? '/assets/data/expert_diagnosis.json'
                     : '/assets/data/general_diagnosis.json';
@@ -32,18 +34,44 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                 const json = await response.json();
                 setFullData(json);
 
-                // Set initial Big/Mid if not set
-                const bigKeys = Object.keys(json);
-                let initBig = selectedBig;
-                if (!initBig || !json[initBig]) {
-                    initBig = bigKeys[0];
-                    setSelectedBig(initBig);
-                }
+                // 2. Load Checklist Detail if ID exists
+                if (data && data.id) {
+                    const token = localStorage.getItem('access_token');
+                    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+                    const res = await fetchWithLogout(`${API_URL}/checklist/${data.id}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
 
-                if (initBig && json[initBig]) {
-                    const midKeys = Object.keys(json[initBig]);
-                    if (midKeys.length > 0) {
-                        setSelectedMid(midKeys[0]);
+                    if (res.ok) {
+                        const detail = await res.json();
+                        // Set fields from detail
+                        setSelectedBig(detail.대분류);
+                        setSelectedMid(detail.중분류);
+                        setImage(detail.이미지경로 || '/assets/diagnosis_street.png');
+                        setReviewText(detail.리뷰 || '');
+
+                        // Parse answers
+                        try {
+                            const parsedAnswers = JSON.parse(detail.answers);
+                            setAnswers(parsedAnswers);
+                        } catch (e) {
+                            console.warn("Failed to parse answers", e);
+                        }
+                    }
+                } else {
+                    // Fallback to props data or defaults
+                    const bigKeys = Object.keys(json);
+                    let initBig = selectedBig;
+                    if (!initBig || !json[initBig]) {
+                        initBig = bigKeys[0];
+                        setSelectedBig(initBig);
+                    }
+
+                    if (initBig && json[initBig]) {
+                        const midKeys = Object.keys(json[initBig]);
+                        if (midKeys.length > 0) {
+                            setSelectedMid(midKeys[0]);
+                        }
                     }
                 }
 
@@ -54,7 +82,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
             }
         };
         fetchData();
-    }, [type]);
+    }, [type, data]);
 
     // Handle Big Category Change
     const handleBigChange = (e) => {
@@ -78,6 +106,42 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
         setHasChanges(true);
     };
 
+    const handleSave = async () => {
+        if (!data || !data.id) return;
+
+        try {
+            const token = localStorage.getItem('access_token');
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+            const payload = {
+                "대분류": selectedBig,
+                "중분류": selectedMid,
+                "리뷰": reviewText,
+                "answers": JSON.stringify(answers),
+                "점수": 0 // Optional, backend might not update this or needs calc
+            };
+
+            const res = await fetchWithLogout(`${API_URL}/checklist/${data.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert("수정되었습니다.");
+                if (onComplete) onComplete();
+            } else {
+                alert("수정 실패.");
+            }
+        } catch (e) {
+            console.error("Update failed", e);
+            alert("에러가 발생했습니다.");
+        }
+    };
+
     if (loading) return <div style={{ padding: 20 }}>Loading...</div>;
 
     // Dynamic Theme Colors
@@ -86,6 +150,57 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
     const titleClass = isExpert ? 'page-title-expert' : 'page-title-general';
 
     const currentQuestions = fullData[selectedBig]?.[selectedMid] || [];
+
+    // [Added] Image Mapping Logic (Same as BigCategory)
+    const getImageForMid = (name) => {
+        // Legacy check for Sidewalk (Big Category Check)
+        // Since we don't track 'Big Category' ID easily here (it's name based), we check if big category name is '보도'
+        if (selectedBig === '보도') {
+            if (name === '보행공간') return '/assets/categories/pedestrian_space.png';
+            if (name === '차량진입구역') return '/assets/categories/vehicle_entry.png';
+            if (name === '자전거도로') return '/assets/categories/bicycle_path.png';
+            if (name === '건물 앞 열린 광장, 쉼터(공개공지)') return '/assets/categories/public_road.png';
+            if (name === '시설물구역') return '/assets/categories/facility_zone.png';
+            return '/assets/categories/facility_zone.png';
+        }
+
+        const map = {
+            "생활도로(국지도로, 동네에서 차가 다니는 길)": "생활도로.png",
+            "횡단보도": "횡단보도.png",
+            "속도저감장치": "속도저감장치.png",
+            "진입공간(보행 접근로)": "진입공간(보행 접근로).png",
+            "산책로": "산책로.png",
+            "위생공간(화장실)": "위생공간(화장실).png",
+            "편의공간(편의시설, 안내시설)": "편의공간(편의시설).png",
+            "휴게공간": "휴게공간.png",
+            "안내시설": "안내 시설.png",
+            "가로등(보행등)": "가로등(보행등).png",
+            "신호등": "신호등.png",
+            "버스승차대": "버스승차대.png",
+            "택시승차대": "택시승차대.png",
+            "두리발승차대": "두리발승차대.png",
+            "지하철출입구": "지하철출입구.png",
+            "휴게(벤치)": "휴게(벤치).png",
+            "휴게(파고라)": "휴게(파고라).png",
+            "휴지통": "휴지통.png",
+            "음수대": "음수대.png",
+            "기타지원시설": "기타지원시설.png",
+            "접근공간": "접근공간.png",
+            "진입공간": "진입공간(진입).png",
+            "이동공간": "이동공간.png",
+            "위생공간": "위생공간.png"
+        };
+
+        if (map[name]) {
+            return `/assets/categories/middle/${map[name]}`;
+        }
+
+        // Fallback
+        if (name.includes('시설')) return '/assets/categories/middle/기타지원시설.png';
+        if (name.includes('위생') || name.includes('화장실')) return '/assets/categories/middle/위생공간(화장실).png';
+
+        return '/assets/categories/facility_zone.png';
+    };
 
     return (
         <div className="diagnosis-edit-container">
@@ -151,10 +266,11 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                             onClick={() => { setSelectedMid(midKey); setHasChanges(true); }}
                         >
                             <div className="mid-img-box">
-                                {/* Placeholder or map images if possible */}
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={selectedMid === midKey ? "#fff" : "#ccc"} strokeWidth="1">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                </svg>
+                                <img
+                                    src={getImageForMid(midKey)}
+                                    alt={midKey}
+                                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                />
                             </div>
                             <div className="mid-name">{midKey}</div>
                             {selectedMid === midKey && <div className="overlay-check">수정하기</div>}
@@ -279,7 +395,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                 <button
                     className={`submit-btn ${hasChanges ? 'active' : ''}`}
                     disabled={!hasChanges}
-                    onClick={onComplete}
+                    onClick={handleSave}
                 >
                     수정하기
                 </button>

@@ -1,11 +1,57 @@
 import React, { useState } from 'react';
 import './Login.css';
 
-const Login = ({ onBack, onSignup }) => {
-    const [id, setId] = useState('');
-    const [password, setPassword] = useState('');
 
-    const isFormValid = id.length > 0 && password.length > 0;
+const Login = ({ onBack, onSignup }) => {
+    const [inputs, setInputs] = useState({
+        id: '',
+        password: ''
+    });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const isFormValid = inputs.id.length > 0 && inputs.password.length > 0;
+    const API_URL = import.meta.env.VITE_API_URL;
+    const handleLogin = async () => {
+        if (!isFormValid || loading) return;
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`${API_URL}/users/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ID: inputs.id,
+                    PW: inputs.password
+                })
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.detail || 'Login failed');
+            }
+
+            const data = await response.json();
+
+            // Store data
+            localStorage.setItem('access_token', data.access_token);
+            if (data.username) localStorage.setItem('username', data.username);
+            if (data.district_code) localStorage.setItem('district_code', data.district_code);
+
+            // Go back to home (update view)
+            onBack();
+        } catch (err) {
+            console.error(err);
+            setError(err.message || '로그인에 실패했습니다.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') handleLogin();
+    };
 
     return (
         <div className="login-container">
@@ -31,6 +77,9 @@ const Login = ({ onBack, onSignup }) => {
                 </div>
             </div>
 
+            {/* Error Message */}
+            {error && <div style={{ color: 'red', textAlign: 'center', marginBottom: '10px' }}>{error}</div>}
+
             {/* Form */}
             <div className="login-form">
                 <div className="input-group">
@@ -39,8 +88,9 @@ const Login = ({ onBack, onSignup }) => {
                         type="text"
                         className="login-input"
                         placeholder="아이디를 입력해 주세요."
-                        value={id}
-                        onChange={(e) => setId(e.target.value)}
+                        value={inputs.id}
+                        onChange={(e) => setInputs({ ...inputs, id: e.target.value })}
+                        onKeyDown={handleKeyDown}
                     />
                 </div>
                 <div className="input-group">
@@ -49,8 +99,9 @@ const Login = ({ onBack, onSignup }) => {
                         type="password"
                         className="login-input"
                         placeholder="비밀번호를 입력해 주세요."
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={inputs.password}
+                        onChange={(e) => setInputs({ ...inputs, password: e.target.value })}
+                        onKeyDown={handleKeyDown}
                     />
                 </div>
             </div>
@@ -58,10 +109,11 @@ const Login = ({ onBack, onSignup }) => {
             {/* Submit Button */}
             <div className="login-btn-container">
                 <button
-                    className={`login-submit-btn ${isFormValid ? 'active' : 'disabled'}`}
-                    disabled={!isFormValid}
+                    className={`login-submit-btn ${isFormValid && !loading ? 'active' : 'disabled'}`}
+                    disabled={!isFormValid || loading}
+                    onClick={handleLogin}
                 >
-                    로그인
+                    {loading ? '로그인 중...' : '로그인'}
                 </button>
             </div>
 

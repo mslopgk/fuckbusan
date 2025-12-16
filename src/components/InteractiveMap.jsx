@@ -1,14 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, GeoJSON, useMap } from 'react-leaflet';
+import { MapContainer, GeoJSON, useMap, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+// import * as turf from '@turf/turf'; // Unused
 
-// Fix for default Leaflet markers if needed (though we only use Poly)
+// Fix for default Leaflet markers if needed
 delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+try {
+    L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    });
+} catch (e) { console.warn("L.Icon fix error", e); }
+
+// Custom Icon
+const peopleIcon = new L.Icon({
+    iconUrl: '/assets/people.png',
+    iconSize: [80, 80],
+    iconAnchor: [40, 65], // Y=65 means bottom part is at center -> shifts image UP by ~25px
+    popupAnchor: [0, -65]
+});
+
+// Mobile Icon: Smaller and slightly higher
+const peopleIconMobile = new L.Icon({
+    iconUrl: '/assets/people.png',
+    iconSize: [60, 60], // Increased from 50x50
+    iconAnchor: [30, 55], // X=30 (center), Y=55 (near bottom) -> lifts image up
+    popupAnchor: [0, -55]
 });
 
 // Component to fit map bounds to GeoJSON
@@ -25,8 +44,9 @@ const BoundsFitter = ({ data }) => {
 
 const InteractiveMap = () => {
     const [geoJsonData, setGeoJsonData] = useState(null);
-    const [selectedDistrict, setSelectedDistrict] = useState(null);
+    const [selectedDistrict, setSelectedDistrict] = useState('부산진구'); // Default to '부산진구'
     const selectedDistrictRef = React.useRef(null);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
     useEffect(() => {
         selectedDistrictRef.current = selectedDistrict;
@@ -39,6 +59,12 @@ const InteractiveMap = () => {
             .catch(err => console.error("Error loading map data:", err));
     }, []);
 
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     // Function to determine style based on state
     const getStyle = (feature) => {
         const isSelected = selectedDistrict === feature.properties.name;
@@ -46,37 +72,42 @@ const InteractiveMap = () => {
             fillColor: isSelected ? '#E6235A' : 'white',
             weight: isSelected ? 2 : 1,
             opacity: 1,
-            color: isSelected ? '#E6235A' : '#333', // Border color
-            fillOpacity: 1 // Solid white or solid pink
+            color: isSelected ? '#E6235A' : '#333',
+            fillOpacity: 1
         };
     };
 
-    // Manual offsets for specific districts based on visual feedback center: [0, 0] is default
-    // User feedback (Round 3): 
-    // Gangseo: More Up + Right
-    // Saha: More Up
-    // Seo: More Up
-    // Dong: Little Right
-    // Jung: Little Down
-    // Yeongdo: Little Left + Little Down
-    // Nam: Up
-    const labelOffsets = {
-        '강서구': [40, -50],    // More Right, Much More Up
-        '사하구': [-10, -40],   // Much More Up
-        '서구': [-5, -25],      // More Up
-        '영도구': [-20, 5],     // Left, Down (relative to previous -10 is down)
-        '남구': [0, -30],       // More Up
-        '동구': [5, 0],         // Right
-        '중구': [0, 10],        // Down
+    // Manual offsets 
+    const desktopOffsets = {
+        '강서구': [40, -50],
+        '사하구': [-10, -40],
+        '서구': [-5, -25],
+        '영도구': [-20, 5],
+        '남구': [0, -30],
+        '동구': [5, 0],
+        '중구': [0, 10],
         '기장군': [-10, 10],
         '북구': [0, 0]
     };
+
+    const mobileOffsets = {
+        '강서구': [80, -110],
+        '사하구': [-10, -100],
+        '서구': [-5, -60],
+        '영도구': [-35, -5],
+        '남구': [-15, -40],
+        '동구': [5, 0],
+        '중구': [0, 5],
+        '기장군': [-10, 10],
+        '북구': [0, 0]
+    };
+
+    const labelOffsets = isMobile ? mobileOffsets : desktopOffsets;
 
     const onEachDistrict = (feature, layer) => {
         const districtName = feature.properties.name;
         const offset = labelOffsets[districtName] || [0, 0];
 
-        // Bind Label Tooltip
         layer.bindTooltip(districtName, {
             permanent: true,
             direction: 'center',
@@ -84,22 +115,10 @@ const InteractiveMap = () => {
             className: `district-label`
         });
 
-        // Effect to update tooltip class when selection changes (since bindTooltip is once)
-        // We can't easily update class on existing tooltip without re-bind or ref manipulation.
-        // Instead, rely on CSS :hover or just the fill color change which is reactive via style prop.
-        // Actually, for the TEXT color to change to white, we need the class.
-        // React-leaflet doesn't re-run this.
-        // Workaround: We will use a unique key on MapContainer or GeoJSON to force re-render? No, too heavy.
-        // Better: We add a listener to the layer to update tooltip class?
-        // Let's stick to just Map Color for now, and handle Text Color via CSS targeting the parent group if possible, or accept it might lag slightly?
-        // Actually, the `style` prop handles the polygon color. The Text color is inside the tooltip `div`.
-        // We can access the tooltip from the layer.
-
         layer.on({
             mouseover: (e) => {
                 const currentSelection = selectedDistrictRef.current;
                 if (currentSelection !== districtName) {
-                    // Hover effect for unselected: Light Grey
                     e.target.setStyle({
                         fillColor: '#f5f5f5',
                         fillOpacity: 1,
@@ -111,7 +130,6 @@ const InteractiveMap = () => {
                 const currentSelection = selectedDistrictRef.current;
                 const isSelected = currentSelection === districtName;
 
-                // Force reset to correct state based on selection REF
                 e.target.setStyle({
                     fillColor: isSelected ? '#E6235A' : 'white',
                     fillOpacity: 1,
@@ -121,23 +139,18 @@ const InteractiveMap = () => {
             },
             click: (e) => {
                 const currentSelection = selectedDistrictRef.current;
-                // Radio selection behavior
                 if (currentSelection !== districtName) {
                     setSelectedDistrict(districtName);
                 }
             },
-            // Update tooltip class when generic 'click' happens anywhere? 
-            // Better: use a useEffect in component to find layers and update tooltips.
         });
     };
 
-    // Effect to update styles and tooltip classes when selection changes
+    // Effect to update tooltip classes
     const geoJsonRef = React.useRef(null);
     useEffect(() => {
         if (geoJsonRef.current) {
-            geoJsonRef.current.setStyle(getStyle); // Re-apply styles
-
-            // Manually update tooltips
+            geoJsonRef.current.setStyle(getStyle);
             geoJsonRef.current.eachLayer(layer => {
                 const name = layer.feature.properties.name;
                 const tooltip = layer.getTooltip();
@@ -155,6 +168,19 @@ const InteractiveMap = () => {
         }
     }, [selectedDistrict]);
 
+    // Calculate center of selected district
+    const getCenterOfDistrict = (districtName) => {
+        if (!geoJsonData) return null;
+        const feature = geoJsonData.features.find(f => f.properties.name === districtName);
+        if (!feature) return null;
+
+        // Leaflet bounds center (fast and adequate for maps)
+        const layer = L.geoJSON(feature);
+        return layer.getBounds().getCenter();
+    };
+
+    const selectedCenter = selectedDistrict ? getCenterOfDistrict(selectedDistrict) : null;
+
     if (!geoJsonData) return null;
 
     return (
@@ -166,9 +192,9 @@ const InteractiveMap = () => {
                         border: none;
                         box-shadow: none;
                         font-family: 'GmarketSans', sans-serif;
-                        font-weight: 500; /* Medium weight */
-                        font-size: 12px; /* Reduced size */
-                        color: #555; /* Slightly softer black */
+                        font-weight: 500;
+                        font-size: 12px;
+                        color: #555;
                         text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
                     }
                     .district-label.active {
@@ -183,7 +209,7 @@ const InteractiveMap = () => {
                 scrollWheelZoom={false}
                 zoomControl={false}
                 doubleClickZoom={false}
-                dragging={false} // Static map feel for hero
+                dragging={false}
                 attributionControl={false}
                 style={{ height: '100%', width: '100%', background: 'transparent' }}
             >
@@ -194,6 +220,10 @@ const InteractiveMap = () => {
                     style={getStyle}
                     onEachFeature={onEachDistrict}
                 />
+
+                {selectedCenter && (
+                    <Marker position={selectedCenter} icon={isMobile ? peopleIconMobile : peopleIcon} interactive={false} />
+                )}
             </MapContainer>
         </div>
     );

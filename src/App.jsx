@@ -9,6 +9,7 @@ import Home from './components/Home'
 
 import Login from './components/Login'
 import Signup from './components/Signup'
+import SignupDone from './components/SignupDone'
 import Report from './components/Report'
 import ReportForm from './components/ReportForm'
 import Diagnosis from './components/Diagnosis'
@@ -41,6 +42,25 @@ function App() {
 
     // State to pass data to edit page
     const [editData, setEditData] = useState(null);
+
+    // Accumulated Diagnosis Data
+    const [diagnosisPayload, setDiagnosisPayload] = useState({
+        location: null, // { lat, lng }
+        photo: null, // File object or URL string
+        bigCategory: '',
+        midCategory: '',
+        questions: [], // Current questions for convenience
+        answers: [],   // Array of { q_index: val } or similar, eventually stringified
+        satisfaction: null,
+        review: ''
+    });
+
+    const updateDiagnosisPayload = (key, value) => {
+        setDiagnosisPayload(prev => ({
+            ...prev,
+            [key]: value
+        }));
+    };
 
     // Fetch data whenever diagnosisMode changes
     useEffect(() => {
@@ -92,31 +112,53 @@ function App() {
     };
 
     const navigateFromHome = (target) => {
+        const districtCode = localStorage.getItem('district_code') || '';
+        const isExpert = districtCode.startsWith('expert');
+
         if (target === 'checkList') {
+            setDiagnosisMode(isExpert ? 'expert' : 'general');
             setView('diagnosis');
         } else if (target === 'diagnosis') {
+            if (!localStorage.getItem('access_token')) {
+                alert('로그인이 필요한 서비스입니다.');
+                setView('login');
+                return;
+            }
+            setDiagnosisMode(isExpert ? 'expert' : 'general');
+            setDiagnosisPayload({
+                location: null, photo: null, bigCategory: '', midCategory: '', questions: [], answers: [], satisfaction: null, review: ''
+            });
             setView('diagnosis');
         } else if (target === 'login') {
             setView('login');
         } else if (target === 'signup') {
             setView('signup');
+        } else if (target === 'signupDone') {
+            setView('signupDone');
         } else if (target === 'report') {
+            if (!localStorage.getItem('access_token')) {
+                alert('로그인이 필요한 서비스입니다.');
+                setView('login');
+                return;
+            }
             setView('report');
         } else if (target === 'survey') {
+            if (!localStorage.getItem('access_token')) {
+                alert('로그인이 필요한 서비스입니다.');
+                setView('login');
+                return;
+            }
             setView('survey');
         } else if (target === 'diagnosisResult') {
-
-            if (diagnosisMode === 'expert') {
-                // If currently in expert mode, switching back to diagnosisResult implies General mode?
-                // The user wants "(Test) General Result Page" button to go to "General Result Page".
-                // So we force General Mode.
-                setDiagnosisMode('general');
-                setView('diagnosisResult');
+            if (isExpert) {
+                setDiagnosisMode('expert');
+                setView('expertDiagnosisResult');
             } else {
-                setDiagnosisMode('general'); // Explicitly ensure general
+                setDiagnosisMode('general');
                 setView('diagnosisResult');
             }
         } else if (target === 'expertDiagnosisResult') {
+            // Keep direct access for testing/buttons
             setDiagnosisMode('expert');
             setView('expertDiagnosisResult');
         } else if (target === 'adminLogin') {
@@ -147,7 +189,15 @@ function App() {
                 />
             )}
             {view === 'signup' && (
-                <Signup onBack={() => setView('login')} />
+                <Signup
+                    onBack={() => setView('login')}
+                    onNavigate={(target) => setView(target)}
+                />
+            )}
+            {view === 'signupDone' && (
+                <SignupDone
+                    onLogin={() => setView('login')}
+                />
             )}
             {view === 'report' && (
                 <Report
@@ -160,6 +210,7 @@ function App() {
             )}
             {view === 'diagnosis' && (
                 <Diagnosis
+                    initialMode={diagnosisMode}
                     onBack={() => setView('home')}
                     onNext={(mode) => {
                         setDiagnosisMode(mode);
@@ -195,7 +246,11 @@ function App() {
                     color={theme.primary}
                     progressBarColor={theme.progressBar}
                     onBack={() => setView('diagnosis')}
-                    onNext={() => {
+                    onNext={(data) => {
+                        // data: { photo, location } from Step1
+                        updateDiagnosisPayload('photo', data.photo);
+                        updateDiagnosisPayload('location', data.location);
+
                         setSelectedBig('');
                         setSelectedMid(null);
                         setView('bigCategory');
@@ -209,7 +264,11 @@ function App() {
                     data={data}
                     initialBig={selectedBig}
                     initialMid={selectedMid}
-                    onNext={goToCheckList}
+                    onNext={(big, mid) => {
+                        updateDiagnosisPayload('bigCategory', big);
+                        updateDiagnosisPayload('midCategory', mid);
+                        goToCheckList(big, mid);
+                    }}
                     onBack={() => setView('diagnosisStep1')}
                 />
             )}
@@ -220,7 +279,10 @@ function App() {
                     diagnosisMode={diagnosisMode}
                     questions={data[selectedBig]?.[selectedMid] || []}
                     onPrev={goToBigCategory}
-                    onNext={() => {
+                    onNext={(ratings) => {
+                        // ratings: { index: value }
+                        updateDiagnosisPayload('answers', ratings);
+
                         if (diagnosisMode === 'expert') {
                             setView('satisfaction');
                         } else {
@@ -234,7 +296,10 @@ function App() {
                     color={theme.primary}
                     progressBarColor={theme.progressBar}
                     onPrev={() => setView('checkList')}
-                    onNext={() => setView('review')} // Satisfaction always goes to Review
+                    onNext={(score) => {
+                        updateDiagnosisPayload('satisfaction', score);
+                        setView('review');
+                    }} // Satisfaction always goes to Review
                 />
             )}
             {view === 'review' && (
@@ -242,6 +307,7 @@ function App() {
                     color={theme.primary}
                     progressBarColor={theme.progressBar}
                     diagnosisMode={diagnosisMode}
+                    diagnosisPayload={diagnosisPayload} // Pass full payload to submit
                     onPrev={() => setView('checkList')}
                     onNext={goToCheckDone}
                 />

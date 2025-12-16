@@ -92,33 +92,30 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     user_name: str
+    district_code: Optional[str] = None
 
 class ChecklistCreate(BaseModel):
     # 필요한 컬럼들을 여기에 다 적어주세요. 예시입니다.
-    진단지역: str
-    ID: str
-    그룹: int
-    Data_No: int
-    유형: int
-    Category_1type: int
-    Category_2type: int
-    등록일시: datetime
-    위도: float
-    경도: float
-    대분류: str
-    중분류: str
-    질문_Num: int
-    질문_기준: str
-    질문_내용: str
-    점수: int
-    리뷰: str
-    이미지경로: str
+    진단지역: Optional[str] = None
+    ID: Optional[str] = None 
+    district_code: Optional[str] = None
+    위도: Optional[float] = None
+    경도: Optional[float] = None
+    대분류: Optional[str] = None
+    중분류: Optional[str] = None
+    질문기준: Optional[str] = None
+    answers: Optional[str] = None # JSON String
+    점수: Optional[int] = None
+    리뷰: Optional[str] = None
+    만족도: Optional[str] = None
+    이미지경로: Optional[str] = None
     
 
 # 사용자에게 보여줄 내용 (출력용)
 class ChecklistResponse(ChecklistCreate):
     result_id: int
-    ID: str
+    ID: Optional[str] = None
+    created_at: Optional[datetime] = None
     
     class Config:
         orm_mode = True

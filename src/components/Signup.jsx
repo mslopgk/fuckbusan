@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Signup.css';
 import './Login.css'; // Reuse common button/input styles
 
-const Signup = ({ onBack }) => {
+const Signup = ({ onBack, onNavigate }) => {
     const [userType, setUserType] = useState('general'); // 'general' | 'expert'
 
     const [formData, setFormData] = useState({
@@ -12,6 +12,10 @@ const Signup = ({ onBack }) => {
         nickname: '',
         phone: ''
     });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const isFormValid = formData.id && formData.password && formData.name && formData.phone;
 
@@ -21,6 +25,48 @@ const Signup = ({ onBack }) => {
             ...prev,
             [name]: value
         }));
+    };
+
+    const handleSignup = async () => {
+        if (!isFormValid || loading) return;
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`${API_URL}/users/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ID: formData.id,
+                    PW: formData.password,
+                    name: formData.name,
+                    nickname: formData.nickname,
+                    phone_num: formData.phone,
+                    district_code: userType === 'expert' ? 'expert' : 'general'
+                })
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.detail || '회원가입에 실패했습니다.');
+            }
+
+            // Success
+            if (onNavigate) {
+                onNavigate('signupDone');
+            } else {
+                console.warn('onNavigate prop missing in Signup');
+                // Fallback to onBack if desired, or just alert
+                alert('회원가입 성공');
+                onBack();
+            }
+
+        } catch (err) {
+            console.error(err);
+            setError(err.message || '회원가입 에러 발생');
+        } finally {
+            setLoading(false);
+        }
     };
 
     // ...
@@ -40,6 +86,7 @@ const Signup = ({ onBack }) => {
             {/* Title */}
             <div className="login-title-section">
                 <div className="login-title">회원가입</div>
+                {error && <div style={{ color: 'red', fontSize: '14px', marginTop: '10px' }}>{error}</div>}
             </div>
 
 
@@ -170,10 +217,11 @@ const Signup = ({ onBack }) => {
             {/* Submit Button */}
             <div className="signup-btn-container">
                 <button
-                    className={`login-submit-btn ${isFormValid ? 'active' : 'disabled'}`}
-                    disabled={!isFormValid}
+                    className={`login-submit-btn ${isFormValid && !loading ? 'active' : 'disabled'}`}
+                    disabled={!isFormValid || loading}
+                    onClick={handleSignup}
                 >
-                    회원가입
+                    {loading ? '처리 중...' : '회원가입'}
                 </button>
             </div>
         </div>

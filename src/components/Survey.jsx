@@ -206,134 +206,122 @@ const Survey = ({ onBack, onComplete }) => {
             </div>
 
             <main className="step-content">
-                <div className="step-top-section">
-                    <div className="step-main-title">설문조사</div>
-                    <div className="progress-bar-container">
-                        <div className="progress-bar-fill" style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}></div>
+                <div className="survey-card">
+                    <div className="step-top-section">
+                        <div className="step-main-title">설문조사</div>
+                        <div className="progress-bar-container">
+                            <div className="progress-bar-fill" style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}></div>
+                        </div>
                     </div>
-                </div>
 
-                <div className="step-title">공공디자인 설문에 참여해주세요</div>
-                <p className="description">
-                    소중한 의견을 바탕으로 공공디자인 품질을 개선하고자 합니다.<br />
-                    설문 참여 기간: 2025년 12월 19일 까지
-                </p>
+                    <div className="step-title">공공디자인 설문에 참여해주세요</div>
+                    <p className="description">
+                        소중한 의견을 바탕으로 공공디자인 품질을 개선하고자 합니다.<br />
+                        설문 참여 기간: 2025년 12월 19일 까지
+                    </p>
 
-                {currentQ.refersTo ? (
-                    // Specialized Layout for Reference Questions (Q3, Q8)
-                    <div className="reference-question-container">
-                        <div className="question-header-row" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '20px' }}>
-                            <span className="question-number" style={{
-                                color: '#fff',
-                                backgroundColor: '#000',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '24px',
-                                height: '24px',
-                                borderRadius: '50%',
-                                fontSize: '14px',
-                                fontWeight: 500,
-                                marginRight: '12px',
-                                flexShrink: 0,
-                                marginTop: '4px'
-                            }}>
-                                {currentQ.id.replace('Q', '')}
-                            </span>
+                    {currentQ.refersTo ? (
+                        // Specialized Layout for Reference Questions (Q3, Q8)
+                        <div className="reference-question-container">
+                            <div className="question-header-row" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '20px' }}>
+                                <span className="question-number" style={{
+                                    color: '#fff',
+                                    backgroundColor: '#000',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '24px',
+                                    height: '24px',
+                                    borderRadius: '50%',
+                                    fontSize: '14px',
+                                    fontWeight: 500,
+                                    marginRight: '12px',
+                                    flexShrink: 0,
+                                    marginTop: '4px'
+                                }}>
+                                    {currentQ.id.replace('Q', '')}
+                                </span>
 
-                            {/* Reference Display */}
-                            <div className="ref-display-group" style={{ flex: 1 }}>
-                                <div className="ref-section" style={{ marginBottom: '0' }}>
-                                    <div className="ref-bar"></div>
-                                    <div className="ref-content" style={{ fontFamily: 'GmarketSans', fontWeight: 500 }}>
-                                        {(answers[currentQ.refersTo] || []).length > 0 ? (answers[currentQ.refersTo] || []).map((a, i) => (
-                                            <div key={i} className="ref-item">{a}</div>
-                                        )) : <div className="ref-placeholder">선택된 항목 없음</div>}
+                                {/* Reference Display */}
+                                <div className="ref-display-group" style={{ flex: 1 }}>
+                                    <div className="ref-section" style={{ marginBottom: '0' }}>
+                                        <div className="ref-bar"></div>
+                                        <div className="ref-content" style={{ fontFamily: 'GmarketSans', fontWeight: 500 }}>
+                                            {(answers[currentQ.refersTo] || []).length > 0 ? (answers[currentQ.refersTo] || []).map((a, i) => (
+                                                <div key={i} className="ref-item">{a}</div>
+                                            )) : <div className="ref-placeholder">선택된 항목 없음</div>}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Secondary Question Text */}
-                        <div className="question-text-sub" style={{
-                            fontFamily: 'GmarketSans',
-                            fontWeight: 300,
-                            fontSize: '20px',
-                            color: '#111',
-                            marginBottom: '30px',
-                            wordBreak: 'keep-all',
-                            lineHeight: '1.4'
-                        }}>
-                            {/* Standard text for refersTo, maybe logic for '(최대 3개)' if needed, present in text usually */}
-                            {currentQ.text} <span className="red-text" style={{ fontSize: '16px', fontWeight: 700 }}>(최대 3개)</span>
-                        </div>
+                            {/* Secondary Question Text */}
+                            <div className="question-text-sub">
+                                {currentQ.text} <span className="red-text" style={{ fontSize: '16px', fontWeight: 700 }}>(최대 3개)</span>
+                            </div>
 
-                        {/* Options */}
-                        {renderMultiSelect(currentQ)}
+                            {/* Options */}
+                            {renderMultiSelect(currentQ)}
+                        </div>
+                    ) : (
+                        // Standard Question Layout
+                        <>
+                            <h3 className="question-text">
+                                <span className="question-number" style={{
+                                    color: '#fff',
+                                    backgroundColor: '#000',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '24px',
+                                    height: '24px',
+                                    borderRadius: '50%',
+                                    fontSize: '14px',
+                                    fontWeight: 500,
+                                    marginRight: '8px',
+                                    flexShrink: 0,
+                                    marginTop: '4px'
+                                }}>
+                                    {currentQ.id.replace('Q', '')}
+                                </span>
+                                {/* Render text with HTML safely */}
+                                <span
+                                    style={{ paddingTop: '0px' }}
+                                    dangerouslySetInnerHTML={{
+                                        __html: currentQ.text + (
+                                            ['Q2', 'Q6', 'Q7', 'Q9'].includes(currentQ.id)
+                                                ? ' <span class="text-highlight">(최대 3개)</span>'
+                                                : ''
+                                        )
+                                    }}
+                                />
+                            </h3>
+
+                            {currentQ.type === 'scale_5' && renderScale(currentQ)}
+                            {currentQ.type === 'multi_select' && renderMultiSelect(currentQ)}
+                            {currentQ.type === 'text' && renderText(currentQ)}
+                        </>
+                    )}
+
+                    {/* Render Sub Questions if applicable */}
+                    {currentQ.subQuestions && currentQ.subQuestions.length > 0 && renderSubQuestions(currentQ)}
+
+                    {/* Footer Buttons inside Card */}
+                    <div className="static-footer">
+                        <button className="btn btn-prev" onClick={handlePrev}>이전</button>
+                        <button
+                            className={`btn btn-next ${answers[currentQ.id] ? 'active' : ''}`}
+                            onClick={handleNext}
+                            disabled={
+                                !answers[currentQ.id] ||
+                                (isMainNegative && currentQ.subQuestions && currentQ.subQuestions.length > 0 && !currentQ.subQuestions.every(sq => answers[sq.id]))
+                            }
+                        >
+                            다음
+                        </button>
                     </div>
-                ) : (
-                    // Standard Question Layout
-                    <>
-                        <h3 className="question-text" style={{
-                            fontFamily: 'GmarketSans, sans-serif',
-                            fontWeight: 300,
-                            display: 'flex',
-                            alignItems: 'flex-start'
-                        }}>
-                            <span className="question-number" style={{
-                                color: '#fff',
-                                backgroundColor: '#000',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '24px',
-                                height: '24px',
-                                borderRadius: '50%',
-                                fontSize: '14px',
-                                fontWeight: 500,
-                                marginRight: '8px',
-                                flexShrink: 0,
-                                marginTop: '4px'
-                            }}>
-                                {currentQ.id.replace('Q', '')}
-                            </span>
-                            {/* Render text with HTML safely */}
-                            <span
-                                style={{ paddingTop: '0px' }}
-                                dangerouslySetInnerHTML={{
-                                    __html: currentQ.text + (
-                                        ['Q2', 'Q6', 'Q7', 'Q9'].includes(currentQ.id)
-                                            ? ' <span class="text-highlight">(최대 3개)</span>'
-                                            : ''
-                                    )
-                                }}
-                            />
-                        </h3>
-
-                        {currentQ.type === 'scale_5' && renderScale(currentQ)}
-                        {currentQ.type === 'multi_select' && renderMultiSelect(currentQ)}
-                        {currentQ.type === 'text' && renderText(currentQ)}
-                    </>
-                )}
-
-                {/* Render Sub Questions if applicable */}
-                {currentQ.subQuestions && currentQ.subQuestions.length > 0 && renderSubQuestions(currentQ)}
-
+                </div>
             </main>
-
-            <footer className="sticky-footer">
-                <button className="btn btn-prev" onClick={handlePrev}>이전</button>
-                <button
-                    className={`btn btn-next ${answers[currentQ.id] ? 'active' : ''}`}
-                    onClick={handleNext}
-                    disabled={
-                        !answers[currentQ.id] ||
-                        (isMainNegative && currentQ.subQuestions && currentQ.subQuestions.length > 0 && !currentQ.subQuestions.every(sq => answers[sq.id]))
-                    }
-                >
-                    다음
-                </button>
-            </footer>
         </div>
     );
 };

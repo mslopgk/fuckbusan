@@ -1482,12 +1482,52 @@
         width: 55%;
     }
 
+}
+
+/* [Action Row: Mobile Layout] */
+.action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 60px;
+}
+
+/* Reorder Grid Items for Mobile */
+/* Survey Card: Bottom, Full Width */
+.action-item.survey-card {
+    order: 3;
+    grid-column: span 2;
+    margin-bottom: 0;
+}
+
+/* Report Card: Top Left */
+.action-item.card.report {
+    order: 1;
+    grid-column: span 1;
+}
+
+/* Diagnose Card: Top Right */
+.action-item.card.diagnose {
+    order: 2;
+    grid-column: span 1;
+}
+
+
+/* =========================================
+   DESKTOP STYLES (min-width: 1024px)
+   ========================================= */
+
+/* ... (previous desktop styles) ... */
+
+@media (min-width: 1024px) {
+
     /* [Action Row: Survey / Report / Diagnose] */
     .action-row {
         display: flex;
         flex-direction: row;
         gap: 24px;
         margin-top: 60px;
+        margin-bottom: 0;
     }
 
     .action-item {
@@ -1502,11 +1542,31 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+        /* Reset Order for Desktop */
+        order: 0 !important;
+        grid-column: auto !important;
+    }
+
+    .action-item.survey-card {
+        order: 0 !important;
+        grid-column: auto !important;
+    }
+
+    .action-item.card.report {
+        order: 0 !important;
+        grid-column: auto !important;
+    }
+
+    .action-item.card.diagnose {
+        order: 0 !important;
+        grid-column: auto !important;
     }
 
     .action-item:hover {
         transform: translateY(-4px);
     }
+
+    /* ... rest of desktop styles ... */
 
     /* Specific Styles for survey card to match other cards */
     .survey-card {
@@ -1589,6 +1649,99 @@
     .section-subtitle {
         margin-top: 12px;
         color: #666;
+    }
+
+    /* DESKTOP HERO REFINEMENTS */
+    /* 1. Hero Map BG: Move image DOWN (show more top land?) */
+    .hero-map-bg {
+        object-position: center 60% !important;
+        /* Adjusted slightly */
+        transform: scale(1.1) translateY(-10%) !important;
+        height: 120% !important;
+        /* Increase area height */
+    }
+
+    /* 3. Hero Text: Keep high */
+    .hero-text {
+        margin-top: -180px;
+        position: relative;
+        z-index: 20;
+    }
+
+    /* 4. District Map: Up and Right */
+    .hero-map-container {
+        /* Move UP (lower Y) and RIGHT (higher X) */
+        transform: scale(1.7) translateY(30px) translateX(120px);
+        transform-origin: center right;
+        z-index: 10;
+        pointer-events: auto !important;
+    }
+
+    .hero-map-overlay {
+        max-width: 900px;
+        pointer-events: auto !important;
+    }
+
+    /* 2. Button Grid: Fit Content, No Right White Space */
+    .category-grid-container {
+        display: flex !important;
+        flex-direction: row !important;
+        width: fit-content !important;
+        /* Key fix */
+        max-width: none !important;
+        padding-right: 12px !important;
+        margin-right: auto !important;
+        gap: 4px !important;
+        margin-top: 30px;
+        margin-left: 0;
+        justify-content: flex-start;
+        flex-wrap: nowrap !important;
+        grid-template-columns: none !important;
+        background-color: white !important;
+        padding: 8px !important;
+        border-radius: 20px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .category-item {
+        flex-direction: column !important;
+        height: 60px !important;
+        width: 64px !important;
+        justify-content: center !important;
+        padding: 4px !important;
+        border-radius: 12px !important;
+        flex: 0 0 auto !important;
+        margin-right: 0 !important;
+        background-color: transparent !important;
+        /* Transparent on white container */
+        box-shadow: none !important;
+    }
+
+    .category-item:hover {
+        background-color: #f0f0f0 !important;
+    }
+
+    .category-item.selected {
+        background-color: #E6235A !important;
+        color: white !important;
+    }
+
+    .cat-icon-wrapper {
+        margin-bottom: 3px !important;
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .cat-icon-wrapper svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .cat-label {
+        text-align: center !important;
+        font-size: 0.7rem !important;
+        white-space: nowrap !important;
+        letter-spacing: -0.5px;
     }
 
     /* [Archive Header] */
@@ -1795,6 +1948,8 @@
 
     .news-header .news-more {
         /* Keep 'More' button in header if present */
+        display: block;
+        /* Explicitly set to avoid empty rule */
     }
 
     .news-list {
@@ -1804,6 +1959,8 @@
         gap: 0;
         /* Let items handle padding */
     }
+
+    /* Closing the open media query */
 
     .news-item {
         border-bottom: 1px solid #eee;
@@ -2176,4 +2333,133 @@
     color: #444;
     font-weight: 500;
     word-break: keep-all;
+}
+
+/* Mobile Refinements */
+.mobile-only {
+    display: none !important;
+}
+
+.desktop-only {
+    display: block !important;
+}
+
+@media (max-width: 768px) {
+    .mobile-only {
+        display: block !important;
+    }
+
+    .desktop-only {
+        display: none !important;
+    }
+
+    .mobile-only.card-arrow {
+        display: inline-block !important;
+    }
+
+    /* 1. Button Grid (CategoryGrid) Horizontal Row */
+    .category-grid-container {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px !important;
+    }
+
+    .category-item {
+        flex-direction: row !important;
+        height: 40px !important;
+        /* Reduced height significantly */
+        padding: 0 2px !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        background-color: white !important;
+        /* Ensure bg is white if needed */
+        border-radius: 8px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+        transition: background-color 0.2s, color 0.2s;
+    }
+
+    .category-item.selected {
+        background-color: #E6235A !important;
+        color: white !important;
+    }
+
+    .category-item.selected .cat-label {
+        color: white !important;
+    }
+
+    .cat-icon-wrapper {
+        width: 20px !important;
+        height: 20px !important;
+        margin-bottom: 0 !important;
+        flex-shrink: 0;
+    }
+
+    .cat-icon-wrapper svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .cat-label {
+        font-size: 0.75rem !important;
+        text-align: left !important;
+
+        font-weight: 500;
+        color: #333;
+    }
+
+    /* 2. Action Cards: Remove Icon, Reduce Height */
+    .action-item.card {
+        height: auto !important;
+        min-height: 110px !important;
+        padding: 24px 20px !important;
+        justify-content: center !important;
+    }
+
+    .action-item.card .card-icon {
+        display: none !important;
+    }
+
+    .action-item.card .card-title {
+        font-size: 1.2rem !important;
+        /* Reduced from default */
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* 3. Survey Arrow moved next to title (Handled via JSX + Flex) */
+    .survey-card {
+        margin-bottom: 12px !important;
+        padding: 20px !important;
+    }
+
+    .survey-title-text {
+        font-size: 1.1rem !important;
+        width: 100%;
+        margin-bottom: 4px;
+        /* Space between title and subtitle */
+    }
+
+    /* 4. Detail Button below Donut Graph */
+    .stats-detail-btn-container.mobile-only {
+        margin-top: 20px !important;
+        margin-bottom: 10px !important;
+        justify-content: center;
+        display: flex !important;
+    }
+
+    /* 5. News More Button Style */
+    .btn-more-news {
+        padding: 6px 14px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        background-color: #f5f5f5;
+        color: #666;
+        font-family: 'GmarketSans', sans-serif;
+        font-size: 0.8rem;
+        display: flex !important;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        outline: none;
+    }
 }

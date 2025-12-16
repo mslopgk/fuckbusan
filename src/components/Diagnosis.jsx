@@ -4,8 +4,8 @@ import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-lea
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-const Diagnosis = ({ onBack, onNext, onList, onMyActivity }) => {
-    const [diagnosisType, setDiagnosisType] = useState('general'); // 'general' | 'expert'
+const Diagnosis = ({ onBack, onNext, onList, onMyActivity, initialMode }) => {
+    const [diagnosisType, setDiagnosisType] = useState(initialMode || 'general'); // 'general' | 'expert'
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedPin, setSelectedPin] = useState(null); // ID of selected pin or 'custom'
     const [customPin, setCustomPin] = useState(null); // { lat, lng }
