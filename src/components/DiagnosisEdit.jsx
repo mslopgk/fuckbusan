@@ -47,7 +47,14 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                         // Set fields from detail
                         setSelectedBig(detail.대분류);
                         setSelectedMid(detail.중분류);
-                        setImage(detail.이미지경로 || '/assets/diagnosis_street.png');
+
+                        // Correctly format image URL
+                        let imgUrl = detail.이미지경로 || '/assets/diagnosis_street.png';
+                        if (imgUrl.startsWith('/')) {
+                            imgUrl = `${API_URL}${imgUrl}`;
+                        }
+                        setImage(imgUrl);
+
                         setReviewText(detail.리뷰 || '');
 
                         // Parse answers
@@ -217,7 +224,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
             <div className={titleClass}>진단 내용 수정</div>
 
             <div className="sub-title-wrapper">
-                <div className="sub-title">부산 부산진구 초연로 6</div>
+                <div className="sub-title">{data && (data.address || data.road) ? (data.address || data.road) : '부산 부산진구 초연로 6 (기본)'}</div>
                 <div className="sub-desc">입력하신 정보를 바탕으로 진단 결과를 정리했습니다.<br />전송 전 내용을 다시 한 번 확인해주세요.</div>
             </div>
 
@@ -345,21 +352,21 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                                 <div className="slider-bg-line"></div>
                                 <div className="radio-group" style={{ justifyContent: 'space-between' }}>
                                     {[
-                                        { value: 'unsuitable', label: '부적합' },
-                                        { value: 'suitable', label: '적합' },
-                                        { value: 'na', label: '해당 없음' }
+                                        { value: 1, label: '부적합' },
+                                        { value: 2, label: '적합' },
+                                        { value: 3, label: '해당 없음' }
                                     ].map((opt) => (
                                         <label key={opt.value} className="radio-label">
                                             <input
                                                 type="radio"
                                                 name={`q-${idx}`}
                                                 value={opt.value}
-                                                checked={answers[idx] === opt.value}
+                                                checked={parseInt(answers[idx]) === opt.value}
                                                 onChange={() => handleAnswerChange(idx, opt.value)}
                                             />
                                             <span
-                                                className={`custom-radio ${answers[idx] === opt.value ? 'checked' : ''}`}
-                                                style={answers[idx] === opt.value ? { backgroundColor: themeColor, borderColor: themeColor } : {}}
+                                                className={`custom-radio ${parseInt(answers[idx]) === opt.value ? 'checked' : ''}`}
+                                                style={parseInt(answers[idx]) === opt.value ? { backgroundColor: themeColor, borderColor: themeColor } : {}}
                                             ></span>
                                             <span style={{
                                                 marginTop: '8px',
