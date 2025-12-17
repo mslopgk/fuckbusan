@@ -29,6 +29,15 @@ const Login = ({ onBack, onSignup }) => {
         checkHealth();
     }, [API_URL]);
     const handleLogin = async () => {
+        // [DEBUG] Check API URL
+        console.log("Login Attempt. API_URL:", API_URL);
+        console.log("Login Inputs:", inputs);
+
+        if (!API_URL) {
+            alert("Error: VITE_API_URL is not defined in .env");
+            return;
+        }
+
         if (!isFormValid || loading) return;
         setLoading(true);
         setError(null);
@@ -50,35 +59,33 @@ const Login = ({ onBack, onSignup }) => {
                 })
             });
 
+            console.log("Login Response Status:", response.status);
+
             if (!response.ok) {
-                const errText = await response.text();
-                let errMsg = '로그인에 실패했습니다.';
-                try {
-                    const errJson = JSON.parse(errText);
-                    errMsg = errJson.detail || errMsg;
-                } catch (e) {
-                    errMsg = `Error ${response.status}: ${errText}`;
-                }
-                throw new Error(errMsg);
+                const errData = await response.json();
+                console.error("Login Error Data:", errData);
+                throw new Error(errData.detail || 'Login failed');
             }
 
             const data = await response.json();
+            console.log("Login Success Data:", data);
 
             // Store data
             localStorage.setItem('access_token', data.access_token);
-            if (data.username || data.user_name) localStorage.setItem('username', data.username || data.user_name);
+            if (data.username) localStorage.setItem('username', data.username);
+            // Fix: Backend sends 'user_name', but frontend code checked 'username'.
+            // Let's support both or fix it. Backend: 'user_name': user.name
+            if (data.user_name) localStorage.setItem('user_name', data.user_name);
+
             if (data.district_code) localStorage.setItem('district_code', data.district_code);
 
             // Go back to home (update view)
             onBack();
         } catch (err) {
             console.error(err);
-            // Check for Network Error (Failed to fetch)
-            if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
-                setError('서버에 연결할 수 없습니다. (네트워크/방화벽 확인)');
-            } else {
-                setError(err.message || '로그인에 실패했습니다.');
-            }
+            const msg = err.message || '로그인에 실패했습니다.';
+            setError(msg);
+            alert(`로그인 오류: ${msg}`);
         } finally {
             setLoading(false);
         }

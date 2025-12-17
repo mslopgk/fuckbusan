@@ -39,6 +39,13 @@ const DiagnosisCard = ({ item, onBookmark, onClick, style }) => {
                 </div>
                 <div className="dc-text-info">
                     <div className="dc-title">{item.title}</div>
+                    {/* Place Name - New Field */}
+                    {item.placeName && (
+                        <div className="dc-place-name" style={{ fontSize: '14px', color: '#111', fontWeight: 500, marginBottom: '4px' }}>
+                            {item.placeName}
+                        </div>
+                    )}
+
                     {item.type === 'general' ? (
                         <div className="dc-score-large">{item.score}</div>
                     ) : (
@@ -48,13 +55,17 @@ const DiagnosisCard = ({ item, onBookmark, onClick, style }) => {
                     )}
 
                     <div className="dc-coords">
-                        <div className="dc-coord-col">
-                            <div className="dc-coord-label">위도</div>
-                            <div className="dc-coord-val">{item.lat}</div>
-                        </div>
-                        <div className="dc-coord-col">
-                            <div className="dc-coord-label">경도</div>
-                            <div className="dc-coord-val">{item.lng}</div>
+                        {/* Address Side by Side with Coords or Just Above */}
+                        <div className="dc-coord-row" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            {item.address && (
+                                <div className="dc-address" style={{ color: '#555', fontSize: '13px', wordBreak: 'keep-all' }}>
+                                    {item.address}
+                                </div>
+                            )}
+                            <div style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#888' }}>
+                                <span>위도 {item.lat}</span>
+                                <span>경도 {item.lng}</span>
+                            </div>
                         </div>
                     </div>
                 </div>

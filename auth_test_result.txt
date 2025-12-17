@@ -1,0 +1,6 @@
+Attempting signup with ID: testuser_3007
+Signup Status: 201
+Signup Response: {"message":"회원가입 성공"}
+Attempting login with ID: testuser_3007
+Login Status: 200
+Login Response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0dXNlcl8zMDA3In0.AgxZ_q7oTWejR054Kz4ynicPdDCHtJM6rWuk9YySk20","token_type":"bearer","user_name":"Test User","district_code":"general"}
