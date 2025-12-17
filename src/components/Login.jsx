@@ -29,15 +29,6 @@ const Login = ({ onBack, onSignup }) => {
         checkHealth();
     }, [API_URL]);
     const handleLogin = async () => {
-        // [DEBUG] Check API URL
-        console.log("Login Attempt. API_URL:", API_URL);
-        console.log("Login Inputs:", inputs);
-
-        if (!API_URL) {
-            alert("Error: VITE_API_URL is not defined in .env");
-            return;
-        }
-
         if (!isFormValid || loading) return;
         setLoading(true);
         setError(null);
@@ -59,8 +50,6 @@ const Login = ({ onBack, onSignup }) => {
                 })
             });
 
-            console.log("Login Response Status:", response.status);
-
             if (!response.ok) {
                 const errText = await response.text();
                 let errMsg = '로그인에 실패했습니다.';
@@ -74,7 +63,6 @@ const Login = ({ onBack, onSignup }) => {
             }
 
             const data = await response.json();
-            console.log("Login Success Data:", data);
 
             // Store data
             localStorage.setItem('access_token', data.access_token);

@@ -25,7 +25,6 @@ import DiagnosisDetail from './components/DiagnosisDetail'
 import AdminLogin from './admin/pages/Login'
 import AdminSignup from './admin/pages/Signup'
 import AdminDashboard from './admin/pages/Dashboard'
-import { fetchWithLogout } from './utils/api'
 
 function App() {
     // Initialize view from sessionStorage to support page refresh
@@ -63,27 +62,6 @@ function App() {
         }));
     };
 
-    // Map Pins State (Lifted from Diagnosis.jsx)
-    const [mapPins, setMapPins] = useState({
-        1: { lat: 35.1668, lng: 129.0570, id: 1, address: { placeName: '부산시민공원', road: '부산 부산진구 시민공원로 73', jibun: '범전동 200', zip: '47196' } },
-        2: { lat: 35.1635, lng: 129.0620, id: 2, address: { placeName: '송상현광장', road: '부산 부산진구 동평로 405', jibun: '전포동 870-1', zip: '47200' } },
-        3: { lat: 35.1610, lng: 129.0550, id: 3, address: { placeName: '서면역', road: '부산 부산진구 가야대로 777', jibun: '부전동 573-1', zip: '47288' } },
-        4: { lat: 35.1685, lng: 129.0595, id: 4, address: { placeName: '국립부산국악원', road: '부산 부산진구 국악원로 2', jibun: '연지동 219-2', zip: '47197' } }
-    });
-
-    const handleAddPin = (newPin) => {
-        // newPin: { lat, lng, address: {...} }
-        const newId = Date.now(); // Simple ID generation
-        setMapPins(prev => ({
-            ...prev,
-            [newId]: { ...newPin, id: newId }
-        }));
-        return newId;
-    };
-
-
-    const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
     // Fetch data whenever diagnosisMode changes
     useEffect(() => {
         const fetchData = async () => {
@@ -109,60 +87,6 @@ function App() {
         fetchData();
     }, [diagnosisMode]);
 
-    // Fetch user's diagnosis pins from backend
-    useEffect(() => {
-        const fetchUserPins = async () => {
-            const token = localStorage.getItem('access_token');
-            if (!token) return; // Not logged in, keep default pins or clear? Maybe keep default mock for non-users?
-
-            try {
-                const res = await fetchWithLogout(`${VITE_API_URL}/checklist/my`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (Array.isArray(data)) {
-                        const backendPins = {};
-                        data.forEach(item => {
-                            // Map backend item to mapPin format
-                            const id = item.result_id;
-                            backendPins[id] = {
-                                id: id,
-                                lat: item.위도,
-                                lng: item.경도,
-                                address: {
-                                    placeName: item.장소명 || item.placeName || '',
-                                    road: item.진단지역 || item.도로명주소 || item.address || '주소 정보 없음',
-                                    jibun: '', // Backend doesn't store this separately yet?
-                                    zip: ''
-                                },
-                                type: item.district_code === 'expert' ? 'expert' : 'general', // Parse type from district_code
-                                ...item // Keep original data for reference
-                            };
-                        });
-
-                        // Merge with existing mock pins or replace? User asked for "stored pins". 
-                        // Usually specific user pins replace default pins, or append.
-                        // Let's replace defaults with user data if user has data. 
-                        // But if we want to show some "recommended" spots, we might merge.
-                        // For now, let's merge but give precedence to user pins. 
-                        // ACTUALLY, usually "mapPins" acts as the source of truth for "My Diagnosis". 
-                        // If I replace, defaults are gone. That might be desired.
-                        if (Object.keys(backendPins).length > 0) {
-                            setMapPins(backendPins);
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error("Failed to fetch user pins:", error);
-            }
-        };
-
-        if (view === 'diagnosis' || view === 'home') {
-            fetchUserPins();
-        }
-    }, [view]);
-
     // Scroll to top and save view state whenever view changes
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -185,21 +109,6 @@ function App() {
 
     const goToCheckDone = () => {
         setView('checkDone');
-    };
-
-    const handleEdit = (item) => {
-        setEditData(item);
-        setView('diagnosisEdit');
-    };
-
-    const handleViewResult = (item) => {
-        if (item.type === 'expert') {
-            setDiagnosisMode('expert');
-            setView('expertDiagnosisResult');
-        } else {
-            setDiagnosisMode('general');
-            setView('diagnosisResult');
-        }
     };
 
     const navigateFromHome = (target) => {
@@ -302,18 +211,11 @@ function App() {
             {view === 'diagnosis' && (
                 <Diagnosis
                     initialMode={diagnosisMode}
-                    mapPins={mapPins}
-                    onAddPin={handleAddPin}
                     onBack={() => setView('home')}
-                    onNext={(data) => {
-                        // data: { mode, location, address }
-                        setDiagnosisMode(data.mode);
-                        updateDiagnosisPayload('location', data.location);
-                        updateDiagnosisPayload('address', data.address); // Add to payload if needed in future
+                    onNext={(mode) => {
+                        setDiagnosisMode(mode);
                         setView('diagnosisStep1');
                     }}
-                    onEdit={handleEdit}
-                    onResult={handleViewResult}
                     onList={() => setView('diagnosisList')}
                     onMyActivity={() => setView('myActivity')}
                 />
