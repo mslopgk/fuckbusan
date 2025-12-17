@@ -35,7 +35,7 @@ const DiagnosisCard = ({ item, onBookmark, onClick, style }) => {
             {/* Main Info Row */}
             <div className="dc-main-info">
                 <div className="dc-img">
-                    <img src={(item && item.image) || '/assets/placeholder.png'} alt="site" />
+                    <img src={item.image || '/assets/placeholder.png'} alt="site" />
                 </div>
                 <div className="dc-text-info">
                     <div className="dc-title">{item.title}</div>

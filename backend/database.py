@@ -12,12 +12,12 @@ DB_PORT = "3306"              # 포트 (HeidiSQL에 적힌 포트, 보통 3306)
 DB_NAME = "mydata"   # 데이터베이스 이름 (HeidiSQL에 만들어둔 것)
 # =========================================================
 
-# MariaDB 연결 주소 만들기
-SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{DB_ID}:{DB_PW}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+# SQLite 연결 주소 만들기 (파일 기반 DB)
+SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app_v2.db"
 
-# 엔진 생성 (MySQL/MariaDB용 설정)
+# 엔진 생성 (SQLite용 설정)
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

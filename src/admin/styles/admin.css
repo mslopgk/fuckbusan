@@ -1442,6 +1442,22 @@
 }
 
 /* Legend */
+.leaflet-pane.leaflet-custom-popup-pane-pane,
+.leaflet-pane.leaflet-top-markers-pane {
+    z-index: 600;
+    pointer-events: none;
+}
+
+/* Re-enable pointer events for the actual markers/clusters inside the pane */
+.leaflet-pane.leaflet-top-markers-pane .leaflet-marker-icon,
+.leaflet-pane.leaflet-top-markers-pane .leaflet-interactive,
+.custom-cluster-marker,
+.leaflet-pane.leaflet-custom-popup-pane-pane *,
+.leaflet-pane.leaflet-custom-popup-pane-pane .leaflet-popup-content-wrapper,
+.leaflet-pane.leaflet-custom-popup-pane-pane .leaflet-popup-tip-container {
+    pointer-events: auto !important;
+}
+
 .map-legend {
     position: absolute;
     bottom: 16px;

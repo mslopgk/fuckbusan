@@ -12,6 +12,22 @@ const Login = ({ onBack, onSignup }) => {
 
     const isFormValid = inputs.id.length > 0 && inputs.password.length > 0;
     const API_URL = import.meta.env.VITE_API_URL;
+    console.log("Login Component API_URL:", API_URL);
+
+    // Health Check on Mount
+    React.useEffect(() => {
+        const checkHealth = async () => {
+            try {
+                const res = await fetch(`${API_URL}/`);
+                const text = await res.json();
+                console.log("Backend Health Check:", text);
+            } catch (e) {
+                console.error("Backend Health Check FAILED:", e);
+                setError(`백엔드 연결 실패: ${e.message} (${API_URL})`);
+            }
+        };
+        checkHealth();
+    }, [API_URL]);
     const handleLogin = async () => {
         // [DEBUG] Check API URL
         console.log("Login Attempt. API_URL:", API_URL);
@@ -27,6 +43,13 @@ const Login = ({ onBack, onSignup }) => {
         setError(null);
 
         try {
+            // Updated to use consistent API endpoint and error handling
+            // Assuming '/users/login' is the desired endpoint for the new system. 
+            // If using LegacyUser, switch to '/auth/login'.
+            // Using raw fetch here but with better error parsing to match api.js style if we want to keep it simple
+            // OR better yet, import api from '../api' if possible. 
+            // Let's stick to fetch but improve the error handling which was swallowing details.
+
             const response = await fetch(`${API_URL}/users/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
