@@ -155,10 +155,7 @@ const Home = ({ onNavigate }) => {
                 </div>
 
 
-                <div className="stats-wrapper">
-                    {/* ... (stats content) ... */}
-                </div>
-                {/* We need to match lines correctly, so I will replace the Action Row part first */}
+
 
 
                 <div className="stats-wrapper">

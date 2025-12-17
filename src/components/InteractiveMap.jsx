@@ -221,9 +221,9 @@ const InteractiveMap = () => {
                     onEachFeature={onEachDistrict}
                 />
 
-                {selectedCenter && (
+                {/* {selectedCenter && (
                     <Marker position={selectedCenter} icon={isMobile ? peopleIconMobile : peopleIcon} interactive={false} />
-                )}
+                )} */}
             </MapContainer>
         </div>
     );
