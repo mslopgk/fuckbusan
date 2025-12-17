@@ -51,22 +51,6 @@ def fix_schema():
                 print(f"Skipped {col_name}: {e}")
             else:
                  print(f"Error adding {col_name}: {e}")
-    
-    # 3. Add address columns to checklist_result
-    checklist_cols = [
-        ("도로명주소", "VARCHAR"),
-        ("장소명", "VARCHAR")
-    ]
-    
-    for col_name, col_type in checklist_cols:
-        try:
-            cursor.execute(f"ALTER TABLE checklist_result ADD COLUMN {col_name} {col_type}")
-            print(f"Added {col_name} column to checklist_result")
-        except Exception as e:
-            if "duplicate column" in str(e).lower() or "no such table" in str(e).lower():
-               print(f"Skipped {col_name} in checklist_result: {e}")
-            else:
-               print(f"Error adding {col_name} to checklist_result: {e}")
 
     conn.commit()
     conn.close()

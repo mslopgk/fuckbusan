@@ -10,7 +10,7 @@ from sqlalchemy import text
 
 # Routers
 from routers import auth, dashboard, ai, user_router, checklist_router, report_router
-
+from routers import user_router, checklist_router
 import models
 from database import engine
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './MyActivity.css';
 import DiagnosisCard from './DiagnosisCard';
 import { fetchWithLogout } from '../utils/api';
@@ -17,16 +17,11 @@ const MyActivity = ({ onBack, onNavigate, onEdit }) => {
     };
 
     useEffect(() => {
-        console.log("MyActivity Mounted. ActiveTab:", activeTab);
         if (activeTab === 'my_diagnosis') {
             const fetchMyData = async () => {
                 try {
                     const token = localStorage.getItem('access_token');
-                    console.log("MyActivity Token:", token);
-                    if (!token) {
-                        console.warn("MyActivity: No token found");
-                        return;
-                    }
+                    if (!token) return;
 
                     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
                     console.log("Fetching: " + `${API_URL}/checklist/my`);
@@ -63,11 +58,9 @@ const MyActivity = ({ onBack, onNavigate, onEdit }) => {
                                 bookmarked: false,
                                 title: item.중분류 || item.대분류 || '진단 결과',
                                 score: String(item.점수 || 0),
-                                result: item.만족도 || 'suitable', // Start with satisfaction column
+                                result: item.만족도 || 'suitable', // Start with satisfaction column, or logic needed
                                 lat: item.위도,
                                 lng: item.경도,
-                                address: item.진단지역 || '주소 정보 없음',
-                                placeName: item.장소명 || item.placeName || '', // With '진단지역' hack, placeName might be empty or part of address. Leaving as is if backend doesn't return it.
                                 scores: [],
                                 desc: item.리뷰,
                                 image: item.이미지경로 ? (item.이미지경로.startsWith('/') ? `${API_URL}${item.이미지경로}` : item.이미지경로) : '/assets/diagnosis_street.png'
