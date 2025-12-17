@@ -221,7 +221,6 @@ const InteractiveMap = () => {
                     onEachFeature={onEachDistrict}
                 />
 
-                {/* People icon hidden as requested */}
                 {/* {selectedCenter && (
                     <Marker position={selectedCenter} icon={isMobile ? peopleIconMobile : peopleIcon} interactive={false} />
                 )} */}

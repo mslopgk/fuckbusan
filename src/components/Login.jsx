@@ -12,6 +12,22 @@ const Login = ({ onBack, onSignup }) => {
 
     const isFormValid = inputs.id.length > 0 && inputs.password.length > 0;
     const API_URL = import.meta.env.VITE_API_URL;
+    console.log("Login Component API_URL:", API_URL);
+
+    // Health Check on Mount
+    React.useEffect(() => {
+        const checkHealth = async () => {
+            try {
+                const res = await fetch(`${API_URL}/`);
+                const text = await res.json();
+                console.log("Backend Health Check:", text);
+            } catch (e) {
+                console.error("Backend Health Check FAILED:", e);
+                setError(`백엔드 연결 실패: ${e.message} (${API_URL})`);
+            }
+        };
+        checkHealth();
+    }, [API_URL]);
     const handleLogin = async () => {
         // [DEBUG] Check API URL
         console.log("Login Attempt. API_URL:", API_URL);
@@ -27,6 +43,13 @@ const Login = ({ onBack, onSignup }) => {
         setError(null);
 
         try {
+            // Updated to use consistent API endpoint and error handling
+            // Assuming '/users/login' is the desired endpoint for the new system. 
+            // If using LegacyUser, switch to '/auth/login'.
+            // Using raw fetch here but with better error parsing to match api.js style if we want to keep it simple
+            // OR better yet, import api from '../api' if possible. 
+            // Let's stick to fetch but improve the error handling which was swallowing details.
+
             const response = await fetch(`${API_URL}/users/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -39,9 +62,15 @@ const Login = ({ onBack, onSignup }) => {
             console.log("Login Response Status:", response.status);
 
             if (!response.ok) {
-                const errData = await response.json();
-                console.error("Login Error Data:", errData);
-                throw new Error(errData.detail || 'Login failed');
+                const errText = await response.text();
+                let errMsg = '로그인에 실패했습니다.';
+                try {
+                    const errJson = JSON.parse(errText);
+                    errMsg = errJson.detail || errMsg;
+                } catch (e) {
+                    errMsg = `Error ${response.status}: ${errText}`;
+                }
+                throw new Error(errMsg);
             }
 
             const data = await response.json();
@@ -49,20 +78,19 @@ const Login = ({ onBack, onSignup }) => {
 
             // Store data
             localStorage.setItem('access_token', data.access_token);
-            if (data.username) localStorage.setItem('username', data.username);
-            // Fix: Backend sends 'user_name', but frontend code checked 'username'.
-            // Let's support both or fix it. Backend: 'user_name': user.name
-            if (data.user_name) localStorage.setItem('user_name', data.user_name);
-
+            if (data.username || data.user_name) localStorage.setItem('username', data.username || data.user_name);
             if (data.district_code) localStorage.setItem('district_code', data.district_code);
 
             // Go back to home (update view)
             onBack();
         } catch (err) {
             console.error(err);
-            const msg = err.message || '로그인에 실패했습니다.';
-            setError(msg);
-            alert(`로그인 오류: ${msg}`);
+            // Check for Network Error (Failed to fetch)
+            if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
+                setError('서버에 연결할 수 없습니다. (네트워크/방화벽 확인)');
+            } else {
+                setError(err.message || '로그인에 실패했습니다.');
+            }
         } finally {
             setLoading(false);
         }

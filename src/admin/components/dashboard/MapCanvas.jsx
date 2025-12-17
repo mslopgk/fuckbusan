@@ -180,7 +180,6 @@ const CustomPane = ({ name, zIndex, children }) => {
 // MapCanvas Component
 const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDistricts = [], onSelectDistricts, insights = [], analysisData = [], onViewDetail }) => {
     const [geoJsonData, setGeoJsonData] = useState(null);
-    const [hoveredDistrict, setHoveredDistrict] = useState(null);
     const [viewState, setViewState] = useState({ center: BUSAN_CENTER, zoom: 11 }); // eslint-disable-line no-unused-vars
     const [isLoading, setIsLoading] = useState(true);
 
@@ -273,8 +272,6 @@ const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDis
     // Interactions for GeoJSON
     const onEachDistrict = (feature, layer) => {
         layer.on({
-            mouseover: () => setHoveredDistrict(feature.properties.code),
-            mouseout: () => setHoveredDistrict(null),
             click: (e) => {
                 L.DomEvent.stopPropagation(e); // Prevent map click
                 if (onSelectDistricts) {
@@ -291,10 +288,6 @@ const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDis
                 }
             }
         });
-        layer.bindTooltip(
-            `<div><strong>${feature.properties.name}</strong><br/>위험도: ${getSeverity(feature.properties.code)}</div>`,
-            { sticky: true, direction: "center", className: "custom-tooltip" }
-        );
     };
 
     // --------------------------------------------------------------------------------
@@ -319,7 +312,7 @@ const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDis
                 scrollWheelZoom={true}
                 className="mapbox"
                 zoomControl={false}
-                preferCanvas={true}
+                preferCanvas={false}
                 minZoom={10}
                 maxBounds={BUSAN_BOUNDS}
                 maxBoundsViscosity={1.0}
@@ -379,6 +372,12 @@ const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDis
                                 center={[data.lat, data.lng]}
                                 radius={data.severity === 'high' ? 12 : 8}
                                 pane="top-markers"
+                                eventHandlers={{
+                                    click: (e) => {
+                                        // Critical: Stop bubble to prevent map/district click handlers
+                                        L.DomEvent.stopPropagation(e);
+                                    }
+                                }}
                                 pathOptions={{
                                     color: 'white',
                                     weight: 2,
@@ -421,7 +420,16 @@ const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDis
 
                                             <button
                                                 onClick={(e) => {
+                                                    // React event stop
                                                     e.stopPropagation();
+                                                    e.preventDefault();
+
+                                                    // Native DOM event stop (Critical for Leaflet)
+                                                    if (e.nativeEvent) {
+                                                        e.nativeEvent.stopImmediatePropagation();
+                                                        e.nativeEvent.stopPropagation();
+                                                    }
+
                                                     onViewDetail && onViewDetail(data);
                                                 }}
                                                 className="popup-btn"
