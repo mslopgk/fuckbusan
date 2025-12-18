@@ -91,12 +91,12 @@ const InteractiveMap = () => {
     };
 
     const mobileOffsets = {
-        '강서구': [140, -190], // Slightly down
-        '사하구': [-10, -150], // Slightly down
-        '서구': [-5, -90],
+        '강서구': [110, -130],  // Gangseo: Moved Left/Down (was 140, -190) - closer to center mass
+        '사하구': [-8, -100], // Saha: Moved Down (was -150)
+        '서구': [-3, -60],   // Seo: Moved Down/Closer (was -90)
         '영도구': [-35, -5],
-        '남구': [-25, -50],
-        '동구': [5, 0],
+        '남구': [-10, -30],  // Nam: Moved Down/Right (was -25, -50)
+        '동구': [2, 0],
         '중구': [0, 5],
         '기장군': [-10, 10],
         '북구': [0, 0]

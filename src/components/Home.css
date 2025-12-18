@@ -23,10 +23,12 @@
     font-family: 'GmarketSans', sans-serif;
     font-weight: bold;
     font-size: 1.25rem;
-    color: #333;
     display: flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    /* Prevent logo crushing */
 }
 
 .logo-icon {
@@ -36,9 +38,40 @@
     border-radius: 50%;
 }
 
-.header-icons {
+.header-actions {
     display: flex;
     gap: 16px;
+    align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+    /* Prevent actions crushing */
+}
+
+.btn-header {
+    white-space: nowrap;
+    /* Basic button reset to ensure it looks good if not defined elsewhere */
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 1rem;
+    color: #333;
+}
+
+.btn-header.login {
+    color: #333;
+}
+
+.btn-header.signup {
+    background-color: #E6235A;
+    color: white;
+    border-radius: 20px;
+    padding: 8px 20px;
+}
+
+.header-icons {
+    display: none;
 }
 
 .content-wrapper {
@@ -164,8 +197,8 @@
     color: white;
 }
 
-/* Survey Banner */
-.survey-banner {
+/* Survey Banner (Now Survey Card) */
+.survey-card {
     background-color: white;
     border-radius: 16px;
     padding: 24px;
@@ -181,12 +214,12 @@
     margin-bottom: 60px;
 }
 
-.survey-banner:hover {
+.survey-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-.survey-banner:hover img[alt="arrow"] {
+.survey-card:hover img[alt="arrow"] {
     transform: translateX(4px);
 }
 
@@ -382,8 +415,8 @@
     position: relative;
     background-color: transparent;
     width: 100%;
-    padding: 60px 20px 150px;
-    /* Increased top padding, kept bottom for bg */
+    padding: 30px 20px 150px;
+    /* Reduced top padding to move text up */
     margin: 0;
     overflow: visible;
     min-height: auto;
@@ -391,12 +424,13 @@
 
 /* Hero Inner Layout (Mobile Base) */
 .hero-inner {
-    display: flex;
-    flex-direction: column;
+    display: block;
+    /* Changed from flex to allow absolute positioning context */
     position: relative;
     z-index: 2;
-    height: auto;
-    /* Flow with content */
+    height: 100%;
+    min-height: 500px;
+    /* Ensure enough height for the map */
 }
 
 .hero-text {
@@ -404,14 +438,15 @@
     z-index: 5;
     text-align: left;
     /* Ensure left align */
-    padding-top: 0px;
     margin-bottom: 20px;
     pointer-events: auto;
+    /* max-width removed as requested */
 }
 
 .hero-title {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 2rem;
+    font-size: clamp(1.6rem, 4vw, 1.6rem);
+    /* Tighter limit as requested */
     font-weight: 800;
     line-height: 1.4;
     color: #333;
@@ -424,21 +459,29 @@
 
 .hero-subtitle {
     font-size: 0.95rem;
-    line-height: 1.6;
+    line-height: clamp(1.3rem, 5vw, 1.5rem);
     color: #666;
 }
 
 .hero-map-container {
-    position: relative;
+    position: absolute;
     width: 100%;
+    /* Full width for responsiveness */
+    min-width: 340px;
+    /* Prevent map from becoming too small on narrow screens */
+    left: 48%;
+    /* Moved slightly right (45 -> 48) */
+    transform: translateX(-50%);
+    top: 45%;
+    /* Moved down slightly (43 -> 45) */
     height: auto;
-    z-index: 1;
+    z-index: 10;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: -30px;
-    /* Mobile: Moved UP based on user request */
+    margin-top: 0;
     pointer-events: none;
+    overflow: visible;
 }
 
 .hero-map-bg-wrapper {
@@ -921,7 +964,8 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 
     /* Overlap Logic */
-    margin-top: -160px;
+    margin-top: -70px;
+    /* Adjusted down slightly (-80 -> -70) */
     /* Pull up deeply into the padding area */
     margin-bottom: 24px;
     position: relative;
@@ -958,10 +1002,15 @@
 }
 
 .cat-label {
-    font-size: 0.85rem;
+    font-size: clamp(0.7rem, 3.5vw, 13px);
+    /* Cap at 13px to prevent huge system font scaling issues */
     font-weight: 600;
     color: #666;
     font-family: 'Pretendard Variable', sans-serif;
+    white-space: nowrap;
+    /* Prevent wrapping */
+    letter-spacing: -0.5px;
+    /* Tighten slightly */
 }
 
 .category-item.selected .cat-label {
@@ -1101,6 +1150,32 @@
     margin-top: 12px;
 }
 
+/* Mobile Survey Card Alignment */
+/* Mobile Survey Card Alignment - Independent Row Layout */
+.survey-card {
+    display: flex;
+    flex-direction: row;
+    /* Enforce row on mobile */
+    justify-content: space-between;
+    align-items: flex-start;
+    /* Align icon to top with text */
+}
+
+.survey-card>div:first-child {
+    flex: 1;
+    /* Text takes available width */
+    margin-right: 8px;
+    /* Spacing between text and icon */
+}
+
+.survey-card .card-icon {
+    margin-top: 0;
+    align-self: flex-start;
+    /* Force Top Alignment */
+    flex-shrink: 0;
+    /* Prevent shrinking */
+}
+
 /* =========================================
    DESKTOP STYLES (min-width: 1024px)
    ========================================= */
@@ -1157,11 +1232,14 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        min-width: 1280px;
+        /* Prevent overlap on smaller desktop screens */
     }
 
     .desktop-nav {
         display: flex;
-        gap: 32px;
+        gap: 20px;
+        flex-wrap: nowrap;
     }
 
     .nav-link {
@@ -1169,8 +1247,9 @@
         color: #333;
         font-family: 'GmarketSans', sans-serif;
         font-weight: 500;
-        font-size: 1rem;
+        font-size: 0.9rem;
         transition: color 0.2s;
+        white-space: nowrap;
     }
 
     .nav-link:hover {
@@ -1228,6 +1307,8 @@
         /* Increased from 500px */
         top: auto;
         left: auto;
+        transform: none;
+        /* Reset mobile transform */
         margin-top: 0;
         overflow: visible;
     }
@@ -1358,6 +1439,11 @@
 
     .btn-detail {
         margin: 0;
+        min-width: 180px;
+        /* Ensure wide button */
+        padding: 12px 15px;
+        /* Extra horizontal padding */
+        text-align: center;
     }
 
     .stats-content-row {
@@ -1646,7 +1732,8 @@
 
     .action-item {
         flex: 1;
-        height: 200px;
+        height: 280px;
+        /* Increased height (200 -> 280) */
         /* Uniform height */
         border-radius: 24px;
         padding: 40px;
@@ -1654,8 +1741,10 @@
         cursor: pointer;
         transition: transform 0.2s;
         display: flex;
+        flex-direction: column;
+        /* Desktop: Column Layout */
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: stretch;
         /* Reset Order for Desktop */
         order: 0 !important;
         grid-column: auto !important;
@@ -1664,6 +1753,24 @@
     .action-item.survey-card {
         order: 0 !important;
         grid-column: auto !important;
+        display: flex;
+        flex-direction: column;
+        /* Ensure column layout on desktop */
+        justify-content: space-between;
+        overflow: hidden;
+        /* Clip overflow content (icon) */
+    }
+
+    .action-item.survey-card>div:first-child {
+        margin-right: 0;
+        /* Reset mobile margin */
+    }
+
+    /* Reset Icon Alignment on Desktop */
+    .survey-card .card-icon {
+        align-self: flex-end;
+        /* Desktop: Bottom Right */
+        margin-top: 0;
     }
 
     .action-item.card.report {
@@ -2183,15 +2290,19 @@
 
     /* [Hero Content Positioning] */
     .hero-text {
-        flex: 1;
-        max-width: 45%;
-        /* Give map more space */
+        flex: 1.8;
+        /* Increase text space ratio relative to map */
+        max-width: none;
+        /* Explicitly remove limits */
         position: relative;
         z-index: 2;
     }
 
     .hero-map-container {
-        width: 55%;
+        width: 100%;
+        /* Let flex handle width */
+        flex: 1;
+        /* Map takes less space */
         height: 100%;
         position: relative;
         display: flex;
@@ -2275,9 +2386,12 @@
 
     /* [Text Positioning - Left] */
     /* [Text Positioning - Left] */
+    /* [Text Positioning - Left] */
+    /* [Text Positioning - Left] */
     .hero-text {
-        flex: 1;
-        max-width: 45%;
+        width: 100%;
+        max-width: 85%;
+        /* Widen to Overlap Map */
         text-align: left;
         align-self: flex-start;
         /* Align to top */
@@ -2285,6 +2399,23 @@
         /* Reset margin */
         padding-top: 20px;
         /* Slight optical adjustment from container top */
+        position: relative;
+        z-index: 5;
+        /* Ensure text is above map */
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        /* Fixed 2.5rem as requested (Default & Max) */
+        max-width: 100%;
+        /* Responsive width */
+    }
+
+    .hero-subtitle {
+        font-size: clamp(1rem, 1.2vw, 1.2rem);
+        /* Cap subtitle size */
+        max-width: 100%;
+        /* Responsive width */
     }
 
     /* [Category Grid: Ensure Overlap] */
@@ -2300,22 +2431,34 @@
 
     /* [Map Overlay Positioning - Right] */
     .hero-map-container {
-        flex: 1;
+        position: absolute;
+        /* Remove from flex flow to allow overlap */
+        right: 0;
+        top: 0;
+        width: 55%;
+        min-width: 500px;
+        /* Ensure map has consistent size */
+        height: 100%;
         display: flex;
         justify-content: center;
         /* Move towards center/boundary */
         align-items: center;
-        height: 100%;
         padding-right: 40px;
         /* Slight offset if needed */
+        z-index: 1;
+        /* Behind text */
+        pointer-events: none;
+        /* Optional: let clicks pass through to text if overlapping heavily? */
+        /* Actually keep pointer events for the map interactivity */
+        pointer-events: auto;
     }
 
     .hero-map-overlay {
         width: 100%;
         max-width: 420px;
         /* Further reduced size */
-        transform: translate(10px, -50px);
-        /* Move right and up */
+        transform: translate(10px, 0);
+        /* Reset vertical shift (move down) */
         overflow: visible;
     }
 }

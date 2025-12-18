@@ -6,7 +6,7 @@
     padding-bottom: 80px;
     /* Space for footer */
     background-color: #fff;
-    max-width: 480px;
+    max-width: 1280px;
     /* Mobile width constraint */
     margin: 0 auto;
     position: relative;
@@ -38,7 +38,7 @@
 }
 
 .step-main-title {
-    font-size: 28px;
+    font-size: 1.75rem;
     font-weight: 900;
     color: #E6235A;
     margin: 0;
@@ -61,7 +61,7 @@
 }
 
 .step-title {
-    font-size: 20px;
+    font-size: 1.25rem;
     font-weight: 800;
     color: #242424;
     margin-bottom: 12px;
@@ -71,7 +71,7 @@
 /* Legacy styles kept below if needed, but overridden by above structure */
 
 .description {
-    font-size: 14px;
+    font-size: 0.875rem;
     color: #666;
     line-height: 1.5;
     margin-bottom: 32px;
@@ -87,7 +87,7 @@
 
 .label {
     display: block;
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: #666666;
     margin-bottom: 8px;
 }
@@ -100,7 +100,7 @@
 .select-box {
     width: 100%;
     padding: 14px 16px;
-    font-size: 16px;
+    font-size: 1rem;
     border: 1px solid #111;
     border-radius: 8px;
     appearance: none;
@@ -178,7 +178,7 @@
 .card-name {
     padding: 16px 0;
     text-align: center;
-    font-size: 14px;
+    font-size: 0.875rem;
     color: #666;
     border-top: 1px solid #eee;
     background-color: #fff;
@@ -201,7 +201,7 @@
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
-    max-width: 480px;
+    max-width: 1280px;
     display: flex;
     gap: 8px;
     padding: 16px 24px 30px;
@@ -214,7 +214,7 @@
     flex: 1;
     padding: 16px;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
     border: none;

@@ -423,7 +423,7 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
                                         border: 'none',
                                         borderRadius: '12px',
                                         height: '60px',
-                                        fontSize: '16px',
+                                        fontSize: '1rem',
                                         fontWeight: '600',
                                         cursor: 'pointer'
                                     }}
@@ -452,8 +452,8 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
                                         border: 'none',
                                         borderRadius: '12px',
                                         height: '60px',
-                                        fontSize: '16px',
-                                        fontWeight: '600',
+                                        fontSize: '1rem',
+                                        fontWeight: '600', // line 457
                                         cursor: 'pointer',
                                         boxShadow: `0 4px 12px ${diagnosisType === 'expert' ? 'rgba(84, 42, 163, 0.3)' : 'rgba(230, 35, 90, 0.3)'}`
                                     }}

@@ -381,6 +381,11 @@ function App() {
                         if (diagnosisMode === 'expert') {
                             setView('satisfaction');
                         } else {
+                            // Calculate Average for General Mode (1-5)
+                            const vals = Object.values(ratings).map(Number);
+                            const sum = vals.reduce((a, b) => a + b, 0);
+                            const avg = vals.length > 0 ? (sum / vals.length).toFixed(1) : "0.0";
+                            updateDiagnosisPayload('satisfaction', avg);
                             goToReview();
                         }
                     }}

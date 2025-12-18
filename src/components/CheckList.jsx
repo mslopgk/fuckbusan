@@ -81,7 +81,7 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
                                     width: '24px',
                                     height: '24px',
                                     borderRadius: '50%',
-                                    fontSize: '14px',
+                                    fontSize: '0.875rem',
                                     fontWeight: 500,
                                     marginRight: '8px',
                                     flexShrink: 0,
@@ -118,7 +118,7 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
                                                 ></span>
                                                 <span style={{
                                                     marginTop: '8px',
-                                                    fontSize: '14px',
+                                                    fontSize: '0.875rem',
                                                     fontWeight: '500',
                                                     color: '#333',
                                                     textAlign: 'center'

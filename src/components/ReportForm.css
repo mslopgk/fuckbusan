@@ -5,6 +5,8 @@
     min-height: 100vh;
     background-color: #fff;
     font-family: 'Pretendard Variable', sans-serif;
+    max-width: 1280px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     /* Hide scrollbar */
@@ -319,7 +321,7 @@
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
-    max-width: 480px;
+    max-width: 1280px;
     display: flex;
     gap: 8px;
     padding: 16px 24px 30px;

@@ -82,7 +82,7 @@ const Home = ({ onNavigate }) => {
 
                 <div className="hero-inner">
                     <div className="hero-text">
-                        <h2 className="hero-title">시민과 기술이 함께 만드는 <br className="mobile-only" /><span className="highlight-red">더 나은 부산</span></h2>
+                        <h2 className="hero-title">시민과 기술이 함께 만드는 <br /><span className="highlight-red">더 나은 부산</span></h2>
                         <p className="hero-subtitle">
                             시민의 목소리와 지능형 기술로<br />
                             도시를 진단하고 개선하는 참여형 플랫폼입니다.<br />
@@ -119,9 +119,8 @@ const Home = ({ onNavigate }) => {
                                 </span>
                             </div>
                             <div className="card-subtitle">공공디자인 설문에 참여해주세요<br />~ 2025.12.19까지</div>
+                            <div className="card-arrow desktop-only">→</div>
                         </div>
-                        {/* Desktop Arrow (Hidden on mobile via CSS) */}
-                        <div className="card-arrow desktop-only">→</div>
                     </div>
 
                     <div className="action-item card report" onClick={() => onNavigate && onNavigate('report')}>
@@ -134,9 +133,6 @@ const Home = ({ onNavigate }) => {
                             <div className="card-subtitle">당신의 아이디어가<br />도시를 더 멋지게!</div>
                             <div className="card-arrow desktop-only">→</div>
                         </div>
-                        <div className="card-icon">
-                            <img src="/assets/suggest.png" alt="제보하기" />
-                        </div>
                     </div>
                     <div className="action-item card diagnose" onClick={() => onNavigate && onNavigate('checkList')}>
                         <div>
@@ -148,9 +144,6 @@ const Home = ({ onNavigate }) => {
                             <div className="card-subtitle">우리 동네 디자인,<br />같이 검진해볼까요?</div>
                             <div className="card-arrow desktop-only">→</div>
                         </div>
-                        <div className="card-icon">
-                            <img src="/assets/check.png" alt="진단하기" />
-                        </div>
                     </div>
                 </div>
 
@@ -160,7 +153,7 @@ const Home = ({ onNavigate }) => {
                     {/* Stats Section Title */}
                     <div className="stats-header-section">
                         <div>
-                            <h2 className="section-title">내가 남긴 제보와 제안, <span className="highlight">지금 어떻게 진행되고 있을까요?</span></h2>
+                            <h2 className="section-title">내가 남긴 제보와 제안, <br /><span className="highlight">지금 어떻게 진행되고 있을까요?</span></h2>
                             <p className="section-subtitle">등록한 내용의 검토·처리 상태를 쉽게 확인할 수 있습니다.</p>
                         </div>
                         {/* Detail Button moved below for mobile re-ordering logic */}

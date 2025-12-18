@@ -143,7 +143,7 @@ const BigCategory = ({ data, onNext, initialBig, initialMid, onBack, color = '#E
                                             {imgPath ? (
                                                 <img src={imgPath} alt={midName} />
                                             ) : (
-                                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc', fontSize: '12px' }}>
+                                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc', fontSize: '0.75rem' }}>
                                                     No Image
                                                 </div>
                                             )}
