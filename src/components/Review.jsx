@@ -56,7 +56,7 @@ const Review = ({ onPrev, onNext, color = '#E6235A', progressBarColor, diagnosis
             // 2. Submit Checklist
             const token = localStorage.getItem('access_token');
             const submitPayload = {
-                "진단지역": diagnosisPayload?.address?.road || diagnosisPayload?.address?.placeName || '부산', // Save detailed address here
+                "진단지역": (diagnosisPayload?.address?.placeName ? diagnosisPayload.address.placeName + " " : "") + (diagnosisPayload?.address?.road || '부산'),
                 "district_code": diagnosisMode, // 'general' or 'expert'
                 "위도": diagnosisPayload?.location?.lat || 0,
                 "경도": diagnosisPayload?.location?.lng || 0,

@@ -35,7 +35,11 @@ const DiagnosisCard = ({ item, onBookmark, onClick, style }) => {
             {/* Main Info Row */}
             <div className="dc-main-info">
                 <div className="dc-img">
-                    <img src={item.image || '/assets/placeholder.png'} alt="site" />
+                    <img
+                        src={item.image || '/assets/diagnosis_street.png'}
+                        alt="site"
+                        onError={(e) => { e.target.src = '/assets/diagnosis_street.png'; }}
+                    />
                 </div>
                 <div className="dc-text-info">
                     <div className="dc-title">{item.title}</div>
@@ -63,8 +67,8 @@ const DiagnosisCard = ({ item, onBookmark, onClick, style }) => {
                                 </div>
                             )}
                             <div style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#888' }}>
-                                <span>위도 {item.lat}</span>
-                                <span>경도 {item.lng}</span>
+                                <span>위도 {Number(item.lat || 0).toFixed(6)}</span>
+                                <span>경도 {Number(item.lng || 0).toFixed(6)}</span>
                             </div>
                         </div>
                     </div>

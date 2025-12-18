@@ -70,7 +70,7 @@ const MyActivity = ({ onBack, onNavigate, onEdit }) => {
                                 placeName: item.장소명 || item.placeName || '', // With '진단지역' hack, placeName might be empty or part of address. Leaving as is if backend doesn't return it.
                                 scores: [],
                                 desc: item.리뷰,
-                                image: item.이미지경로 ? (item.이미지경로.startsWith('/') ? `${API_URL}${item.이미지경로}` : item.이미지경로) : '/assets/diagnosis_street.png'
+                                image: item.이미지경로 ? (item.이미지경로.startsWith('/uploads') ? `${API_URL}${item.이미지경로}` : item.이미지경로) : '/assets/diagnosis_street.png'
                             };
                         });
                         setMyDiagnoses(mapped);

@@ -2,60 +2,65 @@ import React, { useState } from 'react';
 import './DiagnosisList.css';
 import DiagnosisCard from './DiagnosisCard';
 
+import { fetchWithLogout } from '../utils/api';
+
 const DiagnosisList = ({ onBack, onNavigate }) => {
     // 'all' | 'general' | 'expert'
     const [activeTab, setActiveTab] = useState('all');
-    const [sortOrder, setSortOrder] = useState('latest'); // 'latest'
+    const [sortOrder, setSortOrder] = useState('latest');
     const [isSortOpen, setIsSortOpen] = useState(false);
 
-    // Mock Data based on images (moved outside or memoized if real)
-    // Mock Data based on images (moved outside or memoized if real)
-    const [listData, setListData] = useState([
-        {
-            id: 1,
-            type: 'general',
-            date: '25.12.20',
-            bookmarked: false,
-            title: '보도',
-            score: '2.0',
-            lat: '35.1717231',
-            lng: '129.1107443',
-            scores: [
-                { label: '접근성', val: '2.0' },
-                { label: '안전성', val: '2.0' },
-                { label: '정보\n제공성', val: '2.0' },
-                { label: '포용성', val: '2.0' },
-                { label: '이동성', val: '2.0' },
-                { label: '심미성', val: '2.0' }
-            ],
-            desc: '시설물 전반은 잘 관리되고 있는 것으로 보이나, 일부 구간의 바닥 상태가 고르지 않아 보행 시 불편함을 느꼈습니다. 특히 노약자나 어린이가 이용할 경우 안전사고...',
-            image: '/assets/diagnosis_street.png'
-        },
-        {
-            id: 2,
-            type: 'expert',
-            date: '25.12.20',
-            bookmarked: true,
-            title: '위생공간/화장실',
-            result: 'suitable', // suitable | unsuitable
-            lat: '35.1717231',
-            lng: '129.1107443',
-            desc: '시설물 전반은 잘 관리되고 있는 것으로 보이나, 일부 구간의 바닥 상태가 고르지 않아 보행 시 불편함을 느꼈습니다. 특히 노약자나 어린이가 이용할 경우 안전사고...',
-            image: '/assets/diagnosis_street.png'
-        },
-        {
-            id: 3,
-            type: 'expert',
-            date: '25.12.20',
-            bookmarked: false,
-            title: '위생공간/화장실',
-            result: 'unsuitable',
-            lat: '35.1717231',
-            lng: '129.1107443',
-            desc: '시설물 전반은 잘 관리되고 있는 것으로 보이나, 일부 구간의 바닥 상태가 고르지 않아 보행 시 불편함을 느꼈습니다. 특히 노약자나 어린이가 이용할 경우 안전사고...',
-            image: '/assets/diagnosis_street.png'
-        }
-    ]);
+    const [listData, setListData] = useState([]);
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+    React.useEffect(() => {
+        const fetchList = async () => {
+            try {
+                // Use fetchWithLogout to handle auth automatically
+                const token = localStorage.getItem('access_token');
+                const res = await fetchWithLogout(`${API_URL}/checklist/list`, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    console.log("Diagnosis List Loaded, count:", data.length);
+                    // Map to card format
+                    const mapped = data.map(item => {
+                        let dateStr = '23.01.01';
+                        if (item.created_at) {
+                            try {
+                                dateStr = new Date(item.created_at).toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit' }).replace(/\./g, '').replace(/ /g, '.');
+                            } catch (e) { }
+                        }
+
+                        return {
+                            id: item.result_id,
+                            type: item.district_code === 'expert' ? 'expert' : 'general',
+                            date: dateStr,
+                            bookmarked: false,
+                            title: item.중분류 || item.대분류 || '진단 결과',
+                            score: String(item.점수 || 0),
+                            result: item.만족도 || 'suitable',
+                            lat: item.위도,
+                            lng: item.경도,
+                            address: item.진단지역 || '주소 정보 없음',
+                            scores: [],
+                            desc: item.리뷰,
+                            image: item.이미지경로 ? (item.이미지경로.startsWith('/uploads') ? `${API_URL}${item.이미지경로}` : item.이미지경로) : '/assets/diagnosis_street.png',
+                            placeName: item.장소명 || item.placeName || '',
+                        };
+                    });
+                    setListData(mapped);
+                } else {
+                    console.warn("Fetch List Failed:", res.status);
+                }
+            } catch (e) {
+                console.error("Failed to fetch diagnosis list", e);
+            }
+        };
+        fetchList();
+    }, []);
 
     const toggleBookmark = (id) => {
         setListData(prev => prev.map(item =>

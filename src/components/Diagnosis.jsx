@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Diagnosis.css';
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, CircleMarker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -40,20 +40,41 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
-                    setCurrentLocation({ lat: latitude, lng: longitude });
-                    // Optionally fetch address for initial location
-                    if (!selectedPin && !customPin) {
-                        fetchAddress(latitude, longitude);
+                    console.log("Location found:", latitude, longitude);
+
+                    // BUSAN BOUNDS CHECK (approx)
+                    // Lat: 34.8 ~ 35.4
+                    // Lng: 128.8 ~ 129.3
+                    const isBusan = latitude > 34.8 && latitude < 35.4 && longitude > 128.8 && longitude < 129.3;
+
+                    if (isBusan) {
+                        // Only update center/fetch address if we are waiting for initial location
+                        // and user hasn't selected a pin yet.
+                        if (!selectedPin && !customPin) {
+                            setCurrentLocation({ lat: latitude, lng: longitude });
+                            fetchAddress(latitude, longitude);
+                        }
+                    } else {
+                        console.warn("Location is outside Busan (e.g. Seoul), defaulting to Busanjin-gu");
+                        if (!selectedPin && !customPin) {
+                            // Default to Busan Citizens Park or Busanjin-gu
+                            const busanCenter = { lat: 35.1689, lng: 129.0578 }; // Busan Citizens Park approx
+                            setCurrentLocation(busanCenter);
+                            fetchAddress(busanCenter.lat, busanCenter.lng);
+                        }
                     }
                 },
                 (error) => {
                     console.error("Error getting location:", error);
-                    // Fallback to Busan City Hall or similar if denied
-                    setCurrentLocation({ lat: 35.1795543, lng: 129.0756416 });
-                }
+                    // Fallback to Busanjin-gu if failed, only if no pin selected
+                    if (!selectedPin && !customPin) {
+                        setCurrentLocation({ lat: 35.1631, lng: 129.0529 });
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         } else {
-            setCurrentLocation({ lat: 35.1795543, lng: 129.0756416 });
+            console.error("Geolocation not supported");
         }
     }, []);
 
@@ -232,7 +253,7 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
             {/* Map Area */}
             <div className="diagnosis-map-container" style={{ position: 'relative', zIndex: 0 }}>
                 <MapContainer
-                    center={[35.1795543, 129.0756416]} // Default Fallback center
+                    center={[35.1631, 129.0529]} // Default Fallback center (Busanjin-gu)
                     zoom={15}
                     style={{ height: '100%', width: '100%', outline: 'none' }}
                     zoomControl={false}
@@ -263,7 +284,7 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
                             <Marker
                                 key={pin.id}
                                 position={[pin.lat, pin.lng]}
-                                icon={createCustomIcon(pin.id, parseInt(selectedPin) === pin.id, primaryColor)}
+                                icon={createCustomIcon(pin.id, selectedPin == pin.id, primaryColor)}
                                 eventHandlers={{
                                     click: (e) => {
                                         L.DomEvent.stopPropagation(e.originalEvent);
@@ -272,6 +293,20 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
                                 }}
                             />
                         ))}
+
+                    {/* Current Location Marker */}
+                    {currentLocation && (
+                        <CircleMarker
+                            center={[currentLocation.lat, currentLocation.lng]}
+                            radius={8}
+                            fillColor="#4285F4"
+                            color="#fff"
+                            weight={2}
+                            fillOpacity={1}
+                        >
+                            <Popup>현재 위치</Popup>
+                        </CircleMarker>
+                    )}
 
                     {/* Custom Pin Marker */}
                     {customPin && (
@@ -287,6 +322,50 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
                         />
                     )}
                 </MapContainer>
+
+                {/* GPS Button */}
+                <button
+                    className="gps-btn"
+                    style={{
+                        position: 'absolute',
+                        top: '16px',
+                        right: '16px',
+                        width: '40px',
+                        height: '40px',
+                        backgroundColor: '#fff',
+                        borderRadius: '8px',
+                        border: 'none',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                        zIndex: 1000,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
+                    onClick={() => {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                                (position) => {
+                                    const { latitude, longitude } = position.coords;
+                                    setCurrentLocation({ lat: latitude, lng: longitude });
+                                    // Also fetch addr if no pin selected? Maybe just move map.
+                                    // If they click GPS, they usually want to diagnose THERE.
+                                    // Let's set it as custom pin? No, just show location.
+                                    // If they want to diagnose, they'll click the map.
+                                },
+                                (error) => {
+                                    alert("위치 정보를 가져올 수 없습니다.");
+                                },
+                                { enableHighAccuracy: true, timeout: 5000 }
+                            );
+                        }
+                    }}
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.25 1.51H13.5a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
             </div>
 
             {/* Bottom Panel */}

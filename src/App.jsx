@@ -122,34 +122,31 @@ function App() {
                 if (res.ok) {
                     const data = await res.json();
                     if (Array.isArray(data)) {
-                        const backendPins = {};
+                        const userPins = {};
                         data.forEach(item => {
                             // Map backend item to mapPin format
-                            const id = item.result_id;
-                            backendPins[id] = {
+                            // Use 'user_' prefix to avoid collision with default pins (1,2,3,4)
+                            const id = `user_${item.result_id}`;
+                            userPins[id] = {
                                 id: id,
                                 lat: item.위도,
                                 lng: item.경도,
                                 address: {
-                                    placeName: item.장소명 || item.placeName || '',
+                                    placeName: item.장소명 || item.placeName || (item.진단지역 ? item.진단지역.split(' ')[0] : '위치 정보 없음'),
                                     road: item.진단지역 || item.도로명주소 || item.address || '주소 정보 없음',
-                                    jibun: '', // Backend doesn't store this separately yet?
+                                    jibun: '',
                                     zip: ''
                                 },
-                                type: item.district_code === 'expert' ? 'expert' : 'general', // Parse type from district_code
-                                ...item // Keep original data for reference
+                                type: item.district_code === 'expert' ? 'expert' : 'general',
+                                ...item
                             };
                         });
 
-                        // Merge with existing mock pins or replace? User asked for "stored pins". 
-                        // Usually specific user pins replace default pins, or append.
-                        // Let's replace defaults with user data if user has data. 
-                        // But if we want to show some "recommended" spots, we might merge.
-                        // For now, let's merge but give precedence to user pins. 
-                        // ACTUALLY, usually "mapPins" acts as the source of truth for "My Diagnosis". 
-                        // If I replace, defaults are gone. That might be desired.
-                        if (Object.keys(backendPins).length > 0) {
-                            setMapPins(backendPins);
+                        if (Object.keys(userPins).length > 0) {
+                            setMapPins(prev => ({
+                                ...prev,
+                                ...userPins
+                            }));
                         }
                     }
                 }

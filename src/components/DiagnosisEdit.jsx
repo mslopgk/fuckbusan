@@ -50,7 +50,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
 
                         // Correctly format image URL
                         let imgUrl = detail.이미지경로 || '/assets/diagnosis_street.png';
-                        if (imgUrl.startsWith('/')) {
+                        if (imgUrl && imgUrl.startsWith('/uploads')) {
                             imgUrl = `${API_URL}${imgUrl}`;
                         }
                         setImage(imgUrl);
@@ -244,7 +244,11 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                         </svg>
                     </button>
                     <div className="preview-box">
-                        <img src={image} alt="preview" />
+                        <img
+                            src={image}
+                            alt="preview"
+                            onError={(e) => { e.target.src = '/assets/diagnosis_street.png'; }}
+                        />
                     </div>
                 </div>
             </div>
