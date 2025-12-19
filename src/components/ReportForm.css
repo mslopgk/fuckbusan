@@ -29,24 +29,24 @@
 
 /* Title */
 .report-form-title-section {
-    margin-bottom: 40px;
+    margin-bottom: 2.5rem;
 }
 
 .report-form-title {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: bold;
     color: #E6235A;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
 }
 
 .report-form-subtitle {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 1.4rem;
+    font-size: 1.375rem;
     font-weight: 700;
     color: #242424;
     line-height: 1.4;
-    margin-bottom: 10px;
+    margin-bottom: 0.625rem;
 }
 
 .report-form-desc {
@@ -60,17 +60,17 @@
 .form-section {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 1.5rem;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
 .form-label {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: #666;
     font-weight: 500;
 }
@@ -187,8 +187,8 @@
 .char-count {
     text-align: right;
     color: #999;
-    font-size: 0.85rem;
-    margin-top: 4px;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
 }
 
 /* File Upload */

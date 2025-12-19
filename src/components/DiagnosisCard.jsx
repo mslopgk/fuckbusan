@@ -45,7 +45,7 @@ const DiagnosisCard = ({ item, onBookmark, onClick, style }) => {
                     <div className="dc-title">{item.title}</div>
                     {/* Place Name - New Field */}
                     {item.placeName && (
-                        <div className="dc-place-name" style={{ fontSize: '14px', color: '#111', fontWeight: 500, marginBottom: '4px' }}>
+                        <div className="dc-place-name" style={{ fontSize: '0.875rem', color: '#111', fontWeight: 500, marginBottom: '4px' }}>
                             {item.placeName}
                         </div>
                     )}
@@ -62,11 +62,11 @@ const DiagnosisCard = ({ item, onBookmark, onClick, style }) => {
                         {/* Address Side by Side with Coords or Just Above */}
                         <div className="dc-coord-row" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             {item.address && (
-                                <div className="dc-address" style={{ color: '#555', fontSize: '13px', wordBreak: 'keep-all' }}>
+                                <div className="dc-address" style={{ color: '#555', fontSize: '0.8125rem', wordBreak: 'keep-all' }}>
                                     {item.address}
                                 </div>
                             )}
-                            <div style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#888' }}>
+                            <div style={{ display: 'flex', gap: '8px', fontSize: '0.75rem', color: '#888' }}>
                                 <span>위도 {Number(item.lat || 0).toFixed(6)}</span>
                                 <span>경도 {Number(item.lng || 0).toFixed(6)}</span>
                             </div>

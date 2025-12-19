@@ -1,7 +1,16 @@
+import React, { useEffect } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import './DiagnosisResult.css';
 
 const DiagnosisResult = ({ onBack, onHome, onDetailFacility, onDetailZone, onDetailPerson }) => {
+    // Force full width layout
+    useEffect(() => {
+        document.body.classList.add('layout-full-width');
+        return () => {
+            document.body.classList.remove('layout-full-width');
+        };
+    }, []);
+
     // Data Structure matching the design
     // 6 Axes: 접근성, 이동성, 안전성, 정비나 조성, 포용성, 심미성
     const data = [
@@ -21,21 +30,17 @@ const DiagnosisResult = ({ onBack, onHome, onDetailFacility, onDetailZone, onDet
             <g className="recharts-layer recharts-polar-angle-axis-tick">
                 <text
                     x={x}
-                    y={y - 5} // Adjustment
+                    y={y - 5}
                     textAnchor={textAnchor}
-                    fill="#333"
-                    fontSize="10px"
-                    fontWeight="bold"
+                    className="radar-tick-label"
                 >
                     {value}
                 </text>
                 <text
                     x={x}
-                    y={y + 10} // Adjustment
+                    y={y + 10}
                     textAnchor={textAnchor}
-                    fill="#000"
-                    fontSize="12px"
-                    fontWeight="bold"
+                    className="radar-tick-value"
                 >
                     {dataPoint?.A}
                 </text>
@@ -70,7 +75,7 @@ const DiagnosisResult = ({ onBack, onHome, onDetailFacility, onDetailZone, onDet
                 <div className="card-header-score">
                     <span className="main-chart-score">2.4</span> 전체 평균 (36)
                 </div>
-                <div style={{ width: '100%', height: '280px' }}>
+                <div className="chart-container-main">
                     <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="70%" data={data}>
                             <PolarGrid />
@@ -98,16 +103,16 @@ const DiagnosisResult = ({ onBack, onHome, onDetailFacility, onDetailZone, onDet
             {/* 1. Facility */}
             <div className="sub-card">
                 <div className="sub-card-title">시설물별 전체(All) 세부 정보</div>
-                <div style={{ width: '100%', height: '200px' }}>
+                <div className="chart-container-sub">
                     <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="65%" data={data}>
                             <PolarGrid />
                             <PolarAngleAxis dataKey="subject" tick={({ payload, x, y, textAnchor }) => {
                                 const dataPoint = data.find(d => d.subject === payload.value);
                                 return (
-                                    <text x={x} y={y} textAnchor={textAnchor} fill="#666" fontSize="9px">
+                                    <text x={x} y={y} textAnchor={textAnchor} className="radar-mini-tick">
                                         {payload.value}
-                                        <tspan x={x} dy="1.2em" fontWeight="bold" fill="#333">{dataPoint?.A}</tspan>
+                                        <tspan x={x} dy="1.2em" className="radar-mini-value">{dataPoint?.A}</tspan>
                                     </text>
                                 );
                             }} />
@@ -134,16 +139,16 @@ const DiagnosisResult = ({ onBack, onHome, onDetailFacility, onDetailZone, onDet
             {/* 2. Zone */}
             <div className="sub-card">
                 <div className="sub-card-title">구역별 전체(All) 세부 정보</div>
-                <div style={{ width: '100%', height: '200px' }}>
+                <div className="chart-container-sub">
                     <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="65%" data={data}>
                             <PolarGrid />
                             <PolarAngleAxis dataKey="subject" tick={({ payload, x, y, textAnchor }) => {
                                 const dataPoint = data.find(d => d.subject === payload.value);
                                 return (
-                                    <text x={x} y={y} textAnchor={textAnchor} fill="#666" fontSize="9px">
+                                    <text x={x} y={y} textAnchor={textAnchor} className="radar-mini-tick">
                                         {payload.value}
-                                        <tspan x={x} dy="1.2em" fontWeight="bold" fill="#333">{dataPoint?.A}</tspan>
+                                        <tspan x={x} dy="1.2em" className="radar-mini-value">{dataPoint?.A}</tspan>
                                     </text>
                                 );
                             }} />
@@ -170,16 +175,16 @@ const DiagnosisResult = ({ onBack, onHome, onDetailFacility, onDetailZone, onDet
             {/* 3. Person */}
             <div className="sub-card">
                 <div className="sub-card-title">인원별 전체(All) 세부 정보</div>
-                <div style={{ width: '100%', height: '200px' }}>
+                <div className="chart-container-sub">
                     <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="65%" data={data}>
                             <PolarGrid />
                             <PolarAngleAxis dataKey="subject" tick={({ payload, x, y, textAnchor }) => {
                                 const dataPoint = data.find(d => d.subject === payload.value);
                                 return (
-                                    <text x={x} y={y} textAnchor={textAnchor} fill="#666" fontSize="9px">
+                                    <text x={x} y={y} textAnchor={textAnchor} className="radar-mini-tick">
                                         {payload.value}
-                                        <tspan x={x} dy="1.2em" fontWeight="bold" fill="#333">{dataPoint?.A}</tspan>
+                                        <tspan x={x} dy="1.2em" className="radar-mini-value">{dataPoint?.A}</tspan>
                                     </text>
                                 );
                             }} />

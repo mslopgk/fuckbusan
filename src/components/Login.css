@@ -32,19 +32,19 @@
 
 .login-title {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 1.8rem;
+    font-size: 1.75rem;
     font-weight: bold;
     color: #E6235A;
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
 }
 
 .login-subtitle-main {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 1.4rem;
+    font-size: 1.375rem;
     font-weight: bold;
     color: #242424;
     line-height: 1.4;
-    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
 }
 
 .login-subtitle-desc {
@@ -57,13 +57,13 @@
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 1.875rem;
 }
 
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.625rem;
 }
 
 .input-label {
@@ -74,10 +74,10 @@
 
 .login-input {
     width: 100%;
-    padding: 16px;
+    padding: 1rem;
     font-size: 1rem;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     outline: none;
     color: #333;
     transition: border-color 0.2s;
@@ -93,16 +93,16 @@
 
 /* Submit Button */
 .login-btn-container {
-    margin-top: 50px;
+    margin-top: 3.125rem;
 }
 
 .login-submit-btn {
     width: 100%;
-    padding: 18px;
-    font-size: 1.1rem;
+    padding: 1.125rem;
+    font-size: 1rem;
     font-weight: bold;
     border: none;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     cursor: pointer;
     font-family: 'GmarketSans', sans-serif;
     transition: background-color 0.2s;
@@ -117,15 +117,15 @@
 .login-submit-btn.active {
     background-color: #E6235A;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.3);
+    box-shadow: 0 0.25rem 0.75rem rgba(230, 35, 90, 0.3);
 }
 
 /* Footer Links */
 .login-footer-links {
-    margin-top: 24px;
+    margin-top: 1.5rem;
     display: flex;
     justify-content: space-between;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     color: #666;
 }
 

@@ -19,6 +19,13 @@ const Survey = ({ onBack, onComplete }) => {
             });
     }, []);
 
+    const [currentStep, setCurrentStep] = useState(0);
+
+    // Scroll to top when step changes
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [currentStep]);
+
     const handleAnswer = (qid, value) => {
         setAnswers(prev => ({ ...prev, [qid]: value }));
     };
@@ -35,53 +42,58 @@ const Survey = ({ onBack, onComplete }) => {
         });
     };
 
-    const checkCompletion = () => {
-        if (questions.length === 0) return false;
+    const checkCurrentStepCompletion = () => {
+        if (!questions[currentStep]) return false;
+        const q = questions[currentStep];
+        const ans = answers[q.id];
 
-        for (const q of questions) {
-            // 1. Check Main Question Answer
-            const ans = answers[q.id];
-
-            // Multi-select needs non-empty array
-            if (q.type === 'multi_select') {
-                if (!ans || ans.length === 0) return false;
-            }
-            // Text is optional? Usually survey text is optional unless specified. 
-            // Assuming required for now based on previous logic (it was enabled/disabled).
-            // Let's assume text is optional if Q10 (often text is suggestions).
-            // If strictly required: 
-            else if (q.type === 'text') {
-                // Check if it's the final question usually optional? 
-                // Previous code: answers[q.id] check implies required.
-                if (!ans || ans.trim() === '') return false;
-            }
+        // 1. Check Main Question
+        if (q.type === 'multi_select') {
+            if (!ans || ans.length === 0) return false;
+        } else if (q.type === 'text') {
+            // Text required? Let's assume required as per previous logic (or check validation)
+            if (!ans || ans.trim() === '') return false;
+        } else {
             // Scale
-            else {
-                if (!ans) return false;
-            }
+            if (!ans) return false;
+        }
 
-            // 2. Check Sub Questions (if visible)
-            if (q.subQuestions && q.subQuestions.length > 0) {
-                const val = answers[q.id];
-                // If Dissatisfied (1 or 2), subquestions are required
-                if (val === 1 || val === 2) {
-                    for (const subQ of q.subQuestions) {
-                        if (!answers[subQ.id]) return false;
-                    }
+        // 2. Check Sub Questions (if visible)
+        if (q.subQuestions && q.subQuestions.length > 0) {
+            const val = answers[q.id];
+            // If Dissatisfied (1 or 2), subquestions are required
+            if (val === 1 || val === 2) {
+                for (const subQ of q.subQuestions) {
+                    if (!answers[subQ.id]) return false;
                 }
             }
         }
         return true;
     };
 
-    const isComplete = checkCompletion();
+    const isCurrentStepComplete = checkCurrentStepCompletion();
+
+    const handleNext = () => {
+        if (currentStep < questions.length - 1) {
+            setCurrentStep(prev => prev + 1);
+        } else {
+            handleSubmit();
+        }
+    };
+
+    const handlePrev = () => {
+        if (currentStep > 0) {
+            setCurrentStep(prev => prev - 1);
+        } else {
+            onBack();
+        }
+    };
 
     const handleSubmit = () => {
-        if (isComplete) {
+        // Final validation
+        if (questions.length > 0) {
             console.log("Survey Complete:", answers);
             if (onComplete) onComplete();
-        } else {
-            alert("모든 항목에 답변해 주세요.");
         }
     };
 
@@ -182,20 +194,15 @@ const Survey = ({ onBack, onComplete }) => {
         );
     };
 
-    // Calculate Progress based on filled main questions
-    const filledCount = questions.filter(q => {
-        const ans = answers[q.id];
-        if (Array.isArray(ans)) return ans.length > 0;
-        return !!ans;
-    }).length;
-    const progressPerc = Math.round((filledCount / questions.length) * 100);
+    // Calculate Progress
+    const progressPerc = questions.length > 0 ? Math.round(((currentStep + 1) / questions.length) * 100) : 0;
 
 
     return (
         <div className="container">
             {/* Header */}
             <div className="step-header">
-                <button onClick={onBack} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+                <button onClick={handlePrev} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="19" y1="12" x2="5" y2="12"></line>
                         <polyline points="12 19 5 12 12 5"></polyline>
@@ -218,7 +225,8 @@ const Survey = ({ onBack, onComplete }) => {
                 </p>
 
                 <div className="questions-list">
-                    {questions.map((q, index) => {
+                    {questions.length > 0 && (() => {
+                        const q = questions[currentStep];
                         const isMultiLimit = ['Q2', 'Q6', 'Q7', 'Q9'].includes(q.id);
 
                         // RefersTo Logic (Q3, Q8)
@@ -270,19 +278,21 @@ const Survey = ({ onBack, onComplete }) => {
                                 {q.subQuestions && q.subQuestions.length > 0 && renderSubQuestions(q)}
                             </div>
                         );
-                    })}
+                    })()}
                 </div>
             </main>
 
             {/* Footer */}
             <footer className="sticky-footer">
-                <button className="btn btn-prev" onClick={onBack}>이전</button>
+                <button className="btn btn-prev" onClick={handlePrev}>
+                    {currentStep === 0 ? "이전" : "이전"}
+                </button>
                 <button
-                    className={`btn btn-next ${isComplete ? 'active' : ''}`}
-                    disabled={!isComplete}
-                    onClick={handleSubmit}
+                    className={`btn btn-next ${isCurrentStepComplete ? 'active' : ''}`}
+                    disabled={!isCurrentStepComplete}
+                    onClick={handleNext}
                 >
-                    제출하기
+                    {currentStep === questions.length - 1 ? "제출하기" : "다음"}
                 </button>
             </footer>
         </div>

@@ -1,33 +1,32 @@
 /* DiagnosisDetail.css */
 .detail-container {
-    padding: 24px 20px 80px;
-    background-color: #f8f9fa;
+    padding: 1.5rem 1.25rem 5rem;
+    background-color: white;
     min-height: 100vh;
     font-family: 'Pretendard Variable', sans-serif;
+    max-width: 80rem;
+    width: 100%;
+    margin: 0 auto;
 }
 
-.detail-header {
+.result-header {
     position: sticky;
     top: 0;
     z-index: 50;
-    /* Below dropdowns (100+) */
-    background-color: #f8f9fa;
-    /* Match container bg */
+    background-color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px;
-    /* Re-add padding */
-    margin: -24px -20px 24px -20px;
-    /* Counteract container padding */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    /* Shadow effect */
+    padding: 1rem 1.25rem;
+    margin: -1.5rem -1.25rem 1.5rem -1.25rem;
+    width: calc(100% + 2.5rem);
+    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.05);
 }
 
 .header-title {
     font-family: 'GmarketSans', sans-serif;
     font-weight: 800;
-    font-size: 18px;
+    font-size: 1.25rem;
     color: #333;
 }
 
@@ -41,8 +40,8 @@
 .detail-title {
     font-family: 'GmarketSans', sans-serif;
     font-weight: 900;
-    font-size: 24px;
-    margin-bottom: 12px;
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
     /* Match result-title */
 }
 
@@ -58,10 +57,10 @@
 .address-dropdown-header {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 0.25rem;
     font-family: 'GmarketSans', sans-serif;
     font-weight: 900;
-    font-size: 18px;
+    font-size: 1.375rem;
     color: #242424;
     cursor: pointer;
 }
@@ -81,8 +80,8 @@
 }
 
 .address-dropdown-item {
-    padding: 12px 16px;
-    font-size: 16px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
     color: #333;
     font-family: 'Pretendard Variable', sans-serif;
     font-weight: 500;
@@ -106,7 +105,7 @@
     align-items: center;
     font-family: 'GmarketSans', sans-serif;
     font-weight: 900;
-    font-size: 24px;
+    font-size: 1.75rem;
     cursor: pointer;
     color: inherit;
     /* Inherit theme color logic if applied, but layout separates it */
@@ -140,8 +139,8 @@
 }
 
 .title-dropdown-item {
-    padding: 12px 16px;
-    font-size: 16px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
     color: #333;
     font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
@@ -162,8 +161,8 @@
     cursor: pointer;
     font-family: 'GmarketSans', sans-serif;
     font-weight: 800;
-    font-size: 18px;
-    margin-bottom: 30px;
+    font-size: 1.375rem;
+    margin-bottom: 1.875rem;
     /* Adjust spacing before desc */
 }
 
@@ -188,8 +187,8 @@
 }
 
 .dropdown-item {
-    padding: 12px 16px;
-    font-size: 16px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
     color: #333;
     font-family: 'Pretendard Variable', sans-serif;
     font-weight: 500;
@@ -212,15 +211,15 @@
 .detail-main-category {
     font-family: 'GmarketSans', sans-serif;
     font-weight: 900;
-    font-size: 18px;
+    font-size: 1.25rem;
     text-decoration: underline;
     cursor: pointer;
 }
 
 .detail-desc {
-    font-size: 13px;
+    font-size: 0.875rem;
     color: #888;
-    margin-bottom: 30px;
+    margin-bottom: 1.875rem;
 }
 
 /* Theme Colors */
@@ -249,9 +248,9 @@
 
 .detail-card-title {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 16px;
+    font-size: 1.25rem;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
     color: #333;
 }
 
@@ -262,9 +261,9 @@
 
 .middle-cat-header {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 18px;
+    font-size: 1.25rem;
     font-weight: 900;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
     color: #242424;
 }
 
@@ -285,11 +284,11 @@
 }
 
 .cat-chip {
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid #ddd;
+    padding: 0.5rem 1rem;
+    border-radius: 1.25rem;
+    border: 0.0625rem solid #ddd;
     background: white;
-    font-size: 13px;
+    font-size: 1rem;
     color: #666;
     white-space: nowrap;
     cursor: pointer;
@@ -354,5 +353,18 @@
     justify-content: center;
     padding: 40px 0;
     gap: 12px;
+    gap: 12px;
     color: #bbb;
+}
+
+@media (max-width: 64em) {
+    .detail-container {
+        padding: 1.5rem 1rem 5rem;
+    }
+
+    .result-header {
+        margin: -1.5rem -1rem 1.5rem -1rem;
+        padding: 1rem 1rem;
+        width: calc(100% + 2rem);
+    }
 }

@@ -19,25 +19,26 @@
     width: 100%;
 }
 
+/* Title */
 .suggest-form-title-section {
-    margin-bottom: 40px;
+    margin-bottom: 2.5rem;
 }
 
 .suggest-form-title {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: bold;
     color: #E6235A;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
 }
 
 .suggest-form-subtitle {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 1.4rem;
+    font-size: 1.375rem;
     font-weight: 700;
     color: #242424;
     line-height: 1.4;
-    margin-bottom: 10px;
+    margin-bottom: 0.625rem;
 }
 
 .suggest-form-desc {
@@ -51,13 +52,13 @@
 .form-section {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 2rem;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0.75rem;
 }
 
 .form-label {
@@ -116,9 +117,9 @@
 
 .char-count {
     text-align: right;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     color: #888;
-    margin-top: 4px;
+    margin-top: 0.25rem;
 }
 
 /* Location Row */

@@ -14,16 +14,17 @@
 
 /* Question Styles */
 .question-item {
-    margin-bottom: 48px;
+    margin-bottom: 3rem;
+    padding-top: 2rem;
 }
 
 .question-text {
     display: flex;
-    font-size: 1.0625rem;
+    font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.5;
     color: #111;
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
     word-break: keep-all;
 }
 
@@ -31,17 +32,16 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 24px;
-    height: 24px;
+    min-width: 1.75rem;
+    height: 1.75rem;
     background-color: #111;
     color: #fff;
     border-radius: 50%;
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 700;
-    margin-right: 8px;
+    margin-right: 0.5rem;
     flex-shrink: 0;
-    margin-top: 2px;
-    /* Visual alignment */
+    margin-top: 0.125rem;
 }
 
 /* Unified Layout Styles (match DiagnosisStep1.css) */
@@ -49,30 +49,28 @@
     height: 60px;
     display: flex;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 24px;
     background-color: #fff;
+    margin-bottom: 20px;
 }
 
 .step-content {
     flex: 1;
     overflow-y: auto;
-    padding: 24px;
+    padding: 0 24px;
 }
 
 .step-top-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    margin-top: 10px;
+    margin-bottom: 2.5rem;
+    margin-top: 0;
 }
 
 .step-main-title {
     font-size: 1.75rem;
-    font-weight: 900;
+    font-weight: 700;
     color: #E6235A;
-    margin: 0;
-    line-height: 1;
+    margin-bottom: 1.25rem;
+    line-height: 1.2;
     font-family: 'GmarketSans', sans-serif;
 }
 
@@ -87,44 +85,38 @@
 .progress-bar-fill {
     height: 100%;
     background-color: #8B1F54;
-    /* width is set inline */
 }
 
 .step-title {
-    font-size: 1.25rem;
-    font-weight: 800;
+    font-size: 1.375rem;
+    font-weight: 700;
     color: #242424;
-    margin-bottom: 12px;
+    margin-bottom: 0.625rem;
     font-family: 'GmarketSans', sans-serif;
+    line-height: 1.4;
 }
 
-/* Legacy styles kept below if needed, but overridden by above structure */
-
 .description {
-    font-size: 0.875rem;
-    color: #666;
+    font-size: 1rem;
+    color: #888;
     line-height: 1.5;
-    margin-bottom: 24px;
+    margin-bottom: 0;
+    font-weight: 400;
 }
 
 /* Rating Slider */
 .rating-slider-container {
     position: relative;
     padding: 20px 0 40px;
-    /* Space for labels */
     width: 90%;
     margin: 0 auto;
-    /* Ensure padding helps touch target */
 }
 
 .slider-bg-line {
     position: absolute;
     top: 28px;
-    /* Center of the radio buttons (approx) */
     left: 10px;
-    /* Offset for first circle center */
     right: 10px;
-    /* Offset for last circle center */
     height: 2px;
     background-color: #E5E5E5;
     z-index: 1;
@@ -181,11 +173,9 @@
     position: absolute;
     transform: translateX(-50%);
     white-space: nowrap;
-    /* For <br/> support with nowrap */
     line-height: 1.2;
 }
 
-/* Specific positioning for 3 labels based on 5 steps */
 .slider-labels span:nth-child(1) {
     left: 0%;
     padding-left: 10px;
@@ -200,7 +190,7 @@
     padding-right: 10px;
 }
 
-/* Footer (Copied from BigCategory.css for consistency) */
+/* Footer */
 .sticky-footer {
     position: fixed;
     bottom: 0;
@@ -240,4 +230,38 @@
 
 .btn-next.active {
     background-color: #E6235A;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 64em) {
+    .step-header {
+        padding: 0 1rem;
+    }
+
+    .step-content {
+        padding: 1.25rem 1rem 5rem;
+    }
+
+    .step-main-title {
+        font-size: 1.25rem;
+    }
+
+    .step-title {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .question-text {
+        font-size: 1rem;
+    }
+
+    .question-number {
+        transform: scale(0.85);
+        margin-top: 0;
+    }
+
+    .sticky-footer {
+        padding: 1rem 1rem 1.5rem;
+        max-width: 100%;
+    }
 }

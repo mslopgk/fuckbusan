@@ -7,6 +7,14 @@ const ExpertDiagnosisDetail = ({ type, data, onBack, onHome, onDetailFacility, o
     const isZone = type === 'zone';
     const isPerson = type === 'person';
 
+    // Force full width layout
+    useEffect(() => {
+        document.body.classList.add('layout-full-width');
+        return () => {
+            document.body.classList.remove('layout-full-width');
+        };
+    }, []);
+
     let themeClass = '';
     let mainTitle = '';
     let themeColor = '';
@@ -91,7 +99,7 @@ const ExpertDiagnosisDetail = ({ type, data, onBack, onHome, onDetailFacility, o
         <div className={`expert-detail-container ${themeClass}`}>
 
             {/* Header */}
-            <div className="expert-header">
+            <div className="result-header">
                 <button className="icon-btn" onClick={onBack}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -108,22 +116,24 @@ const ExpertDiagnosisDetail = ({ type, data, onBack, onHome, onDetailFacility, o
             </div>
 
             {/* Page Title Dropdown */}
-            <div className="expert-page-title" onClick={() => setIsTitleDropdownOpen(!isTitleDropdownOpen)}>
-                {mainTitle}
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={themeColor} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '8px' }}>
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-            </div>
-            {isTitleDropdownOpen && (
-                <div style={{
-                    position: 'absolute', top: '120px', left: '20px', background: 'white', border: '1px solid #eee',
-                    borderRadius: '8px', padding: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 20
-                }}>
-                    <div className="dropdown-item" onClick={() => { setIsTitleDropdownOpen(false); onDetailFacility(); }}>시설물별 세부 정보</div>
-                    <div className="dropdown-item" onClick={() => { setIsTitleDropdownOpen(false); onDetailZone(); }}>구역별 세부 정보</div>
-                    <div className="dropdown-item" onClick={() => { setIsTitleDropdownOpen(false); onDetailPerson(); }}>인원별 세부 정보</div>
+            <div className="expert-title-wrapper" style={{ position: 'relative', width: 'fit-content' }}>
+                <div className="expert-page-title" onClick={() => setIsTitleDropdownOpen(!isTitleDropdownOpen)} style={{ marginBottom: isTitleDropdownOpen ? '0' : '1.5rem' }}>
+                    {mainTitle}
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={themeColor} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '8px' }}>
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
                 </div>
-            )}
+                {isTitleDropdownOpen && (
+                    <div style={{
+                        position: 'absolute', top: '100%', left: '0', background: 'white', border: '1px solid #eee',
+                        borderRadius: '8px', padding: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 20, minWidth: '200px', marginBottom: '1.5rem'
+                    }}>
+                        <div className="dropdown-item" onClick={() => { setIsTitleDropdownOpen(false); onDetailFacility(); }}>시설물별 세부 정보</div>
+                        <div className="dropdown-item" onClick={() => { setIsTitleDropdownOpen(false); onDetailZone(); }}>구역별 세부 정보</div>
+                        <div className="dropdown-item" onClick={() => { setIsTitleDropdownOpen(false); onDetailPerson(); }}>인원별 세부 정보</div>
+                    </div>
+                )}
+            </div>
 
             {/* Address & Big Category Selection */}
             <div className="title-block">

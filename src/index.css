@@ -12,7 +12,8 @@
 
 /* Override body alignment for Admin and Admin Auth */
 body:has(.admin-container),
-body:has(.auth-container) {
+body:has(.auth-container),
+body.layout-full-width {
   display: block;
   place-items: start;
   justify-content: start;
@@ -22,7 +23,8 @@ body:has(.auth-container) {
 /* Override root constraint for Admin and Admin Auth */
 /* Override root constraint for Admin and Admin Auth */
 #root:has(.admin-container),
-#root:has(.auth-container) {
+#root:has(.auth-container),
+body.layout-full-width #root {
   max-width: none;
   width: 100%;
   margin: 0;

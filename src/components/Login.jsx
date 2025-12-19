@@ -14,6 +14,14 @@ const Login = ({ onBack, onSignup }) => {
     const API_URL = import.meta.env.VITE_API_URL;
     console.log("Login Component API_URL:", API_URL);
 
+    // Force full width layout to match other desktop pages
+    React.useEffect(() => {
+        document.body.classList.add('layout-full-width');
+        return () => {
+            document.body.classList.remove('layout-full-width');
+        };
+    }, []);
+
     // Health Check on Mount
     React.useEffect(() => {
         const checkHealth = async () => {

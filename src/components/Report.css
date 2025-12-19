@@ -1,13 +1,12 @@
 /* Report Page Styles */
 .report-container {
-    padding: 20px 24px;
+    padding: 20px 0;
     min-height: 100vh;
     background-color: #fff;
     font-family: 'Pretendard Variable', sans-serif;
     display: flex;
     flex-direction: column;
     padding-bottom: 120px;
-    /* Space for fixed button, matching ReportForm */
     max-width: 1280px;
     margin: 0 auto;
     position: relative;
@@ -21,28 +20,30 @@
     align-items: center;
     margin-bottom: 20px;
     width: 100%;
+    padding: 0 24px;
 }
 
 /* Title Section */
 .report-title-section {
-    margin-bottom: 40px;
+    margin-bottom: 2.5rem;
+    padding: 0 24px;
 }
 
 .report-title {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: bold;
     color: #E6235A;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
 }
 
 .report-subtitle-main {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 1.4rem;
+    font-size: 1.375rem;
     font-weight: 700;
     color: #242424;
     line-height: 1.4;
-    margin-bottom: 10px;
+    margin-bottom: 0.625rem;
 }
 
 .report-subtitle-desc {
@@ -56,12 +57,14 @@
     font-size: 0.9rem;
     color: #666;
     margin-bottom: 12px;
+    padding: 0 24px;
 }
 
 .selection-group {
     display: flex;
     gap: 12px;
     width: 100%;
+    padding: 0 24px;
 }
 
 .select-btn {

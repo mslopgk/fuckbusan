@@ -22,6 +22,9 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
 
     // Fetch Data
     useEffect(() => {
+        // Force full width layout
+        document.body.classList.add('layout-full-width');
+
         const fetchData = async () => {
             setLoading(true);
             try {
@@ -90,6 +93,13 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
         };
         fetchData();
     }, [type, data]);
+
+    // Cleanup full width layout
+    useEffect(() => {
+        return () => {
+            document.body.classList.remove('layout-full-width');
+        };
+    }, []);
 
     // Handle Big Category Change
     const handleBigChange = (e) => {
@@ -299,7 +309,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                             fontWeight: 300,
                             display: 'flex',
                             alignItems: 'flex-start',
-                            fontSize: '17px',
+                            fontSize: '1.0625rem',
                             lineHeight: 1.5,
                             color: '#111',
                             marginBottom: '24px',
@@ -314,7 +324,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                                 width: '24px',
                                 height: '24px',
                                 borderRadius: '50%',
-                                fontSize: '14px',
+                                fontSize: '0.875rem',
                                 fontWeight: 500,
                                 marginRight: '8px',
                                 flexShrink: 0,
@@ -374,7 +384,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                                             ></span>
                                             <span style={{
                                                 marginTop: '8px',
-                                                fontSize: '14px',
+                                                fontSize: '0.875rem',
                                                 fontWeight: '500',
                                                 color: '#333',
                                                 textAlign: 'center'

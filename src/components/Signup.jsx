@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Signup.css';
 import './Login.css'; // Reuse common button/input styles
 
 const Signup = ({ onBack, onNavigate }) => {
     const [userType, setUserType] = useState('general'); // 'general' | 'expert'
+
+    // Force full width layout
+    useEffect(() => {
+        document.body.classList.add('layout-full-width');
+        return () => {
+            document.body.classList.remove('layout-full-width');
+        };
+    }, []);
 
     const [formData, setFormData] = useState({
         id: '',

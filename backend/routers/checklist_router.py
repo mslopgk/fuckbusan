@@ -67,7 +67,7 @@ def get_checklist(
     skip: int = 0, 
     limit: int = 100, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     # For now, return all or filter by user?
     # Usually users see their own or public ones?

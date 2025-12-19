@@ -8,6 +8,14 @@ const DiagnosisDetail = ({ type, data, onBack, onHome, onDetailFacility, onDetai
     const isZone = type === 'zone';
     const isPerson = type === 'person';
 
+    // Force full width layout
+    useEffect(() => {
+        document.body.classList.add('layout-full-width');
+        return () => {
+            document.body.classList.remove('layout-full-width');
+        };
+    }, []);
+
     let themeClass = '';
     let mainTitle = '';
     let subTitlePart = '';
@@ -108,7 +116,7 @@ const DiagnosisDetail = ({ type, data, onBack, onHome, onDetailFacility, onDetai
     return (
         <div className={`detail-container ${themeClass}`}>
             {/* Header */}
-            <div className="detail-header">
+            <div className="result-header">
                 <button className="icon-btn" onClick={onBack}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="19" y1="12" x2="5" y2="12"></line>

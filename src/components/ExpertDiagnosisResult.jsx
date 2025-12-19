@@ -7,14 +7,18 @@ const ExpertDiagnosisResult = ({ onBack, onHome, onDetailFacility, onDetailZone,
     useEffect(() => {
         if (!isEmbedded) {
             window.scrollTo(0, 0);
+            document.body.classList.add('layout-full-width');
         }
+        return () => {
+            document.body.classList.remove('layout-full-width');
+        };
     }, [isEmbedded]);
 
     return (
         <div className={`expert-result-container ${isEmbedded ? 'embedded' : ''}`}>
             {/* Header */}
             {!isEmbedded && (
-                <div className="expert-header">
+                <div className="result-header">
                     <button className="icon-btn" onClick={onBack}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="19" y1="12" x2="5" y2="12"></line>

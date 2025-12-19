@@ -16,28 +16,28 @@
 .page-title-purple {
     /* Keeps legacy compatibility if used elsewhere, but mainly replaced */
     font-family: 'GmarketSans', sans-serif;
-    font-size: 28px;
+    font-size: 1.75rem;
     font-weight: 900;
     color: #542AA3;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
 }
 
 .page-title-expert {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 28px;
+    font-size: 1.75rem;
     font-weight: 900;
     color: #542AA3;
     /* Expert Purple */
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
 }
 
 .page-title-general {
     font-family: 'GmarketSans', sans-serif;
-    font-size: 28px;
+    font-size: 1.75rem;
     font-weight: 900;
     color: #E6235A;
     /* General Pink */
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
 }
 
 .sub-title-wrapper {
@@ -47,12 +47,12 @@
 .sub-title {
     font-weight: 800;
     color: #111;
-    font-size: 16px;
-    margin-bottom: 8px;
+    font-size: 1.375rem;
+    margin-bottom: 0.5rem;
 }
 
 .sub-desc {
-    font-size: 13px;
+    font-size: 1rem;
     color: #888;
     line-height: 1.5;
 }
@@ -62,9 +62,9 @@
 }
 
 .field-label {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: #666;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
 }
 
 /* Image Preview */
@@ -79,9 +79,9 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
+    font-size: 0.875rem;
     color: #333;
-    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
 }
 
 .remove-img-btn {
@@ -119,9 +119,9 @@
     height: 100%;
     border: 1px solid #333;
     border-radius: 4px;
-    padding: 0 16px;
+    padding: 0 1rem;
     font-weight: 700;
-    font-size: 15px;
+    font-size: 0.9375rem;
     appearance: none;
     /* Remove default arrow */
     background: transparent;
@@ -215,7 +215,7 @@
 }
 
 .mid-name {
-    font-size: 14px;
+    font-size: 0.875rem;
     color: #666;
 }
 
@@ -255,16 +255,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
 }
 
 .q-text {
     font-weight: 700;
-    font-size: 16px;
+    font-size: 1rem;
     color: #111;
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
     line-height: 1.4;
     word-break: keep-all;
 }
@@ -279,7 +279,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 14px;
+    font-size: 0.875rem;
     color: #666;
     cursor: pointer;
 }
@@ -322,7 +322,7 @@
 /* Question Sliders to Match CheckList.jsx */
 .rating-slider-container {
     position: relative;
-    padding: 20px 0 40px;
+    padding: 1.25rem 0 2.5rem;
     /* Space for labels */
     width: 90%;
     margin: 0 auto;

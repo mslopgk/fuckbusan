@@ -25,7 +25,7 @@
 .dc-type-badge {
     padding: 4px 10px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 700;
 }
 
@@ -46,7 +46,7 @@
 }
 
 .dc-date {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: #999;
 }
 
@@ -85,13 +85,13 @@
 .dc-title {
     font-family: 'GmarketSans', sans-serif;
     font-weight: 800;
-    font-size: 16px;
+    font-size: 1rem;
     color: #242424;
     margin-bottom: 6px;
 }
 
 .dc-score-large {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: 900;
     color: #E6235A;
     font-family: 'GmarketSans', sans-serif;
@@ -99,7 +99,7 @@
 }
 
 .dc-result {
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 800;
     padding: 4px 0;
     margin-bottom: 8px;
@@ -127,12 +127,12 @@
 }
 
 .dc-coord-label {
-    font-size: 10px;
+    font-size: 0.625rem;
     color: #aaa;
 }
 
 .dc-coord-val {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: #666;
     font-family: monospace;
 }
@@ -155,7 +155,7 @@
 }
 
 .dc-score-label {
-    font-size: 10px;
+    font-size: 0.625rem;
     color: #888;
     text-align: center;
     margin-bottom: 2px;
@@ -164,7 +164,7 @@
 }
 
 .dc-score-val {
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-weight: 700;
     color: #333;
 }
@@ -178,7 +178,7 @@
 }
 
 .dc-desc {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: #666;
     line-height: 1.5;
     display: -webkit-box;

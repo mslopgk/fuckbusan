@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Report.css';
 import ReportForm from './ReportForm';
 import SuggestForm from './SuggestForm';
@@ -7,6 +7,14 @@ import SuggestSuccess from './SuggestSuccess';
 
 const Report = ({ onBack, onNext }) => {
     const [selectedType, setSelectedType] = useState(null); // 'report' or 'suggest'
+
+    // Force full width layout
+    useEffect(() => {
+        document.body.classList.add('layout-full-width');
+        return () => {
+            document.body.classList.remove('layout-full-width');
+        };
+    }, []);
 
     // New State for completion view
     const [view, setView] = useState('selection'); // 'selection' | 'form' | 'success'

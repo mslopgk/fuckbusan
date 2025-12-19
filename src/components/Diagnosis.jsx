@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Diagnosis.css';
 import { MapContainer, TileLayer, Marker, CircleMarker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -33,6 +33,14 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
     const [addressInfo, setAddressInfo] = useState(null); // { road, jibun, zip, placeName }
     const [isLoadingAddress, setIsLoadingAddress] = useState(false);
     const [customPin, setCustomPin] = useState(null);
+
+    // Force full width layout
+    useEffect(() => {
+        document.body.classList.add('layout-full-width');
+        return () => {
+            document.body.classList.remove('layout-full-width');
+        };
+    }, []);
 
     // Initial Geolocation
     React.useEffect(() => {
