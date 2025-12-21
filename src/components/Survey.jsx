@@ -199,7 +199,7 @@ const Survey = ({ onBack, onComplete }) => {
 
 
     return (
-        <div className="container">
+        <div className="survey-container">
             {/* Header */}
             <div className="step-header">
                 <button onClick={handlePrev} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
