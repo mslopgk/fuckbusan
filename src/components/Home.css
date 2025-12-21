@@ -507,11 +507,15 @@
     top: auto;
     left: auto;
     transform: none;
-    width: 100%;
-    max-width: 500px;
+    width: 130%;
+    /* Make wider to zoom in map */
+    max-width: 600px;
+    /* Allow growing larger */
     height: 400px;
     /* Fixed height for map visibility */
     z-index: 2;
+    flex-shrink: 0;
+    /* Prevent shrinking in flex container */
 }
 
 
