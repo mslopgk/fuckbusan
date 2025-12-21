@@ -77,7 +77,7 @@ const BigCategory = ({ data, onNext, initialBig, initialMid, onBack, color = '#E
     };
 
     return (
-        <div className="container">
+        <div className="big-category-container">
             {/* Header */}
             <div className="step-header">
                 <button onClick={onBack} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>

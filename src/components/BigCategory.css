@@ -1,5 +1,7 @@
 /* Main Container */
-.container {
+.big-category-container {
+    width: 100%;
+    /* Ensure full width up to max-width */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -11,6 +13,8 @@
     margin: 0 auto;
     position: relative;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    /* Match others */
 }
 
 /* Header */
@@ -137,6 +141,14 @@
     background-color: #fff;
     transition: all 0.2s ease;
     position: relative;
+    display: flex;
+    /* Ensure flex layout */
+    flex-direction: column;
+    /* Stack image and text vertically */
+    height: auto;
+    /* Allow height to grow */
+    min-height: 100%;
+    /* Fill grid cell */
     /* For check icon positioning if needed, though check icon is inside image-box */
 }
 
@@ -176,13 +188,23 @@
 }
 
 .category-card-name {
-    padding: 16px 0;
+    padding: 12px 4px;
+    /* Reduced side padding slightly, vertical padding consistent */
     text-align: center;
     font-size: 0.875rem;
     color: #666;
     border-top: 1px solid #eee;
     background-color: #fff;
     transition: all 0.2s ease;
+    word-break: keep-all;
+    /* Prevent awkward breaks */
+    flex-grow: 1;
+    /* Allow text area to expand if needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    /* Ensure minimum height for touch targets and visibility */
 }
 
 .category-card.selected .category-card-name {

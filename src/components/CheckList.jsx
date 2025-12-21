@@ -14,17 +14,19 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
     // State to store ratings keys are index of question, value is rating (1-5 for general, 1-3 for expert)
     const [ratings, setRatings] = useState({});
 
-    // Force full width layout
+    // Scroll to top when step changes
     useEffect(() => {
-        document.body.classList.add('layout-full-width');
+        window.scrollTo(0, 0);
+    }, []);
 
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 20);
-        };
+    const handleScroll = () => {
+        setScrolled(window.scrollY > 20);
+    };
+
+    useEffect(() => {
         window.addEventListener('scroll', handleScroll);
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            document.body.classList.remove('layout-full-width');
         };
     }, []);
 
@@ -47,7 +49,7 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
     ];
 
     return (
-        <div className="container">
+        <div className="checklist-container">
             {/* Header */}
             <div className="step-header">
                 <button className="back-btn" onClick={onPrev} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>

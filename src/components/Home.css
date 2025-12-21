@@ -469,8 +469,8 @@
     /* Full width for responsiveness */
     min-width: 340px;
     /* Prevent map from becoming too small on narrow screens */
-    left: 48%;
-    /* Moved slightly right (45 -> 48) */
+    left: 50%;
+    /* Moved to strictly center (was 48%) */
     transform: translateX(-50%);
     top: 45%;
     /* Moved down slightly (43 -> 45) */
@@ -512,8 +512,6 @@
     height: 400px;
     /* Fixed height for map visibility */
     z-index: 2;
-    margin-left: -20px;
-    margin-right: -20px;
 }
 
 

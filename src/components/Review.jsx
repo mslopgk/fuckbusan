@@ -96,7 +96,7 @@ const Review = ({ onPrev, onNext, color = '#E6235A', progressBarColor, diagnosis
     };
 
     return (
-        <div className="container">
+        <div className="review-container">
             {/* Header */}
             <div className="step-header">
                 <button onClick={onPrev} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
