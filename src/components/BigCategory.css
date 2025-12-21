@@ -129,7 +129,7 @@
     gap: 12px;
 }
 
-.card {
+.category-card {
     border: 1px solid #EEEEEE;
     border-radius: 8px;
     overflow: hidden;
@@ -140,14 +140,14 @@
     /* For check icon positioning if needed, though check icon is inside image-box */
 }
 
-.card.selected {
+.category-card.selected {
     border: 3px solid #070707;
     /* Thick black border */
     background-color: #070707;
     /* Dark background */
 }
 
-.card-image-box {
+.category-card-image-box {
     width: 100%;
     aspect-ratio: 1;
     /* Keep square */
@@ -168,14 +168,14 @@
     height: 24px;
 }
 
-.card-image-box img {
+.category-card-image-box img {
     width: 100%;
     height: 100%;
     /* Fill the box */
     object-fit: contain;
 }
 
-.card-name {
+.category-card-name {
     padding: 16px 0;
     text-align: center;
     font-size: 0.875rem;
@@ -185,7 +185,7 @@
     transition: all 0.2s ease;
 }
 
-.card.selected .card-name {
+.category-card.selected .category-card-name {
     color: #ffffff !important;
     /* White text */
     background-color: #070707;
@@ -238,3 +238,20 @@
 }
 
 /* If selected, maybe change next button color? Leaving as gray for now unless logic added */
+
+@media (min-width: 768px) {
+    .grid-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .category-card-image-box {
+        /* On desktop, keep ratio but maybe adjust if needed */
+        aspect-ratio: 1;
+    }
+}
+
+.category-card-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain !important;
+}

@@ -59,6 +59,8 @@
     flex: 1;
     overflow-y: auto;
     padding: 1.5rem;
+    padding-bottom: 120px;
+    /* Ensure content is not hidden behind fixed footer */
 }
 
 .step-title {

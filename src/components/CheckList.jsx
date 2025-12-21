@@ -14,13 +14,6 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
     // State to store ratings keys are index of question, value is rating (1-5 for general, 1-3 for expert)
     const [ratings, setRatings] = useState({});
 
-    const [currentStep, setCurrentStep] = useState(0);
-
-    // Scroll to top when step changes
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [currentStep]);
-
     // Force full width layout
     useEffect(() => {
         document.body.classList.add('layout-full-width');
@@ -35,33 +28,15 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
         };
     }, []);
 
-    // Questions passed via props
-    // const questions = [ ... ];
-
     const handleRatingChange = (qIndex, value) => {
         setRatings(prev => ({ ...prev, [qIndex]: value }));
     };
 
-    const handlePrev = () => {
-        if (currentStep > 0) {
-            setCurrentStep(prev => prev - 1);
-        } else {
-            onPrev();
-        }
+    const handleSubmit = () => {
+        onNext(ratings);
     };
 
-    const handleNext = () => {
-        if (currentStep < questions.length - 1) {
-            setCurrentStep(prev => prev + 1);
-        } else {
-            onNext(ratings);
-        }
-    };
-
-    // Check if current question is answered
-    const isCurrentAnswered = ratings[currentStep] !== undefined;
-
-    // Check if everything is answered (for final submit safety, though step logic enforces it)
+    // Check if everything is answered (for final submit safety)
     const allAnswered = questions && questions.length > 0 && Object.keys(ratings).length === questions.length;
 
     // Expert Mode Options: Unsuitable, Suitable, N/A
@@ -75,7 +50,7 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
         <div className="container">
             {/* Header */}
             <div className="step-header">
-                <button className="back-btn" onClick={handlePrev} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+                <button className="back-btn" onClick={onPrev} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="19" y1="12" x2="5" y2="12"></line>
                         <polyline points="12 19 5 12 12 5"></polyline>
@@ -85,17 +60,27 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
 
             {/* Content */}
             <main className="step-content">
-                <div className="step-top-section">
-                    <div className="step-main-title" style={{ color: color }}>진단하기</div>
-                    <div className="step-title">{isExpert ? "3) 진단하기" : "3) 체크리스트 작성"}</div>
-                    <p className="description">
-                        {isExpert ? "해당 시설물의 상태를 진단해 주세요." : "해당 시설물의 만족도를 평가해 주세요."}
-                    </p>
+                <div className="step-top-section-wrapper" style={{ marginBottom: '40px', marginTop: '10px' }}>
+                    {/* Top Row: Main Title and Progress */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                        <div className="step-main-title" style={{ color: color, marginBottom: 0 }}>진단하기</div>
+                        <div className="progress-bar-container">
+                            <div className="progress-bar-fill" style={{ width: '75%', backgroundColor: progressBarColor || color }}></div>
+                        </div>
+                    </div>
+
+                    {/* Bottom Column: Subtitle and Description */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div className="step-title" style={{ marginBottom: 0 }}>{isExpert ? "3) 진단하기" : "3) 체크리스트 작성"}</div>
+                        <p className="description" style={{ marginBottom: 0 }}>
+                            {isExpert ? "해당 시설물의 상태를 진단해 주세요." : "해당 시설물의 만족도를 평가해 주세요."}
+                        </p>
+                    </div>
                 </div>
 
                 <div className="questions-list">
-                    {questions.length > 0 && (
-                        <div key={currentStep} className="question-item">
+                    {questions.map((question, index) => (
+                        <div key={index} className="question-item">
                             <h3 className="question-text" style={{
                                 fontFamily: 'GmarketSans, sans-serif',
                                 fontWeight: 300,
@@ -117,10 +102,10 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
                                     flexShrink: 0,
                                     marginTop: '4px' // Push number down further (approx 4px for 17px text line-height)
                                 }}>
-                                    {currentStep + 1}
+                                    {index + 1}
                                 </span>
                                 <span style={{ paddingTop: '0px' }}>
-                                    {questions[currentStep]}
+                                    {question}
                                 </span>
                             </h3>
 
@@ -137,14 +122,14 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
                                             <label key={opt.value} className="radio-label">
                                                 <input
                                                     type="radio"
-                                                    name={`question-${currentStep}`}
+                                                    name={`question-${index}`}
                                                     value={opt.value}
-                                                    checked={ratings[currentStep] === opt.value}
-                                                    onChange={() => handleRatingChange(currentStep, opt.value)}
+                                                    checked={ratings[index] === opt.value}
+                                                    onChange={() => handleRatingChange(index, opt.value)}
                                                 />
                                                 <span
-                                                    className={`custom-radio ${ratings[currentStep] === opt.value ? 'checked' : ''}`}
-                                                    style={ratings[currentStep] === opt.value ? { backgroundColor: color, borderColor: color } : {}}
+                                                    className={`custom-radio ${ratings[index] === opt.value ? 'checked' : ''}`}
+                                                    style={ratings[index] === opt.value ? { backgroundColor: color, borderColor: color } : {}}
                                                 ></span>
                                                 <span style={{
                                                     marginTop: '8px',
@@ -175,14 +160,14 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
                                             <label key={val} className="radio-label">
                                                 <input
                                                     type="radio"
-                                                    name={`question-${currentStep}`}
+                                                    name={`question-${index}`}
                                                     value={val}
-                                                    checked={ratings[currentStep] === val}
-                                                    onChange={() => handleRatingChange(currentStep, val)}
+                                                    checked={ratings[index] === val}
+                                                    onChange={() => handleRatingChange(index, val)}
                                                 />
                                                 <span
-                                                    className={`custom-radio ${ratings[currentStep] === val ? 'checked' : ''}`}
-                                                    style={ratings[currentStep] === val ? { backgroundColor: color, borderColor: color } : {}}
+                                                    className={`custom-radio ${ratings[index] === val ? 'checked' : ''}`}
+                                                    style={ratings[index] === val ? { backgroundColor: color, borderColor: color } : {}}
                                                 ></span>
                                             </label>
                                         ))}
@@ -190,22 +175,22 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
                                 </div>
                             )}
                         </div>
-                    )}
+                    ))}
                 </div>
             </main>
 
             {/* Footer */}
             <footer className="sticky-footer">
-                <button className="btn btn-prev" onClick={handlePrev}>
-                    {currentStep === 0 ? "이전" : "이전"}
+                <button className="btn btn-prev" onClick={onPrev}>
+                    이전
                 </button>
                 <button
-                    className={`btn btn-next ${isCurrentAnswered ? 'active' : ''}`}
-                    disabled={!isCurrentAnswered}
-                    onClick={handleNext}
-                    style={isCurrentAnswered ? { backgroundColor: color } : {}}
+                    className={`btn btn-next ${allAnswered ? 'active' : ''}`}
+                    disabled={!allAnswered}
+                    onClick={handleSubmit}
+                    style={allAnswered ? { backgroundColor: color } : {}}
                 >
-                    {currentStep === questions.length - 1 ? "제출하기" : "다음"}
+                    다음
                 </button>
             </footer>
         </div>

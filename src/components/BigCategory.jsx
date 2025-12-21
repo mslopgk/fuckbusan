@@ -136,10 +136,10 @@ const BigCategory = ({ data, onNext, initialBig, initialMid, onBack, color = '#E
                                 return (
                                     <div
                                         key={midName}
-                                        className={`card ${selectedMid === midName ? 'selected' : ''}`}
+                                        className={`category-card ${selectedMid === midName ? 'selected' : ''}`}
                                         onClick={() => setSelectedMid(midName)}
                                     >
-                                        <div className="card-image-box">
+                                        <div className="category-card-image-box">
                                             {imgPath ? (
                                                 <img src={imgPath} alt={midName} />
                                             ) : (
@@ -156,7 +156,7 @@ const BigCategory = ({ data, onNext, initialBig, initialMid, onBack, color = '#E
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="card-name" style={selectedMid === midName ? { color: color, fontWeight: 'bold' } : {}}>{midName}</div>
+                                        <div className="category-card-name" style={selectedMid === midName ? { color: color, fontWeight: 'bold' } : {}}>{midName}</div>
                                     </div>
                                 );
                             })}
