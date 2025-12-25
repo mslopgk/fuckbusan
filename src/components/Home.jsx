@@ -24,8 +24,8 @@ const Home = ({ onNavigate }) => {
             {/* Header (Mobile & Desktop) */}
             <header className="header mobile-header">
                 <div className="logo-text">
-                    <img src="/assets/logopic.png" alt="logo" style={{ height: '40px', marginRight: '10px' }} />
-                    <div>
+                    <img src="/assets/designLogo.png" alt="logo" style={{ height: '40px', marginRight: '0px', transform: 'translateY(-2px)' }} />
+                    <div style={{ marginTop: '6px' }}>
                         <div style={{ lineHeight: '1' }}>부산참여플랫폼</div>
                         <div style={{ fontSize: '10px', color: '#888', fontWeight: 'normal' }}>Busan Citizen-driven design</div>
                     </div>
@@ -45,8 +45,8 @@ const Home = ({ onNavigate }) => {
             <header className="header desktop-header">
                 <div className="desktop-header-inner">
                     <div className="logo-text">
-                        <img src="/assets/logopic.png" alt="logo" style={{ height: '40px', marginRight: '10px' }} />
-                        <div>
+                        <img src="/assets/designLogo.png" alt="logo" style={{ height: '40px', marginRight: '0px', transform: 'translateY(-2px)' }} />
+                        <div style={{ marginTop: '6px' }}>
                             <div style={{ lineHeight: '1' }}>부산참여플랫폼</div>
                             <div style={{ fontSize: '10px', color: '#888', fontWeight: 'normal' }}>Busan Citizen-driven design</div>
                         </div>
@@ -250,8 +250,8 @@ const Home = ({ onNavigate }) => {
                 </div>
 
                 <div className="footer-left">
-                    <div className="footer-divider-mobile mobile-only"></div>
-                    <img src="/assets/logowhite.png" alt="Busan Platform" className="footer-logo-main" />
+
+
 
                     <div className="footer-info">
                         이메일 | support@busan-design.kr<br />
