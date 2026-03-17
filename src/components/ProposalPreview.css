@@ -1,0 +1,140 @@
+/* ProposalPreview.css */
+
+.proposal-preview-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+    position: relative;
+    background-color: #fff;
+    max-width: 1280px;
+    margin: 0 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Header (Shared style) */
+.pp-header {
+    min-height: 60px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 1px solid #f5f5f5;
+    background-color: #fff;
+}
+
+.pp-header-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #555555;
+}
+
+/* Body */
+.pp-body {
+    flex: 1;
+    padding: 60px 24px 140px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pp-main-title {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 40px;
+    letter-spacing: -0.5px;
+}
+
+/* Info Card */
+.pp-info-card {
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 28px;
+    padding: 36px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.pp-info-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.pp-info-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.4;
+}
+
+.pp-info-value {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #555;
+    line-height: 1.4;
+    white-space: pre-wrap; /* Preserve line breaks in content */
+}
+
+/* Preview Image in Card */
+.pp-preview-image-container {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.pp-preview-img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+/* Footer Control (Shared style) */
+.pp-footer {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1280px;
+    padding: 16px 20px 32px 20px;
+    background-color: #fff;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+}
+
+.pp-btn-prev {
+    flex: 1;
+    background-color: #e0f5f4;
+    color: #16B5B0;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1.15rem;
+    font-weight: bold;
+    font-family: 'GmarketSans', sans-serif;
+    cursor: pointer;
+}
+
+.pp-btn-submit {
+    flex: 2;
+    background-color: #16B5B0;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1.15rem;
+    font-weight: bold;
+    font-family: 'GmarketSans', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(22, 181, 176, 0.2);
+}

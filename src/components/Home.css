@@ -12,11 +12,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
-    background-color: white;
-    position: sticky;
+    background-color: transparent;
+    position: absolute;
     top: 0;
+    left: 0;
+    width: 100%;
     z-index: 100;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 }
 
 .logo-text {
@@ -34,7 +35,7 @@
 .logo-icon {
     width: 24px;
     height: 24px;
-    background-color: #E6235A;
+    background-color: #16B5B0;
     border-radius: 50%;
 }
 
@@ -64,7 +65,7 @@
 }
 
 .btn-header.signup {
-    background-color: #E6235A;
+    background-color: #16B5B0;
     color: white;
     border-radius: 20px;
     padding: 8px 20px;
@@ -145,7 +146,7 @@
 }
 
 .card.diagnose {
-    background-color: #E6235A;
+    background-color: #16B5B0;
     color: white;
 }
 
@@ -258,7 +259,7 @@
 }
 
 .highlight {
-    color: #E6235A;
+    color: #16B5B0;
 }
 
 .stats-card {
@@ -296,7 +297,7 @@
 }
 
 .bar-value.report {
-    color: #E6235A;
+    color: #16B5B0;
 }
 
 .bar-value.diagnose {
@@ -337,7 +338,7 @@
 }
 
 .bar-fill.report {
-    background: linear-gradient(90deg, #61001B 0%, #E6235A 60%);
+    background: linear-gradient(90deg, #005E59 0%, #16B5B0 60%);
 }
 
 .bar-fill.diagnose {
@@ -386,10 +387,10 @@
 .btn-detail {
     width: fit-content;
     padding: 12px 28px;
-    border: 1.5px solid #E6235A;
+    border: 1.5px solid #16B5B0;
     border-radius: 30px;
     background-color: transparent;
-    color: #E6235A;
+    color: #16B5B0;
     font-family: 'GmarketSans', sans-serif;
     font-weight: 500;
     font-size: 1rem;
@@ -405,7 +406,7 @@
 }
 
 .btn-detail:hover {
-    background-color: rgba(230, 35, 90, 0.05);
+    background-color: rgba(22, 181, 176, 0.05);
 }
 
 /* Hero Section */
@@ -415,8 +416,8 @@
     position: relative;
     background-color: transparent;
     width: 100%;
-    padding: 30px 20px 150px;
-    /* Reduced top padding to move text up */
+    padding: 90px 20px 80px; /* Reduced bottom padding to bring the boundary up */
+    /* Increased top padding to avoid header overlap */
     margin: 0;
     overflow: visible;
     min-height: auto;
@@ -454,7 +455,7 @@
 }
 
 .highlight-red {
-    color: #E6235A;
+    color: #16B5B0;
 }
 
 .hero-subtitle {
@@ -472,8 +473,8 @@
     left: 50%;
     /* Moved to strictly center (was 48%) */
     transform: translateX(-50%);
-    top: 45%;
-    /* Moved down slightly (43 -> 45) */
+    top: 28%;
+    /* Moved up significantly to sit on the background dividing line */
     height: auto;
     z-index: 10;
     display: flex;
@@ -518,6 +519,36 @@
     /* Prevent shrinking in flex container */
 }
 
+@media (max-width: 768px) {
+    .hero-map-container {
+        position: relative; /* Change from absolute so it flows below text */
+        top: auto;
+        left: auto;
+        transform: none;
+        margin-top: -10px; /* Pull it up slightly to sit on the background line */
+        padding-bottom: 20px;
+        /* Prevent scroll bar and center the scaled element */
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+        width: 100%;
+    }
+    .hero-map-overlay {
+        width: 600px; /* Force desktop width */
+        max-width: none; /* Override any max value */
+        height: 400px; /* Force desktop height */
+        margin-left: 0; 
+        
+        /* Scale down the entire map visually so Leaflet zooming and label offsets stay perfectly proportional */
+        transform: scale(0.6); 
+        transform-origin: top center;
+        
+        /* Fix the empty space below caused by scaling (400px visual height becomes 240px) */
+        margin-bottom: -160px;
+        filter: drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.15)); /* Add shadow from reference */
+    }
+}
+
 
 .hero-stats-overlay {
     background: white;
@@ -559,7 +590,7 @@
 }
 
 .hero-stat-item .stat-val.red {
-    color: #E6235A;
+    color: #16B5B0;
 }
 
 
@@ -656,10 +687,10 @@
     margin-top: 20px;
     width: 100%;
     padding: 14px;
-    border: 1.5px solid #E6235A;
+    border: 1.5px solid #16B5B0;
     border-radius: 30px;
     background-color: transparent;
-    color: #E6235A;
+    color: #16B5B0;
     text-align: center;
     font-family: 'GmarketSans', sans-serif;
     font-weight: 500;
@@ -673,7 +704,7 @@
 }
 
 .view-more-btn:hover {
-    background-color: rgba(230, 35, 90, 0.05);
+    background-color: rgba(22, 181, 176, 0.05);
 }
 
 /* News Section */
@@ -731,7 +762,7 @@
 
 /* Guide Section (First Time) */
 .guide-section {
-    background-color: #FFF6F7;
+    background-color: #F0FDFB;
     /* Light Pink Bg */
     border-radius: 16px;
     padding: 30px 24px;
@@ -744,7 +775,7 @@
     font-family: 'GmarketSans', sans-serif;
     font-size: 1.4rem;
     font-weight: 800;
-    color: #E6235A;
+    color: #16B5B0;
     margin-bottom: 12px;
 }
 
@@ -768,8 +799,8 @@
 
 .btn-guide {
     background: transparent;
-    border: 1.5px solid #E6235A;
-    color: #E6235A;
+    border: 1.5px solid #16B5B0;
+    color: #16B5B0;
     padding: 10px 20px;
     border-radius: 20px;
     font-size: 0.9rem;
@@ -786,7 +817,7 @@
 }
 
 .btn-guide:hover {
-    background-color: rgba(230, 35, 90, 0.05);
+    background-color: rgba(22, 181, 176, 0.05);
 }
 
 /* Removed old Map Section Styles */
@@ -938,7 +969,7 @@
 }
 
 .nav-item.active {
-    color: #E6235A;
+    color: #16B5B0;
     /* Updated color */
 }
 
@@ -965,10 +996,9 @@
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 
-    /* Overlap Logic */
-    margin-top: -70px;
-    /* Adjusted down slightly (-80 -> -70) */
-    /* Pull up deeply into the padding area */
+    /* Overlap Logic - Deeply pulled up to center exactly on the division line */
+    margin-top: -140px; 
+    /* Centers it based on the updated bottom padding */
     margin-bottom: 24px;
     position: relative;
     z-index: 10;
@@ -992,7 +1022,7 @@
 }
 
 .category-item.selected {
-    background-color: #E6235A;
+    background-color: #16B5B0;
 }
 
 .cat-icon-wrapper {
@@ -1016,6 +1046,25 @@
 }
 
 .category-item.selected .cat-label {
+    color: white;
+}
+
+/* Full Width "All" Button */
+.all-category-btn {
+    grid-column: 1 / -1; /* Spans all columns in the grid */
+    flex-direction: row; /* Horizontal Icon + Text */
+    background-color: #16B5B0 !important; /* Force Mint Background */
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px; /* Square edges */
+    box-shadow: 0 2px 8px rgba(22, 181, 176, 0.3); /* Subtle mint glow */
+}
+
+.all-category-btn .cat-label {
+    color: white !important;
+}
+
+.all-category-btn .cat-icon-wrapper {
     color: white;
 }
 
@@ -1108,7 +1157,7 @@
 .citizen-arrow {
     width: 28px;
     height: 28px;
-    background-color: #E6235A;
+    background-color: #16B5B0;
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -1255,7 +1304,7 @@
     }
 
     .nav-link:hover {
-        color: #E6235A;
+        color: #16B5B0;
     }
 
     /* --- Hero Section --- */
@@ -1341,7 +1390,7 @@
         background-color: white;
         border-radius: 20px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        margin-top: -60px;
+        margin-top: -100px; /* Center perfectly on desktop boundary */
         position: relative;
         z-index: 10;
         border: 1px solid #f0f0f0;
@@ -1830,7 +1879,7 @@
 
     /* Diagnose Card */
     .action-item.diagnose {
-        background-color: #E6235A;
+        background-color: #16B5B0;
         /* Pink bg */
         color: white;
     }
@@ -1977,7 +2026,7 @@
     }
 
     .category-item.selected {
-        background-color: #E6235A !important;
+        background-color: #16B5B0 !important;
         color: white !important;
     }
 
@@ -2494,7 +2543,7 @@
 }
 
 .btn-header.signup {
-    background-color: #E6235A;
+    background-color: #16B5B0;
     font-size: 0.8rem;
     color: white;
 }
@@ -2502,7 +2551,7 @@
 .btn-header.signup:hover {
     background-color: #d01f50;
     transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(230, 35, 90, 0.2);
+    box-shadow: 0 2px 4px rgba(22, 181, 176, 0.2);
 }
 
 /* Enhancements for Carousels */
@@ -2615,7 +2664,7 @@
 .citizen-arrow {
     width: 32px;
     height: 32px;
-    background: #E6235A;
+    background: #16B5B0;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -2694,7 +2743,7 @@
     }
 
     .category-item.selected {
-        background-color: #E6235A !important;
+        background-color: #16B5B0 !important;
         color: white !important;
     }
 
@@ -2841,15 +2890,15 @@
 
     .btn-guide {
         background-color: transparent !important;
-        border: 2px solid #E6235A !important;
+        border: 2px solid #16B5B0 !important;
         /* Darker/Thicker border */
-        color: #E6235A !important;
+        color: #16B5B0 !important;
         font-weight: 600 !important;
         margin-top: 30px !important;
     }
 
     .btn-guide:hover {
-        background-color: rgba(230, 35, 90, 0.05) !important;
+        background-color: rgba(22, 181, 176, 0.05) !important;
     }
 
     .news-header {

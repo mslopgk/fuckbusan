@@ -1,0 +1,410 @@
+/* NewDiagnosis.css */
+
+.new-diagnosis-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+    position: relative;
+    background-color: #fafafa;
+    max-width: 1280px;
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Header */
+.nd-header {
+    min-height: 60px;
+    padding: 16px 20px;
+    /* Increased vertical padding to 16px */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    z-index: 10;
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid #f5f5f5;
+    /* Subtle separator line */
+}
+
+.nd-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nd-back-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-right: 4px;
+}
+
+.nd-header-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #555555;
+}
+
+.nd-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nd-my-proposal-btn {
+    background-color: #e0f5f4;
+    color: #16B5B0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.nd-icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+/* Body Content */
+.nd-body {
+    flex: 1;
+    padding: 32px 20px 120px 20px;
+    /* Increased padding for better breathing room */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Location Title Section */
+.nd-location-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.nd-location-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #222;
+    margin: 0;
+}
+
+.nd-location-arrow {
+    background-color: #16B5B0;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Category Filters (Wrapping Layout) */
+.nd-categories-wrapper {
+    margin-bottom: 20px;
+}
+
+.nd-categories-scroll {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow items to go to the next line */
+    gap: 8px 10px;
+    /* Vertical 8px, Horizontal 10px gap */
+}
+
+.nd-category-pill {
+    background-color: #e8e8e8;
+    color: #444;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.nd-category-pill.active {
+    background-color: #16B5B0;
+    color: white;
+}
+
+/* Sort Row */
+.nd-sort-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+.nd-sort-btn {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Proposal List & Cards */
+.nd-proposal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.nd-proposal-card {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 80px;
+    grid-template-rows: auto auto auto;
+    gap: 4px 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    align-items: center;
+}
+
+.nd-card-badge {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 12px;
+    width: fit-content;
+    margin-bottom: 8px;
+}
+
+.bg-mint-light {
+    background-color: #e0f5f4;
+    color: #0b6865;
+}
+
+.bg-green-light {
+    background-color: #e5f2e5;
+    color: #2b592b;
+}
+
+.bg-pink-light {
+    background-color: #fbe4e8;
+    color: #7a1b2b;
+}
+
+.nd-card-title {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+}
+
+.nd-card-author {
+    grid-column: 1;
+    grid-row: 3;
+    font-size: 0.9rem;
+    color: #999;
+    margin: 0;
+}
+
+.nd-card-image-wrapper {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    justify-self: end;
+    align-self: start;
+}
+
+.nd-card-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    object-fit: cover;
+}
+
+.nd-card-stats {
+    grid-column: 2;
+    grid-row: 3;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.nd-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: #bbb;
+    font-weight: 500;
+}
+
+/* Bottom Fixed Panel */
+.nd-bottom-fixed-panel {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1280px;
+    background-color: #fff;
+    padding: 16px 20px;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
+    z-index: 50;
+    /* Ensure this is lower than modal overlay */
+}
+
+.nd-submit-proposal-btn {
+    width: 100%;
+    background-color: #16B5B0;
+    color: white;
+    font-size: 1.15rem;
+    font-weight: bold;
+    font-family: 'GmarketSans', sans-serif;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(22, 181, 176, 0.2);
+}
+
+/* Region Selection Modal & Bottom Sheet */
+.nd-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1000 !important;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.nd-bottom-sheet {
+    width: 100%;
+    max-width: 1280px;
+    background-color: #fff;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    max-height: 60vh;
+    /* Reduced from 85vh to 60% */
+    animation: slideUp 0.3s ease-out;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.nd-sheet-header {
+    padding: 16px 24px 8px 24px;
+    /* Reduced header padding */
+    display: flex;
+    justify-content: flex-end;
+}
+
+.nd-sheet-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.nd-sheet-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 24px;
+}
+
+.nd-region-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.nd-region-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+    /* Further reduced from 14px */
+    cursor: pointer;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.nd-region-item:last-child {
+    border-bottom: none;
+}
+
+.nd-region-indicator {
+    display: flex;
+    align-items: center;
+    width: 24px;
+    justify-content: center;
+}
+
+.nd-region-name {
+    font-size: 1.25rem;
+    /* Slightly reduced */
+    font-weight: 700;
+    color: #444;
+}
+
+.nd-region-item.selected .nd-region-name {
+    color: #16B5B0;
+}
+
+.nd-sheet-footer {
+    padding: 20px 24px 32px 24px;
+    /* Matches fixed panel padding */
+    background-color: #fff;
+}
+
+.nd-sheet-select-btn {
+    width: 100%;
+    background-color: #16B5B0;
+    color: white;
+    font-size: 1.15rem;
+    /* Matches .nd-submit-proposal-btn */
+    font-weight: bold;
+    font-family: 'GmarketSans', sans-serif;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    /* Matches .nd-submit-proposal-btn */
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(22, 181, 176, 0.2);
+}

@@ -1,0 +1,105 @@
+/* ProposalDone.css */
+
+.proposal-done-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+    position: relative;
+    background-color: #fff;
+    max-width: 1280px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+/* Header (Shared style) */
+.pd-header {
+    min-height: 60px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 1px solid #f5f5f5;
+    background-color: #fff;
+}
+
+.pd-header-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #555555;
+}
+
+/* Body Content */
+.pd-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 40px;
+    text-align: center;
+    margin-top: -60px; /* Offset for header to center content vertically */
+}
+
+.pd-success-icon {
+    width: 64px;
+    height: 64px;
+    background-color: #16B5B0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    color: white;
+    font-size: 32px;
+}
+
+.pd-title-large {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #16B5B0;
+    margin: 0 0 16px 0;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.pd-subtitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 20px 0;
+}
+
+.pd-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #888;
+    margin: 0;
+}
+
+/* Footer Button (Shared style) */
+.pd-footer {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1280px;
+    padding: 16px 20px 32px 20px;
+    background-color: #fff;
+    z-index: 100;
+}
+
+.pd-btn-home {
+    width: 100%;
+    background-color: #16B5B0;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1.15rem;
+    font-weight: bold;
+    font-family: 'GmarketSans', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(22, 181, 176, 0.2);
+}

@@ -62,7 +62,7 @@ const Report = ({ onBack, onNext }) => {
 
             {/* Title */}
             <div className="report-title-section">
-                <div className="report-title">제보/제안하기</div>
+                <div className="report-title">제보하기</div>
                 <div className="report-subtitle-main">
                     더 나은 부산을 위한 참여의 시작
                 </div>

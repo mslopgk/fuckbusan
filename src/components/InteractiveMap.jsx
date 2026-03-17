@@ -69,10 +69,10 @@ const InteractiveMap = () => {
     const getStyle = (feature) => {
         const isSelected = selectedDistrict === feature.properties.name;
         return {
-            fillColor: isSelected ? '#E6235A' : 'white',
+            fillColor: isSelected ? '#16B5B0' : 'white',
             weight: isSelected ? 2 : 1,
             opacity: 1,
-            color: isSelected ? '#E6235A' : '#333',
+            color: isSelected ? '#16B5B0' : '#333',
             fillOpacity: 1
         };
     };
@@ -90,19 +90,9 @@ const InteractiveMap = () => {
         '북구': [0, 0]
     };
 
-    const mobileOffsets = {
-        '강서구': [110, -130],  // Gangseo: Moved Left/Down (was 140, -190) - closer to center mass
-        '사하구': [-8, -100], // Saha: Moved Down (was -150)
-        '서구': [-3, -60],   // Seo: Moved Down/Closer (was -90)
-        '영도구': [-35, -5],
-        '남구': [-10, -30],  // Nam: Moved Down/Right (was -25, -50)
-        '동구': [2, 0],
-        '중구': [0, 5],
-        '기장군': [-10, 10],
-        '북구': [0, 0]
-    };
-
-    const labelOffsets = isMobile ? mobileOffsets : desktopOffsets;
+    // Use only desktop offsets because we are visually scaling the whole map on mobile via CSS 
+    // instead of actually shrinking the map container.
+    const labelOffsets = desktopOffsets;
 
     const onEachDistrict = (feature, layer) => {
         const districtName = feature.properties.name;
@@ -131,10 +121,10 @@ const InteractiveMap = () => {
                 const isSelected = currentSelection === districtName;
 
                 e.target.setStyle({
-                    fillColor: isSelected ? '#E6235A' : 'white',
+                    fillColor: isSelected ? '#16B5B0' : 'white',
                     fillOpacity: 1,
                     weight: isSelected ? 2 : 1,
-                    color: isSelected ? '#E6235A' : '#333'
+                    color: isSelected ? '#16B5B0' : '#333'
                 });
             },
             click: (e) => {

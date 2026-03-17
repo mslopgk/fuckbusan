@@ -1,0 +1,248 @@
+/* ProposalForm.css */
+
+.proposal-form-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+    position: relative;
+    background-color: #fff; /* White background according to screenshot */
+    max-width: 1280px;
+    margin: 0 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Header */
+.pf-header {
+    min-height: 60px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 1px solid #f5f5f5;
+    background-color: #fff;
+}
+
+.pf-header-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #555555;
+    margin: 0;
+}
+
+/* Body */
+.pf-body {
+    flex: 1;
+    padding: 32px 24px 140px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.pf-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pf-section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #333;
+}
+
+/* Category Selection */
+.pf-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.pf-category-pill {
+    background-color: #e0f5f4;
+    color: #444;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px; /* Reduced from 10px 18px */
+    font-size: 0.95rem; /* Reduced from 1rem */
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pf-category-pill.active {
+    background-color: #16B5B0;
+    color: white;
+}
+
+.pf-category-pill.inactive {
+    background-color: #f0fdfc;
+    color: #777;
+}
+
+/* Region Search Row */
+.pf-region-row {
+    display: flex;
+    gap: 12px;
+}
+
+.pf-input-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+.pf-input {
+    width: 100%;
+    border: 1.5px solid #eee;
+    border-radius: 12px;
+    padding: 12px 16px; /* Reduced from 18px */
+    font-size: 1.1rem; /* Reduced from 1.3rem */
+    font-weight: 600;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.pf-input:focus {
+    border-color: #16B5B0;
+}
+
+.pf-textarea {
+    width: 100%;
+    min-height: 120px;
+    border: 1.5px solid #eee;
+    border-radius: 20px;
+    padding: 20px;
+    font-size: 1.1rem;
+    color: #333;
+    outline: none;
+    resize: none;
+    transition: border-color 0.2s;
+}
+
+.pf-search-btn {
+    background-color: #f1f5f5;
+    color: #555;
+    border: none;
+    border-radius: 12px;
+    padding: 0 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Upload Area */
+.pf-upload-area {
+    display: flex;
+    flex-direction: column; /* Stack vertically for large preview */
+    gap: 16px;
+    align-items: center; /* Center the larger preview */
+}
+
+.pf-upload-box {
+    background-color: #f1f5f5;
+    border-radius: 12px;
+    width: 100%; /* Full width for easier tapping */
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border: 1px dashed #ccc;
+}
+
+.pf-upload-box span {
+    font-size: 1.5rem;
+    margin-bottom: -4px;
+}
+
+.pf-upload-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.pf-preview-item {
+    position: relative;
+    width: 100%;
+    max-width: 400px; /* Max width constraint still useful */
+    border-radius: 16px;
+    overflow: visible; /* Show removal button clearly */
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.pf-preview-img, .pf-preview-video {
+    width: 100%;
+    height: auto; /* Original aspect ratio */
+    border-radius: 16px;
+    display: block;
+}
+
+.pf-remove-preview {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.pf-hidden-input {
+    display: none;
+}
+
+/* Footer Control */
+.pf-footer {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1280px;
+    padding: 16px 20px;
+    background-color: #fff;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
+    display: flex;
+    gap: 16px;
+    z-index: 100;
+}
+
+.pf-btn-prev {
+    flex: 1;
+    background-color: #e0f5f4;
+    color: #16B5B0;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1.15rem;
+    font-weight: bold;
+    font-family: 'GmarketSans', sans-serif;
+    cursor: pointer;
+}
+
+.pf-btn-submit {
+    flex: 2;
+    background-color: #16B5B0;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1.15rem;
+    font-weight: bold;
+    font-family: 'GmarketSans', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(22, 181, 176, 0.2);
+}

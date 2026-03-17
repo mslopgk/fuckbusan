@@ -21,6 +21,12 @@ import DiagnosisResult from './components/DiagnosisResult'
 import ExpertDiagnosisResult from './components/ExpertDiagnosisResult'
 import ExpertDiagnosisDetail from './components/ExpertDiagnosisDetail'
 import DiagnosisDetail from './components/DiagnosisDetail'
+import NewDiagnosis from './components/NewDiagnosis'
+import ProposalForm from './components/ProposalForm'
+import ProposalPreview from './components/ProposalPreview'
+import ProposalDone from './components/ProposalDone'
+import ProposalDetail from './components/ProposalDetail'
+import MyProposals from './components/MyProposals' // Added My Proposal Status page
 
 import AdminLogin from './admin/pages/Login'
 import AdminSignup from './admin/pages/Signup'
@@ -55,6 +61,9 @@ function App() {
         satisfaction: null,
         review: ''
     });
+
+    const [proposalData, setProposalData] = useState(null); // Temporary storage for proposal preview
+    const [selectedProposal, setSelectedProposal] = useState(null); // For detail page
 
     const updateDiagnosisPayload = (key, value) => {
         setDiagnosisPayload(prev => ({
@@ -199,7 +208,7 @@ function App() {
         }
     };
 
-    const navigateFromHome = (target) => {
+    const onNavigate = (target, data) => {
         const districtCode = localStorage.getItem('district_code') || '';
         const isExpert = districtCode.startsWith('expert');
 
@@ -253,6 +262,17 @@ function App() {
             setView('adminLogin');
         } else if (target === 'adminDashboard') {
             setView('adminDashboard');
+        } else if (target === 'newDiagnosis') {
+            setView('newDiagnosis');
+        } else if (target === 'proposalForm') {
+            setView('proposalForm');
+        } else if (target === 'proposalPreview') {
+            setView('proposalPreview');
+        } else if (target === 'proposalDetail') {
+            setSelectedProposal(data);
+            setView('proposalDetail');
+        } else if (target === 'myProposals') {
+            setView('myProposals');
         }
     };
 
@@ -268,7 +288,7 @@ function App() {
     return (
         <div>
             {view === 'home' && (
-                <Home onNavigate={navigateFromHome} />
+                <Home onNavigate={onNavigate} />
             )}
             {view === 'login' && (
                 <Login
@@ -517,6 +537,48 @@ function App() {
                 <Survey
                     onBack={() => setView('home')}
                     onComplete={() => setView('surveyDone')}
+                />
+            )}
+            {view === 'newDiagnosis' && (
+                <NewDiagnosis
+                    onBack={() => setView('home')}
+                    onNavigate={onNavigate}
+                />
+            )}
+            {view === 'proposalForm' && (
+                <ProposalForm 
+                    onBack={() => setView('newDiagnosis')} 
+                    onComplete={(data) => {
+                        setProposalData(data);
+                        setView('proposalPreview');
+                    }} 
+                />
+            )}
+            {view === 'proposalPreview' && (
+                <ProposalPreview
+                    data={proposalData}
+                    onBack={() => setView('proposalForm')}
+                    onComplete={() => setView('proposalDone')}
+                />
+            )}
+            {view === 'proposalDone' && (
+                <ProposalDone
+                    onHome={() => {
+                        setProposalData(null);
+                        setView('newDiagnosis');
+                    }}
+                />
+            )}
+            {view === 'proposalDetail' && (
+                <ProposalDetail
+                    proposal={selectedProposal}
+                    onBack={() => setView('newDiagnosis')}
+                />
+            )}
+            {view === 'myProposals' && (
+                <MyProposals
+                    onBack={() => setView('newDiagnosis')}
+                    onNavigate={onNavigate}
                 />
             )}
             {view === 'adminLogin' && (

@@ -37,7 +37,15 @@ const Home = ({ onNavigate }) => {
                             <button className="btn-header signup" onClick={() => onNavigate && onNavigate('signup')}>회원가입</button>
                         </>
                     ) : (
-                        <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button className="btn-header" style={{ padding: '8px', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => alert('알림')}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                            </button>
+                            <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
+                        </div>
                     )}
                 </div>
             </header>
@@ -67,7 +75,15 @@ const Home = ({ onNavigate }) => {
                                 <button className="btn-header signup" onClick={() => onNavigate && onNavigate('signup')}>회원가입</button>
                             </>
                         ) : (
-                            <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <button className="btn-header" style={{ padding: '8px', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => alert('알림')}>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                    </svg>
+                                </button>
+                                <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -106,12 +122,13 @@ const Home = ({ onNavigate }) => {
                 <CategoryGrid />
 
                 {/* Citizen Cards Section */}
-                <CitizenCards />
+                {/* <CitizenCards /> */}
 
                 {/* Action Cards & Survey Row - User wants: Survey / Report / Diagnose in a row */}
                 <div className="action-row">
                     {/* Survey Banner (As Card 1) */}
-                    <div className="action-item survey-card" onClick={() => onNavigate && onNavigate('survey')}>
+                    {false && (
+                        <div className="action-item survey-card" onClick={() => onNavigate && onNavigate('survey')}>
                         <div>
                             <div className="card-title survey-title-text" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 설문조사 <span className="card-arrow mobile-only" style={{ display: 'flex', alignItems: 'center' }}>
@@ -122,11 +139,12 @@ const Home = ({ onNavigate }) => {
                             <div className="card-arrow desktop-only">→</div>
                         </div>
                     </div>
+                    )}
 
                     <div className="action-item card report" onClick={() => onNavigate && onNavigate('report')}>
                         <div>
                             <div className="card-title">
-                                제보/제안하기 <span className="card-arrow mobile-only" style={{ marginLeft: '6px', display: 'flex', alignItems: 'center' }}>
+                                제보하기 <span className="card-arrow mobile-only" style={{ marginLeft: '6px', display: 'flex', alignItems: 'center' }}>
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                                 </span>
                             </div>
@@ -134,10 +152,10 @@ const Home = ({ onNavigate }) => {
                             <div className="card-arrow desktop-only">→</div>
                         </div>
                     </div>
-                    <div className="action-item card diagnose" onClick={() => onNavigate && onNavigate('checkList')}>
+                    <div className="action-item card diagnose" onClick={() => onNavigate && onNavigate('newDiagnosis')}>
                         <div>
                             <div className="card-title">
-                                진단하기 <span className="card-arrow mobile-only" style={{ marginLeft: '6px', display: 'flex', alignItems: 'center' }}>
+                                제안하기 <span className="card-arrow mobile-only" style={{ marginLeft: '6px', display: 'flex', alignItems: 'center' }}>
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                                 </span>
                             </div>
@@ -147,8 +165,9 @@ const Home = ({ onNavigate }) => {
                     </div>
                 </div>
 
-
-                <div className="stats-wrapper">
+                {false && (
+                    <>
+                        <div className="stats-wrapper">
                     {/* Stats Section Title */}
                     {/* Stats Section Title */}
                     <div className="stats-header-section">
@@ -232,11 +251,15 @@ const Home = ({ onNavigate }) => {
                         </button>
                     </div>
                 </div>
+                    </>
+                )}
 
             </div>
 
-            {/* Footer */}
-            <footer className="footer">
+            {false && (
+                <>
+                    {/* Footer */}
+                    <footer className="footer">
                 <div className="footer-right">
                     <div className="footer-links">
                         <a href="#" className="footer-link">이용약관</a>
@@ -275,25 +298,27 @@ const Home = ({ onNavigate }) => {
             <div style={{ textAlign: 'center', padding: '10px', background: '#d0d0d0', borderTop: '1px solid #ccc' }} onClick={() => onNavigate && onNavigate('adminLogin')}>
                 (Test) 관리자 로그인
             </div>
+                </>
+            )}
 
             {/* Fixed Bottom Nav */}
             <nav className="bottom-nav">
                 <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>
-                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'home' ? '#E6007E' : '#999'} strokeWidth="2">
+                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'home' ? '#16B5B0' : '#999'} strokeWidth="2">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                         <polyline points="9 22 9 12 15 12 15 22"></polyline>
                     </svg>
                     <span className="nav-text">홈</span>
                 </div>
                 <div className={`nav-item ${activeTab === 'report' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('report')}>
-                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'report' ? '#E6007E' : '#999'} strokeWidth="2">
+                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'report' ? '#16B5B0' : '#999'} strokeWidth="2">
                         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                         <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                     </svg>
                     <span className="nav-text">제보/제안</span>
                 </div>
                 <div className={`nav-item ${activeTab === 'stats' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('diagnosis')}>
-                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'stats' ? '#E6007E' : '#999'} strokeWidth="2">
+                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'stats' ? '#16B5B0' : '#999'} strokeWidth="2">
                         <line x1="12" y1="20" x2="12" y2="10"></line>
                         <line x1="18" y1="20" x2="18" y2="4"></line>
                         <line x1="6" y1="20" x2="6" y2="16"></line>
@@ -301,7 +326,7 @@ const Home = ({ onNavigate }) => {
                     <span className="nav-text">진단하기</span>
                 </div>
                 <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} style={{ cursor: 'default' }}>
-                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'mypage' ? '#E6007E' : '#999'} strokeWidth="2">
+                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'mypage' ? '#16B5B0' : '#999'} strokeWidth="2">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
                     </svg>
@@ -343,6 +368,22 @@ const CategoryGrid = () => {
 
     return (
         <div className="category-grid-container">
+            {/* All (전체) Button */}
+            <div 
+                className={`category-item all-category-btn ${selected === 'all' || selected === null ? 'selected' : ''}`}
+                onClick={() => setSelected('all')}
+            >
+                <div className="cat-icon-wrapper" style={{ width: 'auto', height: 'auto', marginRight: '4px' }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </div>
+                <span className="cat-label" style={{ fontSize: '1rem', fontWeight: 'bold' }}>전체</span>
+            </div>
+
             {categories.map((cat) => (
                 <div
                     key={cat.id}
