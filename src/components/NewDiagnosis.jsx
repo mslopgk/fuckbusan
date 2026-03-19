@@ -21,6 +21,12 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
     const [isRegionModalOpen, setIsRegionModalOpen] = useState(false);
     const [tempRegion, setTempRegion] = useState('부산 전체');
 
+    const [isSortModalOpen, setIsSortModalOpen] = useState(false);
+    const [selectedSort, setSelectedSort] = useState('최신순');
+    const [tempSort, setTempSort] = useState('최신순');
+
+    const sortOptions = ['조회수', '투표순', '최신순'];
+
     const dummyProposals = [
         {
             id: 1,
@@ -70,6 +76,16 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
         setIsRegionModalOpen(false);
     };
 
+    const handleOpenSortModal = () => {
+        setTempSort(selectedSort);
+        setIsSortModalOpen(true);
+    };
+
+    const handleSelectSort = () => {
+        setSelectedSort(tempSort);
+        setIsSortModalOpen(false);
+    };
+
     return (
         <div className="new-diagnosis-container">
             {/* Header */}
@@ -81,10 +97,15 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
                             <line x1="9" y1="12" x2="15" y2="6"></line>
                         </svg>
                     </button>
-                    <span className="nd-header-title">제안하기</span>
+                    <span className="nd-header-title">홈으로</span>
                 </div>
                 <div className="nd-header-right">
                     <button className="nd-my-proposal-btn" onClick={() => onNavigate && onNavigate('myProposals')}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
                         나의 제안현황
                     </button>
                     <button className="nd-icon-btn">
@@ -126,8 +147,8 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
 
                 {/* Sort Dropdown */}
                 <div className="nd-sort-row">
-                    <button className="nd-sort-btn">
-                        최신순
+                    <button className="nd-sort-btn" onClick={handleOpenSortModal}>
+                        {selectedSort}
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
@@ -157,13 +178,18 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
 
                             <div className="nd-card-stats">
                                 <div className="nd-stat">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#ccc" stroke="none">
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                    </svg>
+                                    <div 
+                                        className={`nd-stat-icon-circle ${item.hasVoted ? 'active' : ''}`} 
+                                        style={(item.title === '전봇대 불이 나갔어요' || item.title === '신호등 고장 신고') ? { marginTop: '-2px' } : {}}
+                                    >
+                                        <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
                                     <span>{item.likes}</span>
                                 </div>
                                 <div className="nd-stat">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#ccc" stroke="none">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#adb5bd" stroke="none">
                                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                                     </svg>
                                     <span>{item.comments}</span>
@@ -186,6 +212,7 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
                 <div className="nd-modal-overlay" onClick={() => setIsRegionModalOpen(false)}>
                     <div className="nd-bottom-sheet" onClick={(e) => e.stopPropagation()}>
                         <div className="nd-sheet-header">
+                            <h3 className="nd-sheet-title">위치 설정</h3>
                             <button className="nd-sheet-close" onClick={() => setIsRegionModalOpen(false)}>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -213,6 +240,46 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
                         </div>
                         <div className="nd-sheet-footer">
                             <button className="nd-sheet-select-btn" onClick={handleSelectRegion}>
+                                선택
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Sort Selection Bottom Sheet Modal */}
+            {isSortModalOpen && (
+                <div className="nd-modal-overlay" onClick={() => setIsSortModalOpen(false)}>
+                    <div className="nd-bottom-sheet" onClick={(e) => e.stopPropagation()}>
+                        <div className="nd-sheet-header nd-sort-header">
+                            <h3 className="nd-sheet-title">정렬</h3>
+                            <button className="nd-sheet-close" onClick={() => setIsSortModalOpen(false)}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="nd-sheet-content">
+                            <div className="nd-sort-list">
+                                {sortOptions.map((option) => (
+                                    <div 
+                                        key={option}
+                                        className={`nd-sort-item ${tempSort === option ? 'selected' : ''}`}
+                                        onClick={() => setTempSort(option)}
+                                    >
+                                        <div className="nd-sort-indicator">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={tempSort === option ? '#16B5B0' : '#ddd'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <polyline points="6 9 12 15 18 9"></polyline>
+                                            </svg>
+                                        </div>
+                                        <span className="nd-sort-name">{option}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="nd-sheet-footer">
+                            <button className="nd-sheet-select-btn" onClick={handleSelectSort}>
                                 선택
                             </button>
                         </div>

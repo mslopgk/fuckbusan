@@ -150,10 +150,26 @@
 .mp-stat {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     font-size: 0.85rem;
-    color: #bbb;
+    color: #adb5bd;
     font-weight: 500;
+}
+
+.mp-stat-icon-circle {
+    width: 12px;
+    height: 12px;
+    background-color: #adb5bd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    margin-top: -1px;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.mp-stat-icon-circle.active {
+    background-color: #16B5B0;
 }
 
 .mp-stat.active {

@@ -6,7 +6,7 @@
     flex-direction: column;
     font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
     position: relative;
-    background-color: #fff; /* White background according to screenshot */
+    background-color: #fff;
     max-width: 1280px;
     margin: 0 auto;
     overflow-y: auto;
@@ -19,189 +19,388 @@
     padding: 16px 20px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    position: relative;
-    border-bottom: 1px solid #f5f5f5;
+    justify-content: space-between;
     background-color: #fff;
+    z-index: 10;
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.pf-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pf-back-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-right: 4px;
 }
 
 .pf-header-title {
     font-size: 1.1rem;
     font-weight: 600;
     color: #555555;
-    margin: 0;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+.pf-my-status {
+    background-color: #16B5B0;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 8px rgba(22, 181, 176, 0.2);
+}
+
+.pf-status-icon {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.pf-status-icon span {
+    width: 14px;
+    height: 2px;
+    background-color: white;
+    border-radius: 1px;
 }
 
 /* Body */
 .pf-body {
     flex: 1;
-    padding: 32px 24px 140px 24px;
+    padding: 30px 24px 120px 24px;
     display: flex;
     flex-direction: column;
-    gap: 32px;
+}
+
+.pf-main-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #333;
+    line-height: 1.3;
+    margin-bottom: 40px;
 }
 
 .pf-section {
+    margin-bottom: 35px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
 }
 
 .pf-section-title {
-    font-size: 1.15rem;
+    font-size: 18px;
     font-weight: 700;
     color: #333;
+    margin-bottom: 20px;
 }
 
-/* Category Selection */
-.pf-categories {
+/* Category Grid */
+.pf-category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px 10px;
+}
+
+.pf-category-item {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.pf-category-pill {
-    background-color: #e0f5f4;
-    color: #444;
-    border: none;
-    border-radius: 20px;
-    padding: 8px 16px; /* Reduced from 10px 18px */
-    font-size: 0.95rem; /* Reduced from 1rem */
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.pf-category-pill.active {
-    background-color: #16B5B0;
-    color: white;
-}
-
-.pf-category-pill.inactive {
-    background-color: #f0fdfc;
-    color: #777;
-}
-
-/* Region Search Row */
-.pf-region-row {
-    display: flex;
+    align-items: center;
     gap: 12px;
+    cursor: pointer;
 }
 
-.pf-input-wrapper {
-    flex: 1;
-    position: relative;
+.pf-category-icon {
+    width: 32px;
+    height: 32px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.pf-category-item.active .pf-category-icon {
+    background-color: #16B5B0;
+}
+
+.pf-category-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #444;
+}
+
+.pf-category-item.active .pf-category-name {
+    color: #333;
+}
+
+/* Form Inputs */
 .pf-input {
     width: 100%;
-    border: 1.5px solid #eee;
+    border: 1px solid #e5e5e5;
     border-radius: 12px;
-    padding: 12px 16px; /* Reduced from 18px */
-    font-size: 1.1rem; /* Reduced from 1.3rem */
-    font-weight: 600;
+    padding: 16px 20px;
+    font-size: 16px;
     color: #333;
     outline: none;
-    transition: border-color 0.2s;
+    box-sizing: border-box;
 }
 
-.pf-input:focus {
-    border-color: #16B5B0;
+.pf-input::placeholder {
+    color: #bbb;
 }
 
 .pf-textarea {
     width: 100%;
-    min-height: 120px;
-    border: 1.5px solid #eee;
-    border-radius: 20px;
+    min-height: 180px;
+    border: 1px solid #e5e5e5;
+    border-radius: 15px;
     padding: 20px;
-    font-size: 1.1rem;
+    font-size: 16px;
+    line-height: 1.5;
     color: #333;
     outline: none;
     resize: none;
-    transition: border-color 0.2s;
+    box-sizing: border-box;
 }
 
-.pf-search-btn {
-    background-color: #f1f5f5;
-    color: #555;
-    border: none;
-    border-radius: 12px;
-    padding: 0 24px;
-    font-size: 1rem;
-    font-weight: 600;
+.pf-textarea::placeholder {
+    color: #bbb;
+}
+
+/* Location Group */
+.pf-location-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pf-location-input-wrapper {
+    position: relative;
     cursor: pointer;
 }
 
-/* Upload Area */
-.pf-upload-area {
+.pf-location-input {
+    padding-right: 50px;
+    cursor: pointer;
+}
+
+.pf-location-icon {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #bbb;
     display: flex;
-    flex-direction: column; /* Stack vertically for large preview */
-    gap: 16px;
-    align-items: center; /* Center the larger preview */
+    align-items: center;
+}
+
+.pf-detail-address-input {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Map Modal */
+.pf-map-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #fff;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+}
+
+.pf-map-header {
+    padding: 24px 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+
+.pf-map-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+    padding: 4px;
+    margin-bottom: 20px;
+    display: block;
+    line-height: 1;
+    margin-left: -4px; /* Align with left padding */
+}
+
+.pf-map-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #333;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.pf-map-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: #f0f0f0; /* Fallback background */
+}
+
+.pf-map-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+/* Force LocationSelector to fill space */
+.pf-map-wrapper > div {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+.pf-map-floating-label {
+    position: absolute;
+    bottom: 115px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #444;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    z-index: 1000;
+    white-space: nowrap;
+}
+
+.pf-current-loc-btn {
+    position: absolute;
+    bottom: 110px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    background-color: #fff;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.pf-current-loc-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+.pf-current-loc-btn:active {
+    background-color: #f0f0f0;
+}
+
+.pf-map-footer {
+    padding: 20px 20px 40px;
+    background-color: transparent;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+.pf-map-done-btn {
+    width: 100%;
+    height: 60px;
+    background-color: #12B3AE;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(18, 179, 174, 0.3);
+}
+
+/* Upload */
+.pf-upload-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .pf-upload-box {
-    background-color: #f1f5f5;
-    border-radius: 12px;
-    width: 100%; /* Full width for easier tapping */
+    width: 100px;
     height: 100px;
+    border: 1px solid #e5e5e5;
+    border-radius: 15px;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #999;
-    font-size: 1.2rem;
     cursor: pointer;
-    border: 1px dashed #ccc;
-}
-
-.pf-upload-box span {
-    font-size: 1.5rem;
-    margin-bottom: -4px;
-}
-
-.pf-upload-count {
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.pf-preview-item {
+    overflow: hidden;
     position: relative;
-    width: 100%;
-    max-width: 400px; /* Max width constraint still useful */
-    border-radius: 16px;
-    overflow: visible; /* Show removal button clearly */
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
 }
 
-.pf-preview-img, .pf-preview-video {
-    width: 100%;
-    height: auto; /* Original aspect ratio */
-    border-radius: 16px;
-    display: block;
+.pf-upload-plus {
+    font-size: 32px;
+    color: #ddd;
+    font-weight: 300;
 }
 
-.pf-remove-preview {
+.pf-preview-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.pf-preview-content {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pf-remove-btn {
     position: absolute;
-    top: -6px;
-    right: -6px;
-    background-color: #555;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(0,0,0,0.5);
     color: white;
     border: none;
     border-radius: 50%;
     width: 20px;
     height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
+    font-size: 14px;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 10;
 }
 
-.pf-hidden-input {
-    display: none;
+.pf-upload-help {
+    font-size: 14px;
+    color: #bbb;
+    margin-top: 10px;
 }
 
 /* Footer Control */
@@ -212,37 +411,297 @@
     transform: translateX(-50%);
     width: 100%;
     max-width: 1280px;
-    padding: 16px 20px;
+    padding: 20px;
     background-color: #fff;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
     display: flex;
-    gap: 16px;
+    gap: 12px;
     z-index: 100;
+    box-sizing: border-box;
 }
 
-.pf-btn-prev {
+.pf-btn-draft {
     flex: 1;
-    background-color: #e0f5f4;
-    color: #16B5B0;
+    height: 60px;
+    background-color: #e9e9e9;
+    color: #888;
     border: none;
-    border-radius: 12px;
-    padding: 16px;
-    font-size: 1.15rem;
-    font-weight: bold;
-    font-family: 'GmarketSans', sans-serif;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
     cursor: pointer;
 }
 
 .pf-btn-submit {
     flex: 2;
-    background-color: #16B5B0;
+    height: 60px;
+    background-color: #B5E7E5;
     color: white;
     border: none;
-    border-radius: 12px;
-    padding: 16px;
-    font-size: 1.15rem;
-    font-weight: bold;
-    font-family: 'GmarketSans', sans-serif;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(22, 181, 176, 0.2);
+}
+
+.pf-btn-submit:not(:disabled) {
+    background-color: #16B5B0;
+}
+
+.pf-btn-submit:disabled {
+    background-color: #B5E7E5;
+    opacity: 0.8;
+}
+
+/* Gallery Modal */
+.pf-gallery-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #fff;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.pf-gallery-header {
+    padding: 24px 20px;
+    background-color: #fff;
+}
+
+.pf-gallery-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+    padding: 0;
+}
+
+.pf-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background-color: #f1f1f1;
+}
+
+.pf-gallery-item {
+    aspect-ratio: 1 / 1;
+    background-color: #fff;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+}
+
+.pf-take-photo {
+    background-color: #16B5B0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.pf-gallery-icon-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.pf-plus-large {
+    font-size: 32px;
+    font-weight: 300;
+}
+
+.pf-photo-text {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.pf-gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pf-placeholder-inner {
+    width: 100%;
+    height: 100%;
+    background-color: #f9f9f9;
+}
+
+.pf-placeholder:hover .pf-placeholder-inner {
+    background-color: #f0f0f0;
+}
+
+.pf-gallery-remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pf-map-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #16B5B0;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.pf-hidden-input {
+    display: none;
+}
+
+/* Draft Modal */
+.pf-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pf-draft-modal {
+    width: 85%;
+    max-width: 320px;
+    background-color: #fff;
+    border-radius: 30px;
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.pf-draft-icon {
+    margin-bottom: 25px;
+}
+
+.pf-draft-text {
+    font-size: 19px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 30px;
+    text-align: center;
+    letter-spacing: -0.5px;
+}
+
+.pf-draft-btns {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pf-btn-save-confirm {
+    width: 100%;
+    height: 56px;
+    background-color: #12B3AE;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pf-btn-save-cancel {
+    width: 100%;
+    height: 56px;
+    background-color: #e9e9e9;
+    color: #333;
+    border: none;
+    border-radius: 15px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Load Modal */
+.pf-load-modal {
+    width: 85%;
+    max-width: 320px;
+    background-color: #fff;
+    border-radius: 30px;
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.pf-load-icon {
+    margin-bottom: 25px;
+}
+
+.pf-load-text {
+    font-size: 19px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 8px;
+    text-align: center;
+    letter-spacing: -0.5px;
+}
+
+.pf-load-subtext {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+.pf-load-btns {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pf-btn-load {
+    width: 100%;
+    height: 56px;
+    background-color: #12B3AE;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pf-btn-new {
+    width: 100%;
+    height: 56px;
+    background-color: #D9F7F6;
+    color: #12B3AE;
+    border: none;
+    border-radius: 15px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
 }

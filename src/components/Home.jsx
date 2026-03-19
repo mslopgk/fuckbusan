@@ -24,11 +24,7 @@ const Home = ({ onNavigate }) => {
             {/* Header (Mobile & Desktop) */}
             <header className="header mobile-header">
                 <div className="logo-text">
-                    <img src="/assets/designLogo.png" alt="logo" style={{ height: '40px', marginRight: '0px', transform: 'translateY(-2px)' }} />
-                    <div style={{ marginTop: '6px' }}>
-                        <div style={{ lineHeight: '1' }}>부산참여플랫폼</div>
-                        <div style={{ fontSize: '10px', color: '#888', fontWeight: 'normal' }}>Busan Citizen-driven design</div>
-                    </div>
+                    <img src="/WDC.svg" alt="logo" style={{ height: '28px' }} />
                 </div>
                 <div className="header-actions">
                     {!isLoggedIn ? (
@@ -53,11 +49,7 @@ const Home = ({ onNavigate }) => {
             <header className="header desktop-header">
                 <div className="desktop-header-inner">
                     <div className="logo-text">
-                        <img src="/assets/designLogo.png" alt="logo" style={{ height: '40px', marginRight: '0px', transform: 'translateY(-2px)' }} />
-                        <div style={{ marginTop: '6px' }}>
-                            <div style={{ lineHeight: '1' }}>부산참여플랫폼</div>
-                            <div style={{ fontSize: '10px', color: '#888', fontWeight: 'normal' }}>Busan Citizen-driven design</div>
-                        </div>
+                        <img src="/WDC.svg" alt="logo" style={{ height: '28px' }} />
                     </div>
 
                     <nav className="desktop-nav">
@@ -315,7 +307,7 @@ const Home = ({ onNavigate }) => {
                         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                         <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                     </svg>
-                    <span className="nav-text">제보/제안</span>
+                    <span className="nav-text">제보</span>
                 </div>
                 <div className={`nav-item ${activeTab === 'stats' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('diagnosis')}>
                     <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'stats' ? '#16B5B0' : '#999'} strokeWidth="2">
@@ -323,14 +315,14 @@ const Home = ({ onNavigate }) => {
                         <line x1="18" y1="20" x2="18" y2="4"></line>
                         <line x1="6" y1="20" x2="6" y2="16"></line>
                     </svg>
-                    <span className="nav-text">진단하기</span>
+                    <span className="nav-text">제안</span>
                 </div>
                 <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} style={{ cursor: 'default' }}>
                     <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'mypage' ? '#16B5B0' : '#999'} strokeWidth="2">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
                     </svg>
-                    <span className="nav-text">정보확인</span>
+                    <span className="nav-text">내 정보</span>
                 </div>
             </nav>
         </div>

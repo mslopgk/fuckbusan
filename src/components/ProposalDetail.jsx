@@ -7,12 +7,21 @@ const ProposalDetail = ({ proposal, onBack }) => {
 
     const [hasVoted, setHasVoted] = useState(false);
     const [currentLikes, setCurrentLikes] = useState(proposal.likes || 0);
+    const [showVoteModal, setShowVoteModal] = useState(false);
 
     const handleVote = () => {
         if (!hasVoted) {
-            setHasVoted(true);
-            setCurrentLikes(prev => prev + 1);
+            // Start voting process with modal
+            setShowVoteModal(true);
+            
+            // Wait 2 seconds before applying the result and closing modal
+            setTimeout(() => {
+                setHasVoted(true);
+                setCurrentLikes(prev => prev + 1);
+                setShowVoteModal(false);
+            }, 2000);
         } else {
+            // Logic for un-voting (if allowed, user didn't specify modal for this)
             setHasVoted(false);
             setCurrentLikes(prev => prev - 1);
         }
@@ -37,7 +46,12 @@ const ProposalDetail = ({ proposal, onBack }) => {
                     className={`pd-vote-btn ${hasVoted ? 'voted' : ''}`} 
                     onClick={handleVote}
                 >
-                    투표하기
+                    <div className="pd-vote-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    {hasVoted ? '투표하였습니다' : '투표하기'}
                 </button>
             </header>
 
@@ -53,6 +67,9 @@ const ProposalDetail = ({ proposal, onBack }) => {
 
                 <div className="pd-main-image-wrapper">
                     <img src={proposal.image} alt="Proposal" className="pd-main-image" />
+                    <div className="pd-address-badge">
+                        {proposal.region || '전체'} · {proposal.detailedAddress || '부산광역시'}
+                    </div>
                 </div>
 
                 <div className="pd-stats-row">
@@ -62,14 +79,16 @@ const ProposalDetail = ({ proposal, onBack }) => {
                         <span>조회수 {proposal.views}</span>
                     </div>
                     <div className="pd-stats-right">
-                        <div className={`pd-stat-item ${hasVoted ? 'active-heart' : ''}`}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill={hasVoted ? "#ff4d4f" : "none"} stroke={hasVoted ? "#ff4d4f" : "#bbb"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        <div className="pd-stat-item" style={{ cursor: 'pointer' }} onClick={handleVote}>
+                        <div className={`pd-stat-icon-circle ${hasVoted ? 'active' : ''}`}>
+                            <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
-                            <span style={{ color: hasVoted ? '#ff4d4f' : '#bbb' }}>{currentLikes}</span>
                         </div>
+                        <span>{currentLikes}</span>
+                    </div>
                         <div className="pd-stat-item">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#adb5bd" stroke="none">
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                             </svg>
                             <span>{proposal.comments}</span>
@@ -97,8 +116,29 @@ const ProposalDetail = ({ proposal, onBack }) => {
                         className="pd-comment-input" 
                         placeholder="댓글을 입력해주세요"
                     />
+                    <button className="pd-comment-send-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
                 </div>
             </div>
+
+            {/* Vote Success Modal */}
+            {showVoteModal && (
+                <div className="pd-vote-modal-overlay">
+                    <div className="pd-vote-modal-box">
+                        <div className="pd-vote-success-icon-container">
+                            <img src="/Union.svg" alt="Union" className="pd-union-icon" />
+                            <img src="/Vector.svg" alt="Vector" className="pd-vector-icon" />
+                        </div>
+                        <h2 className="pd-vote-modal-text">
+                            투표가<br/>완료되었습니다
+                        </h2>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

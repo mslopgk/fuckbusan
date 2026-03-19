@@ -548,9 +548,10 @@ function App() {
             {view === 'proposalForm' && (
                 <ProposalForm 
                     onBack={() => setView('newDiagnosis')} 
+                    onNavigate={onNavigate}
                     onComplete={(data) => {
-                        setProposalData(data);
-                        setView('proposalPreview');
+                        setProposalData(data); // Store if needed for summary on done page
+                        setView('proposalDone');
                     }} 
                 />
             )}
@@ -563,7 +564,11 @@ function App() {
             )}
             {view === 'proposalDone' && (
                 <ProposalDone
-                    onHome={() => {
+                    onMyProposals={() => {
+                        setProposalData(null);
+                        onNavigate('myProposals');
+                    }}
+                    onOthers={() => {
                         setProposalData(null);
                         setView('newDiagnosis');
                     }}

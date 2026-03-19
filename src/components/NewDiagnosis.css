@@ -59,14 +59,17 @@
 }
 
 .nd-my-proposal-btn {
-    background-color: #e0f5f4;
-    color: #16B5B0;
+    background-color: #16B5B0;
+    color: white;
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
     border: none;
     border-radius: 20px;
-    padding: 6px 12px;
+    padding: 8px 14px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(22, 181, 176, 0.2);
 }
 
 .nd-icon-btn {
@@ -255,10 +258,26 @@
 .nd-stat {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     font-size: 0.85rem;
-    color: #bbb;
+    color: #adb5bd;
     font-weight: 500;
+}
+
+.nd-stat-icon-circle {
+    width: 12px;
+    height: 12px;
+    background-color: #adb5bd; /* Match comment icon color */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    margin-top: -1px;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.nd-stat-icon-circle.active {
+    background-color: #16B5B0;
 }
 
 /* Bottom Fixed Panel */
@@ -330,9 +349,21 @@
 
 .nd-sheet-header {
     padding: 16px 24px 8px 24px;
-    /* Reduced header padding */
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nd-sort-header {
+    justify-content: space-between;
+    padding-bottom: 20px;
+}
+
+.nd-sheet-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #222;
+    margin: 0;
 }
 
 .nd-sheet-close {
@@ -350,6 +381,45 @@
     padding: 0 24px;
 }
 
+/* Sort Specific styles */
+.nd-sort-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nd-sort-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0; /* Aligned with .nd-region-item */
+    cursor: pointer;
+    border-bottom: 1px solid #f2f2f2; /* Consistency factor 101 */
+}
+
+.nd-sort-item:last-child {
+    border-bottom: none;
+}
+
+.nd-sort-indicator {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nd-sort-name {
+    font-size: 1.25rem; /* Aligned with .nd-region-name */
+    font-weight: 700;
+    color: #444;
+}
+
+.nd-sort-item.selected .nd-sort-name {
+    color: #16B5B0;
+}
+
+/* Region Selection styles (Restored) */
 .nd-region-list {
     display: flex;
     flex-direction: column;
@@ -360,7 +430,6 @@
     align-items: center;
     gap: 16px;
     padding: 10px 0;
-    /* Further reduced from 14px */
     cursor: pointer;
     border-bottom: 1px solid #f2f2f2;
 }
@@ -378,7 +447,6 @@
 
 .nd-region-name {
     font-size: 1.25rem;
-    /* Slightly reduced */
     font-weight: 700;
     color: #444;
 }
@@ -389,7 +457,6 @@
 
 .nd-sheet-footer {
     padding: 20px 24px 32px 24px;
-    /* Matches fixed panel padding */
     background-color: #fff;
 }
 

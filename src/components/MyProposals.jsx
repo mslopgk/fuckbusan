@@ -97,14 +97,19 @@ const MyProposals = ({ onBack, onNavigate }) => {
                             )}
 
                             <div className="mp-card-stats">
-                                <div className={`mp-stat ${isVotedTab ? 'active' : ''}`}>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill={isVotedTab ? "#ff4d4f" : "#ccc"} stroke="none">
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                    </svg>
+                                <div className="mp-stat">
+                                    <div 
+                                        className={`mp-stat-icon-circle ${isVotedTab ? 'active' : ''}`} 
+                                        style={(item.title === '전봇대 불이 나갔어요' || item.title === '신호등 고장 신고') ? { marginTop: '-2px' } : {}}
+                                    >
+                                        <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
                                     <span>{displayLikes}</span>
                                 </div>
                                 <div className="mp-stat">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#ccc" stroke="none">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#adb5bd" stroke="none">
                                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                                     </svg>
                                     <span>{item.comments}</span>
