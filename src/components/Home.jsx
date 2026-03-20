@@ -133,7 +133,7 @@ const Home = ({ onNavigate }) => {
                     </div>
                     )}
 
-                    <div className="action-item card report" onClick={() => onNavigate && onNavigate('report')}>
+                    <div className="action-item card report" onClick={() => alert('준비 중입니다.')}>
                         <div>
                             <div className="card-title">
                                 제보하기 <span className="card-arrow mobile-only" style={{ marginLeft: '6px', display: 'flex', alignItems: 'center' }}>
@@ -144,7 +144,15 @@ const Home = ({ onNavigate }) => {
                             <div className="card-arrow desktop-only">→</div>
                         </div>
                     </div>
-                    <div className="action-item card diagnose" onClick={() => onNavigate && onNavigate('newDiagnosis')}>
+                    <div className="action-item card diagnose" onClick={() => {
+                        const token = localStorage.getItem('access_token');
+                        if (!token) {
+                            alert('로그인이 필요한 서비스입니다.');
+                            onNavigate && onNavigate('login');
+                            return;
+                        }
+                        onNavigate && onNavigate('newDiagnosis');
+                    }}>
                         <div>
                             <div className="card-title">
                                 제안하기 <span className="card-arrow mobile-only" style={{ marginLeft: '6px', display: 'flex', alignItems: 'center' }}>
@@ -302,14 +310,22 @@ const Home = ({ onNavigate }) => {
                     </svg>
                     <span className="nav-text">홈</span>
                 </div>
-                <div className={`nav-item ${activeTab === 'report' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('report')}>
+                <div className={`nav-item ${activeTab === 'report' ? 'active' : ''}`} onClick={() => alert('준비 중입니다.')}>
                     <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'report' ? '#16B5B0' : '#999'} strokeWidth="2">
                         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                         <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                     </svg>
                     <span className="nav-text">제보</span>
                 </div>
-                <div className={`nav-item ${activeTab === 'stats' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('diagnosis')}>
+                <div className={`nav-item ${activeTab === 'stats' ? 'active' : ''}`} onClick={() => {
+                    const token = localStorage.getItem('access_token');
+                    if (!token) {
+                        alert('로그인이 필요한 서비스입니다.');
+                        onNavigate && onNavigate('login');
+                        return;
+                    }
+                    onNavigate && onNavigate('newDiagnosis');
+                }}>
                     <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'stats' ? '#16B5B0' : '#999'} strokeWidth="2">
                         <line x1="12" y1="20" x2="12" y2="10"></line>
                         <line x1="18" y1="20" x2="18" y2="4"></line>
@@ -317,7 +333,7 @@ const Home = ({ onNavigate }) => {
                     </svg>
                     <span className="nav-text">제안</span>
                 </div>
-                <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} style={{ cursor: 'default' }}>
+                <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('myProposals')} style={{ cursor: 'pointer' }}>
                     <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'mypage' ? '#16B5B0' : '#999'} strokeWidth="2">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>

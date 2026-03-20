@@ -61,7 +61,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     box-shadow: 0 4px 8px rgba(22, 181, 176, 0.2);
 }
 

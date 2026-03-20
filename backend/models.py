@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, JSON, DateTime, DECIMAL
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, JSON, DateTime, DECIMAL, Text
 from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
@@ -75,6 +75,7 @@ class Persona(Base):
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     user_id = Column(Integer, primary_key=True, index=True)
     ID = Column(String(50), unique=True, index=True, nullable=False)
@@ -135,3 +136,47 @@ class Suggestion(Base):
     expected_effect = Column(String(2000))
     files = Column(JSON)
     created_at = Column(DateTime, default=datetime.now)
+
+class NewProposal(Base):
+    __tablename__ = "new_proposals"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    category = Column(String(100))
+    title = Column(String(255))
+    content = Column(Text)  # String(4000)에서 Text로 변경 (더 안전함)
+    region = Column(String(255))
+    detailed_address = Column(String(255), nullable=True)
+    files = Column(Text, nullable=True)  # JSON에서 Text로 변경 (호환성 문제 방지)
+    views_count = Column(Integer, default=0)
+    likes_count = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.now)
+
+    # 작성자 관계 설정
+    creator = relationship("User", backref="proposals")
+
+class ProposalLike(Base):
+    __tablename__ = "proposal_likes"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    proposal_id = Column(Integer, ForeignKey("new_proposals.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationships
+    user = relationship("User", backref="liked_proposals")
+    proposal = relationship("NewProposal", backref="liked_by_users")
+
+class ProposalView(Base):
+    __tablename__ = "proposal_views"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    proposal_id = Column(Integer, ForeignKey("new_proposals.id"), nullable=False)
+    viewed_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", backref="viewed_proposals")
+    proposal = relationship("NewProposal", backref="viewed_by_users")

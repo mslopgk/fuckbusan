@@ -16,9 +16,9 @@
 
 /* Header */
 .nd-header {
+    height: 60px;
     min-height: 60px;
-    padding: 16px 20px;
-    /* Increased vertical padding to 16px */
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;

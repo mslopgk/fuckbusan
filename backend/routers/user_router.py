@@ -18,6 +18,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/users/login", auto_error=False)
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -51,6 +52,24 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
     return user
+
+# [★ 선택적 보안요원: 로그인 안 해도 통과, 하지만 누구인지 확인만 함]
+def get_current_user_optional(token: str = Depends(oauth2_scheme_optional), db: Session = Depends(get_db)):
+    if not token:
+        return None
+    try:
+        # oauth2_scheme은 토큰이 없으면 401을 내보내므로, 
+        # 선택적으로 하려면 직접 Header에서 가져오거나 
+        # 별도의 Dependency를 만들어야 할 수도 있습니다. 
+        # 하지만 일단 oauth2_scheme을 쓰면 강제성이 있으므로 수동으로 처리하는 로직을 고려합니다.
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            return None
+        user = db.query(User).filter(User.ID == username).first()
+        return user
+    except:
+        return None
 
 # --- [API] ---
 

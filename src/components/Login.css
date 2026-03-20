@@ -34,7 +34,7 @@
     font-family: 'GmarketSans', sans-serif;
     font-size: 1.75rem;
     font-weight: bold;
-    color: #E6235A;
+    color: #16B5B0;
     margin-bottom: 1.5rem;
 }
 
@@ -88,7 +88,7 @@
 }
 
 .login-input:focus {
-    border-color: #E6235A;
+    border-color: #16B5B0;
 }
 
 /* Submit Button */
@@ -115,9 +115,9 @@
 }
 
 .login-submit-btn.active {
-    background-color: #E6235A;
+    background-color: #16B5B0;
     color: #fff;
-    box-shadow: 0 0.25rem 0.75rem rgba(230, 35, 90, 0.3);
+    box-shadow: 0 0.25rem 0.75rem rgba(22, 181, 176, 0.3);
 }
 
 /* Footer Links */

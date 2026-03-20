@@ -17,7 +17,9 @@ router = APIRouter(
 
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    UPLOAD_DIR = "uploads"
+    # current_dir is backend/routers, so back up one level to backend/
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
     if not os.path.exists(UPLOAD_DIR):
         os.makedirs(UPLOAD_DIR)
     
@@ -66,7 +68,6 @@ def submit_checklist(result: ChecklistCreate, db: Session = Depends(get_db), cur
 def get_checklist(
     skip: int = 0, 
     limit: int = 100, 
-    db: Session = Depends(get_db),
     db: Session = Depends(get_db)
 ):
     # For now, return all or filter by user?

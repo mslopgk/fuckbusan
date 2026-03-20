@@ -15,8 +15,9 @@
 
 /* Header (Shared style consistency) */
 .pd-header {
+    height: 60px;
     min-height: 60px;
-    padding: 16px 20px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -25,6 +26,12 @@
     position: sticky;
     top: 0;
     border-bottom: 1px solid #f5f5f5;
+}
+
+.pd-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .pd-back-btn {
@@ -56,6 +63,22 @@
 .pd-vote-btn.voted {
     background-color: #16B5B0;
     color: white;
+}
+
+.pd-more-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.pd-more-btn:hover {
+    color: #333;
 }
 
 .pd-vote-icon {
@@ -102,6 +125,7 @@
     color: #222;
     margin: 0;
     width: 100%;
+    text-align: left;
 }
 
 .pd-author {
@@ -351,4 +375,183 @@
     text-align: center;
     line-height: 1.4;
     margin: 0;
+}
+
+/* [추가] 메뉴 모달 및 바텀 시트 스타일 (지역선택창 스타일 계승) */
+.pd-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.pd-bottom-sheet {
+    width: 100%;
+    max-width: 1280px;
+    background-color: #fff;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    max-height: 40vh;
+    animation: pdSlideUp 0.3s ease-out;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes pdSlideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.pd-sheet-content {
+    padding: 16px 24px;
+}
+
+.pd-menu-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.pd-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    cursor: pointer;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #888; /* 기본색은 약간 연하게 (제안글 수정) */
+    border-bottom: 1px solid #f2f2f2;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+.pd-menu-item:last-child {
+    border-bottom: none;
+}
+
+.pd-menu-item.danger {
+    color: #222; /* 삭제 버튼은 진하게 */
+    font-weight: 800;
+}
+
+.pd-sheet-footer {
+    padding: 8px 24px 32px 24px;
+    background-color: #fff;
+}
+
+.pd-sheet-close-btn {
+    width: 100%;
+    background-color: #e8e8e8; /* 닫기 버튼은 연한 회색 */
+    color: #222;
+    font-size: 1.15rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.pd-sheet-close-btn:hover {
+    background-color: #ddd;
+}
+
+/* 삭제 확인 모달 스타일 */
+.pd-delete-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pd-delete-modal-box {
+    background-color: #fff;
+    width: 85%;
+    max-width: 320px;
+    padding: 40px 24px;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+}
+
+.pd-delete-modal-icon-container {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pd-delete-modal-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.pd-delete-modal-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 30px;
+    text-align: center;
+    letter-spacing: -0.5px;
+    line-height: 1.4;
+}
+
+.pd-delete-modal-btns {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pd-delete-btn-yes {
+    width: 100%;
+    height: 56px;
+    background-color: #16B5B0;
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+.pd-delete-btn-yes:active {
+    transform: scale(0.98);
+}
+
+.pd-delete-btn-no {
+    width: 100%;
+    height: 56px;
+    background-color: #E0F5F4;
+    color: #16B5B0;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+.pd-delete-btn-no:active {
+    transform: scale(0.98);
 }

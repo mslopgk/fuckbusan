@@ -3,6 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
+import sys
+
+# [추가] backend 디렉토리를 모듈 경로에 추가하여 routers 임포트 가능하게 함
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.append(current_dir)
+
 import logging
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
@@ -49,16 +56,11 @@ app = FastAPI(
 
 # CORS Configuration
 origins = [
-    "*",
-    # "http://localhost:5173",
-    # "http://127.0.0.1:5173",
-    # "http://localhost:3000",
-    # "http://localhost:8501", 
-    # "http://0.0.0.0:8501",
-    # "http://127.0.0.1:3000",
-    # "http://192.168.45.14:5173",
-    # "http://192.168.45.14:8501",
-    # "http://192.168.45.14:3000",
+    "http://localhost:8501",
+    "http://127.0.0.1:8501",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",
 ]
 
 app.add_middleware(

@@ -64,6 +64,8 @@ function App() {
 
     const [proposalData, setProposalData] = useState(null); // Temporary storage for proposal preview
     const [selectedProposal, setSelectedProposal] = useState(null); // For detail page
+    const [isProposalEdit, setIsProposalEdit] = useState(false); // [추가] 제안 수정 모드 여부
+    const [proposalToEdit, setProposalToEdit] = useState(null); // [추가] 수정할 제안 데이터
 
     const updateDiagnosisPayload = (key, value) => {
         setDiagnosisPayload(prev => ({
@@ -265,6 +267,8 @@ function App() {
         } else if (target === 'newDiagnosis') {
             setView('newDiagnosis');
         } else if (target === 'proposalForm') {
+            setIsProposalEdit(!!data?.isEdit); // 데이터로 수정 모드 판단
+            setProposalToEdit(data?.proposal || null);
             setView('proposalForm');
         } else if (target === 'proposalPreview') {
             setView('proposalPreview');
@@ -547,11 +551,97 @@ function App() {
             )}
             {view === 'proposalForm' && (
                 <ProposalForm 
-                    onBack={() => setView('newDiagnosis')} 
+                    onBack={() => setView(isProposalEdit ? 'proposalDetail' : 'newDiagnosis')} 
                     onNavigate={onNavigate}
-                    onComplete={(data) => {
-                        setProposalData(data); // Store if needed for summary on done page
-                        setView('proposalDone');
+                    isEdit={isProposalEdit}
+                    initialData={proposalToEdit}
+                    onComplete={async (formData) => {
+                        try {
+                            const token = localStorage.getItem('access_token');
+                            const VITE_API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
+                            // [1] 신규 파일 업로드 처리
+                            const uploadNewFiles = async (files) => {
+                                const uploadedNames = [];
+                                for (const file of files) {
+                                    const uploadData = new FormData();
+                                    uploadData.append('file', file);
+                                    
+                                    const uploadRes = await fetch(`${VITE_API_URL}/api/reports/upload`, {
+                                        method: 'POST',
+                                        body: uploadData,
+                                        // FormData 전송 시 Content-Type 헤더를 명시하지 않아야 브라우저가 boundary를 자동으로 설정함
+                                    });
+                                    
+                                    if (uploadRes.ok) {
+                                        const result = await uploadRes.json();
+                                        uploadedNames.push(result.filename);
+                                    } else {
+                                        console.error('File upload failed for:', file.name);
+                                    }
+                                }
+                                return uploadedNames;
+                            };
+
+                            const newUploadedFilenames = await uploadNewFiles(formData.newFiles || []);
+                            const finalFilenames = [...(formData.existingFiles || []), ...newUploadedFilenames];
+
+                            if (isProposalEdit) {
+                                // [수정 모드] PUT 요청
+                                const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${formData.id}`, {
+                                    method: 'PUT',
+                                    headers: { 
+                                        'Content-Type': 'application/json',
+                                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                    },
+                                    body: JSON.stringify({
+                                        category: formData.category,
+                                        title: formData.title,
+                                        content: formData.content,
+                                        region: formData.region,
+                                        detailed_address: formData.detailed_address,
+                                        files: finalFilenames
+                                    })
+                                });
+
+                                if (response.ok) {
+                                    localStorage.removeItem('proposal_draft'); // [추가] 수정 성공 시 임시저장 삭제
+                                    alert('성공적으로 수정되었습니다.');
+                                    setView('proposalDetail');
+                                } else {
+                                    alert('수정에 실패했습니다.');
+                                }
+                            } else {
+                                // [신규 등록] POST 요청
+                                const payload = {
+                                    category: formData.category,
+                                    title: formData.title,
+                                    content: formData.content,
+                                    region: formData.region,
+                                    detailed_address: formData.detailed_address,
+                                    files: finalFilenames
+                                };
+                                
+                                const response = await fetch(`${VITE_API_URL}/api/reports/new-proposal`, {
+                                    method: 'POST',
+                                    headers: { 
+                                        'Content-Type': 'application/json',
+                                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                    },
+                                    body: JSON.stringify(payload)
+                                });
+                                
+                                if (response.ok) {
+                                    localStorage.removeItem('proposal_draft'); // [추가] 등록 성공 시 임시저장 삭제
+                                    setView('proposalDone');
+                                } else {
+                                    alert('제안 저장에 실패했습니다.');
+                                }
+                            }
+                        } catch (error) {
+                            console.error("Proposal action error:", error);
+                            alert('오류가 발생했습니다.');
+                        }
                     }} 
                 />
             )}
@@ -578,11 +668,12 @@ function App() {
                 <ProposalDetail
                     proposal={selectedProposal}
                     onBack={() => setView('newDiagnosis')}
+                    onNavigate={onNavigate}
                 />
             )}
             {view === 'myProposals' && (
                 <MyProposals
-                    onBack={() => setView('newDiagnosis')}
+                    onBack={() => setView('home')}
                     onNavigate={onNavigate}
                 />
             )}

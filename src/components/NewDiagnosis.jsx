@@ -10,7 +10,7 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
         };
     }, []);
 
-    const categories = ['주거', '생활', '교통', '안전', '교육', '산업일자리', '문화여가'];
+    const categories = ['주거', '환경', '교육', '안전', '산업 및 고용', '모빌리티', '문화 및 레저', '보건 및 복지'];
     const regions = [
         '부산 전 지역', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구',
         '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'
@@ -27,44 +27,65 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
 
     const sortOptions = ['조회수', '투표순', '최신순'];
 
-    const dummyProposals = [
-        {
-            id: 1,
-            category: '주거',
-            title: '전봇대 불이 나갔어요',
-            author: '동래구 우리디자이너',
-            likes: 12,
-            comments: 12,
-            image: '/assets/proposal_1.png',
-            description: '여기 위치보내드립니다\n전봇대가 꺼졌습니다\n빨리 켜주세요',
-            date: '2026.01.02',
-            views: 333
-        },
-        {
-            id: 2,
-            category: '생활',
-            title: '골목길 쓰레기 방치',
-            author: '서구 보안관',
-            likes: 8,
-            comments: 5,
-            image: '/assets/proposal_2.png',
-            description: '집 앞 골목에 쓰레기가 일주일째 방치되어 있습니다.\n악취가 너무 심하니 조치 부탁드립니다.',
-            date: '2026.01.05',
-            views: 120
-        },
-        {
-            id: 3,
-            category: '교통',
-            title: '신호등 고장 신고',
-            author: '동래구 운전자B',
-            likes: 25,
-            comments: 10,
-            image: '/assets/proposal_3.png',
-            description: '사거리 신호등이 깜빡거리기만 하고 바뀌질 않네요.\n교통 체증이 심각하니 확인해주세요.',
-            date: '2026.01.07',
-            views: 450
-        }
-    ];
+    const [proposals, setProposals] = useState([]); // Real data from backend
+    const [loading, setLoading] = useState(true);
+
+    const VITE_API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
+    useEffect(() => {
+        const fetchProposals = async () => {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`${VITE_API_URL}/api/reports/proposals`, {
+                    headers: {
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setProposals(data || []);
+                }
+            } catch (error) {
+                console.error("Failed to fetch proposals:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProposals();
+    }, [VITE_API_URL]);
+
+    // Format date for list card
+    const formatDate = (dateStr) => {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+    };
+
+    // 카테고리별 배지 색상 정의
+    const getCategoryStyle = (category) => {
+        const styles = {
+            '주거': { background: '#FFF3E0', color: '#E65100' },
+            '환경': { background: '#E8F5E9', color: '#2E7D32' },
+            '교육': { background: '#EDE7F6', color: '#4527A0' },
+            '안전': { background: '#FCE4EC', color: '#C62828' },
+            '산업 및 고용': { background: '#E0F2F1', color: '#00695C' },
+            '모빌리티': { background: '#E3F2FD', color: '#1565C0' },
+            '문화 및 레저': { background: '#FFF8E1', color: '#F57F17' },
+            '보건 및 복지': { background: '#F3E5F5', color: '#7B1FA2' },
+        };
+        return styles[category] || { background: '#F5F5F5', color: '#616161' };
+    };
+
+    // Filtered and Sorted Proposals
+    const filteredProposals = proposals.filter(p => {
+        const matchesCategory = selectedCategory === '전체' || p.category === selectedCategory;
+        // region 필드에서 '~구' 포함 여부로 매칭 (예: "부산 해운대구" → "해운대구" 선택 시 매칭)
+        const matchesRegion = selectedRegion === '부산 전체' || (p.region && p.region.includes(selectedRegion));
+        return matchesCategory && matchesRegion;
+    });
+
+    // Dummy data for original items if needed, but primarily use real data.
+    // If real data is empty, we show a message.
 
     const handleOpenModal = () => {
         setTempRegion(selectedRegion === '부산 전체' ? '부산 전 지역' : selectedRegion);
@@ -156,47 +177,72 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
                 </div>
 
                 {/* Proposal List */}
+                {/* Proposal List */}
                 <div className="nd-proposal-list">
-                    {dummyProposals.map((item) => (
-                        <div
-                            key={item.id}
-                            className="nd-proposal-card"
-                            onClick={() => onNavigate('proposalDetail', item)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <div className={`nd-card-badge ${item.category === '주거' ? 'bg-mint-light' : item.category === '생활' ? 'bg-green-light' : 'bg-pink-light'}`}>
-                                {item.category}
-                            </div>
-                            <h3 className="nd-card-title">{item.title}</h3>
-                            <p className="nd-card-author">{item.author}</p>
+                    {loading ? (
+                        <div style={{ textAlign: 'center', padding: '20px', color: '#888' }}>로딩 중...</div>
+                    ) : filteredProposals.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>해당하는 제안이 없습니다.</div>
+                    ) : filteredProposals.map((item) => {
+                        // 이미지 경로 처리
+                        let imageUrl = null;
+                        if (item.files && item.files.length > 0) {
+                            const firstFile = item.files[0];
+                            imageUrl = firstFile.startsWith('http') ? firstFile : `${VITE_API_URL}/uploads/${firstFile}`;
+                        }
 
-                            {item.image && (
-                                <div className="nd-card-image-wrapper">
-                                    <img src={item.image} alt={item.title} className="nd-card-image" onError={(e) => { e.target.style.display = 'none'; }} />
+                        return (
+                            <div
+                                key={item.id}
+                                className="nd-proposal-card"
+                                onClick={() => onNavigate('proposalDetail', {
+                                    ...item,
+                                    description: item.content,
+                                    author: item.nickname, // [수정] 닉네임 사용
+                                    date: formatDate(item.created_at),
+                                    views: item.views_count,
+                                    likes: item.likes_count,
+                                    image: imageUrl,
+                                    isMine: item.is_mine // [수정] 백엔드 기반 본인 판별
+                                })}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <div className="nd-card-badge" style={getCategoryStyle(item.category)}>
+                                    {item.category}
                                 </div>
-                            )}
+                                <h3 className="nd-card-title">{item.title}</h3>
+                                <p className="nd-card-author">{item.nickname || '익명'}</p>
 
-                            <div className="nd-card-stats">
-                                <div className="nd-stat">
-                                    <div 
-                                        className={`nd-stat-icon-circle ${item.hasVoted ? 'active' : ''}`} 
-                                        style={(item.title === '전봇대 불이 나갔어요' || item.title === '신호등 고장 신고') ? { marginTop: '-2px' } : {}}
-                                    >
-                                        <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                            <polyline points="20 6 9 17 4 12"></polyline>
-                                        </svg>
+                                {imageUrl && (
+                                    <div className="nd-card-image-wrapper">
+                                        <img 
+                                            src={imageUrl} 
+                                            alt={item.title} 
+                                            className="nd-card-image" 
+                                            onError={(e) => { e.target.style.display = 'none'; }} 
+                                        />
                                     </div>
-                                    <span>{item.likes}</span>
-                                </div>
-                                <div className="nd-stat">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#adb5bd" stroke="none">
-                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                    </svg>
-                                    <span>{item.comments}</span>
+                                )}
+
+                                <div className="nd-card-stats">
+                                    <div className="nd-stat">
+                                        <div className={`nd-stat-icon-circle ${item.has_voted ? 'active' : ''}`}>
+                                            <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                        </div>
+                                        <span>{item.likes_count}</span>
+                                    </div>
+                                    <div className="nd-stat">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#adb5bd" stroke="none">
+                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                        <span>0</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
 

@@ -1,6 +1,7 @@
 from typing import List, Optional, Any, Dict
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from datetime import datetime
+import json
 
 class DistrictAnalysisBase(BaseModel):
     district_code: str
@@ -126,6 +127,36 @@ class ReportCreate(BaseModel):
     title: str
     content: str
     files: List[str] = []
+
+class NewProposalCreate(BaseModel):
+    category: str
+    title: str
+    content: str
+    region: str
+    detailed_address: Optional[str] = None
+    files: List[str] = []
+
+class NewProposalRead(NewProposalCreate):
+    id: int
+    user_id: Optional[int] = None
+    views_count: int
+    likes_count: int
+    nickname: Optional[str] = None # 작성자 닉네임 추가
+    is_mine: Optional[bool] = False # 본인 글 여부 (동적 판단용)
+    has_voted: Optional[bool] = False # 투표 여부 추가
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+    @validator("files", pre=True)
+    def parse_files(cls, v):
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except:
+                return []
+        return v
 
 class SuggestionCreate(BaseModel):
     location: str
