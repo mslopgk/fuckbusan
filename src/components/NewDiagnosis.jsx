@@ -82,6 +82,15 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
         // region 필드에서 '~구' 포함 여부로 매칭 (예: "부산 해운대구" → "해운대구" 선택 시 매칭)
         const matchesRegion = selectedRegion === '부산 전체' || (p.region && p.region.includes(selectedRegion));
         return matchesCategory && matchesRegion;
+    }).sort((a, b) => {
+        if (selectedSort === '최신순') {
+            return new Date(b.created_at) - new Date(a.created_at);
+        } else if (selectedSort === '투표순') {
+            return (b.likes_count || 0) - (a.likes_count || 0);
+        } else if (selectedSort === '조회수') {
+            return (b.views_count || 0) - (a.views_count || 0);
+        }
+        return 0;
     });
 
     // Dummy data for original items if needed, but primarily use real data.
@@ -225,6 +234,7 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
                                             src={imageUrl} 
                                             alt={item.title} 
                                             className="nd-card-image" 
+                                            loading="lazy"
                                             onError={(e) => { e.target.style.display = 'none'; }} 
                                         />
                                     </div>

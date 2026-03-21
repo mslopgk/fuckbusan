@@ -159,6 +159,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                             src={imageUrl} 
                             alt="Proposal" 
                             className="pd-main-image" 
+                            loading="lazy"
                             onError={(e) => { 
                                 console.warn("Detail image load failed:", imageUrl);
                                 e.target.style.display='none'; 

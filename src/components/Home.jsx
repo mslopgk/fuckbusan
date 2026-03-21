@@ -110,14 +110,14 @@ const Home = ({ onNavigate }) => {
             {/* Content Wrapper */}
             <div className="content-wrapper">
 
-                {/* Category Grid Section */}
-                <CategoryGrid />
+                {/* Category Grid Section - Temporarily hidden per request */}
+                {false && <CategoryGrid />}
 
                 {/* Citizen Cards Section */}
                 {/* <CitizenCards /> */}
 
                 {/* Action Cards & Survey Row - User wants: Survey / Report / Diagnose in a row */}
-                <div className="action-row">
+                <div className="action-row" style={{ marginTop: '-40px', position: 'relative', zIndex: 20 }}>
                     {/* Survey Banner (As Card 1) */}
                     {false && (
                         <div className="action-item survey-card" onClick={() => onNavigate && onNavigate('survey')}>

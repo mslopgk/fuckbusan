@@ -1,36 +1,37 @@
-import React, { useState, useEffect } from 'react'
-import BigCategory from './components/BigCategory'
-import CheckList from './components/CheckList'
-import Satisfaction from './components/Satisfaction'
-import Review from './components/Review'
-import CheckDone from './components/CheckDone'
-import Survey from './components/Survey'
-import Home from './components/Home'
+import React, { useState, useEffect, Suspense, lazy } from 'react'
 
-import Login from './components/Login'
-import Signup from './components/Signup'
-import SignupDone from './components/SignupDone'
-import Report from './components/Report'
-import ReportForm from './components/ReportForm'
-import Diagnosis from './components/Diagnosis'
-import DiagnosisStep1 from './components/DiagnosisStep1'
-import DiagnosisList from './components/DiagnosisList'
-import MyActivity from './components/MyActivity'
-import DiagnosisEdit from './components/DiagnosisEdit'
-import DiagnosisResult from './components/DiagnosisResult'
-import ExpertDiagnosisResult from './components/ExpertDiagnosisResult'
-import ExpertDiagnosisDetail from './components/ExpertDiagnosisDetail'
-import DiagnosisDetail from './components/DiagnosisDetail'
-import NewDiagnosis from './components/NewDiagnosis'
-import ProposalForm from './components/ProposalForm'
-import ProposalPreview from './components/ProposalPreview'
-import ProposalDone from './components/ProposalDone'
-import ProposalDetail from './components/ProposalDetail'
-import MyProposals from './components/MyProposals' // Added My Proposal Status page
+const BigCategory = lazy(() => import('./components/BigCategory'));
+const CheckList = lazy(() => import('./components/CheckList'));
+const Satisfaction = lazy(() => import('./components/Satisfaction'));
+const Review = lazy(() => import('./components/Review'));
+const CheckDone = lazy(() => import('./components/CheckDone'));
+const Survey = lazy(() => import('./components/Survey'));
+const Home = lazy(() => import('./components/Home'));
+const Login = lazy(() => import('./components/Login'));
+const Signup = lazy(() => import('./components/Signup'));
+const SignupDone = lazy(() => import('./components/SignupDone'));
+const Report = lazy(() => import('./components/Report'));
+const ReportForm = lazy(() => import('./components/ReportForm'));
+const Diagnosis = lazy(() => import('./components/Diagnosis'));
+const DiagnosisStep1 = lazy(() => import('./components/DiagnosisStep1'));
+const DiagnosisList = lazy(() => import('./components/DiagnosisList'));
+const MyActivity = lazy(() => import('./components/MyActivity'));
+const DiagnosisEdit = lazy(() => import('./components/DiagnosisEdit'));
+const DiagnosisResult = lazy(() => import('./components/DiagnosisResult'));
+const ExpertDiagnosisResult = lazy(() => import('./components/ExpertDiagnosisResult'));
+const ExpertDiagnosisDetail = lazy(() => import('./components/ExpertDiagnosisDetail'));
+const DiagnosisDetail = lazy(() => import('./components/DiagnosisDetail'));
+const NewDiagnosis = lazy(() => import('./components/NewDiagnosis'));
+const ProposalForm = lazy(() => import('./components/ProposalForm'));
+const ProposalPreview = lazy(() => import('./components/ProposalPreview'));
+const ProposalDone = lazy(() => import('./components/ProposalDone'));
+const ProposalDetail = lazy(() => import('./components/ProposalDetail'));
+const MyProposals = lazy(() => import('./components/MyProposals'));
 
-import AdminLogin from './admin/pages/Login'
-import AdminSignup from './admin/pages/Signup'
-import AdminDashboard from './admin/pages/Dashboard'
+const AdminLogin = lazy(() => import('./admin/pages/Login'));
+const AdminSignup = lazy(() => import('./admin/pages/Signup'));
+const AdminDashboard = lazy(() => import('./admin/pages/Dashboard'));
+
 import { fetchWithLogout } from './utils/api'
 
 function App() {
@@ -290,423 +291,425 @@ function App() {
     if (loading && view !== 'home') return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
 
     return (
-        <div>
-            {view === 'home' && (
-                <Home onNavigate={onNavigate} />
-            )}
-            {view === 'login' && (
-                <Login
-                    onBack={() => setView('home')}
-                    onSignup={() => setView('signup')}
-                />
-            )}
-            {view === 'signup' && (
-                <Signup
-                    onBack={() => setView('login')}
-                    onNavigate={(target) => setView(target)}
-                />
-            )}
-            {view === 'signupDone' && (
-                <SignupDone
-                    onLogin={() => setView('login')}
-                />
-            )}
-            {view === 'report' && (
-                <Report
-                    onBack={() => setView('home')}
-                    onNext={(type) => setView('reportForm')}
-                />
-            )}
-            {view === 'reportForm' && (
-                <ReportForm onBack={() => setView('report')} />
-            )}
-            {view === 'diagnosis' && (
-                <Diagnosis
-                    initialMode={diagnosisMode}
-                    mapPins={mapPins}
-                    onAddPin={handleAddPin}
-                    onBack={() => setView('home')}
-                    onNext={(data) => {
-                        // data: { mode, location, address }
-                        setDiagnosisMode(data.mode);
-                        updateDiagnosisPayload('location', data.location);
-                        updateDiagnosisPayload('address', data.address); // Add to payload if needed in future
-                        setView('diagnosisStep1');
-                    }}
-                    onEdit={handleEdit}
-                    onResult={handleViewResult}
-                    onList={() => setView('diagnosisList')}
-                    onMyActivity={() => setView('myActivity')}
-                />
-            )}
-            {view === 'diagnosisList' && (
-                <DiagnosisList
-                    onBack={() => setView('diagnosis')}
-                />
-            )}
-            {view === 'myActivity' && (
-                <MyActivity
-                    onBack={() => setView('diagnosis')}
-                    onEdit={(item) => {
-                        setEditData(item);
-                        setView('diagnosisEdit');
-                    }}
-                />
-            )}
-            {view === 'diagnosisEdit' && (
-                <DiagnosisEdit
-                    data={editData}
-                    onBack={() => setView('myActivity')}
-                    onComplete={() => setView('myActivity')}
-                />
-            )}
-            {view === 'diagnosisStep1' && (
-                <DiagnosisStep1
-                    color={theme.primary}
-                    progressBarColor={theme.progressBar}
-                    onBack={() => setView('diagnosis')}
-                    onNext={(data) => {
-                        // data: { photo, location } from Step1
-                        updateDiagnosisPayload('photo', data.photo);
-                        updateDiagnosisPayload('location', data.location);
-
-                        setSelectedBig('');
-                        setSelectedMid(null);
-                        setView('bigCategory');
-                    }}
-                />
-            )}
-            {view === 'bigCategory' && (
-                <BigCategory
-                    color={theme.primary}
-                    progressBarColor={theme.progressBar}
-                    data={data}
-                    initialBig={selectedBig}
-                    initialMid={selectedMid}
-                    onNext={(big, mid) => {
-                        updateDiagnosisPayload('bigCategory', big);
-                        updateDiagnosisPayload('midCategory', mid);
-                        goToCheckList(big, mid);
-                    }}
-                    onBack={() => setView('diagnosisStep1')}
-                />
-            )}
-            {view === 'checkList' && (
-                <CheckList
-                    color={theme.primary}
-                    progressBarColor={theme.progressBar}
-                    diagnosisMode={diagnosisMode}
-                    questions={data[selectedBig]?.[selectedMid] || []}
-                    onPrev={goToBigCategory}
-                    onNext={(ratings) => {
-                        // ratings: { index: value }
-                        updateDiagnosisPayload('answers', ratings);
-
-                        if (diagnosisMode === 'expert') {
-                            setView('satisfaction');
-                        } else {
-                            // Calculate Average for General Mode (1-5)
-                            const vals = Object.values(ratings).map(Number);
-                            const sum = vals.reduce((a, b) => a + b, 0);
-                            const avg = vals.length > 0 ? (sum / vals.length).toFixed(1) : "0.0";
-                            updateDiagnosisPayload('satisfaction', avg);
-                            goToReview();
-                        }
-                    }}
-                />
-            )}
-            {view === 'satisfaction' && (
-                <Satisfaction
-                    color={theme.primary}
-                    progressBarColor={theme.progressBar}
-                    onPrev={() => setView('checkList')}
-                    onNext={(score) => {
-                        updateDiagnosisPayload('satisfaction', score);
-                        setView('review');
-                    }} // Satisfaction always goes to Review
-                />
-            )}
-            {view === 'review' && (
-                <Review
-                    color={theme.primary}
-                    progressBarColor={theme.progressBar}
-                    diagnosisMode={diagnosisMode}
-                    diagnosisPayload={diagnosisPayload} // Pass full payload to submit
-                    onPrev={() => setView('checkList')}
-                    onNext={goToCheckDone}
-                />
-            )}
-            {view === 'checkDone' && (
-                <CheckDone
-                    type="diagnosis"
-                    color={theme.primary}
-                    onGoHome={() => setView('home')}
-                />
-            )}
-            {view === 'diagnosisResult' && (
-                <DiagnosisResult
-                    onBack={() => setView('home')}
-                    onHome={() => setView('home')}
-                    onDetailFacility={() => setView('facilityDetail')}
-                    onDetailZone={() => setView('zoneDetail')}
-                    onDetailPerson={() => setView('personDetail')}
-                />
-            )}
-            {view === 'expertDiagnosisResult' && (
-                <ExpertDiagnosisResult
-                    onBack={() => setView('home')}
-                    onHome={() => setView('home')}
-                    onDetailFacility={() => setView('facilityDetail')}
-                    onDetailZone={() => setView('zoneDetail')}
-                    onDetailPerson={() => setView('personDetail')}
-                />
-            )}
-            {view === 'facilityDetail' && (
-                diagnosisMode === 'expert' ? (
-                    <ExpertDiagnosisDetail
-                        type="facility"
+        <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#16B5B0', fontWeight: 'bold' }}>화면을 불러오는 중입니다...</div>}>
+            <div>
+                {view === 'home' && (
+                    <Home onNavigate={onNavigate} />
+                )}
+                {view === 'login' && (
+                    <Login
+                        onBack={() => setView('home')}
+                        onSignup={() => setView('signup')}
+                    />
+                )}
+                {view === 'signup' && (
+                    <Signup
+                        onBack={() => setView('login')}
+                        onNavigate={(target) => setView(target)}
+                    />
+                )}
+                {view === 'signupDone' && (
+                    <SignupDone
+                        onLogin={() => setView('login')}
+                    />
+                )}
+                {view === 'report' && (
+                    <Report
+                        onBack={() => setView('home')}
+                        onNext={(type) => setView('reportForm')}
+                    />
+                )}
+                {view === 'reportForm' && (
+                    <ReportForm onBack={() => setView('report')} />
+                )}
+                {view === 'diagnosis' && (
+                    <Diagnosis
+                        initialMode={diagnosisMode}
+                        mapPins={mapPins}
+                        onAddPin={handleAddPin}
+                        onBack={() => setView('home')}
+                        onNext={(data) => {
+                            // data: { mode, location, address }
+                            setDiagnosisMode(data.mode);
+                            updateDiagnosisPayload('location', data.location);
+                            updateDiagnosisPayload('address', data.address); // Add to payload if needed in future
+                            setView('diagnosisStep1');
+                        }}
+                        onEdit={handleEdit}
+                        onResult={handleViewResult}
+                        onList={() => setView('diagnosisList')}
+                        onMyActivity={() => setView('myActivity')}
+                    />
+                )}
+                {view === 'diagnosisList' && (
+                    <DiagnosisList
+                        onBack={() => setView('diagnosis')}
+                    />
+                )}
+                {view === 'myActivity' && (
+                    <MyActivity
+                        onBack={() => setView('diagnosis')}
+                        onEdit={(item) => {
+                            setEditData(item);
+                            setView('diagnosisEdit');
+                        }}
+                    />
+                )}
+                {view === 'diagnosisEdit' && (
+                    <DiagnosisEdit
+                        data={editData}
+                        onBack={() => setView('myActivity')}
+                        onComplete={() => setView('myActivity')}
+                    />
+                )}
+                {view === 'diagnosisStep1' && (
+                    <DiagnosisStep1
+                        color={theme.primary}
+                        progressBarColor={theme.progressBar}
+                        onBack={() => setView('diagnosis')}
+                        onNext={(data) => {
+                            // data: { photo, location } from Step1
+                            updateDiagnosisPayload('photo', data.photo);
+                            updateDiagnosisPayload('location', data.location);
+    
+                            setSelectedBig('');
+                            setSelectedMid(null);
+                            setView('bigCategory');
+                        }}
+                    />
+                )}
+                {view === 'bigCategory' && (
+                    <BigCategory
+                        color={theme.primary}
+                        progressBarColor={theme.progressBar}
                         data={data}
-                        onBack={() => setView('expertDiagnosisResult')}
+                        initialBig={selectedBig}
+                        initialMid={selectedMid}
+                        onNext={(big, mid) => {
+                            updateDiagnosisPayload('bigCategory', big);
+                            updateDiagnosisPayload('midCategory', mid);
+                            goToCheckList(big, mid);
+                        }}
+                        onBack={() => setView('diagnosisStep1')}
+                    />
+                )}
+                {view === 'checkList' && (
+                    <CheckList
+                        color={theme.primary}
+                        progressBarColor={theme.progressBar}
+                        diagnosisMode={diagnosisMode}
+                        questions={data[selectedBig]?.[selectedMid] || []}
+                        onPrev={goToBigCategory}
+                        onNext={(ratings) => {
+                            // ratings: { index: value }
+                            updateDiagnosisPayload('answers', ratings);
+    
+                            if (diagnosisMode === 'expert') {
+                                setView('satisfaction');
+                            } else {
+                                // Calculate Average for General Mode (1-5)
+                                const vals = Object.values(ratings).map(Number);
+                                const sum = vals.reduce((a, b) => a + b, 0);
+                                const avg = vals.length > 0 ? (sum / vals.length).toFixed(1) : "0.0";
+                                updateDiagnosisPayload('satisfaction', avg);
+                                goToReview();
+                            }
+                        }}
+                    />
+                )}
+                {view === 'satisfaction' && (
+                    <Satisfaction
+                        color={theme.primary}
+                        progressBarColor={theme.progressBar}
+                        onPrev={() => setView('checkList')}
+                        onNext={(score) => {
+                            updateDiagnosisPayload('satisfaction', score);
+                            setView('review');
+                        }} // Satisfaction always goes to Review
+                    />
+                )}
+                {view === 'review' && (
+                    <Review
+                        color={theme.primary}
+                        progressBarColor={theme.progressBar}
+                        diagnosisMode={diagnosisMode}
+                        diagnosisPayload={diagnosisPayload} // Pass full payload to submit
+                        onPrev={() => setView('checkList')}
+                        onNext={goToCheckDone}
+                    />
+                )}
+                {view === 'checkDone' && (
+                    <CheckDone
+                        type="diagnosis"
+                        color={theme.primary}
+                        onGoHome={() => setView('home')}
+                    />
+                )}
+                {view === 'diagnosisResult' && (
+                    <DiagnosisResult
+                        onBack={() => setView('home')}
                         onHome={() => setView('home')}
                         onDetailFacility={() => setView('facilityDetail')}
                         onDetailZone={() => setView('zoneDetail')}
                         onDetailPerson={() => setView('personDetail')}
                     />
-                ) : (
-                    <DiagnosisDetail
-                        type="facility"
-                        data={data}
-                        onBack={() => setView(diagnosisMode === 'expert' ? 'expertDiagnosisResult' : 'diagnosisResult')}
+                )}
+                {view === 'expertDiagnosisResult' && (
+                    <ExpertDiagnosisResult
+                        onBack={() => setView('home')}
                         onHome={() => setView('home')}
                         onDetailFacility={() => setView('facilityDetail')}
                         onDetailZone={() => setView('zoneDetail')}
                         onDetailPerson={() => setView('personDetail')}
                     />
-                )
-            )}
-            {view === 'zoneDetail' && (
-                diagnosisMode === 'expert' ? (
-                    <ExpertDiagnosisDetail
-                        type="zone"
-                        data={data}
-                        onBack={() => setView('expertDiagnosisResult')}
-                        onHome={() => setView('home')}
-                        onDetailFacility={() => setView('facilityDetail')}
-                        onDetailZone={() => setView('zoneDetail')}
-                        onDetailPerson={() => setView('personDetail')}
+                )}
+                {view === 'facilityDetail' && (
+                    diagnosisMode === 'expert' ? (
+                        <ExpertDiagnosisDetail
+                            type="facility"
+                            data={data}
+                            onBack={() => setView('expertDiagnosisResult')}
+                            onHome={() => setView('home')}
+                            onDetailFacility={() => setView('facilityDetail')}
+                            onDetailZone={() => setView('zoneDetail')}
+                            onDetailPerson={() => setView('personDetail')}
+                        />
+                    ) : (
+                        <DiagnosisDetail
+                            type="facility"
+                            data={data}
+                            onBack={() => setView(diagnosisMode === 'expert' ? 'expertDiagnosisResult' : 'diagnosisResult')}
+                            onHome={() => setView('home')}
+                            onDetailFacility={() => setView('facilityDetail')}
+                            onDetailZone={() => setView('zoneDetail')}
+                            onDetailPerson={() => setView('personDetail')}
+                        />
+                    )
+                )}
+                {view === 'zoneDetail' && (
+                    diagnosisMode === 'expert' ? (
+                        <ExpertDiagnosisDetail
+                            type="zone"
+                            data={data}
+                            onBack={() => setView('expertDiagnosisResult')}
+                            onHome={() => setView('home')}
+                            onDetailFacility={() => setView('facilityDetail')}
+                            onDetailZone={() => setView('zoneDetail')}
+                            onDetailPerson={() => setView('personDetail')}
+                        />
+                    ) : (
+                        <DiagnosisDetail
+                            type="zone"
+                            data={data}
+                            onBack={() => setView(diagnosisMode === 'expert' ? 'expertDiagnosisResult' : 'diagnosisResult')}
+                            onHome={() => setView('home')}
+                            onDetailFacility={() => setView('facilityDetail')}
+                            onDetailZone={() => setView('zoneDetail')}
+                            onDetailPerson={() => setView('personDetail')}
+                        />
+                    )
+                )}
+                {view === 'personDetail' && (
+                    diagnosisMode === 'expert' ? (
+                        <ExpertDiagnosisDetail
+                            type="person"
+                            data={data}
+                            onBack={() => setView('expertDiagnosisResult')}
+                            onHome={() => setView('home')}
+                            onDetailFacility={() => setView('facilityDetail')}
+                            onDetailZone={() => setView('zoneDetail')}
+                            onDetailPerson={() => setView('personDetail')}
+                        />
+                    ) : (
+                        <DiagnosisDetail
+                            type="person"
+                            data={data}
+                            onBack={() => setView(diagnosisMode === 'expert' ? 'expertDiagnosisResult' : 'diagnosisResult')}
+                            onHome={() => setView('home')}
+                            onDetailFacility={() => setView('facilityDetail')}
+                            onDetailZone={() => setView('zoneDetail')}
+                            onDetailPerson={() => setView('personDetail')}
+                        />
+                    )
+                )}
+                {view === 'surveyDone' && (
+                    <CheckDone
+                        type="survey"
+                        color="#E6235A"
+                        onGoHome={() => setView('home')}
                     />
-                ) : (
-                    <DiagnosisDetail
-                        type="zone"
-                        data={data}
-                        onBack={() => setView(diagnosisMode === 'expert' ? 'expertDiagnosisResult' : 'diagnosisResult')}
-                        onHome={() => setView('home')}
-                        onDetailFacility={() => setView('facilityDetail')}
-                        onDetailZone={() => setView('zoneDetail')}
-                        onDetailPerson={() => setView('personDetail')}
+                )}
+                {view === 'survey' && (
+                    <Survey
+                        onBack={() => setView('home')}
+                        onComplete={() => setView('surveyDone')}
                     />
-                )
-            )}
-            {view === 'personDetail' && (
-                diagnosisMode === 'expert' ? (
-                    <ExpertDiagnosisDetail
-                        type="person"
-                        data={data}
-                        onBack={() => setView('expertDiagnosisResult')}
-                        onHome={() => setView('home')}
-                        onDetailFacility={() => setView('facilityDetail')}
-                        onDetailZone={() => setView('zoneDetail')}
-                        onDetailPerson={() => setView('personDetail')}
+                )}
+                {view === 'newDiagnosis' && (
+                    <NewDiagnosis
+                        onBack={() => setView('home')}
+                        onNavigate={onNavigate}
                     />
-                ) : (
-                    <DiagnosisDetail
-                        type="person"
-                        data={data}
-                        onBack={() => setView(diagnosisMode === 'expert' ? 'expertDiagnosisResult' : 'diagnosisResult')}
-                        onHome={() => setView('home')}
-                        onDetailFacility={() => setView('facilityDetail')}
-                        onDetailZone={() => setView('zoneDetail')}
-                        onDetailPerson={() => setView('personDetail')}
-                    />
-                )
-            )}
-            {view === 'surveyDone' && (
-                <CheckDone
-                    type="survey"
-                    color="#E6235A"
-                    onGoHome={() => setView('home')}
-                />
-            )}
-            {view === 'survey' && (
-                <Survey
-                    onBack={() => setView('home')}
-                    onComplete={() => setView('surveyDone')}
-                />
-            )}
-            {view === 'newDiagnosis' && (
-                <NewDiagnosis
-                    onBack={() => setView('home')}
-                    onNavigate={onNavigate}
-                />
-            )}
-            {view === 'proposalForm' && (
-                <ProposalForm 
-                    onBack={() => setView(isProposalEdit ? 'proposalDetail' : 'newDiagnosis')} 
-                    onNavigate={onNavigate}
-                    isEdit={isProposalEdit}
-                    initialData={proposalToEdit}
-                    onComplete={async (formData) => {
-                        try {
-                            const token = localStorage.getItem('access_token');
-                            const VITE_API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
-
-                            // [1] 신규 파일 업로드 처리
-                            const uploadNewFiles = async (files) => {
-                                const uploadedNames = [];
-                                for (const file of files) {
-                                    const uploadData = new FormData();
-                                    uploadData.append('file', file);
-                                    
-                                    const uploadRes = await fetch(`${VITE_API_URL}/api/reports/upload`, {
-                                        method: 'POST',
-                                        body: uploadData,
-                                        // FormData 전송 시 Content-Type 헤더를 명시하지 않아야 브라우저가 boundary를 자동으로 설정함
-                                    });
-                                    
-                                    if (uploadRes.ok) {
-                                        const result = await uploadRes.json();
-                                        uploadedNames.push(result.filename);
-                                    } else {
-                                        console.error('File upload failed for:', file.name);
+                )}
+                {view === 'proposalForm' && (
+                    <ProposalForm 
+                        onBack={() => setView(isProposalEdit ? 'proposalDetail' : 'newDiagnosis')} 
+                        onNavigate={onNavigate}
+                        isEdit={isProposalEdit}
+                        initialData={proposalToEdit}
+                        onComplete={async (formData) => {
+                            try {
+                                const token = localStorage.getItem('access_token');
+                                const VITE_API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+    
+                                // [1] 신규 파일 업로드 처리
+                                const uploadNewFiles = async (files) => {
+                                    const uploadedNames = [];
+                                    for (const file of files) {
+                                        const uploadData = new FormData();
+                                        uploadData.append('file', file);
+                                        
+                                        const uploadRes = await fetch(`${VITE_API_URL}/api/reports/upload`, {
+                                            method: 'POST',
+                                            body: uploadData,
+                                            // FormData 전송 시 Content-Type 헤더를 명시하지 않아야 브라우저가 boundary를 자동으로 설정함
+                                        });
+                                        
+                                        if (uploadRes.ok) {
+                                            const result = await uploadRes.json();
+                                            uploadedNames.push(result.filename);
+                                        } else {
+                                            console.error('File upload failed for:', file.name);
+                                        }
                                     }
-                                }
-                                return uploadedNames;
-                            };
-
-                            const newUploadedFilenames = await uploadNewFiles(formData.newFiles || []);
-                            const finalFilenames = [...(formData.existingFiles || []), ...newUploadedFilenames];
-
-                            if (isProposalEdit) {
-                                // [수정 모드] PUT 요청
-                                const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${formData.id}`, {
-                                    method: 'PUT',
-                                    headers: { 
-                                        'Content-Type': 'application/json',
-                                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-                                    },
-                                    body: JSON.stringify({
+                                    return uploadedNames;
+                                };
+    
+                                const newUploadedFilenames = await uploadNewFiles(formData.newFiles || []);
+                                const finalFilenames = [...(formData.existingFiles || []), ...newUploadedFilenames];
+    
+                                if (isProposalEdit) {
+                                    // [수정 모드] PUT 요청
+                                    const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${formData.id}`, {
+                                        method: 'PUT',
+                                        headers: { 
+                                            'Content-Type': 'application/json',
+                                            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                        },
+                                        body: JSON.stringify({
+                                            category: formData.category,
+                                            title: formData.title,
+                                            content: formData.content,
+                                            region: formData.region,
+                                            detailed_address: formData.detailed_address,
+                                            files: finalFilenames
+                                        })
+                                    });
+    
+                                    if (response.ok) {
+                                        localStorage.removeItem('proposal_draft'); // [추가] 수정 성공 시 임시저장 삭제
+                                        alert('성공적으로 수정되었습니다.');
+                                        
+                                        setSelectedProposal(prev => ({
+                                            ...prev,
+                                            category: formData.category,
+                                            title: formData.title,
+                                            content: formData.content,
+                                            description: formData.content, // Fallback compatibility
+                                            region: formData.region,
+                                            detailed_address: formData.detailed_address,
+                                            detailedAddress: formData.detailed_address, // Fallback compatibility
+                                            files: finalFilenames,
+                                            image: finalFilenames.length > 0 ? (finalFilenames[0].startsWith('http') ? finalFilenames[0] : (finalFilenames[0].startsWith('/uploads/') ? finalFilenames[0] : `/uploads/${finalFilenames[0]}`)) : (prev ? prev.image : null)
+                                        }));
+                                        
+                                        setView('proposalDetail');
+                                    } else {
+                                        alert('수정에 실패했습니다.');
+                                    }
+                                } else {
+                                    // [신규 등록] POST 요청
+                                    const payload = {
                                         category: formData.category,
                                         title: formData.title,
                                         content: formData.content,
                                         region: formData.region,
                                         detailed_address: formData.detailed_address,
                                         files: finalFilenames
-                                    })
-                                });
-
-                                if (response.ok) {
-                                    localStorage.removeItem('proposal_draft'); // [추가] 수정 성공 시 임시저장 삭제
-                                    alert('성공적으로 수정되었습니다.');
+                                    };
                                     
-                                    setSelectedProposal(prev => ({
-                                        ...prev,
-                                        category: formData.category,
-                                        title: formData.title,
-                                        content: formData.content,
-                                        description: formData.content, // Fallback compatibility
-                                        region: formData.region,
-                                        detailed_address: formData.detailed_address,
-                                        detailedAddress: formData.detailed_address, // Fallback compatibility
-                                        files: finalFilenames,
-                                        image: finalFilenames.length > 0 ? (finalFilenames[0].startsWith('http') ? finalFilenames[0] : (finalFilenames[0].startsWith('/uploads/') ? finalFilenames[0] : `/uploads/${finalFilenames[0]}`)) : (prev ? prev.image : null)
-                                    }));
+                                    const response = await fetch(`${VITE_API_URL}/api/reports/new-proposal`, {
+                                        method: 'POST',
+                                        headers: { 
+                                            'Content-Type': 'application/json',
+                                            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                        },
+                                        body: JSON.stringify(payload)
+                                    });
                                     
-                                    setView('proposalDetail');
-                                } else {
-                                    alert('수정에 실패했습니다.');
+                                    if (response.ok) {
+                                        localStorage.removeItem('proposal_draft'); // [추가] 등록 성공 시 임시저장 삭제
+                                        setView('proposalDone');
+                                    } else {
+                                        alert('제안 저장에 실패했습니다.');
+                                    }
                                 }
-                            } else {
-                                // [신규 등록] POST 요청
-                                const payload = {
-                                    category: formData.category,
-                                    title: formData.title,
-                                    content: formData.content,
-                                    region: formData.region,
-                                    detailed_address: formData.detailed_address,
-                                    files: finalFilenames
-                                };
-                                
-                                const response = await fetch(`${VITE_API_URL}/api/reports/new-proposal`, {
-                                    method: 'POST',
-                                    headers: { 
-                                        'Content-Type': 'application/json',
-                                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-                                    },
-                                    body: JSON.stringify(payload)
-                                });
-                                
-                                if (response.ok) {
-                                    localStorage.removeItem('proposal_draft'); // [추가] 등록 성공 시 임시저장 삭제
-                                    setView('proposalDone');
-                                } else {
-                                    alert('제안 저장에 실패했습니다.');
-                                }
+                            } catch (error) {
+                                console.error("Proposal action error:", error);
+                                alert('오류가 발생했습니다.');
                             }
-                        } catch (error) {
-                            console.error("Proposal action error:", error);
-                            alert('오류가 발생했습니다.');
-                        }
-                    }} 
-                />
-            )}
-            {view === 'proposalPreview' && (
-                <ProposalPreview
-                    data={proposalData}
-                    onBack={() => setView('proposalForm')}
-                    onComplete={() => setView('proposalDone')}
-                />
-            )}
-            {view === 'proposalDone' && (
-                <ProposalDone
-                    onMyProposals={() => {
-                        setProposalData(null);
-                        onNavigate('myProposals');
-                    }}
-                    onOthers={() => {
-                        setProposalData(null);
-                        setView('newDiagnosis');
-                    }}
-                />
-            )}
-            {view === 'proposalDetail' && (
-                <ProposalDetail
-                    proposal={selectedProposal}
-                    onBack={() => setView('newDiagnosis')}
-                    onNavigate={onNavigate}
-                />
-            )}
-            {view === 'myProposals' && (
-                <MyProposals
-                    onBack={() => setView('home')}
-                    onNavigate={onNavigate}
-                />
-            )}
-            {view === 'adminLogin' && (
-                <AdminLogin
-                    onNavigate={(target) => setView(target)}
-                />
-            )}
-            {view === 'adminSignup' && (
-                <AdminSignup
-                    onNavigate={(target) => setView(target)}
-                />
-            )}
-            {view === 'adminDashboard' && (
-                <AdminDashboard
-                    onNavigate={(target) => setView(target)}
-                />
-            )}
-        </div>
+                        }} 
+                    />
+                )}
+                {view === 'proposalPreview' && (
+                    <ProposalPreview
+                        data={proposalData}
+                        onBack={() => setView('proposalForm')}
+                        onComplete={() => setView('proposalDone')}
+                    />
+                )}
+                {view === 'proposalDone' && (
+                    <ProposalDone
+                        onMyProposals={() => {
+                            setProposalData(null);
+                            onNavigate('myProposals');
+                        }}
+                        onOthers={() => {
+                            setProposalData(null);
+                            setView('newDiagnosis');
+                        }}
+                    />
+                )}
+                {view === 'proposalDetail' && (
+                    <ProposalDetail
+                        proposal={selectedProposal}
+                        onBack={() => setView('newDiagnosis')}
+                        onNavigate={onNavigate}
+                    />
+                )}
+                {view === 'myProposals' && (
+                    <MyProposals
+                        onBack={() => setView('home')}
+                        onNavigate={onNavigate}
+                    />
+                )}
+                {view === 'adminLogin' && (
+                    <AdminLogin
+                        onNavigate={(target) => setView(target)}
+                    />
+                )}
+                {view === 'adminSignup' && (
+                    <AdminSignup
+                        onNavigate={(target) => setView(target)}
+                    />
+                )}
+                {view === 'adminDashboard' && (
+                    <AdminDashboard
+                        onNavigate={(target) => setView(target)}
+                    />
+                )}
+            </div>
+        </Suspense>
     )
 }
 

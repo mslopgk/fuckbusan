@@ -146,6 +146,7 @@ const MyProposals = ({ onBack, onNavigate }) => {
                                         src={imageUrl} 
                                         alt={item.title} 
                                         className="mp-card-image" 
+                                        loading="lazy"
                                         onError={(e) => { 
                                             console.warn("Image load failed:", imageUrl);
                                             e.target.style.display='none'; 
