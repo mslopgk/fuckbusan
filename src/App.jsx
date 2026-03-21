@@ -607,6 +607,20 @@ function App() {
                                 if (response.ok) {
                                     localStorage.removeItem('proposal_draft'); // [추가] 수정 성공 시 임시저장 삭제
                                     alert('성공적으로 수정되었습니다.');
+                                    
+                                    setSelectedProposal(prev => ({
+                                        ...prev,
+                                        category: formData.category,
+                                        title: formData.title,
+                                        content: formData.content,
+                                        description: formData.content, // Fallback compatibility
+                                        region: formData.region,
+                                        detailed_address: formData.detailed_address,
+                                        detailedAddress: formData.detailed_address, // Fallback compatibility
+                                        files: finalFilenames,
+                                        image: finalFilenames.length > 0 ? (finalFilenames[0].startsWith('http') ? finalFilenames[0] : (finalFilenames[0].startsWith('/uploads/') ? finalFilenames[0] : `/uploads/${finalFilenames[0]}`)) : (prev ? prev.image : null)
+                                    }));
+                                    
                                     setView('proposalDetail');
                                 } else {
                                     alert('수정에 실패했습니다.');

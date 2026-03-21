@@ -107,6 +107,8 @@ const MyProposals = ({ onBack, onNavigate }) => {
                         const firstFile = item.files[0];
                         if (firstFile.startsWith('http')) {
                             imageUrl = firstFile;
+                        } else if (firstFile.startsWith('/assets/')) {
+                            imageUrl = firstFile;
                         } else if (firstFile.startsWith('/uploads/')) {
                             imageUrl = `${VITE_API_URL}${firstFile}`;
                         } else {

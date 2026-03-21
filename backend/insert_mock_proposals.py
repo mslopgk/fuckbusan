@@ -29,7 +29,7 @@ def insert_mock_proposals():
                 "content": "동래구 우리디자이너... 빠른 조치가 필요하네요. 전봇대가 꺼져서 밤길이 너무 어두워요. 빨리 고쳐주세요!",
                 "region": "동래구",
                 "detailed_address": "사직동 123-45",
-                "files": json.dumps(["done.svg"]), # Existing icon as placeholder
+                "files": json.dumps(["/assets/proposal_1.png"]), # Use real photo
                 "user_id": users[len(users)-1].user_id # Last user
             },
             {
@@ -38,16 +38,16 @@ def insert_mock_proposals():
                 "content": "시민공원 산책로에 쓰레기통이 너무 멀리 떨어져 있어서 사람들이 바닥에 쓰레기를 버립니다. 추가 설치가 시급합니다.",
                 "region": "부산진구",
                 "detailed_address": "부산시민공원 남문 인근",
-                "files": json.dumps(["file.svg"]),
+                "files": json.dumps(["/assets/proposal_2.png"]),
                 "user_id": users[0].user_id
             },
             {
-                "category": "교통",
+                "category": "보건 및 복지",
                 "title": "스마트 버스 쉘터 설치 제안",
                 "content": "여름에는 시원하고 겨울에는 따뜻한 스마트 쉘터가 우리 동네에도 생겼으면 좋겠습니다. 어르신들이 많이 이용하시는 정류장 위주로 검토 바랍니다.",
                 "region": "금정구",
                 "detailed_address": "부산대 정문 버스 정류장",
-                "files": json.dumps(["WDC.svg"]),
+                "files": json.dumps(["/assets/proposal_3.png"]),
                 "user_id": users[min(1, len(users)-1)].user_id
             }
         ]

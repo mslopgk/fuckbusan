@@ -81,11 +81,12 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         }
     };
     
-    // 이미지 경로 처리
     let imageUrl = proposal.image;
     if (proposal.files && proposal.files.length > 0 && (!imageUrl || imageUrl.includes('localhost:8501'))) {
         const firstFile = proposal.files[0];
         if (firstFile.startsWith('http')) {
+            imageUrl = firstFile;
+        } else if (firstFile.startsWith('/assets/')) {
             imageUrl = firstFile;
         } else if (firstFile.startsWith('/uploads/')) {
             imageUrl = `${VITE_API_URL}${firstFile}`;
@@ -135,12 +136,13 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                 <div className="pd-category-tag" style={(() => {
                     const styles = {
                         '주거': { background: '#FFF3E0', color: '#E65100' },
-                        '생활': { background: '#E8F5E9', color: '#2E7D32' },
-                        '교통': { background: '#E3F2FD', color: '#1565C0' },
-                        '안전': { background: '#FCE4EC', color: '#C62828' },
+                        '환경': { background: '#E8F5E9', color: '#2E7D32' },
                         '교육': { background: '#EDE7F6', color: '#4527A0' },
-                        '산업일자리': { background: '#E0F2F1', color: '#00695C' },
-                        '문화여가': { background: '#FFF8E1', color: '#F57F17' },
+                        '안전': { background: '#FCE4EC', color: '#C62828' },
+                        '산업 및 고용': { background: '#E0F2F1', color: '#00695C' },
+                        '모빌리티': { background: '#E3F2FD', color: '#1565C0' },
+                        '문화 및 레저': { background: '#FFF8E1', color: '#F57F17' },
+                        '보건 및 복지': { background: '#F3E5F5', color: '#7B1FA2' },
                     };
                     return styles[proposal.category] || { background: '#F5F5F5', color: '#616161' };
                 })()}>{proposal.category}</div>

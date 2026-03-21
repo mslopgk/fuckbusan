@@ -10,7 +10,7 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
         };
     }, []);
 
-    const categories = ['주거', '환경', '교육', '안전', '산업 및 고용', '모빌리티', '문화 및 레저', '보건 및 복지'];
+    const categories = ['전체', '주거', '환경', '교육', '안전', '산업 및 고용', '모빌리티', '문화 및 레저', '보건 및 복지'];
     const regions = [
         '부산 전 지역', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구',
         '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'
@@ -158,7 +158,7 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
                             <button
                                 key={idx}
                                 className={`nd-category-pill ${selectedCategory === cat ? 'active' : ''}`}
-                                onClick={() => setSelectedCategory(selectedCategory === cat ? '전체' : cat)}
+                                onClick={() => setSelectedCategory(cat)}
                             >
                                 {cat}
                             </button>
@@ -188,7 +188,13 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
                         let imageUrl = null;
                         if (item.files && item.files.length > 0) {
                             const firstFile = item.files[0];
-                            imageUrl = firstFile.startsWith('http') ? firstFile : `${VITE_API_URL}/uploads/${firstFile}`;
+                            if (firstFile.startsWith('http')) {
+                                imageUrl = firstFile;
+                            } else if (firstFile.startsWith('/assets/')) {
+                                imageUrl = firstFile;
+                            } else {
+                                imageUrl = `${VITE_API_URL}/uploads/${firstFile}`;
+                            }
                         }
 
                         return (

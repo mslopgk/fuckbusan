@@ -126,27 +126,34 @@
 .nd-categories-scroll {
     display: flex;
     flex-wrap: wrap;
-    /* Allow items to go to the next line */
-    gap: 8px 10px;
-    /* Vertical 8px, Horizontal 10px gap */
+    gap: 8px 6px;
+    justify-content: flex-start;
 }
 
 .nd-category-pill {
+    flex: 0 0 auto;
+    text-align: center;
     background-color: #e8e8e8;
     color: #444;
     border: none;
     border-radius: 20px;
-    padding: 8px 16px;
-    font-size: 0.95rem;
+    padding: 6px 10px;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
     transition: background-color 0.2s, color 0.2s;
+    letter-spacing: -0.3px;
 }
 
 .nd-category-pill.active {
-    background-color: #16B5B0;
-    color: white;
+    background-color: #16B5B0 !important;
+    color: white !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    padding: 6px 10px !important;
+    border: none !important;
+    margin: 0 !important;
 }
 
 /* Sort Row */

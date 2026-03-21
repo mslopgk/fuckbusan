@@ -7,11 +7,11 @@ const SignupDone = ({ onLogin }) => {
             <div className="check-done-content">
                 <div className="check-icon-wrapper">
                     <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="30" cy="30" r="30" fill="#E6235A" />
+                        <circle cx="30" cy="30" r="30" fill="#16B5B0" />
                         <path d="M17 31L26 40L43 23" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 </div>
-                <h1 className="done-title" style={{ color: '#E6235A' }}>회원가입 완료</h1>
+                <h1 className="done-title" style={{ color: '#16B5B0' }}>회원가입 완료</h1>
                 <h2 className="done-subtitle">환영합니다!</h2>
                 <p className="done-description">
                     회원가입이 성공적으로 완료되었습니다.<br />
@@ -23,7 +23,7 @@ const SignupDone = ({ onLogin }) => {
                 <button
                     className="btn-home"
                     onClick={onLogin}
-                    style={{ backgroundColor: '#E6235A', color: '#fff', border: 'none' }}
+                    style={{ backgroundColor: '#16B5B0', color: '#fff', border: 'none' }}
                 >
                     로그인 하기
                 </button>
