@@ -100,7 +100,8 @@ function App() {
     };
 
 
-    const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const rawApiUrl = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
+    const VITE_API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
     // Fetch data whenever diagnosisMode changes
     useEffect(() => {
@@ -567,7 +568,7 @@ function App() {
                         onComplete={async (formData) => {
                             try {
                                 const token = localStorage.getItem('access_token');
-                                const VITE_API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+                                const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
     
                                 // [1] 신규 파일 업로드 처리
                                 const uploadNewFiles = async (files) => {

@@ -28,7 +28,7 @@ const MyActivity = ({ onBack, onNavigate, onEdit }) => {
                         return;
                     }
 
-                    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+                    const API_URL = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
                     console.log("Fetching: " + `${API_URL}/checklist/my`);
                     // alert("Fetching: " + `${API_URL}/checklist/my`); // Debug
 

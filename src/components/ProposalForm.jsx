@@ -26,7 +26,7 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
     // 수정 모드 시 기존 이미지 로드
     useEffect(() => {
         if (isEdit && initialData && initialData.files) {
-            const VITE_API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+            const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
             const existingFiles = initialData.files.map(filename => {
                 const url = filename.startsWith('http') ? filename : `${VITE_API_URL}/uploads/${filename}`;
                 return {
@@ -330,10 +330,10 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
                         <div className="pf-draft-icon">
                             <img src="/save_draft_icon.svg" alt="Draft" style={{ width: '60px' }} />
                         </div>
-                        <h2 className="pf-draft-text">작성 중인 내용을<br/>임시저장 하시겠습니까?</h2>
+                        <h2 className="pf-draft-text">작성 중인 제안글을<br/>저장할까요?</h2>
                         <div className="pf-draft-btns">
-                            <button className="pf-btn-save-confirm" onClick={handleSaveDraft}>확인</button>
-                            <button className="pf-btn-save-cancel" onClick={() => setShowDraftModal(false)}>취소</button>
+                            <button className="pf-btn-save-confirm" onClick={handleSaveDraft}>저장하기</button>
+                            <button className="pf-btn-save-cancel" onClick={() => setShowDraftModal(false)}>저장안함</button>
                         </div>
                     </div>
                 </div>
