@@ -26,8 +26,10 @@ const Signup = ({ onBack, onNavigate }) => {
 
     const API_URL = import.meta.env.VITE_API_URL;
 
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,20}$/;
+    const passwordValid = passwordRegex.test(formData.password);
     const passwordMatch = formData.password && formData.passwordConfirm && formData.password === formData.passwordConfirm;
-    const isFormValid = formData.id && formData.password && passwordMatch && formData.name && formData.phone;
+    const isFormValid = formData.id && passwordValid && passwordMatch && formData.name && formData.phone;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -157,7 +159,13 @@ const Signup = ({ onBack, onNavigate }) => {
                         onChange={handleChange}
                         autoComplete="new-password"
                     />
-                    <div className="helper-text">*영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요.</div>
+                    {formData.password.length > 0 && !passwordValid ? (
+                        <div className="helper-text" style={{ color: '#E6235A' }}>*영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요.</div>
+                    ) : formData.password.length > 0 && passwordValid ? (
+                        <div className="helper-text" style={{ color: '#16B5B0' }}>사용 가능한 비밀번호입니다.</div>
+                    ) : (
+                        <div className="helper-text">*영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요.</div>
+                    )}
                 </div>
 
                 {/* Password Confirm */}

@@ -129,7 +129,10 @@ const Home = ({ onNavigate }) => {
                             </div>
                             <div className="card-arrow">→</div>
                         </div>
-                        <div className="action-item card diagnose" onClick={() => onNavigate && onNavigate('newDiagnosis')}>
+                        <div className="action-item card diagnose" onClick={() => {
+                                if (!isLoggedIn) { alert('로그인 후 이용할 수 있습니다.'); onNavigate && onNavigate('login'); return; }
+                                onNavigate && onNavigate('newDiagnosis');
+                            }}>
                             <div className="card-top">
                                 <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
                                     <div className="card-title">제안하기</div>
