@@ -111,6 +111,12 @@ const Signup = ({ onBack, onNavigate }) => {
             {/* Title */}
             <div className="login-title-section">
                 <div className="login-title">회원가입</div>
+                <div className="login-subtitle-main">
+                    더나은 부산을 위한 첫걸음
+                </div>
+                <div className="login-subtitle-desc">
+                    아직 계정이 없다면 회원가입을 진행해주세요
+                </div>
                 {error && <div style={{ color: 'red', fontSize: '14px', marginTop: '10px' }}>{error}</div>}
             </div>
 
@@ -242,7 +248,7 @@ const Signup = ({ onBack, onNavigate }) => {
             {/* Submit Button */}
             <div className="signup-btn-container">
                 <button
-                    className={`login-submit-btn ${isFormValid && !loading ? 'active' : 'disabled'}`}
+                    className={`signup-submit-btn ${isFormValid && !loading ? 'active' : 'disabled'}`}
                     disabled={!isFormValid || loading}
                     onClick={handleSignup}
                 >

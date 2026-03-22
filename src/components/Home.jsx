@@ -117,7 +117,7 @@ const Home = ({ onNavigate }) => {
                 {/* <CitizenCards /> */}
 
                 {/* Action Cards & Survey Row - User wants: Survey / Report / Diagnose in a row */}
-                <div className="action-row" style={{ marginTop: '-40px', position: 'relative', zIndex: 20 }}>
+                <div className="action-row" style={{ marginTop: '-60px', position: 'relative', zIndex: 20 }}>
                     {/* Survey Banner (As Card 1) */}
                     {false && (
                         <div className="action-item survey-card" onClick={() => onNavigate && onNavigate('survey')}>
@@ -134,15 +134,14 @@ const Home = ({ onNavigate }) => {
                     )}
 
                     <div className="action-item card report" onClick={() => alert('준비 중입니다.')}>
-                        <div>
-                            <div className="card-title">
-                                제보하기 <span className="card-arrow mobile-only" style={{ marginLeft: '6px', display: 'flex', alignItems: 'center' }}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                                </span>
+                        <div className="card-top">
+                            <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
+                                <div className="card-title">제보하기</div>
+                                <img src="/pencilicon.svg" alt="제보하기 아이콘" className="card-icon-img" />
                             </div>
                             <div className="card-subtitle">당신의 아이디어가<br />도시를 더 멋지게!</div>
-                            <div className="card-arrow desktop-only">→</div>
                         </div>
+                        <div className="card-arrow">→</div>
                     </div>
                     <div className="action-item card diagnose" onClick={() => {
                         const token = localStorage.getItem('access_token');
@@ -153,15 +152,14 @@ const Home = ({ onNavigate }) => {
                         }
                         onNavigate && onNavigate('newDiagnosis');
                     }}>
-                        <div>
-                            <div className="card-title">
-                                제안하기 <span className="card-arrow mobile-only" style={{ marginLeft: '6px', display: 'flex', alignItems: 'center' }}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                                </span>
+                        <div className="card-top">
+                            <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
+                                <div className="card-title">제안하기</div>
+                                <img src="/lighticon.svg" alt="제안하기 아이콘" className="card-icon-img" />
                             </div>
-                            <div className="card-subtitle">우리 동네 디자인,<br />같이 검진해볼까요?</div>
-                            <div className="card-arrow desktop-only">→</div>
+                            <div className="card-subtitle">우리 동네 디자인,<br />같이 점검해볼까요?</div>
                         </div>
+                        <div className="card-arrow">→</div>
                     </div>
                 </div>
 

@@ -69,6 +69,11 @@
     color: white;
     border-radius: 20px;
     padding: 8px 20px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-header.signup:hover {
+    background-color: #0F8581; /* Darker Mint */
 }
 
 .header-icons {
@@ -109,10 +114,11 @@
 
 .card {
     flex: 1;
+    min-width: 0;
     border-radius: 16px;
     padding: 24px;
     position: relative;
-    height: 260px;
+    height: 160px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -156,10 +162,40 @@
     text-align: left;
 }
 
+.card-top {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.card-icon-img {
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.card.diagnose .card-icon-img {
+    width: 32px; /* Visually match the pencil icon due to internal SVG padding */
+    height: 32px;
+}
+
+.card:hover .card-icon-img {
+    transform: scale(1.05) rotate(-5deg);
+}
+
 .card-subtitle {
     font-size: 0.95rem;
     opacity: 0.9;
     line-height: 1.5;
+    white-space: nowrap;
+    word-break: keep-all;
 }
 
 .card-icon {
@@ -1783,11 +1819,11 @@
 
     .action-item {
         flex: 1;
-        height: 280px;
-        /* Increased height (200 -> 280) */
+        min-width: 0;
+        height: 160px;
         /* Uniform height */
         border-radius: 24px;
-        padding: 40px;
+        padding: 24px; /* Reduced from 40px to give text room */
         position: relative;
         cursor: pointer;
         transition: transform 0.2s;

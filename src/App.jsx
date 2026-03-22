@@ -64,7 +64,13 @@ function App() {
     });
 
     const [proposalData, setProposalData] = useState(null); // Temporary storage for proposal preview
-    const [selectedProposal, setSelectedProposal] = useState(null); // For detail page
+    const [selectedProposal, setSelectedProposal] = useState(() => {
+        const stored = sessionStorage.getItem('selectedProposal');
+        if (stored) {
+            try { return JSON.parse(stored); } catch (e) { return null; }
+        }
+        return null;
+    });
     const [isProposalEdit, setIsProposalEdit] = useState(false); // [추가] 제안 수정 모드 여부
     const [proposalToEdit, setProposalToEdit] = useState(null); // [추가] 수정할 제안 데이터
 
@@ -275,6 +281,7 @@ function App() {
             setView('proposalPreview');
         } else if (target === 'proposalDetail') {
             setSelectedProposal(data);
+            if (data) sessionStorage.setItem('selectedProposal', JSON.stringify(data));
             setView('proposalDetail');
         } else if (target === 'myProposals') {
             setView('myProposals');
@@ -567,7 +574,9 @@ function App() {
                                     const uploadedNames = [];
                                     for (const file of files) {
                                         const uploadData = new FormData();
-                                        uploadData.append('file', file);
+                                        // 한글 파일명 전송 시 서버(Python/Nginx 환경)에서 발생할 수 있는 
+                                        // 인코딩 파싱 에러(500)를 방지하기 위해 파일명을 URL 인코딩하여 전송합니다.
+                                        uploadData.append('file', file, encodeURIComponent(file.name));
                                         
                                         const uploadRes = await fetch(`${VITE_API_URL}/api/reports/upload`, {
                                             method: 'POST',
@@ -607,22 +616,23 @@ function App() {
                                     });
     
                                     if (response.ok) {
-                                        localStorage.removeItem('proposal_draft'); // [추가] 수정 성공 시 임시저장 삭제
-                                        alert('성공적으로 수정되었습니다.');
-                                        
-                                        setSelectedProposal(prev => ({
-                                            ...prev,
-                                            category: formData.category,
-                                            title: formData.title,
-                                            content: formData.content,
-                                            description: formData.content, // Fallback compatibility
-                                            region: formData.region,
-                                            detailed_address: formData.detailed_address,
-                                            detailedAddress: formData.detailed_address, // Fallback compatibility
-                                            files: finalFilenames,
-                                            image: finalFilenames.length > 0 ? (finalFilenames[0].startsWith('http') ? finalFilenames[0] : (finalFilenames[0].startsWith('/uploads/') ? finalFilenames[0] : `/uploads/${finalFilenames[0]}`)) : (prev ? prev.image : null)
-                                        }));
-                                        
+                                        setSelectedProposal(prev => {
+                                            const updatedProposal = {
+                                                ...prev,
+                                                category: formData.category,
+                                                title: formData.title,
+                                                content: formData.content,
+                                                description: formData.content, // Fallback compatibility
+                                                region: formData.region,
+                                                detailed_address: formData.detailed_address,
+                                                detailedAddress: formData.detailed_address, // Fallback compatibility
+                                                files: finalFilenames,
+                                                image: finalFilenames.length > 0 ? (finalFilenames[0].startsWith('http') ? finalFilenames[0] : (finalFilenames[0].startsWith('/uploads/') ? finalFilenames[0] : `/uploads/${finalFilenames[0]}`)) : (prev ? prev.image : null)
+                                            };
+                                            sessionStorage.setItem('selectedProposal', JSON.stringify(updatedProposal));
+                                            return updatedProposal;
+                                        });
+
                                         setView('proposalDetail');
                                     } else {
                                         alert('수정에 실패했습니다.');
