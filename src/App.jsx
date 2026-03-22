@@ -587,7 +587,7 @@ function App() {
                                         
                                         if (uploadRes.ok) {
                                             const result = await uploadRes.json();
-                                            uploadedNames.push(result.filename);
+                                            uploadedNames.push(result.url);
                                         } else {
                                             console.error('File upload failed for:', file.name);
                                         }

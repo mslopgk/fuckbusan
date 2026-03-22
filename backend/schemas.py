@@ -158,6 +158,28 @@ class NewProposalRead(NewProposalCreate):
                 return []
         return v
 
+class ProposalCommentBase(BaseModel):
+    content: str
+    parent_comment_id: Optional[int] = None
+
+class ProposalCommentCreate(ProposalCommentBase):
+    pass
+
+class ProposalCommentUpdate(BaseModel):
+    content: str
+
+class ProposalCommentRead(ProposalCommentBase):
+    id: int
+    user_id: str
+    nickname: str
+    created_at: datetime
+    replies: List['ProposalCommentRead'] = []
+
+    class Config:
+        orm_mode = True
+
+ProposalCommentRead.update_forward_refs()
+
 class SuggestionCreate(BaseModel):
     location: str
     title: str

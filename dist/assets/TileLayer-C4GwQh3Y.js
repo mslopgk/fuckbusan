@@ -1,1 +1,0 @@
-import{g as l,l as c,w as r,b as o}from"./leaflet-D278NYel.js";function u(i,a,n){const{opacity:e,zIndex:t}=a;e!=null&&e!==n.opacity&&i.setOpacity(e),t!=null&&t!==n.zIndex&&i.setZIndex(t)}const f=l(function({url:a,...n},e){const t=new c.TileLayer(a,r(n,e));return o(t,e)},function(a,n,e){u(a,n,e);const{url:t}=n;t!=null&&t!==e.url&&a.setUrl(t)});export{f as T};

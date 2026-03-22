@@ -1,18 +1,17 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# =========================================================
-# [설정 구역] 여기를 본인 HeidiSQL 정보로 바꿔주세요!
-# =========================================================
-DB_ID = "root"                # HeidiSQL 접속 아이디 (보통 root)
-DB_PW = "1234"                # HeidiSQL 접속 비밀번호 (본인이 설정한 거!)
-DB_HOST = "127.0.0.1"         # 주소 (그대로 두세요)
-DB_PORT = "3306"              # 포트 (HeidiSQL에 적힌 포트, 보통 3306)
-DB_NAME = "mydata"   # 데이터베이스 이름 (HeidiSQL에 만들어둔 것)
-# =========================================================
+load_dotenv()
 
-# [임시 전환] MariaDB 연결 주소 만들기 (pymysql 사용)
+DB_ID = os.getenv("DB_USER", "root")
+DB_PW = os.getenv("DB_PASSWORD", "")
+DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
+DB_PORT = os.getenv("DB_PORT", "3306")
+DB_NAME = os.getenv("DB_NAME", "busan_design_db")
+
 SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{DB_ID}:{DB_PW}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4"
 
 # 엔진 생성 (MariaDB용)

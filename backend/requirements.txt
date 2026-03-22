@@ -5,7 +5,11 @@ pymysql
 python-dotenv
 openai
 pydantic
-passlib[bcrypt]
+passlib[bcrypt,argon2]
+argon2-cffi
 python-multipart
 pyjwt
+python-jose[cryptography]
 httpx
+boto3==1.34.0
+mangum

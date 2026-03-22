@@ -64,8 +64,8 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -86,11 +86,6 @@ assets_dir = os.path.join(dist_dir, "assets")
 if os.path.exists(assets_dir):
     app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
-# uploads folder
-uploads_dir = os.path.join(current_dir, "uploads")
-if not os.path.exists(uploads_dir):
-    os.makedirs(uploads_dir)
-app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
 @app.get("/")
 def read_root():
@@ -114,7 +109,10 @@ async def serve_react_app(full_path: str):
     
     return {"error": "Frontend build not found. Please run 'npm run build'."}
 
+# Lambda 핸들러
+from mangum import Mangum
+handler = Mangum(app, lifespan="off")
+
 if __name__ == "__main__":
     import uvicorn
-    # Backend moved to 8000 to allow Frontend on 8501
     uvicorn.run(app, host="0.0.0.0", port=8000)

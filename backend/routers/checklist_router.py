@@ -5,37 +5,46 @@ from models import ChecklistResult, User
 from schemas import ChecklistCreate, ChecklistResponse
 import os
 import uuid
-import shutil
+import boto3
+from botocore.exceptions import ClientError
 
 # [★ 중요 변경] dependencies가 아니라 user_router에서 가져옵니다!
-from routers.user_router import get_current_user 
+from routers.user_router import get_current_user
 
 router = APIRouter(
     prefix="/checklist",
     tags=["checklist"]
 )
 
+S3_BUCKET = os.getenv("MY_AWS_BUCKET_NAME", os.getenv("S3_BUCKET_NAME", "busan-promotion"))
+AWS_REGION = os.getenv("MY_AWS_REGION", "ap-northeast-2")
+
+def get_s3_client():
+    return boto3.client(
+        "s3",
+        region_name=AWS_REGION,
+        aws_access_key_id=os.getenv("MY_AWS_ACCESS_KEY"),
+        aws_secret_access_key=os.getenv("MY_AWS_SECRET_KEY"),
+    )
+
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    # current_dir is backend/routers, so back up one level to backend/
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
-    if not os.path.exists(UPLOAD_DIR):
-        os.makedirs(UPLOAD_DIR)
-    
-    # Generate unique filename
     file_ext = file.filename.split(".")[-1]
     filename = f"{uuid.uuid4()}.{file_ext}"
-    file_path = os.path.join(UPLOAD_DIR, filename)
-    
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-        
-    # Return URL (assuming backend is at / or handled via VITE_API_URL in frontend)
-    # We return relative path, frontend can prepend API URL if needed, 
-    # but here we mounted /uploads at root of backend.
-    # Frontend logic: if starts with http, use it, else prepend backend url.
-    return {"url": f"/uploads/{filename}"}
+
+    try:
+        contents = await file.read()
+        get_s3_client().put_object(
+            Bucket=S3_BUCKET,
+            Key=filename,
+            Body=contents,
+            ContentType=file.content_type
+        )
+    except ClientError as e:
+        raise HTTPException(status_code=500, detail=f"S3 업로드 실패: {str(e)}")
+
+    url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{filename}"
+    return {"url": url}
 
 import traceback
 

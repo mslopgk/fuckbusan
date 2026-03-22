@@ -3,11 +3,12 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 import json
 import os
-import shutil
 import uuid
+import boto3
+from botocore.exceptions import ClientError
 
 # [수정] 필요한 의존성 import
-from database import get_db 
+from database import get_db
 import models, schemas
 from .user_router import get_current_user, get_current_user_optional
 
@@ -16,25 +17,35 @@ router = APIRouter(
     tags=["reports"],
 )
 
-# 업로드 디렉토리 설정 (상위 main.py와 맞춤)
-UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "uploads")
-if not os.path.exists(UPLOAD_DIR):
-    os.makedirs(UPLOAD_DIR)
+S3_BUCKET = os.getenv("MY_AWS_BUCKET_NAME", os.getenv("S3_BUCKET_NAME", "busan-promotion"))
+AWS_REGION = os.getenv("MY_AWS_REGION", "ap-northeast-2")
+
+def get_s3_client():
+    return boto3.client(
+        "s3",
+        region_name=AWS_REGION,
+        aws_access_key_id=os.getenv("MY_AWS_ACCESS_KEY"),
+        aws_secret_access_key=os.getenv("MY_AWS_SECRET_KEY"),
+    )
 
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
     try:
-        # 고유한 파일명 생성 (중복 방지)
         file_extension = os.path.splitext(file.filename)[1]
         unique_filename = f"{uuid.uuid4()}{file_extension}"
-        file_path = os.path.join(UPLOAD_DIR, unique_filename)
-        
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-            
-        return {"filename": unique_filename}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
+        contents = await file.read()
+
+        get_s3_client().put_object(
+            Bucket=S3_BUCKET,
+            Key=unique_filename,
+            Body=contents,
+            ContentType=file.content_type
+        )
+
+        url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{unique_filename}"
+        return {"filename": unique_filename, "url": url}
+    except ClientError as e:
+        raise HTTPException(status_code=500, detail=f"S3 업로드 실패: {str(e)}")
 
 @router.post("/report", status_code=status.HTTP_201_CREATED)
 def create_report(report: schemas.ReportCreate, db: Session = Depends(get_db)):
@@ -307,6 +318,9 @@ def delete_proposal(
         raise HTTPException(status_code=403, detail="본인의 제안만 삭제할 수 있습니다.")
     
     try:
+        db.query(models.ProposalComment).filter(models.ProposalComment.proposal_id == proposal_id).delete()
+        db.query(models.ProposalLike).filter(models.ProposalLike.proposal_id == proposal_id).delete()
+        db.query(models.ProposalView).filter(models.ProposalView.proposal_id == proposal_id).delete()
         db.delete(proposal)
         db.commit()
         return {"message": "제안이 성공적으로 삭제되었습니다."}
@@ -324,7 +338,7 @@ def create_comment(
     proposal = db.query(models.NewProposal).filter(models.NewProposal.id == proposal_id).first()
     if not proposal:
         raise HTTPException(status_code=404, detail="Proposal not found")
-    
+
     new_comment = models.ProposalComment(
         proposal_id=proposal_id,
         user_id=current_user.user_id,
@@ -334,7 +348,7 @@ def create_comment(
     db.add(new_comment)
     db.commit()
     db.refresh(new_comment)
-    
+
     return schemas.ProposalCommentRead(
         id=new_comment.id,
         content=new_comment.content,
@@ -350,11 +364,13 @@ def get_comments(
     proposal_id: int,
     db: Session = Depends(get_db)
 ):
-    comments = db.query(models.ProposalComment).filter(models.ProposalComment.proposal_id == proposal_id).order_by(models.ProposalComment.created_at.asc()).all()
-    
+    comments = db.query(models.ProposalComment).filter(
+        models.ProposalComment.proposal_id == proposal_id
+    ).order_by(models.ProposalComment.created_at.asc()).all()
+
     comment_dict = {}
     top_level_comments = []
-    
+
     for c in comments:
         c_read = schemas.ProposalCommentRead(
             id=c.id,
@@ -366,13 +382,13 @@ def get_comments(
             replies=[]
         )
         comment_dict[c.id] = c_read
-        
+
     for c_id, c_read in comment_dict.items():
         if c_read.parent_comment_id and c_read.parent_comment_id in comment_dict:
             comment_dict[c_read.parent_comment_id].replies.append(c_read)
         else:
             top_level_comments.append(c_read)
-            
+
     return top_level_comments
 
 @router.delete("/proposals/{proposal_id}/comments/{comment_id}")
@@ -382,14 +398,16 @@ def delete_comment(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    comment = db.query(models.ProposalComment).filter(models.ProposalComment.id == comment_id, models.ProposalComment.proposal_id == proposal_id).first()
+    comment = db.query(models.ProposalComment).filter(
+        models.ProposalComment.id == comment_id,
+        models.ProposalComment.proposal_id == proposal_id
+    ).first()
     if not comment:
         raise HTTPException(status_code=404, detail="Comment not found")
-    
+
     if comment.user_id != current_user.user_id and current_user.ID != "admin":
         raise HTTPException(status_code=403, detail="본인의 댓글만 삭제할 수 있습니다.")
-    
-    # First, delete child replies if any to avoid orphaned entries.
+
     db.query(models.ProposalComment).filter(models.ProposalComment.parent_comment_id == comment_id).delete()
     db.delete(comment)
     db.commit()
@@ -403,17 +421,20 @@ def update_comment(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    comment = db.query(models.ProposalComment).filter(models.ProposalComment.id == comment_id, models.ProposalComment.proposal_id == proposal_id).first()
+    comment = db.query(models.ProposalComment).filter(
+        models.ProposalComment.id == comment_id,
+        models.ProposalComment.proposal_id == proposal_id
+    ).first()
     if not comment:
         raise HTTPException(status_code=404, detail="Comment not found")
-        
+
     if comment.user_id != current_user.user_id and current_user.ID != "admin":
         raise HTTPException(status_code=403, detail="본인의 댓글만 수정할 수 있습니다.")
-        
+
     comment.content = comment_data.content
     db.commit()
     db.refresh(comment)
-    
+
     return schemas.ProposalCommentRead(
         id=comment.id,
         content=comment.content,

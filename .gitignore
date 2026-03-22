@@ -1,5 +1,7 @@
 node_modules
 venv/
+dist/
+backend/package/
 __pycache__/
 *.pyc
 *.pyo
