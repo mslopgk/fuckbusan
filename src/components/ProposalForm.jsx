@@ -332,17 +332,17 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
                         </div>
                     </div>
                     <span className="pf-upload-help">* 사진 또는 동영상 첨부해주세요</span>
-                    <input type="file" ref={fileInputRef} className="pf-hidden-input" multiple accept="image/*,video/*" onChange={handleFileChange} />
+                    <input type="file" ref={fileInputRef} className="pf-hidden-input" multiple accept="image/*" onChange={handleFileChange} />
                 </section>
             </div>
 
             <div className="pf-footer">
                 {!isEdit && <button className="pf-btn-draft" onClick={() => setShowDraftModal(true)}>임시저장</button>}
-                <button 
-                    className={`pf-btn-submit ${isEdit ? 'edit-mode' : ''}`} 
-                    onClick={handleSubmit} 
+                <button
+                    className={`pf-btn-submit ${isEdit ? 'edit-mode' : ''}`}
+                    onClick={handleSubmit}
                     disabled={!isFormValid}
-                    style={{ width: isEdit ? '100%' : 'auto' }}
+                    style={isEdit ? { width: '100%' } : {}}
                 >
                     {isEdit ? '수정완료' : '작성완료'}
                 </button>

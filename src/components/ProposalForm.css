@@ -432,7 +432,7 @@
 }
 
 .pf-btn-submit {
-    flex: 2;
+    flex: 1;
     height: 60px;
     background-color: #B5E7E5;
     color: white;
@@ -876,7 +876,7 @@
         border-radius: 15px;
     }
 
-    /* 푸터: PC에서 sticky bottom, 960px 중앙 정렬 */
+    /* 푸터: PC에서 fixed → sticky, 중앙 960px 오른쪽 정렬 */
     .pf-footer {
         position: sticky;
         bottom: 0;
@@ -884,34 +884,35 @@
         transform: none;
         width: 100%;
         max-width: 100%;
-        padding: 16px calc((100% - 960px) / 2);
         border-top: 1px solid #f0f0f0;
         background-color: #fff;
         display: flex;
-        gap: 16px;
         justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        padding: 16px calc((100% - 960px) / 2);
         box-sizing: border-box;
         z-index: 100;
     }
 
     .pf-btn-draft {
-        width: 121px;
-        height: 59px;
+        flex: none;
+        width: 200px;
+        height: 56px;
         background-color: #E6E6E6;
         color: #777777;
         border-radius: 15px;
         font-size: 18px;
-        font-weight: 400;
-        flex: none;
+        font-weight: 700;
     }
 
     .pf-btn-submit {
-        width: 301px;
-        height: 59px;
+        flex: none;
+        width: 200px;
+        height: 56px;
         border-radius: 15px;
         font-size: 18px;
         font-weight: 700;
-        flex: none;
     }
 
     .pf-btn-submit:not(:disabled) {
