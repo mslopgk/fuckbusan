@@ -179,10 +179,33 @@ function App() {
         }
     }, [view]);
 
+    // Sync state with browser history for back button support
+    useEffect(() => {
+        const handlePopState = (event) => {
+            if (event.state && event.state.view) {
+                setView(event.state.view);
+            } else {
+                setView('home');
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        if (!window.history.state) {
+            window.history.replaceState({ view: view }, '', '');
+        }
+
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, []);
+
     // Scroll to top and save view state whenever view changes
     useEffect(() => {
         window.scrollTo(0, 0);
         sessionStorage.setItem('current_view', view);
+
+        if (window.history.state?.view !== view) {
+            window.history.pushState({ view: view }, '', '');
+        }
     }, [view]);
 
     const goToCheckList = (big, mid) => {

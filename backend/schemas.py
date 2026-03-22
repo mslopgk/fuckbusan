@@ -141,6 +141,7 @@ class NewProposalRead(NewProposalCreate):
     user_id: Optional[int] = None
     views_count: int
     likes_count: int
+    comments_count: Optional[int] = 0
     nickname: Optional[str] = None # 작성자 닉네임 추가
     is_mine: Optional[bool] = False # 본인 글 여부 (동적 판단용)
     has_voted: Optional[bool] = False # 투표 여부 추가

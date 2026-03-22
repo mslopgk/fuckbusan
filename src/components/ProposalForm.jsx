@@ -53,14 +53,36 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
     }, [isEdit, initialData]);
 
     // [추가] 임시저장 실행
-    const handleSaveDraft = () => {
+    const handleSaveDraft = async () => {
+        const toBase64 = (blobUrl) => new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                resolve(canvas.toDataURL('image/jpeg', 0.8));
+            };
+            img.onerror = () => resolve(null);
+            img.src = blobUrl;
+        });
+
+        const files = await Promise.all(attachedFiles.map(async (f) => {
+            const preview = f.preview && f.preview.startsWith('blob:')
+                ? await toBase64(f.preview)
+                : f.preview;
+            return { preview, name: f.name, type: f.type, isExisting: f.isExisting, filename: f.filename || null };
+        }));
+
         const draftData = {
             category: selectedCategory,
             region: region,
             detailed_address: detailedAddress,
             title: title,
             content: content,
-            savedAt: new Date().toISOString()
+            savedAt: new Date().toISOString(),
+            files,
         };
         localStorage.setItem('proposal_draft', JSON.stringify(draftData));
         setShowDraftModal(false);
@@ -68,13 +90,28 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
     };
 
     // [추가] 임시저장 불러오기 실행
-    const handleLoadDraft = () => {
+    const handleLoadDraft = async () => {
         if (savedDraftData) {
             setSelectedCategory(savedDraftData.category || '주거');
             setRegion(savedDraftData.region || '');
             setDetailedAddress(savedDraftData.detailed_address || '');
             setTitle(savedDraftData.title || '');
             setContent(savedDraftData.content || '');
+            if (savedDraftData.files && savedDraftData.files.length > 0) {
+                const restored = await Promise.all(savedDraftData.files.map(async (f) => {
+                    if (f.isExisting) {
+                        return { file: null, preview: f.preview, name: f.name, type: f.type, isExisting: true, filename: f.filename };
+                    }
+                    if (f.preview && f.preview.startsWith('data:')) {
+                        const res = await fetch(f.preview);
+                        const blob = await res.blob();
+                        const file = new File([blob], f.name, { type: blob.type });
+                        return { file, preview: f.preview, name: f.name, type: f.type, isExisting: false };
+                    }
+                    return null;
+                }));
+                setAttachedFiles(restored.filter(Boolean));
+            }
         }
         setShowLoadModal(false);
     };
@@ -344,13 +381,20 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
                 <div className="pf-modal-overlay">
                     <div className="pf-load-modal">
                         <div className="pf-load-icon">
-                            <img src="/save_draft_icon.svg" alt="Load" style={{ width: '60px' }} />
+                            <img src="/paper.png" alt="Load" style={{ width: '60px' }} />
                         </div>
-                        <h2 className="pf-load-text">이전에 작성하던<br/>내용이 있습니다</h2>
-                        <p className="pf-load-subtext">이어서 작성하시겠습니까?</p>
+                        <h2 className="pf-load-text">임시저장된 내용을<br/>불러올까요?</h2>
+                        <p className="pf-load-subtext">
+                            {savedDraftData && savedDraftData.savedAt ? (
+                                (() => {
+                                    const d = new Date(savedDraftData.savedAt);
+                                    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 작성됨`;
+                                })()
+                            ) : ""}
+                        </p>
                         <div className="pf-load-btns">
                             <button className="pf-btn-load" onClick={handleLoadDraft}>불러오기</button>
-                            <button className="pf-btn-new" onClick={handleClearDraft}>새로 작성</button>
+                            <button className="pf-btn-new" onClick={handleClearDraft}>새로 작성하기</button>
                         </div>
                     </div>
                 </div>

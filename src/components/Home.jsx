@@ -34,13 +34,13 @@ const Home = ({ onNavigate }) => {
                         </>
                     ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
                             <button className="btn-header" style={{ padding: '8px', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => alert('알림')}>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                                 </svg>
                             </button>
-                            <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
                         </div>
                     )}
                 </div>
@@ -68,13 +68,13 @@ const Home = ({ onNavigate }) => {
                             </>
                         ) : (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
                                 <button className="btn-header" style={{ padding: '8px', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => alert('알림')}>
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                                         <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                                     </svg>
                                 </button>
-                                <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
                             </div>
                         )}
                     </div>
@@ -117,115 +117,117 @@ const Home = ({ onNavigate }) => {
                 {/* <CitizenCards /> */}
 
                 {/* Action Cards & Survey Row */}
-                <div className="action-row" style={{ marginTop: '-120px', position: 'relative', zIndex: 20 }}>
-                    <div className="action-item card report" onClick={() => alert('준비 중입니다.')}>
-                        <div className="card-top">
-                            <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
-                                <div className="card-title">제보하기</div>
-                                <img src="/pencilicon.svg" alt="제보하기 아이콘" className="card-icon-img" />
+                <div className="main-actions-container">
+                    <div className="action-row">
+                        <div className="action-item card report" onClick={() => alert('준비 중입니다.')}>
+                            <div className="card-top">
+                                <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
+                                    <div className="card-title">제보하기</div>
+                                    <img src="/pencilicon.svg" alt="제보하기 아이콘" className="card-icon-img" />
+                                </div>
+                                <div className="card-subtitle">당신의 아이디어가<br />도시를 더 멋지게!</div>
                             </div>
-                            <div className="card-subtitle">당신의 아이디어가<br />도시를 더 멋지게!</div>
+                            <div className="card-arrow">→</div>
                         </div>
-                        <div className="card-arrow">→</div>
-                    </div>
-                    <div className="action-item card diagnose" onClick={() => onNavigate && onNavigate('newDiagnosis')}>
-                        <div className="card-top">
-                            <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
-                                <div className="card-title">제안하기</div>
-                                <img src="/lighticon.svg" alt="제안하기 아이콘" className="card-icon-img" />
+                        <div className="action-item card diagnose" onClick={() => onNavigate && onNavigate('newDiagnosis')}>
+                            <div className="card-top">
+                                <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
+                                    <div className="card-title">제안하기</div>
+                                    <img src="/lighticon.svg" alt="제안하기 아이콘" className="card-icon-img" />
+                                </div>
+                                <div className="card-subtitle">우리 동네 디자인,<br />같이 점검해볼까요?</div>
                             </div>
-                            <div className="card-subtitle">우리 동네 디자인,<br />같이 점검해볼까요?</div>
+                            <div className="card-arrow">→</div>
                         </div>
-                        <div className="card-arrow">→</div>
                     </div>
                 </div>
 
                 {false && (
                     <>
                         <div className="stats-wrapper">
-                    {/* Stats Section Title */}
-                    {/* Stats Section Title */}
-                    <div className="stats-header-section">
-                        <div>
-                            <h2 className="section-title">내가 남긴 제보와 제안, <br /><span className="highlight">지금 어떻게 진행되고 있을까요?</span></h2>
-                            <p className="section-subtitle">등록한 내용의 검토·처리 상태를 쉽게 확인할 수 있습니다.</p>
-                        </div>
-                        {/* Detail Button moved below for mobile re-ordering logic */}
-                        <div className="stats-detail-btn-container desktop-only">
-                            <button className="btn-detail">
-                                자세히보기 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Stats Graphs */}
-                    <div className="stats-content-row">
-                        <StatsContent />
-                    </div>
-
-                    {/* Mobile Detail Button (Below Charts) */}
-                    <div className="stats-detail-btn-container mobile-only">
-                        <button className="btn-detail">
-                            자세히보기 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                        </button>
-                    </div>
-                </div>
-
-
-                <ArchiveCards />
-
-                {/* Bottom Row: News & Guide */}
-                <div className="bottom-row">
-                    {/* News Section */}
-                    <div className="news-section">
-                        <div className="news-header">
-                            <h2 className="section-title-sm">플랫폼 소식</h2>
-                            <button className="btn-more-news mobile-only">
-                                더보기 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                            </button>
-                            <button className="btn-more-news desktop-only">
-                                더보기 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                            </button>
-                        </div>
-                        <div className="news-list">
-                            <div className="news-item">
-                                <span className="news-date">2024.12.18</span>
-                                <span className="news-content">부산공공디자인 공모전 수상작 발표 및 전시 안내</span>
+                            {/* Stats Section Title */}
+                            {/* Stats Section Title */}
+                            <div className="stats-header-section">
+                                <div>
+                                    <h2 className="section-title">내가 남긴 제보와 제안, <br /><span className="highlight">지금 어떻게 진행되고 있을까요?</span></h2>
+                                    <p className="section-subtitle">등록한 내용의 검토·처리 상태를 쉽게 확인할 수 있습니다.</p>
+                                </div>
+                                {/* Detail Button moved below for mobile re-ordering logic */}
+                                <div className="stats-detail-btn-container desktop-only">
+                                    <button className="btn-detail">
+                                        자세히보기 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                    </button>
+                                </div>
                             </div>
-                            <div className="news-item">
-                                <span className="news-date">2024.12.10</span>
-                                <span className="news-content">겨울철 도시 시설물 안전 점검 실시 결과를 알려...</span>
+
+                            {/* Stats Graphs */}
+                            <div className="stats-content-row">
+                                <StatsContent />
                             </div>
-                            <div className="news-item">
-                                <span className="news-date">2024.11.28</span>
-                                <span className="news-content">시민 참여단 5기 모집 종료 및 선정 결과 공고</span>
-                            </div>
-                            <div className="news-item">
-                                <span className="news-date">2024.11.15</span>
-                                <span className="news-content">공공디자인 포럼 '도시를 바꾸는 힘' 개최 안내</span>
-                            </div>
-                            <div className="news-item">
-                                <span className="news-date">2024.11.02</span>
-                                <span className="news-content">2024년 하반기 우수 제보자 시상식 진행</span>
+
+                            {/* Mobile Detail Button (Below Charts) */}
+                            <div className="stats-detail-btn-container mobile-only">
+                                <button className="btn-detail">
+                                    자세히보기 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </button>
                             </div>
                         </div>
-                    </div>
 
-                    {/* First Time Guide Section */}
-                    <div className="guide-section">
-                        <h2 className="guide-title">처음 방문하셨나요?</h2>
-                        <p className="guide-desc">
-                            부산참여플랫폼 이용 가이드를<br />
-                            확인하고, 쉽고 편리하게<br />
-                            참여해 보세요!
-                        </p>
-                        <img src="/assets/first_time.png" alt="First Time Guide" className="guide-image" />
 
-                        <button className="btn-guide">
-                            가이드 보러가기 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                        </button>
-                    </div>
-                </div>
+                        <ArchiveCards />
+
+                        {/* Bottom Row: News & Guide */}
+                        <div className="bottom-row">
+                            {/* News Section */}
+                            <div className="news-section">
+                                <div className="news-header">
+                                    <h2 className="section-title-sm">플랫폼 소식</h2>
+                                    <button className="btn-more-news mobile-only">
+                                        더보기 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                    </button>
+                                    <button className="btn-more-news desktop-only">
+                                        더보기 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                    </button>
+                                </div>
+                                <div className="news-list">
+                                    <div className="news-item">
+                                        <span className="news-date">2024.12.18</span>
+                                        <span className="news-content">부산공공디자인 공모전 수상작 발표 및 전시 안내</span>
+                                    </div>
+                                    <div className="news-item">
+                                        <span className="news-date">2024.12.10</span>
+                                        <span className="news-content">겨울철 도시 시설물 안전 점검 실시 결과를 알려...</span>
+                                    </div>
+                                    <div className="news-item">
+                                        <span className="news-date">2024.11.28</span>
+                                        <span className="news-content">시민 참여단 5기 모집 종료 및 선정 결과 공고</span>
+                                    </div>
+                                    <div className="news-item">
+                                        <span className="news-date">2024.11.15</span>
+                                        <span className="news-content">공공디자인 포럼 '도시를 바꾸는 힘' 개최 안내</span>
+                                    </div>
+                                    <div className="news-item">
+                                        <span className="news-date">2024.11.02</span>
+                                        <span className="news-content">2024년 하반기 우수 제보자 시상식 진행</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* First Time Guide Section */}
+                            <div className="guide-section">
+                                <h2 className="guide-title">처음 방문하셨나요?</h2>
+                                <p className="guide-desc">
+                                    부산참여플랫폼 이용 가이드를<br />
+                                    확인하고, 쉽고 편리하게<br />
+                                    참여해 보세요!
+                                </p>
+                                <img src="/assets/first_time.png" alt="First Time Guide" className="guide-image" />
+
+                                <button className="btn-guide">
+                                    가이드 보러가기 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </button>
+                            </div>
+                        </div>
                     </>
                 )}
 
@@ -235,62 +237,52 @@ const Home = ({ onNavigate }) => {
                 <>
                     {/* Footer */}
                     <footer className="footer">
-                <div className="footer-right">
-                    <div className="footer-links">
-                        <a href="#" className="footer-link">이용약관</a>
-                        <a href="#" className="footer-link">개인정보처리방침</a>
-                        <a href="#" className="footer-link">문의하기</a>
+                        <div className="footer-right">
+                            <div className="footer-links">
+                                <a href="#" className="footer-link">이용약관</a>
+                                <a href="#" className="footer-link">개인정보처리방침</a>
+                                <a href="#" className="footer-link">문의하기</a>
+                            </div>
+
+                            <div className="faq-btn">
+                                자주 묻는 질문(FAQ) →
+                            </div>
+                        </div>
+
+                        <div className="footer-left">
+
+
+
+                            <div className="footer-info">
+                                이메일 | support@busan-design.kr<br />
+                                전화 | 051-000-0000<br />
+                                운영시간 | 평일 09:00 - 18:00
+                            </div>
+
+                            <div className="footer-copyright">
+                                © 2025 Busan Public Design Platform. All rights reserved.
+                            </div>
+                        </div>
+                    </footer>
+
+                    {/* Temporary Link for Dev */}
+                    <div style={{ textAlign: 'center', padding: '10px', background: '#f0f0f0' }} onClick={() => onNavigate && onNavigate('diagnosisResult')}>
+                        (Test) 진단 결과 페이지
                     </div>
-
-                    <div className="faq-btn">
-                        자주 묻는 질문(FAQ) →
+                    <div style={{ textAlign: 'center', padding: '10px', background: '#e0e0e0', borderTop: '1px solid #ccc' }} onClick={() => onNavigate && onNavigate('expertDiagnosisResult')}>
+                        (Test) 전문가 진단 결과 페이지
                     </div>
-                </div>
-
-                <div className="footer-left">
-
-
-
-                    <div className="footer-info">
-                        이메일 | support@busan-design.kr<br />
-                        전화 | 051-000-0000<br />
-                        운영시간 | 평일 09:00 - 18:00
+                    <div style={{ textAlign: 'center', padding: '10px', background: '#d0d0d0', borderTop: '1px solid #ccc' }} onClick={() => onNavigate && onNavigate('adminLogin')}>
+                        (Test) 관리자 로그인
                     </div>
-
-                    <div className="footer-copyright">
-                        © 2025 Busan Public Design Platform. All rights reserved.
-                    </div>
-                </div>
-            </footer>
-
-            {/* Temporary Link for Dev */}
-            <div style={{ textAlign: 'center', padding: '10px', background: '#f0f0f0' }} onClick={() => onNavigate && onNavigate('diagnosisResult')}>
-                (Test) 진단 결과 페이지
-            </div>
-            <div style={{ textAlign: 'center', padding: '10px', background: '#e0e0e0', borderTop: '1px solid #ccc' }} onClick={() => onNavigate && onNavigate('expertDiagnosisResult')}>
-                (Test) 전문가 진단 결과 페이지
-            </div>
-            <div style={{ textAlign: 'center', padding: '10px', background: '#d0d0d0', borderTop: '1px solid #ccc' }} onClick={() => onNavigate && onNavigate('adminLogin')}>
-                (Test) 관리자 로그인
-            </div>
                 </>
             )}
 
             {/* Fixed Bottom Nav */}
             <nav className="bottom-nav">
                 <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>
-                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'home' ? '#16B5B0' : '#999'} strokeWidth="2">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
+                    <img src="/home.svg" alt="홈" className="nav-icon" style={{ filter: activeTab === 'home' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
                     <span className="nav-text">홈</span>
-                </div>
-                <div className={`nav-item ${activeTab === 'report' ? 'active' : ''}`} onClick={() => alert('준비 중입니다.')}>
-                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'report' ? '#16B5B0' : '#999'} strokeWidth="2">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                    <span className="nav-text">제보</span>
                 </div>
                 <div className={`nav-item ${activeTab === 'stats' ? 'active' : ''}`} onClick={() => {
                     const token = localStorage.getItem('access_token');
@@ -301,18 +293,15 @@ const Home = ({ onNavigate }) => {
                     }
                     onNavigate && onNavigate('newDiagnosis');
                 }}>
-                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'stats' ? '#16B5B0' : '#999'} strokeWidth="2">
-                        <line x1="12" y1="20" x2="12" y2="10"></line>
-                        <line x1="18" y1="20" x2="18" y2="4"></line>
-                        <line x1="6" y1="20" x2="6" y2="16"></line>
-                    </svg>
+                    <img src="/suggest.png" alt="제안" className="nav-icon" style={{ width: '30px', height: '30px', opacity: 0.6, filter: (activeTab === 'stats' || activeTab === 'diagnosis') ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
                     <span className="nav-text">제안</span>
                 </div>
+                <div className={`nav-item ${activeTab === 'report' ? 'active' : ''}`} onClick={() => alert('준비 중입니다.')}>
+                    <img src="/graph.svg" alt="통계" className="nav-icon" style={{ width: '18px', height: '18px', filter: activeTab === 'report' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
+                    <span className="nav-text">통계</span>
+                </div>
                 <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('myProposals')} style={{ cursor: 'pointer' }}>
-                    <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke={activeTab === 'mypage' ? '#16B5B0' : '#999'} strokeWidth="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
+                    <img src="/myid.svg" alt="내 정보" className="nav-icon" style={{ filter: activeTab === 'mypage' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
                     <span className="nav-text">내 정보</span>
                 </div>
             </nav>
@@ -352,7 +341,7 @@ const CategoryGrid = () => {
     return (
         <div className="category-grid-container">
             {/* All (전체) Button */}
-            <div 
+            <div
                 className={`category-item all-category-btn ${selected === 'all' || selected === null ? 'selected' : ''}`}
                 onClick={() => setSelected('all')}
             >

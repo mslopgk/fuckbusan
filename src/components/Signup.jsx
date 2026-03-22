@@ -16,6 +16,7 @@ const Signup = ({ onBack, onNavigate }) => {
     const [formData, setFormData] = useState({
         id: '',
         password: '',
+        passwordConfirm: '',
         name: '',
         nickname: '',
         phone: ''
@@ -25,7 +26,8 @@ const Signup = ({ onBack, onNavigate }) => {
 
     const API_URL = import.meta.env.VITE_API_URL;
 
-    const isFormValid = formData.id && formData.password && formData.name && formData.phone;
+    const passwordMatch = formData.password && formData.passwordConfirm && formData.password === formData.passwordConfirm;
+    const isFormValid = formData.id && formData.password && passwordMatch && formData.name && formData.phone;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -153,8 +155,31 @@ const Signup = ({ onBack, onNavigate }) => {
                         placeholder="비밀번호를 입력해 주세요."
                         value={formData.password}
                         onChange={handleChange}
+                        autoComplete="new-password"
                     />
                     <div className="helper-text">*영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요.</div>
+                </div>
+
+                {/* Password Confirm */}
+                <div className="input-group">
+                    <div className="input-label-row">
+                        <label className="input-label">비밀번호 확인</label>
+                        <div className="required-dot"></div>
+                    </div>
+                    <input
+                        type="password"
+                        name="passwordConfirm"
+                        className="login-input"
+                        placeholder="비밀번호를 다시 입력해 주세요."
+                        value={formData.passwordConfirm}
+                        onChange={handleChange}
+                        autoComplete="new-password"
+                    />
+                    {formData.passwordConfirm.length > 0 && (
+                        <div className="helper-text" style={{ color: passwordMatch ? '#16B5B0' : '#E6235A' }}>
+                            {passwordMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.'}
+                        </div>
+                    )}
                 </div>
 
                 {/* Divider */}

@@ -342,23 +342,43 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                     {proposal.description || proposal.content}
                 </p>
 
-                {imageUrl && (
+                {safeProposal.files && safeProposal.files.length > 0 ? (
+                    <div className="pd-main-image-wrapper">
+                        {safeProposal.files.map((file, idx) => {
+                            let src = file;
+                            if (!file.startsWith('http') && !file.startsWith('/assets/')) {
+                                src = file.startsWith('/uploads/') ? `${VITE_API_URL}${file}` : `${VITE_API_URL}/uploads/${file}`;
+                            }
+                            return (
+                                <img
+                                    key={idx}
+                                    src={src}
+                                    alt={`Proposal ${idx + 1}`}
+                                    className="pd-main-image"
+                                    loading="lazy"
+                                    style={{ marginBottom: idx < safeProposal.files.length - 1 ? '8px' : '0' }}
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                />
+                            );
+                        })}
+                        <div className="pd-address-badge">
+                            {proposal.region || '전체'} · {proposal.detailed_address || proposal.detailedAddress || ''}
+                        </div>
+                    </div>
+                ) : imageUrl ? (
                     <div className="pd-main-image-wrapper">
                         <img
                             src={imageUrl}
                             alt="Proposal"
                             className="pd-main-image"
                             loading="lazy"
-                            onError={(e) => {
-                                console.warn("Detail image load failed:", imageUrl);
-                                e.target.style.display = 'none';
-                            }}
+                            onError={(e) => { e.target.style.display = 'none'; }}
                         />
                         <div className="pd-address-badge">
                             {proposal.region || '전체'} · {proposal.detailed_address || proposal.detailedAddress || ''}
                         </div>
                     </div>
-                )}
+                ) : null}
 
                 <div className="pd-stats-row">
                     <div className="pd-stats-left">

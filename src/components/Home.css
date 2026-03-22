@@ -73,7 +73,8 @@
 }
 
 .btn-header.signup:hover {
-    background-color: #0F8581; /* Darker Mint */
+    background-color: #0F8581;
+    /* Darker Mint */
 }
 
 .header-icons {
@@ -84,7 +85,8 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Reduced from 50px */
+    gap: 20px;
+    /* Reduced from 50px */
     position: relative;
     z-index: 10;
 }
@@ -93,8 +95,10 @@
 .main-actions-container {
     display: flex;
     flex-direction: column;
-    gap: 4px; /* Even tighter gap as requested */
+    gap: 4px;
+    /* Even tighter gap as requested */
     margin-top: -120px;
+    /* Enhanced pull-up */
     position: relative;
     z-index: 20;
 }
@@ -193,7 +197,8 @@
 }
 
 .card.diagnose .card-icon-img {
-    width: 32px; /* Visually match the pencil icon due to internal SVG padding */
+    width: 32px;
+    /* Visually match the pencil icon due to internal SVG padding */
     height: 32px;
 }
 
@@ -247,11 +252,13 @@
 
 /* Admin / List Access Section */
 .admin-access-section {
-    margin-top: 0; /* Removed margin to join completely with cards above */
+    margin-top: 0;
+    /* Removed margin to join completely with cards above */
     background-color: #fcfcfc;
     border: 1.5px solid #eee;
     border-radius: 16px;
-    padding: 20px 24px; /* Reduced padding slightly */
+    padding: 20px 24px;
+    /* Reduced padding slightly */
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     opacity: 0;
@@ -527,7 +534,8 @@
     position: relative;
     background-color: transparent;
     width: 100%;
-    padding: 90px 20px 80px; /* Reduced bottom padding to bring the boundary up */
+    padding: 90px 20px 80px;
+    /* Reduced bottom padding to bring the boundary up */
     /* Increased top padding to avoid header overlap */
     margin: 0;
     overflow: visible;
@@ -631,31 +639,52 @@
 }
 
 @media (max-width: 768px) {
+    .hero-section {
+        height: 750px;
+        /* Expanded to fit even larger map */
+        padding: 80px 15px 0;
+        min-height: auto;
+    }
+
     .hero-map-container {
-        position: relative; /* Change from absolute so it flows below text */
-        top: auto;
-        left: auto;
-        transform: none;
-        margin-top: -10px; /* Pull it up slightly to sit on the background line */
-        padding-bottom: 20px;
-        /* Prevent scroll bar and center the scaled element */
+        position: absolute;
+        width: 100%;
+        left: 50%;
+        top: 55%;
+        /* Raised further to 55% as requested */
+        /* Pure vertical center within the 750px hero */
+        transform: translate(-50%, -50%);
         display: flex;
         justify-content: center;
         overflow: visible;
-        width: 100%;
+        pointer-events: none;
+        z-index: 10;
+        margin-top: 0;
     }
+
     .hero-map-overlay {
-        width: 90vw; /* Responsive width as requested */
-        max-width: 500px; /* Cap for tablet widths */
-        height: 380px; /* Proportional height */
-        margin-left: 0; 
-        
-        /* Font size preserved by removing scale */
-        transform: none; 
-        transform-origin: top center;
-        
-        margin-bottom: 20px;
-        filter: drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.15)); /* Add shadow from reference */
+        width: 95vw;
+        max-width: none;
+        height: 550px;
+        margin-left: 0;
+        transform: scale(1.1);
+        /* Larger scale as requested */
+        pointer-events: auto;
+        filter: drop-shadow(0px 15px 30px rgba(0, 0, 0, 0.25));
+    }
+
+    .action-row {
+        margin-top: 10px;
+        /* Reduced from 80px */
+        position: relative;
+        z-index: 20;
+        padding: 0 8px;
+        /* Wider cards (less side padding) */
+    }
+
+    .card {
+        height: 175px;
+        /* Slightly taller for a 'wider' feel */
     }
 }
 
@@ -1107,7 +1136,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 
     /* Overlap Logic - Deeply pulled up to center exactly on the division line */
-    margin-top: -140px; 
+    margin-top: -140px;
     /* Centers it based on the updated bottom padding */
     margin-bottom: 24px;
     position: relative;
@@ -1161,13 +1190,18 @@
 
 /* Full Width "All" Button */
 .all-category-btn {
-    grid-column: 1 / -1; /* Spans all columns in the grid */
-    flex-direction: row; /* Horizontal Icon + Text */
-    background-color: #16B5B0 !important; /* Force Mint Background */
+    grid-column: 1 / -1;
+    /* Spans all columns in the grid */
+    flex-direction: row;
+    /* Horizontal Icon + Text */
+    background-color: #16B5B0 !important;
+    /* Force Mint Background */
     color: white;
     padding: 12px 16px;
-    border-radius: 8px; /* Square edges */
-    box-shadow: 0 2px 8px rgba(22, 181, 176, 0.3); /* Subtle mint glow */
+    border-radius: 8px;
+    /* Square edges */
+    box-shadow: 0 2px 8px rgba(22, 181, 176, 0.3);
+    /* Subtle mint glow */
 }
 
 .all-category-btn .cat-label {
@@ -1500,7 +1534,8 @@
         background-color: white;
         border-radius: 20px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        margin-top: -100px; /* Center perfectly on desktop boundary */
+        margin-top: -100px;
+        /* Center perfectly on desktop boundary */
         position: relative;
         z-index: 10;
         border: 1px solid #f0f0f0;
@@ -1897,7 +1932,8 @@
         height: 160px;
         /* Uniform height */
         border-radius: 24px;
-        padding: 24px; /* Reduced from 40px to give text room */
+        padding: 24px;
+        /* Reduced from 40px to give text room */
         position: relative;
         cursor: pointer;
         transition: transform 0.2s;
@@ -2882,9 +2918,18 @@
     }
 
     /* 2. Action Cards: Remove Icon, Reduce Height */
+    .action-row {
+        margin-top: 80px !important;
+        /* Lowered even further from 20px */
+        padding: 0 4px !important;
+        /* Widened (less side padding) */
+        gap: 8px !important;
+    }
+
     .action-item.card {
         height: auto !important;
-        min-height: 110px !important;
+        min-height: 180px !important;
+        /* Increased height */
         padding: 24px 20px !important;
         justify-content: center !important;
     }

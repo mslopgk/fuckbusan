@@ -147,8 +147,46 @@ def login(user_input: UserLogin, db: Session = Depends(get_db)):
     
     # 프론트엔드로 토큰과 유저 이름 전송
     return {
-        "access_token": access_token, 
-        "token_type": "bearer", 
+        "access_token": access_token,
+        "token_type": "bearer",
         "user_name": user.name,
         "district_code": user.district_code
     }
+
+class ChangePasswordRequest(BaseModel):
+    current_pw: str
+    new_pw: str
+
+@router.put("/change-password")
+def change_password(req: ChangePasswordRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not verify_password(req.current_pw, current_user.PW):
+        raise HTTPException(status_code=400, detail="현재 비밀번호가 일치하지 않습니다.")
+    current_user.PW = get_password_hash(req.new_pw)
+    db.commit()
+    return {"message": "비밀번호가 변경되었습니다."}
+
+class FindIdRequest(BaseModel):
+    name: str
+    phone_num: str
+
+class FindPwRequest(BaseModel):
+    ID: str
+    phone_num: str
+
+@router.post("/find-id")
+def find_id(req: FindIdRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.name == req.name, User.phone_num == req.phone_num).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")
+    return {"ID": user.ID}
+
+@router.post("/find-pw")
+def find_pw(req: FindPwRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.ID == req.ID, User.phone_num == req.phone_num).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")
+    import random, string
+    temp_pw = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+    user.PW = get_password_hash(temp_pw)
+    db.commit()
+    return {"temp_password": temp_pw}

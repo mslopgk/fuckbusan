@@ -110,10 +110,10 @@ def get_all_proposals(
     proposals = db.query(models.NewProposal).order_by(models.NewProposal.created_at.desc()).all()
     for p in proposals:
         p.nickname = p.creator.nickname if p.creator else "익명"
+        p.comments_count = db.query(models.ProposalComment).filter(models.ProposalComment.proposal_id == p.id).count()
         if current_user:
             if p.user_id == current_user.user_id:
                 p.is_mine = True
-            # 투표 여부 확인
             has_liked = db.query(models.ProposalLike).filter(
                 models.ProposalLike.proposal_id == p.id,
                 models.ProposalLike.user_id == current_user.user_id
@@ -131,7 +131,7 @@ def get_my_proposals(
     for p in proposals:
         p.nickname = current_user.nickname
         p.is_mine = True
-        # 내가 쓴 글이라도 투표 여부는 조회 (보통 본인 글 투표 안되게 프론트에서 막지만)
+        p.comments_count = db.query(models.ProposalComment).filter(models.ProposalComment.proposal_id == p.id).count()
         has_liked = db.query(models.ProposalLike).filter(
             models.ProposalLike.proposal_id == p.id,
             models.ProposalLike.user_id == current_user.user_id

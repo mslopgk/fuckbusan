@@ -1,198 +1,163 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, GeoJSON, useMap, Marker } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import React, { useState, useEffect, useRef } from 'react';
+import { MapContainer, GeoJSON, useMap, Tooltip, Marker } from 'react-leaflet';
 import L from 'leaflet';
-// import * as turf from '@turf/turf'; // Unused
+import 'leaflet/dist/leaflet.css';
 
-// Fix for default Leaflet markers if needed
+// Fix for default Leaflet icons in React
 delete L.Icon.Default.prototype._getIconUrl;
-try {
-    L.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-    });
-} catch (e) { console.warn("L.Icon fix error", e); }
-
-// Custom Icon
-const peopleIcon = new L.Icon({
-    iconUrl: '/assets/people.png',
-    iconSize: [80, 80],
-    iconAnchor: [40, 65], // Y=65 means bottom part is at center -> shifts image UP by ~25px
-    popupAnchor: [0, -65]
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Mobile Icon: Smaller and slightly higher
-const peopleIconMobile = new L.Icon({
-    iconUrl: '/assets/people.png',
-    iconSize: [60, 60], // Increased from 50x50
-    iconAnchor: [30, 55], // X=30 (center), Y=55 (near bottom) -> lifts image up
-    popupAnchor: [0, -55]
-});
-
-// Component to fit map bounds to GeoJSON
-const BoundsFitter = ({ data }) => {
-    const map = useMap();
-    useEffect(() => {
-        if (data) {
-            const geoJsonLayer = L.geoJSON(data);
-            map.fitBounds(geoJsonLayer.getBounds(), { padding: [10, 10] });
-        }
-    }, [data, map]);
-    return null;
+// Manual offsets for specific labels [latOffset, lngOffset] - User's latest values
+const labelOffsets = {
+    '강서구': [0.14, 0.15],
+    '사하구': [0.11, -0.011],
+    '서구': [0.07, 0],
+    '영도구': [0, -0.04],
+    '남구': [0.04, -0.02],
+    '연제구': [0.005, 0],
+    '해운대구': [-0.015, -0.005]
 };
 
 const InteractiveMap = () => {
     const [geoJsonData, setGeoJsonData] = useState(null);
-    const [selectedDistrict, setSelectedDistrict] = useState('부산진구'); // Default to '부산진구'
-    const selectedDistrictRef = React.useRef(null);
+    const [selectedDistrict, setSelectedDistrict] = useState('부산진구');
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
     useEffect(() => {
-        selectedDistrictRef.current = selectedDistrict;
-    }, [selectedDistrict]);
-
-    useEffect(() => {
+        // Load high-fidelity GeoJSON
         fetch('/assets/busan_districts_high.json')
             .then(res => res.json())
-            .then(data => setGeoJsonData(data))
-            .catch(err => console.error("Error loading map data:", err));
-    }, []);
+            .then(data => setGeoJsonData(data));
 
-    useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 768);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Function to determine style based on state
-    const getStyle = (feature) => {
-        const isSelected = selectedDistrict === feature.properties.name;
-        return {
-            fillColor: isSelected ? '#16B5B0' : 'white',
-            weight: isSelected ? 2 : 1,
-            opacity: 1,
-            color: isSelected ? '#16B5B0' : '#333',
-            fillOpacity: 1
-        };
-    };
-
-    // Manual offsets 
-    const desktopOffsets = {
-        '강서구': [100, -130], // Slightly down
-        '사하구': [-10, -90],  // Slightly down
-        '서구': [-5, -55],
-        '영도구': [-20, 5],
-        '남구': [-15, -40],
-        '동구': [5, 0],
-        '중구': [0, 10],
-        '기장군': [-10, 10],
-        '북구': [0, 0]
-    };
-
-    // Use only desktop offsets because we are visually scaling the whole map on mobile via CSS 
-    // instead of actually shrinking the map container.
-    const labelOffsets = desktopOffsets;
-
-    const onEachDistrict = (feature, layer) => {
-        const districtName = feature.properties.name;
-        const offset = labelOffsets[districtName] || [0, 0];
-
-        layer.bindTooltip(districtName, {
-            permanent: true,
-            direction: 'center',
-            offset: L.point(offset),
-            className: `district-label`
-        });
+    const onEachFeature = (feature, layer) => {
+        const name = feature.properties.name;
 
         layer.on({
+            click: (e) => {
+                L.DomEvent.stopPropagation(e.originalEvent);
+                setSelectedDistrict(name);
+            },
             mouseover: (e) => {
-                const currentSelection = selectedDistrictRef.current;
-                if (currentSelection !== districtName) {
-                    e.target.setStyle({
-                        fillColor: '#f5f5f5',
-                        fillOpacity: 1,
-                        weight: 1
+                const layer = e.target;
+                if (name !== selectedDistrict) {
+                    layer.setStyle({
+                        fillColor: '#e0f7f6', // Light mint hover
+                        fillOpacity: 1
                     });
                 }
             },
             mouseout: (e) => {
-                const currentSelection = selectedDistrictRef.current;
-                const isSelected = currentSelection === districtName;
-
-                e.target.setStyle({
-                    fillColor: isSelected ? '#16B5B0' : 'white',
-                    fillOpacity: 1,
-                    weight: isSelected ? 2 : 1,
-                    color: isSelected ? '#16B5B0' : '#333'
-                });
-            },
-            click: (e) => {
-                const currentSelection = selectedDistrictRef.current;
-                if (currentSelection !== districtName) {
-                    setSelectedDistrict(districtName);
+                const layer = e.target;
+                if (name !== selectedDistrict) {
+                    layer.setStyle({
+                        fillColor: '#ffffff',
+                        fillOpacity: 1
+                    });
                 }
-            },
+            }
         });
     };
 
-    // Effect to update tooltip classes
-    const geoJsonRef = React.useRef(null);
-    useEffect(() => {
-        if (geoJsonRef.current) {
-            geoJsonRef.current.setStyle(getStyle);
-            geoJsonRef.current.eachLayer(layer => {
-                const name = layer.feature.properties.name;
-                const tooltip = layer.getTooltip();
-                if (tooltip) {
-                    const el = tooltip.getElement();
-                    if (el) {
-                        if (name === selectedDistrict) {
-                            el.classList.add('active');
-                        } else {
-                            el.classList.remove('active');
-                        }
-                    }
-                }
-            });
-        }
-    }, [selectedDistrict]);
-
-    // Calculate center of selected district
-    const getCenterOfDistrict = (districtName) => {
-        if (!geoJsonData) return null;
-        const feature = geoJsonData.features.find(f => f.properties.name === districtName);
-        if (!feature) return null;
-
-        // Leaflet bounds center (fast and adequate for maps)
-        const layer = L.geoJSON(feature);
-        return layer.getBounds().getCenter();
+    const districtStyle = (feature) => {
+        const isSelected = feature.properties.name === selectedDistrict;
+        return {
+            fillColor: isSelected ? '#16B5B0' : '#ffffff',
+            weight: 0.8,
+            opacity: 0.6,
+            color: '#444',
+            fillOpacity: 1,
+        };
     };
 
-    const selectedCenter = selectedDistrict ? getCenterOfDistrict(selectedDistrict) : null;
+    const BoundsFitter = ({ data }) => {
+        const map = useMap();
+        useEffect(() => {
+            if (data) {
+                const geoJsonLayer = L.geoJSON(data);
+                map.fitBounds(geoJsonLayer.getBounds(), { padding: [5, 5] });
+            }
+        }, [data, map]);
+        return null;
+    };
+
+    const getLabelPosition = (feature) => {
+        const name = feature.properties.name;
+        const coords = feature.geometry.coordinates;
+        let points = [];
+        if (feature.geometry.type === 'Polygon') points = coords[0];
+        else if (feature.geometry.type === 'MultiPolygon') points = coords[0][0];
+
+        const latLongs = points.map(p => [p[1], p[0]]);
+        const bounds = L.latLngBounds(latLongs);
+        const center = bounds.getCenter();
+
+        const offset = labelOffsets[name] || [0, 0];
+        return [center.lat + offset[0], center.lng + offset[1]];
+    };
 
     if (!geoJsonData) return null;
 
     return (
-        <div style={{ height: '100%', width: '100%' }}>
+        <div className="option2-map-container" style={{
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+            borderRadius: '20px',
+            overflow: 'visible'
+        }}>
             <style>
                 {`
-                    .district-label {
-                        background: transparent;
-                        border: none;
-                        box-shadow: none;
-                        font-family: 'GmarketSans', sans-serif;
-                        font-weight: 500;
-                        font-size: 12px;
-                        color: #555;
-                        text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+                    .leaflet-container {
+                        background: transparent !important;
                     }
-                    .district-label.active {
-                        color: white;
-                        text-shadow: none;
+                    .district-label-tooltip {
+                        background: transparent !important;
+                        border: none !important;
+                        box-shadow: none !important;
+                        color: #1a1a1a !important; /* Default Black */
+                        font-family: 'GmarketSans', sans-serif !important;
+                        font-weight: 500 !important;
+                        font-size: ${isMobile ? '10px' : '12px'} !important;
+                        text-shadow: 0px 0px 4px #fff, 0px 0px 4px #fff !important;
+                        white-space: nowrap !important;
+                        pointer-events: none !important;
+                        opacity: 1 !important; /* Ensure no transparency */
+                        display: flex !important;
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                    }
+                    .district-label-tooltip.selected {
+                        color: #ffffff !important; /* Selected White */
+                        text-shadow: 0px 0px 4px rgba(0,0,0,0.2) !important;
+                        font-weight: 600 !important;
+                        z-index: 1000 !important; /* Bring to front when selected */
+                        opacity: 1 !important;
+                    }
+                    .selected-person-icon {
+                        width: ${isMobile ? '60px' : '80px'} !important;
+                        max-width: none !important; /* <--- root cause fix: allow icon to be wider than text */
+                        height: auto !important;
+                        margin-bottom: 4px !important;
+                        filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2));
+                        opacity: 1 !important; /* Ensure icon is fully opaque */
+                    }
+                    .invisible-marker {
+                        opacity: 0;
+                        pointer-events: none;
                     }
                 `}
             </style>
+
             <MapContainer
                 center={[35.1795543, 129.0756416]}
                 zoom={11}
@@ -201,20 +166,45 @@ const InteractiveMap = () => {
                 doubleClickZoom={false}
                 dragging={false}
                 attributionControl={false}
-                style={{ height: '100%', width: '100%', background: 'transparent' }}
+                style={{ height: '100%', width: '100%' }}
             >
                 <BoundsFitter data={geoJsonData} />
                 <GeoJSON
-                    ref={geoJsonRef}
+                    key={`geojson-${selectedDistrict}`} // Force full re-render on selection
                     data={geoJsonData}
-                    style={getStyle}
-                    onEachFeature={onEachDistrict}
+                    style={districtStyle}
+                    onEachFeature={onEachFeature}
                 />
 
-                {/* People icon hidden as requested */}
-                {/* {selectedCenter && (
-                    <Marker position={selectedCenter} icon={isMobile ? peopleIconMobile : peopleIcon} interactive={false} />
-                )} */}
+                {geoJsonData.features.map(feature => {
+                    const name = feature.properties.name;
+                    const isSelected = name === selectedDistrict;
+                    const pos = getLabelPosition(feature);
+
+                    return (
+                        <Marker
+                            key={`marker-${name}-${isSelected}`}
+                            position={pos}
+                            icon={L.divIcon({ className: 'invisible-marker' })}
+                        >
+                            <Tooltip
+                                permanent
+                                direction="center"
+                                offset={isSelected ? [0, isMobile ? -26 : -35] : [0, 0]}
+                                className={`district-label-tooltip ${isSelected ? 'selected' : ''}`}
+                            >
+                                {isSelected && (
+                                    <img
+                                        src={isMobile ? "/people.png" : "/people2.png"}
+                                        alt="selected"
+                                        className="selected-person-icon"
+                                    />
+                                )}
+                                <span>{name}</span>
+                            </Tooltip>
+                        </Marker>
+                    );
+                })}
             </MapContainer>
         </div>
     );
