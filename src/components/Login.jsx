@@ -129,6 +129,7 @@ const Login = ({ onBack, onSignup }) => {
                 });
                 if (!res.ok) throw new Error((await res.json()).detail);
                 const data = await res.json();
+                sessionStorage.setItem('pw_change_required', '1');
                 setFindResult({ type: 'pw', value: data.temp_password });
             }
         } catch (e) {
@@ -192,15 +193,17 @@ const Login = ({ onBack, onSignup }) => {
                     </div>
                 )}
 
-                <div className="login-btn-container">
-                    <button
-                        className={`login-submit-btn ${(findMode === 'id' ? findInputs.name && findInputs.phone : findInputs.id && findInputs.phone) && !findLoading ? 'active' : 'disabled'}`}
-                        disabled={(findMode === 'id' ? !findInputs.name || !findInputs.phone : !findInputs.id || !findInputs.phone) || findLoading}
-                        onClick={handleFind}
-                    >
-                        {findLoading ? '확인 중...' : '확인'}
-                    </button>
-                </div>
+                {(findMode === 'id' || !findResult) && (
+                    <div className="login-btn-container">
+                        <button
+                            className={`login-submit-btn ${(findMode === 'id' ? findInputs.name && findInputs.phone : findInputs.id && findInputs.phone) && !findLoading ? 'active' : 'disabled'}`}
+                            disabled={(findMode === 'id' ? !findInputs.name || !findInputs.phone : !findInputs.id || !findInputs.phone) || findLoading}
+                            onClick={handleFind}
+                        >
+                            {findLoading ? '확인 중...' : '확인'}
+                        </button>
+                    </div>
+                )}
             </div>
         );
     }

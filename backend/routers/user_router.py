@@ -165,6 +165,15 @@ def change_password(req: ChangePasswordRequest, db: Session = Depends(get_db), c
     db.commit()
     return {"message": "비밀번호가 변경되었습니다."}
 
+class ResetPasswordRequest(BaseModel):
+    new_pw: str
+
+@router.put("/reset-password")
+def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    current_user.PW = get_password_hash(req.new_pw)
+    db.commit()
+    return {"message": "비밀번호가 변경되었습니다."}
+
 class FindIdRequest(BaseModel):
     name: str
     phone_num: str

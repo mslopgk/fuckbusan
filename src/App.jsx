@@ -27,6 +27,7 @@ const ProposalPreview = lazy(() => import('./components/ProposalPreview'));
 const ProposalDone = lazy(() => import('./components/ProposalDone'));
 const ProposalDetail = lazy(() => import('./components/ProposalDetail'));
 const MyProposals = lazy(() => import('./components/MyProposals'));
+const ChangePassword = lazy(() => import('./components/ChangePassword'));
 
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
 const AdminSignup = lazy(() => import('./admin/pages/Signup'));
@@ -329,7 +330,13 @@ function App() {
                 )}
                 {view === 'login' && (
                     <Login
-                        onBack={() => setView('home')}
+                        onBack={() => {
+                            if (sessionStorage.getItem('pw_change_required') === '1') {
+                                setView('changePassword');
+                            } else {
+                                setView('home');
+                            }
+                        }}
                         onSignup={() => setView('signup')}
                     />
                 )}
@@ -726,6 +733,9 @@ function App() {
                         onBack={() => setView('home')}
                         onNavigate={onNavigate}
                     />
+                )}
+                {view === 'changePassword' && (
+                    <ChangePassword onBack={() => setView('home')} />
                 )}
                 {view === 'adminLogin' && (
                     <AdminLogin

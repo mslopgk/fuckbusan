@@ -6,10 +6,6 @@ const MyProposals = ({ onBack, onNavigate }) => {
     const [activeTab, setActiveTab] = useState('mine'); // 'mine' or 'voted'
     const [proposals, setProposals] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showPwModal, setShowPwModal] = useState(false);
-    const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
-    const [pwError, setPwError] = useState('');
-    const [pwLoading, setPwLoading] = useState(false);
 
     // [중요] 127.0.0.1을 우선 사용하여 주소 충돌 방지
     const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
@@ -57,28 +53,6 @@ const MyProposals = ({ onBack, onNavigate }) => {
         return styles[category] || { background: '#F5F5F5', color: '#616161' };
     };
 
-    const handleChangePassword = async () => {
-        if (pwForm.next !== pwForm.confirm) {
-            setPwError('새 비밀번호가 일치하지 않습니다.'); return;
-        }
-        setPwLoading(true); setPwError('');
-        try {
-            const token = localStorage.getItem('access_token');
-            const res = await fetch(`${VITE_API_URL}/users/change-password`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ current_pw: pwForm.current, new_pw: pwForm.next })
-            });
-            if (!res.ok) { const d = await res.json(); throw new Error(d.detail); }
-            alert('비밀번호가 변경되었습니다.');
-            setShowPwModal(false);
-            setPwForm({ current: '', next: '', confirm: '' });
-        } catch (e) {
-            setPwError(e.message);
-        } finally {
-            setPwLoading(false);
-        }
-    };
 
     // Format date string
     const formatDate = (dateStr) => {
@@ -100,29 +74,7 @@ const MyProposals = ({ onBack, onNavigate }) => {
                     </button>
                     <span className="mp-header-title">나의 제안현황</span>
                 </div>
-                <button onClick={() => setShowPwModal(true)} style={{ background: 'none', border: '1px solid #ddd', borderRadius: '8px', padding: '6px 12px', fontSize: '13px', color: '#555', cursor: 'pointer' }}>
-                    비밀번호 변경
-                </button>
             </header>
-
-            {showPwModal && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowPwModal(false)}>
-                    <div style={{ background: '#fff', borderRadius: '16px', padding: '24px', width: '320px', display: 'flex', flexDirection: 'column', gap: '12px' }} onClick={e => e.stopPropagation()}>
-                        <div style={{ fontSize: '17px', fontWeight: 'bold', marginBottom: '4px' }}>비밀번호 변경</div>
-                        {['current', 'next', 'confirm'].map((key, i) => (
-                            <input key={key} type="password" placeholder={['현재 비밀번호', '새 비밀번호', '새 비밀번호 확인'][i]}
-                                value={pwForm[key]} onChange={e => setPwForm(p => ({ ...p, [key]: e.target.value }))}
-                                style={{ border: '1px solid #ddd', borderRadius: '10px', padding: '12px', fontSize: '14px', outline: 'none' }}
-                            />
-                        ))}
-                        {pwError && <div style={{ color: '#E6235A', fontSize: '13px' }}>{pwError}</div>}
-                        <button onClick={handleChangePassword} disabled={pwLoading || !pwForm.current || !pwForm.next || !pwForm.confirm}
-                            style={{ background: pwLoading || !pwForm.current || !pwForm.next || !pwForm.confirm ? '#ccc' : '#16B5B0', color: '#fff', border: 'none', borderRadius: '10px', padding: '13px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer' }}>
-                            {pwLoading ? '변경 중...' : '변경하기'}
-                        </button>
-                    </div>
-                </div>
-            )}
 
             {/* Tabs */}
             <div className="mp-tabs-container">
