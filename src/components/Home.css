@@ -2446,8 +2446,7 @@
 
     /* Restore Desktop Spacing */
     .content-wrapper {
-        margin-top: -120px;
-        /* Keep desktop overlap strong */
+        margin-top: 0; /* Reset desktop overlap to zero */
     }
 
     /* [Hero Inner: Centered Content] */

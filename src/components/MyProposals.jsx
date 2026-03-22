@@ -2,10 +2,19 @@
 import React, { useState, useEffect } from 'react';
 import './MyProposals.css';
 
+const DISTRICTS = ['부산전체','중구','서구','동구','영도구','부산진구','동래구','남구','북구','해운대구','사하구','금정구','강서구','연제구','수영구','사상구','기장군'];
+const CATEGORIES = ['전체','주거','환경','교육','안전','산업 및 고용','모빌리티','문화 및 레저','보건 및 복지'];
+
 const MyProposals = ({ onBack, onNavigate }) => {
     const [activeTab, setActiveTab] = useState('mine'); // 'mine' or 'voted'
     const [proposals, setProposals] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    // 데스크톱 필터 상태
+    const [search, setSearch] = useState('');
+    const [appliedSearch, setAppliedSearch] = useState('');
+    const [selectedDistrict, setSelectedDistrict] = useState('부산전체');
+    const [selectedCategory, setSelectedCategory] = useState('전체');
 
     // [중요] 127.0.0.1을 우선 사용하여 주소 충돌 방지
     const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
@@ -61,9 +70,41 @@ const MyProposals = ({ onBack, onNavigate }) => {
         return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
     };
 
+    // 데스크톱 클라이언트 필터링
+    const filteredProposals = React.useMemo(() => {
+        let filtered = [...proposals];
+        if (selectedDistrict !== '부산전체') {
+            filtered = filtered.filter(p => p.region && p.region.includes(selectedDistrict));
+        }
+        if (selectedCategory !== '전체') {
+            filtered = filtered.filter(p => p.category === selectedCategory);
+        }
+        if (appliedSearch.trim()) {
+            const q = appliedSearch.trim().toLowerCase();
+            filtered = filtered.filter(p =>
+                (p.title && p.title.toLowerCase().includes(q)) ||
+                (p.content && p.content.toLowerCase().includes(q))
+            );
+        }
+        return filtered;
+    }, [proposals, selectedDistrict, selectedCategory, appliedSearch]);
+
     return (
         <div className="my-proposals-container">
-            {/* Header */}
+            {/* PC 히어로 배너 */}
+            <div className="mp-pc-hero">
+                <p className="mp-pc-page-title">나의 제안</p>
+                <div className="mp-pc-hero-inner">
+                    <div className="mp-pc-hero-text">
+                        <p>내가 제안하고 내가 투표한<br />제안을 확인하세요</p>
+                    </div>
+                    <div className="mp-pc-hero-illust">
+                        <img src="/assets/pc_hero_myproposals.png" alt="" onError={(e) => e.target.style.display = 'none'} />
+                    </div>
+                </div>
+            </div>
+
+            {/* Header (모바일 전용) */}
             <header className="mp-header">
                 <div className="mp-header-left">
                     <button className="mp-back-btn" onClick={onBack}>
@@ -76,20 +117,52 @@ const MyProposals = ({ onBack, onNavigate }) => {
                 </div>
             </header>
 
+            {/* PC 검색 + 구군 + 카테고리 필터 */}
+            <div className="mp-pc-filters">
+                <div className="mp-search-wrapper">
+                    <input
+                        type="text"
+                        className="mp-search-input"
+                        placeholder="검색"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') setAppliedSearch(search); }}
+                    />
+                    <button className="mp-search-btn" onClick={() => setAppliedSearch(search)}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div className="mp-district-tabs">
+                    {DISTRICTS.map((d) => (
+                        <button key={d} className={`mp-district-tab ${selectedDistrict === d ? 'active' : ''}`} onClick={() => setSelectedDistrict(d)}>{d}</button>
+                    ))}
+                </div>
+                <div className="mp-category-chips">
+                    {CATEGORIES.map((cat) => (
+                        <button key={cat} className={`mp-category-chip ${selectedCategory === cat ? 'active' : ''}`} onClick={() => setSelectedCategory(cat)}>{cat}</button>
+                    ))}
+                </div>
+            </div>
+
             {/* Tabs */}
             <div className="mp-tabs-container">
-                <button 
-                    className={`mp-tab-btn ${activeTab === 'mine' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('mine')}
-                >
-                    나의 제안글
-                </button>
-                <button 
-                    className={`mp-tab-btn ${activeTab === 'voted' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('voted')}
-                >
-                    투표한 제안
-                </button>
+                <div className="mp-tab-switcher">
+                    <button
+                        className={`mp-tab-btn ${activeTab === 'mine' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('mine')}
+                    >
+                        나의 제안글
+                    </button>
+                    <button
+                        className={`mp-tab-btn ${activeTab === 'voted' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('voted')}
+                    >
+                        투표한 제안
+                    </button>
+                </div>
             </div>
 
             {/* Content List */}
@@ -100,7 +173,7 @@ const MyProposals = ({ onBack, onNavigate }) => {
                     <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
                         {activeTab === 'mine' ? '아직 작성한 제안이 없습니다.' : '투표한 제안이 없습니다.'}
                     </div>
-                ) : (proposals).map((item) => {
+                ) : (filteredProposals).map((item) => {
                     
                     // [수정] 이미지 경로 생성 로직 강화
                     let imageUrl = null;

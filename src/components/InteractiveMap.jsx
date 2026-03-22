@@ -129,7 +129,8 @@ const InteractiveMap = () => {
                         font-size: ${isMobile ? '10px' : '12px'} !important;
                         text-shadow: 0px 0px 4px #fff, 0px 0px 4px #fff !important;
                         white-space: nowrap !important;
-                        pointer-events: none !important;
+                        pointer-events: auto !important;
+                        cursor: pointer !important;
                         opacity: 1 !important; /* Ensure no transparency */
                         display: flex !important;
                         flex-direction: column !important;
@@ -153,7 +154,8 @@ const InteractiveMap = () => {
                     }
                     .invisible-marker {
                         opacity: 0;
-                        pointer-events: none;
+                        pointer-events: auto;
+                        cursor: pointer;
                     }
                 `}
             </style>
@@ -164,6 +166,8 @@ const InteractiveMap = () => {
                 scrollWheelZoom={false}
                 zoomControl={false}
                 doubleClickZoom={false}
+                touchZoom={false}
+                boxZoom={false}
                 dragging={false}
                 attributionControl={false}
                 style={{ height: '100%', width: '100%' }}
@@ -186,12 +190,20 @@ const InteractiveMap = () => {
                             key={`marker-${name}-${isSelected}`}
                             position={pos}
                             icon={L.divIcon({ className: 'invisible-marker' })}
+                            eventHandlers={{
+                                click: (e) => {
+                                    console.log(`Marker clicked for district: ${name}`);
+                                    L.DomEvent.stopPropagation(e);
+                                    setSelectedDistrict(name);
+                                },
+                            }}
                         >
                             <Tooltip
                                 permanent
                                 direction="center"
                                 offset={isSelected ? [0, isMobile ? -26 : -35] : [0, 0]}
                                 className={`district-label-tooltip ${isSelected ? 'selected' : ''}`}
+                                interactive={true}
                             >
                                 {isSelected && (
                                     <img
@@ -200,7 +212,16 @@ const InteractiveMap = () => {
                                         className="selected-person-icon"
                                     />
                                 )}
-                                <span>{name}</span>
+                                <span
+                                    onClick={(e) => {
+                                        console.log(`Text label clicked: ${name}`);
+                                        e.stopPropagation();
+                                        setSelectedDistrict(name);
+                                    }}
+                                    style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+                                >
+                                    {name}
+                                </span>
                             </Tooltip>
                         </Marker>
                     );

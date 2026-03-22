@@ -222,6 +222,19 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
 
     return (
         <div className="proposal-form-container">
+            {/* PC 히어로 배너 */}
+            <div className="pf-pc-hero">
+                <p className="pf-pc-page-title">제안하기</p>
+                <div className="pf-pc-hero-inner">
+                    <div className="pf-pc-hero-text">
+                        <p>우리동네 개선 아이디어를<br />제안해보세요.</p>
+                    </div>
+                    <div className="pf-pc-hero-illust">
+                        <img src="/assets/pc_hero_proposalform.png" alt="" onError={(e) => e.target.style.display = 'none'} />
+                    </div>
+                </div>
+            </div>
+
             {/* Header */}
             <header className="pf-header">
                 <div className="pf-header-left">

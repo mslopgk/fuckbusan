@@ -27,6 +27,7 @@ const ProposalPreview = lazy(() => import('./components/ProposalPreview'));
 const ProposalDone = lazy(() => import('./components/ProposalDone'));
 const ProposalDetail = lazy(() => import('./components/ProposalDetail'));
 const MyProposals = lazy(() => import('./components/MyProposals'));
+const ProposalList = lazy(() => import('./components/ProposalList'));
 const ChangePassword = lazy(() => import('./components/ChangePassword'));
 
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
@@ -34,6 +35,7 @@ const AdminSignup = lazy(() => import('./admin/pages/Signup'));
 const AdminDashboard = lazy(() => import('./admin/pages/Dashboard'));
 
 import { fetchWithLogout } from './utils/api'
+import PCHeader from './components/PCHeader'
 
 function App() {
     // Initialize view from sessionStorage to support page refresh
@@ -246,7 +248,10 @@ function App() {
         const districtCode = localStorage.getItem('district_code') || '';
         const isExpert = districtCode.startsWith('expert');
 
-        if (target === 'checkList') {
+        if (target === 'home') {
+            setView('home');
+            return;
+        } else if (target === 'checkList') {
             setDiagnosisMode(isExpert ? 'expert' : 'general');
             setView('diagnosis');
         } else if (target === 'diagnosis') {
@@ -297,7 +302,7 @@ function App() {
         } else if (target === 'adminDashboard') {
             setView('adminDashboard');
         } else if (target === 'newDiagnosis') {
-            setView('newDiagnosis');
+            setView('proposalList');
         } else if (target === 'proposalForm') {
             setIsProposalEdit(!!data?.isEdit); // 데이터로 수정 모드 판단
             setProposalToEdit(data?.proposal || null);
@@ -310,6 +315,8 @@ function App() {
             setView('proposalDetail');
         } else if (target === 'myProposals') {
             setView('myProposals');
+        } else if (target === 'proposalList') {
+            setView('proposalList');
         }
     };
 
@@ -322,9 +329,17 @@ function App() {
 
     if (loading && view !== 'home') return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
 
+    // PC 헤더를 표시할 뷰 목록
+    const pcHeaderViews = ['proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm'];
+    const showPCHeader = pcHeaderViews.includes(view);
+
     return (
         <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#16B5B0', fontWeight: 'bold' }}>화면을 불러오는 중입니다...</div>}>
             <div>
+                {/* PC 전용 네비게이션 헤더 */}
+                {showPCHeader && (
+                    <PCHeader currentView={view} onNavigate={onNavigate} />
+                )}
                 {view === 'home' && (
                     <Home onNavigate={onNavigate} />
                 )}
@@ -583,15 +598,9 @@ function App() {
                         onComplete={() => setView('surveyDone')}
                     />
                 )}
-                {view === 'newDiagnosis' && (
-                    <NewDiagnosis
-                        onBack={() => setView('home')}
-                        onNavigate={onNavigate}
-                    />
-                )}
                 {view === 'proposalForm' && (
-                    <ProposalForm 
-                        onBack={() => setView(isProposalEdit ? 'proposalDetail' : 'newDiagnosis')} 
+                    <ProposalForm
+                        onBack={() => setView(isProposalEdit ? 'proposalDetail' : 'proposalList')}
                         onNavigate={onNavigate}
                         isEdit={isProposalEdit}
                         initialData={proposalToEdit}
@@ -717,19 +726,25 @@ function App() {
                         }}
                         onOthers={() => {
                             setProposalData(null);
-                            setView('newDiagnosis');
+                            setView('proposalList');
                         }}
                     />
                 )}
                 {view === 'proposalDetail' && (
                     <ProposalDetail
                         proposal={selectedProposal}
-                        onBack={() => setView('newDiagnosis')}
+                        onBack={() => setView('proposalList')}
                         onNavigate={onNavigate}
                     />
                 )}
                 {view === 'myProposals' && (
                     <MyProposals
+                        onBack={() => setView('home')}
+                        onNavigate={onNavigate}
+                    />
+                )}
+                {view === 'proposalList' && (
+                    <ProposalList
                         onBack={() => setView('home')}
                         onNavigate={onNavigate}
                     />

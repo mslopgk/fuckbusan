@@ -322,28 +322,63 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
 
             {/* Main Content */}
             <div className="pd-content">
-                <div className="pd-category-tag" style={(() => {
-                    const styles = {
-                        '주거': { background: '#FFF3E0', color: '#E65100' },
-                        '환경': { background: '#E8F5E9', color: '#2E7D32' },
-                        '교육': { background: '#EDE7F6', color: '#4527A0' },
-                        '안전': { background: '#FCE4EC', color: '#C62828' },
-                        '산업 및 고용': { background: '#E0F2F1', color: '#00695C' },
-                        '모빌리티': { background: '#E3F2FD', color: '#1565C0' },
-                        '문화 및 레저': { background: '#FFF8E1', color: '#F57F17' },
-                        '보건 및 복지': { background: '#F3E5F5', color: '#7B1FA2' },
-                    };
-                    return styles[proposal.category] || { background: '#F5F5F5', color: '#616161' };
-                })()}>{proposal.category}</div>
+                {/* PC 전용 플로팅 투표 버튼 */}
+                {!isMine && (
+                    <div className="pd-pc-vote-float">
+                        <button
+                            className={`pd-pc-vote-circle ${hasVoted ? 'voted' : ''}`}
+                            onClick={handleVote}
+                        >
+                            <div className="pd-pc-vote-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </div>
+                            <span className="pd-pc-vote-count">{currentLikes}</span>
+                            <span className="pd-pc-vote-label">{hasVoted ? '투표완료' : '투표하기'}</span>
+                        </button>
+                    </div>
+                )}
+
+                {/* 태그 행: 지역 + 카테고리 */}
+                <div className="pd-tags-row">
+                    {proposal.region && (
+                        <span className="pd-region-pill">{proposal.region}</span>
+                    )}
+                    <div className="pd-category-tag" style={(() => {
+                        const styles = {
+                            '주거': { background: '#FFF3E0', color: '#E65100' },
+                            '환경': { background: '#E8F5E9', color: '#2E7D32' },
+                            '교육': { background: '#EDE7F6', color: '#4527A0' },
+                            '안전': { background: '#FCE4EC', color: '#C62828' },
+                            '산업 및 고용': { background: '#E0F2F1', color: '#00695C' },
+                            '모빌리티': { background: '#E3F2FD', color: '#1565C0' },
+                            '문화 및 레저': { background: '#FFF8E1', color: '#F57F17' },
+                            '보건 및 복지': { background: '#F3E5F5', color: '#7B1FA2' },
+                        };
+                        return styles[proposal.category] || { background: '#F5F5F5', color: '#616161' };
+                    })()}>{proposal.category}</div>
+                </div>
+
                 <h1 className="pd-title">{proposal.title}</h1>
+                {/* 모바일 작성자 */}
                 <p className="pd-author">{proposal.nickname || proposal.author || '작성자 정보 없음'}</p>
 
-                <p className="pd-description" style={{ whiteSpace: 'pre-wrap' }}>
-                    {proposal.description || proposal.content}
-                </p>
+                {/* PC 작성자 + 메타 정보 행 */}
+                <div className="pd-meta-row">
+                    <span className="pd-author-text">{proposal.nickname || proposal.author || '작성자 정보 없음'}</span>
+                    <div className="pd-meta-right">
+                        <span>{proposal.date}</span>
+                        <span>·</span>
+                        <span>조회수 {currentViews}</span>
+                    </div>
+                </div>
+
+                {/* PC 구분선 */}
+                <div className="pd-divider"></div>
 
                 {safeProposal.files && safeProposal.files.length > 0 ? (
-                    <div className="pd-main-image-wrapper">
+                    <div className="pd-main-image-wrapper pd-order-image">
                         {safeProposal.files.map((file, idx) => {
                             let src = file;
                             if (!file.startsWith('http') && !file.startsWith('/assets/')) {
@@ -366,7 +401,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                         </div>
                     </div>
                 ) : imageUrl ? (
-                    <div className="pd-main-image-wrapper">
+                    <div className="pd-main-image-wrapper pd-order-image">
                         <img
                             src={imageUrl}
                             alt="Proposal"
@@ -379,6 +414,10 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                         </div>
                     </div>
                 ) : null}
+
+                <p className="pd-description pd-order-desc" style={{ whiteSpace: 'pre-wrap' }}>
+                    {proposal.description || proposal.content}
+                </p>
 
                 <div className="pd-stats-row">
                     <div className="pd-stats-left">

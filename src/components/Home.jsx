@@ -131,7 +131,7 @@ const Home = ({ onNavigate }) => {
                         </div>
                         <div className="action-item card diagnose" onClick={() => {
                                 if (!isLoggedIn) { alert('로그인 후 이용할 수 있습니다.'); onNavigate && onNavigate('login'); return; }
-                                onNavigate && onNavigate('newDiagnosis');
+                                onNavigate && onNavigate('proposalList');
                             }}>
                             <div className="card-top">
                                 <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
@@ -294,7 +294,7 @@ const Home = ({ onNavigate }) => {
                         onNavigate && onNavigate('login');
                         return;
                     }
-                    onNavigate && onNavigate('newDiagnosis');
+                    onNavigate && onNavigate('proposalList');
                 }}>
                     <img src="/suggest.png" alt="제안" className="nav-icon" style={{ width: '30px', height: '30px', opacity: 0.6, filter: (activeTab === 'stats' || activeTab === 'diagnosis') ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
                     <span className="nav-text">제안</span>

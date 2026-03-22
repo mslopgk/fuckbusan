@@ -186,3 +186,248 @@
 .mp-stat.active svg {
     fill: #ff4d4f;
 }
+
+/* PC 전용 요소 (모바일에서 숨김) */
+.mp-pc-hero { display: none; }
+.mp-pc-filters { display: none; }
+
+@media (min-width: 1024px) {
+    .my-proposals-container {
+        height: auto;
+        min-height: calc(100vh - 60px);
+        background-color: #fff;
+        max-width: 100%;
+    }
+
+    .mp-header { display: none; }
+
+    /* 히어로 배너 */
+    .mp-pc-hero {
+        display: block;
+        width: 960px;
+        max-width: calc(100% - 40px);
+        margin: 40px auto 0;
+        box-sizing: border-box;
+    }
+
+    .mp-pc-page-title {
+        display: block;
+        font-family: 'Pretendard Variable', sans-serif;
+        font-size: 30px;
+        font-weight: 700;
+        color: #000;
+        margin: 0 0 16px 0;
+        letter-spacing: -0.5px;
+    }
+
+    .mp-pc-hero-inner {
+        background-color: #F3F9FF;
+        border-radius: 30px;
+        height: 162px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 44px;
+        gap: 24px;
+        overflow: hidden;
+    }
+
+    .mp-pc-hero-text p {
+        font-family: 'Inter', 'GmarketSans', sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: #242424;
+        line-height: 1.4;
+        letter-spacing: -0.96px;
+        margin: 0;
+    }
+
+    .mp-pc-hero-illust {
+        width: 154px;
+        height: 154px;
+        flex-shrink: 0;
+    }
+
+    .mp-pc-hero-illust img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    /* 검색 + 구군 + 카테고리 필터 */
+    .mp-pc-filters {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 960px;
+        max-width: calc(100% - 40px);
+        margin: 24px auto 0;
+        box-sizing: border-box;
+    }
+
+    .mp-search-wrapper {
+        position: relative;
+        max-width: 480px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .mp-search-input {
+        width: 100%;
+        height: 47px;
+        border: 1px solid #DDDDDD;
+        border-radius: 100px;
+        padding: 0 48px 0 20px;
+        font-size: 15px;
+        font-family: 'Pretendard Variable', sans-serif;
+        color: #242424;
+        background-color: #fff;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+        letter-spacing: -0.64px;
+    }
+
+    .mp-search-input:focus { border-color: #23BDBB; }
+    .mp-search-input::placeholder { color: #A6A6A6; }
+
+    .mp-search-btn {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #888;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+    }
+
+    .mp-district-tabs {
+        display: grid;
+        grid-template-columns: repeat(9, 1fr);
+        gap: 0;
+        border: 1px solid #DDDDDD;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .mp-district-tab {
+        background: none;
+        border: none;
+        border-right: 1px solid #DDDDDD;
+        padding: 12px 4px;
+        font-family: 'Pretendard Variable', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        color: #555;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.15s;
+        white-space: nowrap;
+    }
+
+    .mp-district-tab:last-child { border-right: none; }
+    .mp-district-tab:hover { background-color: #f0fafa; color: #23BDBB; }
+    .mp-district-tab.active { background-color: #23BDBB; color: white; font-weight: 700; }
+
+    .mp-category-chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .mp-category-chip {
+        background: none;
+        border: 1px solid #DDDDDD;
+        border-radius: 100px;
+        padding: 6px 16px;
+        font-family: 'Pretendard Variable', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: #555;
+        cursor: pointer;
+        transition: all 0.15s;
+        white-space: nowrap;
+    }
+
+    .mp-category-chip:hover { border-color: #23BDBB; color: #23BDBB; }
+    .mp-category-chip.active { background-color: #23BDBB; border-color: #23BDBB; color: white; font-weight: 700; }
+
+    /* 탭 스위처 */
+    .mp-tabs-container {
+        width: 960px;
+        max-width: calc(100% - 40px);
+        margin: 24px auto 0;
+        padding: 0;
+        background: none;
+        display: flex;
+        justify-content: center;
+    }
+
+    .mp-tab-switcher {
+        display: flex;
+        width: 353px;
+        height: 50px;
+        border: 1px solid #DDDDDD;
+        border-radius: 30px;
+        overflow: hidden;
+    }
+
+    .mp-tab-btn {
+        flex: 1;
+        border: none;
+        background: none;
+        font-family: 'Pretendard Variable', sans-serif;
+        font-size: 18px;
+        font-weight: 400;
+        color: #777;
+        padding: 0;
+        cursor: pointer;
+        border-radius: 30px;
+        transition: all 0.2s ease;
+        letter-spacing: -0.72px;
+        height: 50px;
+    }
+
+    .mp-tab-btn.active {
+        background-color: #23BDBB;
+        color: white;
+        font-weight: 600;
+    }
+
+    /* 카드 그리드 3열 */
+    .mp-content {
+        width: 960px;
+        max-width: calc(100% - 40px);
+        margin: 20px auto 0;
+        padding: 0 0 80px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        align-items: start;
+        box-sizing: border-box;
+    }
+
+    .mp-content > div[style*="text-align"] {
+        grid-column: 1 / -1;
+    }
+
+    .mp-proposal-card {
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: auto;
+    }
+
+    .mp-card-image-wrapper { grid-column: unset; grid-row: unset; }
+    .mp-card-stats { justify-content: flex-start; grid-column: unset; grid-row: unset; }
+    .mp-card-title { grid-column: unset; grid-row: unset; font-size: 16px; font-weight: 500; letter-spacing: -0.64px; margin: 0; }
+    .mp-card-author { grid-column: unset; grid-row: unset; font-size: 13px; }
+    .mp-card-badge { grid-column: unset; grid-row: unset; }
+}
