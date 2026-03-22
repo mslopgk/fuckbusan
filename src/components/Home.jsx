@@ -116,23 +116,8 @@ const Home = ({ onNavigate }) => {
                 {/* Citizen Cards Section */}
                 {/* <CitizenCards /> */}
 
-                {/* Action Cards & Survey Row - User wants: Survey / Report / Diagnose in a row */}
-                <div className="action-row" style={{ marginTop: '-60px', position: 'relative', zIndex: 20 }}>
-                    {/* Survey Banner (As Card 1) */}
-                    {false && (
-                        <div className="action-item survey-card" onClick={() => onNavigate && onNavigate('survey')}>
-                        <div>
-                            <div className="card-title survey-title-text" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                설문조사 <span className="card-arrow mobile-only" style={{ display: 'flex', alignItems: 'center' }}>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                                </span>
-                            </div>
-                            <div className="card-subtitle">공공디자인 설문에 참여해주세요<br />~ 2025.12.19까지</div>
-                            <div className="card-arrow desktop-only">→</div>
-                        </div>
-                    </div>
-                    )}
-
+                {/* Action Cards & Survey Row */}
+                <div className="action-row" style={{ marginTop: '-120px', position: 'relative', zIndex: 20 }}>
                     <div className="action-item card report" onClick={() => alert('준비 중입니다.')}>
                         <div className="card-top">
                             <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
@@ -143,15 +128,7 @@ const Home = ({ onNavigate }) => {
                         </div>
                         <div className="card-arrow">→</div>
                     </div>
-                    <div className="action-item card diagnose" onClick={() => {
-                        const token = localStorage.getItem('access_token');
-                        if (!token) {
-                            alert('로그인이 필요한 서비스입니다.');
-                            onNavigate && onNavigate('login');
-                            return;
-                        }
-                        onNavigate && onNavigate('newDiagnosis');
-                    }}>
+                    <div className="action-item card diagnose" onClick={() => onNavigate && onNavigate('newDiagnosis')}>
                         <div className="card-top">
                             <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
                                 <div className="card-title">제안하기</div>

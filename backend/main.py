@@ -60,7 +60,6 @@ origins = [
     "http://127.0.0.1:8501",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "http://localhost:8000",
 ]
 
 app.add_middleware(
@@ -99,10 +98,14 @@ def read_root():
 
 @app.get("/{full_path:path}")
 async def serve_react_app(full_path: str):
-    # Serve specific files if they exist in dist (e.g., favicon.ico)
+    # Static files check (images, assets etc.)
     file_path = os.path.join(dist_dir, full_path)
     if os.path.exists(file_path) and os.path.isfile(file_path):
         return FileResponse(file_path)
+    
+    # Specific 404 for common browser-auto-requested icons if they aren't provided
+    if full_path in ["favicon.ico", "favicon.svg", "apple-touch-icon.png"]:
+        raise HTTPException(status_code=404, detail="Icon not found")
     
     # Fallback to index.html for SPA routing
     index_file = os.path.join(dist_dir, "index.html")

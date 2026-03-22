@@ -275,7 +275,7 @@ def update_proposal(
     if not proposal:
         raise HTTPException(status_code=404, detail="제안을 찾을 수 없습니다.")
     
-    if proposal.user_id != current_user.user_id:
+    if proposal.user_id != current_user.user_id and current_user.ID != "admin":
         raise HTTPException(status_code=403, detail="본인의 제안만 수정할 수 있습니다.")
     
     try:
@@ -303,7 +303,7 @@ def delete_proposal(
     if not proposal:
         raise HTTPException(status_code=404, detail="제안을 찾을 수 없습니다.")
     
-    if proposal.user_id != current_user.user_id:
+    if proposal.user_id != current_user.user_id and current_user.ID != "admin":
         raise HTTPException(status_code=403, detail="본인의 제안만 삭제할 수 있습니다.")
     
     try:
@@ -313,3 +313,113 @@ def delete_proposal(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/proposals/{proposal_id}/comments", response_model=schemas.ProposalCommentRead)
+def create_comment(
+    proposal_id: int,
+    comment: schemas.ProposalCommentCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    proposal = db.query(models.NewProposal).filter(models.NewProposal.id == proposal_id).first()
+    if not proposal:
+        raise HTTPException(status_code=404, detail="Proposal not found")
+    
+    new_comment = models.ProposalComment(
+        proposal_id=proposal_id,
+        user_id=current_user.user_id,
+        content=comment.content,
+        parent_comment_id=comment.parent_comment_id
+    )
+    db.add(new_comment)
+    db.commit()
+    db.refresh(new_comment)
+    
+    return schemas.ProposalCommentRead(
+        id=new_comment.id,
+        content=new_comment.content,
+        parent_comment_id=new_comment.parent_comment_id,
+        user_id=current_user.ID,
+        nickname=current_user.nickname or current_user.name,
+        created_at=new_comment.created_at,
+        replies=[]
+    )
+
+@router.get("/proposals/{proposal_id}/comments", response_model=List[schemas.ProposalCommentRead])
+def get_comments(
+    proposal_id: int,
+    db: Session = Depends(get_db)
+):
+    comments = db.query(models.ProposalComment).filter(models.ProposalComment.proposal_id == proposal_id).order_by(models.ProposalComment.created_at.asc()).all()
+    
+    comment_dict = {}
+    top_level_comments = []
+    
+    for c in comments:
+        c_read = schemas.ProposalCommentRead(
+            id=c.id,
+            content=c.content,
+            parent_comment_id=c.parent_comment_id,
+            user_id=c.user.ID if c.user else "unknown",
+            nickname=(c.user.nickname if c.user and c.user.nickname else (c.user.name if c.user else "익명")),
+            created_at=c.created_at,
+            replies=[]
+        )
+        comment_dict[c.id] = c_read
+        
+    for c_id, c_read in comment_dict.items():
+        if c_read.parent_comment_id and c_read.parent_comment_id in comment_dict:
+            comment_dict[c_read.parent_comment_id].replies.append(c_read)
+        else:
+            top_level_comments.append(c_read)
+            
+    return top_level_comments
+
+@router.delete("/proposals/{proposal_id}/comments/{comment_id}")
+def delete_comment(
+    proposal_id: int,
+    comment_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    comment = db.query(models.ProposalComment).filter(models.ProposalComment.id == comment_id, models.ProposalComment.proposal_id == proposal_id).first()
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    
+    if comment.user_id != current_user.user_id and current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="본인의 댓글만 삭제할 수 있습니다.")
+    
+    # First, delete child replies if any to avoid orphaned entries.
+    db.query(models.ProposalComment).filter(models.ProposalComment.parent_comment_id == comment_id).delete()
+    db.delete(comment)
+    db.commit()
+    return {"message": "댓글이 삭제되었습니다."}
+
+@router.put("/proposals/{proposal_id}/comments/{comment_id}", response_model=schemas.ProposalCommentRead)
+def update_comment(
+    proposal_id: int,
+    comment_id: int,
+    comment_data: schemas.ProposalCommentUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    comment = db.query(models.ProposalComment).filter(models.ProposalComment.id == comment_id, models.ProposalComment.proposal_id == proposal_id).first()
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+        
+    if comment.user_id != current_user.user_id and current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="본인의 댓글만 수정할 수 있습니다.")
+        
+    comment.content = comment_data.content
+    db.commit()
+    db.refresh(comment)
+    
+    return schemas.ProposalCommentRead(
+        id=comment.id,
+        content=comment.content,
+        parent_comment_id=comment.parent_comment_id,
+        user_id=comment.user.ID if comment.user else "unknown",
+        nickname=(comment.user.nickname if comment.user and comment.user.nickname else (comment.user.name if comment.user else "익명")),
+        created_at=comment.created_at,
+        replies=[]
+    )

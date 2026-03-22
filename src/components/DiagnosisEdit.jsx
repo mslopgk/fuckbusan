@@ -40,7 +40,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                 // 2. Load Checklist Detail if ID exists
                 if (data && data.id) {
                     const token = localStorage.getItem('access_token');
-                    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+                    const API_URL = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
                     const res = await fetchWithLogout(`${API_URL}/checklist/${data.id}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
@@ -128,7 +128,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
 
         try {
             const token = localStorage.getItem('access_token');
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+            const API_URL = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
 
             const payload = {
                 "대분류": selectedBig,

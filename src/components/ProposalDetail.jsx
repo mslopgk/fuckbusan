@@ -3,27 +3,50 @@ import React, { useState, useEffect } from 'react';
 import './ProposalDetail.css';
 
 const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
-    if (!proposal) return null;
+    const safeProposal = proposal || {};
 
-    const [hasVoted, setHasVoted] = useState(proposal.has_voted || false);
-    const [currentLikes, setCurrentLikes] = useState(proposal.likes_count || proposal.likes || 0);
-    const [currentViews, setCurrentViews] = useState(proposal.views_count || proposal.views || 0);
+    const [hasVoted, setHasVoted] = useState(safeProposal.has_voted || false);
+    const [currentLikes, setCurrentLikes] = useState(safeProposal.likes_count || safeProposal.likes || 0);
+    const [currentViews, setCurrentViews] = useState(safeProposal.views_count || safeProposal.views || 0);
     const [showVoteModal, setShowVoteModal] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false); // [추가] 메뉴 모달 상태
-    const [showDeleteModal, setShowDeleteModal] = useState(false); // [추가] 삭제 확인 모달 상태
 
-    const isMine = proposal.is_mine === true || proposal.isMine === true;
+    // UI Modal States
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    // Comment States
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState("");
+    const [replyingTo, setReplyingTo] = useState(null);
+    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [openCommentMenuId, setOpenCommentMenuId] = useState(null);
+    const [currentUserId, setCurrentUserId] = useState(null);
+
+    const isMine = safeProposal.is_mine === true || safeProposal.isMine === true;
 
     // [중요] 127.0.0.1을 우선 사용하여 주소 충돌 방지
-    const VITE_API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+    const rawApiUrl = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
+    const VITE_API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
-    // [조회수] 상세 페이지 진입 시 조회수 증가 API 호출 (본인 글 제외, 중복 방지)
+    useEffect(() => {
+        try {
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                setCurrentUserId(payload.sub);
+            }
+        } catch (e) {
+            console.error("Token parse error", e);
+        }
+    }, []);
+
     useEffect(() => {
         const incrementView = async () => {
+            if (!safeProposal.id) return;
             const token = localStorage.getItem('access_token');
             if (!token) return; // 비로그인은 무시
             try {
-                const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${proposal.id}/view`, {
+                const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/view`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -36,10 +59,162 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
             }
         };
         incrementView();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [proposal.id]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [safeProposal.id]);
+
+    const fetchComments = async () => {
+        if (!safeProposal.id) return;
+        try {
+            const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments`);
+            if (response.ok) {
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    setComments(data);
+                } else if (data && Array.isArray(data.comments)) {
+                    setComments(data.comments);
+                } else {
+                    setComments([]);
+                    console.warn("Expected comments array, but received:", data);
+                }
+            } else {
+                setComments([]);
+            }
+        } catch (error) {
+            console.error("Failed to fetch comments", error);
+            setComments([]);
+        }
+    };
+
+    useEffect(() => {
+        fetchComments();
+    }, [safeProposal.id]);
+
+    const handleDeleteComment = async (commentId) => {
+        if (!safeProposal.id) return;
+        if (!window.confirm("정말로 이 댓글을 삭제하시겠습니까?")) return;
+        const token = localStorage.getItem('access_token');
+        try {
+            const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments/${commentId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                setOpenCommentMenuId(null);
+                fetchComments();
+            } else {
+                alert("댓글 삭제에 실패했습니다.");
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const startEditComment = (comment) => {
+        setOpenCommentMenuId(null);
+        setReplyingTo(null);
+        setEditingCommentId(comment.id);
+        setNewComment(comment.content);
+    };
+
+    const handleAddComment = async (parentId = null, contentStr) => {
+        if (!safeProposal.id) return;
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+        if (!contentStr.trim()) return;
+
+        try {
+            if (editingCommentId) {
+                // Edit existing
+                const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments/${editingCommentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content: contentStr })
+                });
+                if (response.ok) {
+                    setEditingCommentId(null);
+                    setNewComment("");
+                    fetchComments();
+                }
+            } else {
+                // Create new
+                const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: contentStr,
+                        parent_comment_id: parentId
+                    })
+                });
+                if (response.ok) {
+                    if (parentId) {
+                        setReplyingTo(null);
+                    }
+                    setNewComment("");
+                    fetchComments();
+                }
+            }
+        } catch (error) {
+            console.error("Comment submit error", error);
+        }
+    };
+
+    const renderComments = (commentList) => {
+        if (!Array.isArray(commentList)) return null;
+        return commentList.map(comment => (
+            <div key={comment.id} className={`pd-comment-item ${comment.parent_comment_id ? 'is-reply' : ''}`}>
+                <div className="pd-comment-header">
+                    <div className="pd-comment-author">
+                        {comment.nickname}
+                        <span className="pd-comment-date" style={{ fontSize: '0.8rem', color: '#999', fontWeight: 'normal', marginLeft: '8px' }}>{new Date(comment.created_at).toLocaleDateString()}</span>
+                    </div>
+                    {(comment.user_id === currentUserId || currentUserId === 'admin') && (
+                        <div className="pd-comment-actions">
+                            <button className="pd-comment-more-btn" onClick={() => setOpenCommentMenuId(openCommentMenuId === comment.id ? null : comment.id)}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="5" r="2" fill="#aaa" />
+                                    <circle cx="12" cy="12" r="2" fill="#aaa" />
+                                    <circle cx="12" cy="19" r="2" fill="#aaa" />
+                                </svg>
+                            </button>
+                            {openCommentMenuId === comment.id && (
+                                <div className="pd-comment-dropdown">
+                                    <button onClick={() => startEditComment(comment)}>수정하기</button>
+                                    <button className="danger" onClick={() => handleDeleteComment(comment.id)}>삭제하기</button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+                <p className="pd-comment-text">{comment.content}</p>
+                {!comment.parent_comment_id && (
+                    <button className="pd-reply-btn" onClick={() => {
+                        setEditingCommentId(null);
+                        setReplyingTo(replyingTo === comment.id ? null : comment.id);
+                    }}>
+                        {replyingTo === comment.id ? '답글취소' : '답글쓰기'}
+                    </button>
+                )}
+
+                {comment.replies && comment.replies.length > 0 && (
+                    <div className="pd-comment-replies">
+                        {renderComments(comment.replies)}
+                    </div>
+                )}
+            </div>
+        ));
+    };
 
     const handleVote = async () => {
+        if (!safeProposal.id) return;
         if (isMine) {
             alert("본인의 제안에는 투표할 수 없습니다.");
             return;
@@ -52,9 +227,9 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         }
 
         try {
-            const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${proposal.id}/vote`, {
+            const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/vote`, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
@@ -63,7 +238,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
             if (response.ok) {
                 const result = await response.json();
                 const nowVoted = result.has_voted;
-                
+
                 setHasVoted(nowVoted);
                 setCurrentLikes(result.likes_count);
 
@@ -80,10 +255,10 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
             alert("서버 통신 오류가 발생했습니다.");
         }
     };
-    
-    let imageUrl = proposal.image;
-    if (proposal.files && proposal.files.length > 0 && (!imageUrl || imageUrl.includes('localhost:8501'))) {
-        const firstFile = proposal.files[0];
+
+    let imageUrl = safeProposal.image;
+    if (safeProposal.files && safeProposal.files.length > 0 && (!imageUrl || imageUrl.includes('localhost:8501'))) {
+        const firstFile = safeProposal.files[0];
         if (firstFile.startsWith('http')) {
             imageUrl = firstFile;
         } else if (firstFile.startsWith('/assets/')) {
@@ -93,6 +268,20 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         } else {
             imageUrl = `${VITE_API_URL}/uploads/${firstFile}`;
         }
+    }
+
+    if (!proposal) {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: '20px', backgroundColor: '#f9f9f9' }}>
+                <p style={{ fontSize: '1.2rem', color: '#555', fontWeight: 'bold' }}>제안 데이터를 불러올 수 없습니다.</p>
+                <button
+                    onClick={onBack}
+                    style={{ padding: '10px 20px', backgroundColor: '#16B5B0', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                    홈으로 돌아가기
+                </button>
+            </div>
+        );
     }
 
     return (
@@ -107,18 +296,18 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                         </svg>
                     </button>
                 </div>
-                
-                {isMine ? (
+
+                {(isMine || currentUserId === 'admin') ? (
                     <button className="pd-more-btn" onClick={() => setIsMenuOpen(true)}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="5" r="2" fill="currentColor"/>
-                            <circle cx="12" cy="12" r="2" fill="currentColor"/>
-                            <circle cx="12" cy="19" r="2" fill="currentColor"/>
+                            <circle cx="12" cy="5" r="2" fill="currentColor" />
+                            <circle cx="12" cy="12" r="2" fill="currentColor" />
+                            <circle cx="12" cy="19" r="2" fill="currentColor" />
                         </svg>
                     </button>
                 ) : (
-                    <button 
-                        className={`pd-vote-btn ${hasVoted ? 'voted' : ''}`} 
+                    <button
+                        className={`pd-vote-btn ${hasVoted ? 'voted' : ''}`}
                         onClick={handleVote}
                     >
                         <div className="pd-vote-icon">
@@ -148,21 +337,21 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                 })()}>{proposal.category}</div>
                 <h1 className="pd-title">{proposal.title}</h1>
                 <p className="pd-author">{proposal.nickname || proposal.author || '작성자 정보 없음'}</p>
-                
+
                 <p className="pd-description" style={{ whiteSpace: 'pre-wrap' }}>
                     {proposal.description || proposal.content}
                 </p>
 
                 {imageUrl && (
                     <div className="pd-main-image-wrapper">
-                        <img 
-                            src={imageUrl} 
-                            alt="Proposal" 
-                            className="pd-main-image" 
+                        <img
+                            src={imageUrl}
+                            alt="Proposal"
+                            className="pd-main-image"
                             loading="lazy"
-                            onError={(e) => { 
+                            onError={(e) => {
                                 console.warn("Detail image load failed:", imageUrl);
-                                e.target.style.display='none'; 
+                                e.target.style.display = 'none';
                             }}
                         />
                         <div className="pd-address-badge">
@@ -179,40 +368,49 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                     </div>
                     <div className="pd-stats-right">
                         <div className="pd-stat-item" style={{ cursor: 'pointer' }} onClick={handleVote}>
-                        <div className={`pd-stat-icon-circle ${hasVoted ? 'active' : ''}`}>
-                            <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
+                            <div className={`pd-stat-icon-circle ${hasVoted ? 'active' : ''}`}>
+                                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </div>
+                            <span>{currentLikes}</span>
                         </div>
-                        <span>{currentLikes}</span>
-                    </div>
                         <div className="pd-stat-item">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="#adb5bd" stroke="none">
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                             </svg>
-                            <span>{proposal.comments || 0}</span>
+                            <span>{comments.length}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div className="pd-comments-section">
-                <div className="pd-comment-item" style={{ opacity: 0.7 }}>
-                    <div className="pd-comment-author">동래구 우리디자이너</div>
-                    <p className="pd-comment-text">빠른 조치가 필요하네요 (데모 데이터)</p>
-                    <button className="pd-reply-btn">답글쓰기</button>
-                </div>
+                {comments.length === 0 ? (
+                    <div style={{ textAlign: 'center', color: '#999', margin: '20px 0' }}>아직 댓글이 없습니다. 첫 댓글을 남겨주세요!</div>
+                ) : (
+                    renderComments(comments)
+                )}
             </div>
 
             <div className="pd-comment-input-panel">
+                {(replyingTo || editingCommentId) && (
+                    <div style={{ fontSize: '0.85rem', color: '#16B5B0', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', padding: '0 4px' }}>
+                        <span>{editingCommentId ? "댓글을 수정 중입니다..." : "답글을 작성 중입니다..."}</span>
+                        <button onClick={() => { setReplyingTo(null); setEditingCommentId(null); setNewComment(""); }} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontWeight: 'bold' }}>✕ 취소</button>
+                    </div>
+                )}
                 <div className="pd-comment-input-wrapper">
-                    <input 
-                        type="text" 
-                        className="pd-comment-input" 
-                        placeholder="댓글을 입력해주세요 (기능은 추후 연동 예정)"
+                    <input
+                        type="text"
+                        className="pd-comment-input"
+                        placeholder={editingCommentId ? "수정할 내용을 입력해주세요" : (replyingTo ? "답글을 입력해주세요" : "댓글을 입력해주세요")}
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleAddComment(replyingTo, newComment)}
                     />
-                    <button className="pd-comment-send-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <button className="pd-comment-send-btn" onClick={() => handleAddComment(replyingTo, newComment)}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={newComment.trim() ? "#16B5B0" : "#ccc"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="22" y1="2" x2="11" y2="13"></line>
                             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                         </svg>
@@ -226,13 +424,13 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                     <div className="pd-bottom-sheet" onClick={(e) => e.stopPropagation()}>
                         <div className="pd-sheet-content">
                             <div className="pd-menu-list">
-                                <div className="pd-menu-item" onClick={() => { 
+                                <div className="pd-menu-item" onClick={() => {
                                     setIsMenuOpen(false);
                                     onNavigate('proposalForm', { isEdit: true, proposal: proposal });
                                 }}>
                                     제안글 수정
                                 </div>
-                                <div className="pd-menu-item danger" onClick={() => { 
+                                <div className="pd-menu-item danger" onClick={() => {
                                     setIsMenuOpen(false);
                                     setShowDeleteModal(true);
                                 }}>
@@ -258,7 +456,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                             <img src="/Vector.svg" alt="Vector" className="pd-vector-icon" />
                         </div>
                         <h2 className="pd-vote-modal-text">
-                            투표가<br/>완료되었습니다
+                            투표가<br />완료되었습니다
                         </h2>
                     </div>
                 </div>
@@ -274,11 +472,12 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                         <h2 className="pd-delete-modal-title">제안글을 삭제하시겠습니까?</h2>
                         <div className="pd-delete-modal-btns">
                             <button className="pd-delete-btn-yes" onClick={async () => {
+                                if (!safeProposal.id) return;
                                 try {
                                     const token = localStorage.getItem('access_token');
-                                    const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${proposal.id}`, {
+                                    const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}`, {
                                         method: 'DELETE',
-                                        headers: { 
+                                        headers: {
                                             ...(token ? { 'Authorization': `Bearer ${token}` } : {})
                                         }
                                     });

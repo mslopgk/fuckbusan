@@ -8,7 +8,7 @@ const MyProposals = ({ onBack, onNavigate }) => {
     const [loading, setLoading] = useState(true);
 
     // [중요] 127.0.0.1을 우선 사용하여 주소 충돌 방지
-    const VITE_API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+    const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
 
     useEffect(() => {
         const fetchProposalsData = async () => {

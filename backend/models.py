@@ -180,3 +180,18 @@ class ProposalView(Base):
 
     user = relationship("User", backref="viewed_proposals")
     proposal = relationship("NewProposal", backref="viewed_by_users")
+
+class ProposalComment(Base):
+    __tablename__ = "proposal_comments"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    proposal_id = Column(Integer, ForeignKey("new_proposals.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    content = Column(Text, nullable=False)
+    parent_comment_id = Column(Integer, ForeignKey("proposal_comments.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.now)
+
+    user = relationship("User", backref="comments")
+    proposal = relationship("NewProposal", backref="comments")
+    replies = relationship("ProposalComment", backref="parent_comment", remote_side=[id])

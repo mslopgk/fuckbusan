@@ -84,15 +84,21 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 50px;
-    margin-top: 0px;
-    /* Mobile: Moved down further (no overlap) */
+    gap: 20px; /* Reduced from 50px */
     position: relative;
     z-index: 10;
-    /* Ensure grid is clickable and above map bg */
 }
 
-/* Action Cards */
+/* Consolidated Actions Layout */
+.main-actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* Even tighter gap as requested */
+    margin-top: -120px;
+    position: relative;
+    z-index: 20;
+}
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -105,10 +111,15 @@
     }
 }
 
+.action-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
 .action-cards {
     display: flex;
     flex-direction: column;
-    /* Stack on mobile */
     gap: 12px;
 }
 
@@ -232,6 +243,70 @@
 .card.diagnose .card-subtitle,
 .card.diagnose .card-arrow {
     color: white;
+}
+
+/* Admin / List Access Section */
+.admin-access-section {
+    margin-top: 0; /* Removed margin to join completely with cards above */
+    background-color: #fcfcfc;
+    border: 1.5px solid #eee;
+    border-radius: 16px;
+    padding: 20px 24px; /* Reduced padding slightly */
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out forwards;
+    animation-delay: 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.admin-access-section:hover {
+    border-color: #16B5B0;
+    background-color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.admin-access-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-access-text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-title {
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #333;
+}
+
+.admin-subtitle {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.admin-icon {
+    width: 44px;
+    height: 44px;
+    background-color: #f0fdfb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #16B5B0;
+    transition: all 0.3s ease;
+}
+
+.admin-access-section:hover .admin-icon {
+    background-color: #16B5B0;
+    color: white;
+    transform: scale(1.1);
 }
 
 /* Survey Banner (Now Survey Card) */
@@ -566,21 +641,20 @@
         /* Prevent scroll bar and center the scaled element */
         display: flex;
         justify-content: center;
-        overflow: hidden;
+        overflow: visible;
         width: 100%;
     }
     .hero-map-overlay {
-        width: 600px; /* Force desktop width */
-        max-width: none; /* Override any max value */
-        height: 400px; /* Force desktop height */
+        width: 90vw; /* Responsive width as requested */
+        max-width: 500px; /* Cap for tablet widths */
+        height: 380px; /* Proportional height */
         margin-left: 0; 
         
-        /* Scale down the entire map visually so Leaflet zooming and label offsets stay perfectly proportional */
-        transform: scale(0.6); 
+        /* Font size preserved by removing scale */
+        transform: none; 
         transform-origin: top center;
         
-        /* Fix the empty space below caused by scaling (400px visual height becomes 240px) */
-        margin-bottom: -160px;
+        margin-bottom: 20px;
         filter: drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.15)); /* Add shadow from reference */
     }
 }

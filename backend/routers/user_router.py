@@ -48,6 +48,16 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     except JWTError:
         raise credentials_exception
         
+    if username == "admin":
+        # Virtual Admin User (Not in DB)
+        return User(
+            user_id=999999,
+            ID="admin",
+            name="관리자",
+            nickname="관리자",
+            district_code="admin"
+        )
+
     user = db.query(User).filter(User.ID == username).first()
     if user is None:
         raise credentials_exception
@@ -66,6 +76,16 @@ def get_current_user_optional(token: str = Depends(oauth2_scheme_optional), db: 
         username: str = payload.get("sub")
         if username is None:
             return None
+        
+        if username == "admin":
+            return User(
+                user_id=999999,
+                ID="admin",
+                name="관리자",
+                nickname="관리자",
+                district_code="admin"
+            )
+
         user = db.query(User).filter(User.ID == username).first()
         return user
     except:
@@ -101,6 +121,16 @@ class UserLogin(BaseModel):
 # --- [수정] JSON을 받는 로그인 함수 ---
 @router.post("/login", response_model=Token)
 def login(user_input: UserLogin, db: Session = Depends(get_db)):
+    # 0. Virtual Admin Check (No DB required)
+    if user_input.ID == "admin" and user_input.PW == "1234":
+        access_token = create_access_token(data={"sub": "admin"})
+        return {
+            "access_token": access_token, 
+            "token_type": "bearer", 
+            "user_name": "관리자",
+            "district_code": "admin"
+        }
+
     # 1. 아이디로 유저 찾기
     user = db.query(User).filter(User.ID == user_input.ID).first()
     
