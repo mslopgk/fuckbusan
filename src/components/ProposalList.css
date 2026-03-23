@@ -525,13 +525,24 @@
         align-items: center;
     }
 
+    .pl-district-tabs-wrapper {
+        border: 1px solid #DDDDDD;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
     .pl-district-tabs {
         display: grid;
-        grid-template-columns: repeat(9, 1fr);
         gap: 0;
-        border: 1px solid #DDDDDD;
-        border-radius: 12px;
-        overflow: hidden;
+    }
+
+    .pl-district-tabs-row1 {
+        grid-template-columns: repeat(9, 1fr);
+        border-bottom: 1px solid #DDDDDD;
+    }
+
+    .pl-district-tabs-row2 {
+        grid-template-columns: repeat(8, 1fr);
     }
 
     .pl-district-tab {
@@ -555,10 +566,9 @@
 
     .pl-filter-row {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
     }
 
     .pl-category-chips {
@@ -589,6 +599,7 @@
         align-items: center;
         gap: 8px;
         white-space: nowrap;
+        align-self: flex-end;
     }
 
     .pl-sort-btn {

@@ -313,17 +313,30 @@ const ProposalList = ({ onNavigate, onBack }) => {
                     </button>
                 </div>
 
-                {/* 구군 탭 */}
-                <div className="pl-district-tabs">
-                    {DISTRICTS.map((d) => (
-                        <button
-                            key={d}
-                            className={`pl-district-tab ${selectedDistrict === d ? 'active' : ''}`}
-                            onClick={() => setSelectedDistrict(d)}
-                        >
-                            {d}
-                        </button>
-                    ))}
+                {/* 구군 탭 - 두 개의 그리드를 붙여서 사용 */}
+                <div className="pl-district-tabs-wrapper">
+                    <div className="pl-district-tabs pl-district-tabs-row1">
+                        {DISTRICTS.slice(0, 9).map((d) => (
+                            <button
+                                key={d}
+                                className={`pl-district-tab ${selectedDistrict === d ? 'active' : ''}`}
+                                onClick={() => setSelectedDistrict(d)}
+                            >
+                                {d}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="pl-district-tabs pl-district-tabs-row2">
+                        {DISTRICTS.slice(9).map((d) => (
+                            <button
+                                key={d}
+                                className={`pl-district-tab ${selectedDistrict === d ? 'active' : ''}`}
+                                onClick={() => setSelectedDistrict(d)}
+                            >
+                                {d}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* 카테고리 필터 + 정렬 */}

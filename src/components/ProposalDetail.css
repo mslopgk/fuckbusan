@@ -163,14 +163,19 @@
 
 .pd-address-badge {
     background-color: #16B5B0;
-    color: white;
+    color: rgba(255, 255, 255, 0.75);
     font-size: 0.9rem;
-    font-weight: 700;
-    padding: 8px 16px; /* Reduced vertical padding */
+    font-weight: 500;
+    padding: 8px 16px;
     border-radius: 25px;
     width: fit-content;
     margin-top: 12px;
     box-shadow: 0 4px 8px rgba(22, 181, 176, 0.2);
+}
+
+.pd-address-badge strong {
+    color: white;
+    font-weight: 800;
 }
 
 .pd-stats-row {
@@ -649,6 +654,7 @@
 .pd-meta-row { display: none; }
 .pd-divider { display: none; }
 .pd-pc-vote-float { display: none; }
+.pd-pc-address { display: none; }
 
 @media (min-width: 1024px) {
     .proposal-detail-container {
@@ -660,8 +666,35 @@
 
     .pd-header { display: none; }
     .pd-author { display: none; }
-    .pd-stats-row { display: none; }
     .pd-address-badge { display: none; }
+
+    .pd-stats-row {
+        display: flex;
+        margin-top: 10px;
+        color: #aaa;
+        font-size: 13px;
+    }
+
+    .pd-stats-right { display: none; }
+
+    .pd-pc-address {
+        display: inline-flex;
+        align-items: center;
+        background-color: #16B5B0;
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 14px;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: 20px;
+        margin-top: 12px;
+        letter-spacing: -0.3px;
+        width: fit-content;
+    }
+
+    .pd-pc-address strong {
+        color: white;
+        font-weight: 800;
+    }
 
     .pd-content {
         width: 960px;
@@ -843,14 +876,18 @@
     }
 
     .pd-comment-input-panel {
+        position: relative;
         width: 960px;
-        max-width: calc(100vw - 40px);
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 12px 0 24px;
+        max-width: calc(100% - 40px);
+        left: auto;
+        transform: none;
+        margin: 0 auto;
+        padding: 16px 0;
         background: #fff;
         border-top: 1px solid #f0f0f0;
+        border-bottom: 1px solid #f0f0f0;
         box-sizing: border-box;
+        z-index: 20;
     }
 
     .pd-bottom-sheet {

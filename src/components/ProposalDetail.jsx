@@ -28,6 +28,16 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
     const rawApiUrl = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
     const VITE_API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
+    const parseAddress = (region) => {
+        if (!region) return { district: '', formatted: '' };
+        const parts = region.split(',').map(p => p.trim());
+        const filtered = parts.filter(p => p !== '대한민국' && !/^\d{5}$/.test(p));
+        const reversed = [...filtered].reverse();
+        const districtMatch = region.match(/[가-힣]+(?:구|군)/);
+        const district = districtMatch ? districtMatch[0] : '';
+        return { district, formatted: reversed.join(' ') };
+    };
+
     useEffect(() => {
         try {
             const token = localStorage.getItem('access_token');
@@ -343,7 +353,9 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                 {/* 태그 행: 지역 + 카테고리 */}
                 <div className="pd-tags-row">
                     {proposal.region && (
-                        <span className="pd-region-pill">{proposal.region}</span>
+                        <span className="pd-region-pill">
+                            {(proposal.region.match(/[가-힣]+(?:구|군)/) || [proposal.region])[0]}
+                        </span>
                     )}
                     <div className="pd-category-tag" style={(() => {
                         const styles = {
@@ -396,9 +408,14 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                                 />
                             );
                         })}
-                        <div className="pd-address-badge">
-                            {proposal.region || '전체'} · {proposal.detailed_address || proposal.detailedAddress || ''}
-                        </div>
+                        {(() => {
+                            const { district, formatted } = parseAddress(proposal.region);
+                            return (
+                                <div className="pd-address-badge">
+                                    <strong>{district}</strong>{formatted ? <> &nbsp;·&nbsp; {formatted}</> : ''}
+                                </div>
+                            );
+                        })()}
                     </div>
                 ) : imageUrl ? (
                     <div className="pd-main-image-wrapper pd-order-image">
@@ -409,15 +426,29 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                             loading="lazy"
                             onError={(e) => { e.target.style.display = 'none'; }}
                         />
-                        <div className="pd-address-badge">
-                            {proposal.region || '전체'} · {proposal.detailed_address || proposal.detailedAddress || ''}
-                        </div>
+                        {(() => {
+                            const { district, formatted } = parseAddress(proposal.region);
+                            return (
+                                <div className="pd-address-badge">
+                                    <strong>{district}</strong>{formatted ? <> &nbsp;·&nbsp; {formatted}</> : ''}
+                                </div>
+                            );
+                        })()}
                     </div>
                 ) : null}
 
                 <p className="pd-description pd-order-desc" style={{ whiteSpace: 'pre-wrap' }}>
                     {proposal.description || proposal.content}
                 </p>
+
+                {proposal.region && (
+                    <div className="pd-pc-address">
+                        {(() => {
+                            const { district, formatted } = parseAddress(proposal.region);
+                            return <><strong>{district}</strong>{formatted ? <> &nbsp;·&nbsp; {formatted}</> : ''}</>;
+                        })()}
+                    </div>
+                )}
 
                 <div className="pd-stats-row">
                     <div className="pd-stats-left">
@@ -444,14 +475,6 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                 </div>
             </div>
 
-            <div className="pd-comments-section">
-                {comments.length === 0 ? (
-                    <div style={{ textAlign: 'center', color: '#999', margin: '20px 0' }}>아직 댓글이 없습니다. 첫 댓글을 남겨주세요!</div>
-                ) : (
-                    renderComments(comments)
-                )}
-            </div>
-
             <div className="pd-comment-input-panel">
                 {(replyingTo || editingCommentId) && (
                     <div style={{ fontSize: '0.85rem', color: '#16B5B0', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', padding: '0 4px' }}>
@@ -475,6 +498,14 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                         </svg>
                     </button>
                 </div>
+            </div>
+
+            <div className="pd-comments-section">
+                {comments.length === 0 ? (
+                    <div style={{ textAlign: 'center', color: '#999', margin: '20px 0' }}>아직 댓글이 없습니다. 첫 댓글을 남겨주세요!</div>
+                ) : (
+                    renderComments(comments)
+                )}
             </div>
 
             {/* [추가] 제안글 관리 메뉴 모달 (바텀 시트) */}
