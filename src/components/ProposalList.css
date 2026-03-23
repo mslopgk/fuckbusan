@@ -629,62 +629,13 @@
         gap: 20px;
     }
 
-    .pl-card {
-        background-color: #fff;
-        border-radius: 15px;
-        padding: 16px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+    .pl-grid .pl-mobile-card {
         cursor: pointer;
         transition: box-shadow 0.2s;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
     }
 
-    .pl-card:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12); }
-
-    .pl-card-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 4px;
-    }
-
-    .pl-card-badge {
-        font-size: 12px;
-        font-weight: 700;
-        padding: 4px 10px;
-        border-radius: 10px;
-    }
-
-    .pl-card-thumb {
-        width: 56px;
-        height: 56px;
-        border-radius: 10px;
-        object-fit: cover;
-        flex-shrink: 0;
-    }
-
-    .pl-card-title {
-        font-size: 15px;
-        font-weight: 600;
-        color: #222;
-        margin: 0;
-        line-height: 1.4;
-        letter-spacing: -0.3px;
-    }
-
-    .pl-card-author {
-        font-size: 13px;
-        color: #999;
-        margin: 0;
-    }
-
-    .pl-card-stats {
-        display: flex;
-        gap: 12px;
-        margin-top: auto;
-        padding-top: 8px;
+    .pl-grid .pl-mobile-card:hover {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
     }
 
     .pl-empty {

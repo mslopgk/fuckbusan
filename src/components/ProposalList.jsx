@@ -375,16 +375,16 @@ const ProposalList = ({ onNavigate, onBack }) => {
                             const imageUrl = getImageUrl(item);
                             const catStyle = CATEGORY_STYLES[item.category] || { background: '#F5F5F5', color: '#616161' };
                             return (
-                                <div key={item.id} className="pl-card" onClick={() => handleCardClick(item)}>
-                                    <div className="pl-card-top">
-                                        <span className="pl-card-badge" style={catStyle}>{item.category}</span>
-                                        {imageUrl && (
-                                            <img src={imageUrl} alt={item.title} className="pl-card-thumb" loading="lazy" onError={(e) => e.target.style.display = 'none'} />
-                                        )}
-                                    </div>
-                                    <h3 className="pl-card-title">{item.title}</h3>
-                                    <p className="pl-card-author">{item.nickname || item.author || '작성자 정보 없음'}</p>
-                                    <div className="pl-card-stats">
+                                <div key={item.id} className="pl-mobile-card" onClick={() => handleCardClick(item)}>
+                                    <span className="pl-mobile-card-badge" style={catStyle}>{item.category}</span>
+                                    <h3 className="pl-mobile-card-title">{item.title}</h3>
+                                    <p className="pl-mobile-card-author">{item.nickname || item.author || '작성자 정보 없음'}</p>
+                                    {imageUrl && (
+                                        <div className="pl-mobile-card-img-wrapper">
+                                            <img src={imageUrl} alt={item.title} className="pl-mobile-card-img" loading="lazy" onError={(e) => e.target.style.display = 'none'} />
+                                        </div>
+                                    )}
+                                    <div className="pl-mobile-card-stats">
                                         <div className="pl-stat">
                                             <div className={`pl-stat-icon ${item.has_voted ? 'active' : ''}`}>
                                                 <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">

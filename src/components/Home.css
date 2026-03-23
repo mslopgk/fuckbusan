@@ -652,8 +652,7 @@
 
 @media (max-width: 768px) {
     .hero-section {
-        height: 750px;
-        /* Expanded to fit even larger map */
+        height: 560px;
         padding: 80px 15px 0;
         min-height: auto;
     }
@@ -1896,7 +1895,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-bottom: 60px;
+    margin-bottom: 0;
 }
 
 /* Reorder Grid Items for Mobile */
