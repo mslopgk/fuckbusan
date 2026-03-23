@@ -330,7 +330,7 @@ function App() {
     if (loading && view !== 'home') return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
 
     // PC 헤더를 표시할 뷰 목록
-    const pcHeaderViews = ['proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm'];
+    const pcHeaderViews = ['home', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm'];
     const showPCHeader = pcHeaderViews.includes(view);
 
     return (
