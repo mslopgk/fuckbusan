@@ -1,0 +1,271 @@
+.admin-dashboard-new {
+    display: flex;
+    height: 100vh;
+    background-color: #fff;
+    color: #333;
+    font-family: 'Pretendard', sans-serif;
+}
+
+/* Sidebar Styling */
+.admin-sidebar-new {
+    width: 260px;
+    background-color: #1a1a1b; /* Very dark gray/black */
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 0;
+}
+
+.sidebar-logo-new {
+    font-size: 24px;
+    font-weight: 700;
+    padding: 0 30px;
+    margin-bottom: 50px;
+}
+
+.sidebar-menu-new {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu-item-new {
+    padding: 15px 30px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #999;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.menu-item-new:hover {
+    color: #fff;
+}
+
+.menu-item-new.active {
+    color: #16B5B0; /* Teal for active main menu */
+}
+
+.submenu-item-new {
+    padding: 10px 30px 10px 45px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #999;
+    transition: color 0.2s;
+}
+
+.submenu-item-new.active {
+    color: #16B5B0;
+}
+
+.submenu-item-new:hover {
+    color: #fff;
+}
+
+/* Main Layout */
+.admin-main-new {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Header Styling */
+.admin-header-new {
+    height: 80px;
+    background-color: #fff;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 40px;
+    border-bottom: 1px solid #eee;
+}
+
+.header-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: 20px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.user-avatar-circle {
+    width: 32px;
+    height: 32px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #16B5B0;
+}
+
+.btn-logout-new {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: none;
+    color: #666;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.btn-logout-new:hover {
+    background-color: #f9f9f9;
+}
+
+/* Content Layout */
+.admin-content-new {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.content-header-new {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
+}
+
+.content-title-new {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.total-count-text {
+    font-size: 15px;
+    color: #666;
+}
+
+.total-count-text span {
+    font-weight: 700;
+    color: #333;
+}
+
+/* Search Box */
+.search-box-new {
+    background-color: #f9f9f9;
+    padding: 24px 30px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 40px;
+    border: none;
+}
+
+.search-label-new {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.search-input-wrapper-new {
+    position: relative;
+    flex: 1;
+    max-width: 300px;
+}
+
+.search-input-new {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.btn-search-new {
+    background-color: #16B5B0;
+    color: white;
+    padding: 0 30px;
+    height: 48px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Table Styling */
+.table-container-new {
+    background-color: transparent;
+    overflow: hidden;
+    padding-bottom: 20px;
+}
+
+.admin-table-new {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table-new th {
+    height: 54px;
+    border-top: 2px solid #ccc;
+    border-bottom: 2px solid #ccc;
+    text-align: center;
+    padding: 0 15px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+}
+
+.admin-table-new td {
+    height: 60px;
+    border-bottom: 1px solid #f2f2f2;
+    padding: 0 15px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+}
+
+.admin-table-new tr:hover {
+    background-color: #fcfcfc;
+}
+
+.nickname-cell {
+    font-weight: 700;
+    color: #333 !important;
+}
+
+.action-btns-new {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #999;
+}
+
+.btn-action-text {
+    cursor: pointer;
+}
+
+.btn-action-text:hover {
+    color: #333;
+}
+
+/* Pagination */
+.pagination-new {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 30px 0;
+    font-size: 16px;
+    color: #999;
+}
+
+.page-num-new {
+    cursor: pointer;
+}
+
+.page-num-new.active {
+    color: #16B5B0;
+    font-weight: 700;
+}

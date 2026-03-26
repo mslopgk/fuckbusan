@@ -93,7 +93,9 @@ const PCHeader = ({ currentView, onNavigate }) => {
                 <div className="pc-header-actions">
                     {isLoggedIn ? (
                         <>
-                            <span className="pc-user-name">{userName}</span>
+                            <span className="pc-user-name" onClick={() => onNavigate('myPage')} style={{ cursor: 'pointer' }}>{userName}</span>
+                            <button className="pc-auth-link" onClick={() => onNavigate('myPage')}>마이페이지</button>
+                            <span className="pc-auth-divider"></span>
                             <button className="pc-auth-link" onClick={handleLogout}>로그아웃</button>
                         </>
                     ) : (

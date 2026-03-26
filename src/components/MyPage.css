@@ -1,0 +1,171 @@
+/* MyPage.css */
+
+.mypage-container {
+    min-height: 100vh;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Pretendard Variable', sans-serif;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+    .mypage-container {
+        width: 1024px;
+        margin: 0 auto;
+    }
+}
+
+/* Header */
+.mypage-header {
+    height: 60px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.mypage-back-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+/* Body */
+.mypage-body {
+    padding: 24px 24px 80px 24px;
+    flex: 1;
+}
+
+@media (min-width: 1024px) {
+    .mypage-body {
+        width: 600px;
+        margin: 0 auto;
+        padding-top: 40px;
+    }
+}
+
+.mypage-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #16B5B0;
+    margin: 0 0 32px 0;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+.mypage-welcome-section {
+    margin-bottom: 32px;
+}
+
+.mypage-welcome-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.5px;
+}
+
+.mypage-welcome-desc {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+}
+
+/* Form */
+.mypage-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.mypage-input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.mypage-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.required-dot {
+    color: #FF4D4F;
+    font-size: 8px;
+    margin-left: 4px;
+    position: relative;
+    top: -4px;
+}
+
+.mypage-input {
+    height: 52px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 16px;
+    color: #222;
+    outline: none;
+    transition: border-color 0.2s;
+    background-color: #fff;
+}
+
+.mypage-input.readonly {
+    background-color: #f5f5f5;
+    border-color: #f5f5f5;
+    color: #444;
+}
+
+.mypage-input:focus {
+    border-color: #16B5B0;
+}
+
+.mypage-input.second-pw {
+    margin-top: 12px;
+}
+
+.mypage-hint {
+    font-size: 12px;
+    color: #888;
+    margin: 8px 0 0 0;
+}
+
+/* Footer */
+.mypage-footer {
+    margin-top: 60px;
+}
+
+.mypage-submit-btn {
+    width: 100%;
+    height: 56px;
+    background-color: #ddd;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.mypage-submit-btn:hover {
+    background-color: #ccc;
+}
+
+.mypage-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 16px;
+    color: #666;
+}
