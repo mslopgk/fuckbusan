@@ -29,6 +29,8 @@ const ProposalDetail = lazy(() => import('./components/ProposalDetail'));
 const MyProposals = lazy(() => import('./components/MyProposals'));
 const ProposalList = lazy(() => import('./components/ProposalList'));
 const ChangePassword = lazy(() => import('./components/ChangePassword'));
+const ReportPostForm = lazy(() => import('./components/ReportPostForm'));
+const ReportDone = lazy(() => import('./components/ReportDone'));
 
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
 const AdminSignup = lazy(() => import('./admin/pages/Signup'));
@@ -317,6 +319,10 @@ function App() {
             setView('myProposals');
         } else if (target === 'proposalList') {
             setView('proposalList');
+        } else if (target === 'reportPostForm') {
+            setView('reportPostForm');
+        } else if (target === 'reportDone') {
+            setView('reportDone');
         }
     };
 
@@ -330,7 +336,7 @@ function App() {
     if (loading && view !== 'home') return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
 
     // PC 헤더를 표시할 뷰 목록
-    const pcHeaderViews = ['home', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm'];
+    const pcHeaderViews = ['home', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm', 'reportPostForm'];
     const showPCHeader = pcHeaderViews.includes(view);
 
     return (
@@ -374,6 +380,18 @@ function App() {
                 )}
                 {view === 'reportForm' && (
                     <ReportForm onBack={() => setView('report')} />
+                )}
+                {view === 'reportPostForm' && (
+                    <ReportPostForm 
+                        onBack={() => setView('home')} 
+                        onNavigate={onNavigate}
+                    />
+                )}
+                {view === 'reportDone' && (
+                    <ReportDone 
+                        onMyReports={() => setView('myProposals')} 
+                        onOthers={() => setView('proposalList')} 
+                    />
                 )}
                 {view === 'diagnosis' && (
                     <Diagnosis
