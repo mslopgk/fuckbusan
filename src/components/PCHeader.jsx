@@ -83,8 +83,11 @@ const PCHeader = ({ currentView, onNavigate }) => {
                         )}
                     </div>
 
-                    {/* 제보 - 비활성화 */}
-                    <button className="pc-nav-link pc-nav-disabled" disabled>
+                    {/* 제보 */}
+                    <button 
+                        className={`pc-nav-link ${currentView === 'reportList' ? 'active' : ''}`}
+                        onClick={() => onNavigate('reportList')}
+                    >
                         제보
                     </button>
                 </nav>

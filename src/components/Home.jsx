@@ -288,13 +288,7 @@ const Home = ({ onNavigate }) => {
                     <span className="nav-text">홈</span>
                 </div>
                 <div className={`nav-item ${activeTab === 'report' ? 'active' : ''}`} onClick={() => {
-                    const token = localStorage.getItem('access_token');
-                    if (!token) {
-                        alert('로그인이 필요한 서비스입니다.');
-                        onNavigate && onNavigate('login');
-                        return;
-                    }
-                    onNavigate && onNavigate('reportPostForm');
+                    onNavigate && onNavigate('reportList');
                 }}>
                     <img src="/report.svg" alt="제보" className="nav-icon" style={{ width: '22px', height: '22px', filter: activeTab === 'report' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
                     <span className="nav-text">제보</span>
