@@ -2,17 +2,25 @@
     padding: 0;
     background: #fff;
     min-height: 100vh;
-    font-family: 'Pretendard', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     display: flex;
     flex-direction: column;
     position: relative;
     max-width: 480px;
     margin: 0 auto;
-    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    box-shadow: 0 0 20px rgba(0,0,0,0.08);
 }
 
+/* Header */
 .rd-header {
-    padding: 16px 20px;
+    height: 50px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .rd-back-btn {
@@ -20,323 +28,454 @@
     border: none;
     padding: 0;
     cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 .rd-content {
-    padding: 0 20px 100px 20px;
+    padding: 10px 14px 120px 14px;
     flex: 1;
 }
 
-.rd-badge-row {
+/* 1. Top Tags */
+.rd-tags-row {
     display: flex;
     gap: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
-.rd-badge {
+.rd-tag {
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 700;
 }
 
-.rd-badge.region {
-    background: #E0F2F1;
-    color: #00695C;
-}
+.rd-tag.bg-blue { background-color: #E3F2FD; color: #1565C0; }
+.rd-tag.bg-yellow { background-color: #FFF9C4; color: #FBC02D; }
+.rd-tag.bg-pink { background-color: #FCE4EC; color: #D81B60; }
 
+/* 2. Author Info */
 .rd-author-info {
-    margin-bottom: 12px;
+    margin-bottom: 20px;
 }
 
 .rd-author-name {
-    font-size: 20px;
-    font-weight: bold;
-    color: #222;
-    margin: 0 0 4px 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 4px;
 }
 
-.rd-date {
-    font-size: 14px;
+.rd-meta-row-small {
+    font-size: 13px;
     color: #999;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.rd-dot-divider {
+    font-weight: bold;
 }
 
 .rd-divider {
     border: none;
     border-top: 1px solid #f0f0f0;
-    margin: 16px 0;
+    margin: 0 0 24px 0;
 }
 
-.rd-title {
-    font-size: 22px;
-    font-weight: 800;
-    color: #1a1a1a;
-    line-height: 1.4;
+/* 3. Report Body */
+.rd-main-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #222;
     margin-bottom: 24px;
+    line-height: 1.4;
 }
 
-.rd-main-image-wrapper {
+.rd-image-container {
     width: 100%;
     margin-bottom: 16px;
 }
 
-.rd-main-image {
+.rd-main-img {
     width: 100%;
-    border-radius: 24px;
+    border-radius: 20px;
     object-fit: cover;
+    display: block;
 }
 
-.rd-map-preview-card {
-    height: 120px;
+.rd-map-preview {
     width: 100%;
-    border-radius: 24px;
+    height: 100px;
+    border-radius: 20px;
     overflow: hidden;
     margin-bottom: 24px;
+    position: relative;
 }
 
-.rd-mini-map {
+.rd-leaflet-preview {
     width: 100%;
     height: 100%;
 }
 
-.rd-map-dot {
-    width: 20px;
-    height: 20px;
-    background: #FF0000;
-    border: 3px solid #fff;
+.rd-map-center-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    background: #ff0000;
+    border: 2px solid #fff;
     border-radius: 50%;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    transform: translate(-50%, -50%);
+    z-index: 1000;
 }
 
-.rd-meta-row {
+/* 4. Detailed Meta Row */
+.rd-stats-row-detailed {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    padding-bottom: 12px;
 }
 
-.rd-meta-date {
+.rd-stats-left {
     font-size: 14px;
     color: #999;
 }
 
-.rd-meta-stats {
+.rd-stats-right {
     display: flex;
     gap: 16px;
 }
 
-.rd-stat-btn {
+.rd-stat-item {
     display: flex;
     align-items: center;
-    gap: 4px;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-}
-
-.rd-stat-count {
+    gap: 5px;
     font-size: 14px;
-    font-weight: 600;
+    color: #999;
 }
 
+/* 5. Comment Input */
 .rd-comment-input-wrapper {
+    margin-bottom: 24px;
+}
+
+.rd-comment-input-inner {
     display: flex;
-    background: #F8F9FA;
-    border-radius: 24px;
-    padding: 12px 20px;
-    margin-bottom: 30px;
     align-items: center;
+    background-color: #fff;
+    border: 1.5px solid #eee;
+    border-radius: 30px;
+    padding: 6px 12px 6px 20px;
 }
 
 .rd-comment-input {
     flex: 1;
-    background: transparent;
     border: none;
     outline: none;
     font-size: 15px;
     color: #333;
+    padding: 8px 0;
 }
 
-.rd-send-btn {
+.rd-comment-input::placeholder {
+    color: #bbb;
+}
+
+.rd-comment-send-btn {
     background: none;
     border: none;
-    padding: 0;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
-.rd-comment-item {
-    margin-bottom: 20px;
+/* 6. Comments List */
+.rd-comment-item-new {
+    margin-bottom: 24px;
 }
 
 .rd-comment-author {
+    display: block;
     font-size: 15px;
     font-weight: 700;
     color: #333;
-    margin: 0 0 4px 0;
+    margin-bottom: 4px;
 }
 
 .rd-comment-text {
     font-size: 15px;
     color: #444;
-    margin: 0 0 6px 0;
+    line-height: 1.5;
+    margin-bottom: 4px;
 }
 
 .rd-reply-btn {
+    background: none;
+    border: none;
+    padding: 0;
     font-size: 13px;
-    color: #adb5bd;
+    color: #bbb;
     cursor: pointer;
 }
 
-/* Stepper Animation/Styles */
-.rd-stepper-wrapper {
+/* Footer Action Buttons (MyReports) */
+.rd-action-footer {
     position: fixed;
     bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
     width: 100%;
     max-width: 480px;
-    background: #fff;
-    padding: 16px 20px 30px 20px;
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
-}
-
-.rd-stepper {
+    background-color: #fff;
+    padding: 16px 16px 30px 16px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    padding: 10px 0;
+    gap: 12px;
+    box-shadow: 0 -10px 20px rgba(0,0,0,0.03);
+    z-index: 100;
+    box-sizing: border-box;
 }
 
-.rd-stepper-line {
-    position: absolute;
-    top: 50%;
-    left: 10%;
-    right: 10%;
-    height: 1px;
-    background: #eee;
-    z-index: 1;
-}
-
-.rd-step {
-    z-index: 2;
+.rd-btn-delete {
+    flex: 1;
+    height: 50px;
+    background-color: #f5f5f5;
+    color: #666;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
     cursor: pointer;
 }
 
-.rd-step-circle {
-    background: #eee;
-    color: #999;
-    font-size: 13px;
-    font-weight: bold;
+.rd-btn-modify {
+    flex: 1;
+    height: 50px;
+    background-color: #fff;
+    color: #FF5A7D;
+    border: 1.5px solid #FF5A7D;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Stepper (New Pill Design) */
+.rd-stepper-wrapper-new {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 480px;
+    background-color: #fff;
+    padding: 20px 16px 40px 16px;
+    z-index: 100;
+    box-sizing: border-box;
+}
+
+.rd-stepper-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Increased gap */
+}
+
+.rd-step-pill {
     padding: 8px 16px;
+    background-color: #ededed;
+    color: #999;
     border-radius: 20px;
-    border: 1px solid #ddd;
-    transition: all 0.3s ease;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
-.rd-step.active .rd-step-circle {
-    background: #E6235A;
+.rd-step-pill.active {
+    background-color: #FF5A7D;
     color: #fff;
-    border-color: #E6235A;
-    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.3);
 }
 
-.rd-step.past .rd-step-circle {
-    background: #F8F9FA;
-    color: #666;
-    border-color: #eee;
+.rd-step-connector {
+    width: 15px;
+    height: 1.5px;
+    background-color: #e0e0e0;
+    flex-shrink: 0;
 }
 
-/* Modal Styling */
+/* Result Modal Styling (Image Match) */
 .rd-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     z-index: 2000;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    backdrop-filter: blur(4px);
-    animation: rdFadeIn 0.3s ease;
 }
 
 .rd-modal-card {
     background: #fff;
     width: 100%;
-    max-width: 340px;
-    border-radius: 32px;
-    overflow: hidden;
-    padding: 24px;
-    text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-    animation: rdPop 0.3s cubic-bezier(0.17, 0.67, 0.83, 1.34);
+    max-width: 320px;
+    border-radius: 40px; /* Highly rounded as in image */
+    padding: 30px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    animation: rdModalFadeUp 0.3s ease-out;
+}
+
+@keyframes rdModalFadeUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .rd-modal-title {
     font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
+    font-weight: 800;
+    color: #222;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
 }
 
 .rd-modal-img-wrapper {
     width: 100%;
-    margin-bottom: 20px;
+    border-radius: 20px; /* Standardized rounding instead of pill */
+    overflow: hidden;
+    margin-bottom: 24px;
 }
 
 .rd-modal-img {
     width: 100%;
-    border-radius: 24px;
+    height: auto; /* Show full image aspect ratio */
+    display: block;
+    object-fit: cover;
 }
 
 .rd-modal-content {
-    font-size: 14px;
-    color: #666;
-    line-height: 1.6;
-    text-align: left;
-    margin-bottom: 24px;
+    font-size: 15px;
     color: #444;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 24px;
+    word-break: keep-all;
+    padding: 0 10px;
 }
 
 .rd-modal-footer {
+    width: 100%;
     border-top: 1px solid #f0f0f0;
-    padding-top: 20px;
-}
-
-.rd-modal-manager {
+    padding-top: 16px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
 }
 
-.rd-manager-label {
-    font-size: 15px;
-    font-weight: bold;
-    color: #E6235A;
-    margin-bottom: 4px;
+/* Delete Confirmation Modal Styling (Pink Theme) */
+.rd-delete-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.rd-manager-date {
-    font-size: 13px;
-    color: #999;
+.rd-delete-modal-box {
+    background-color: #fff;
+    width: 85%;
+    max-width: 320px;
+    padding: 40px 24px;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    animation: rdModalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
 }
 
-@keyframes rdFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+@keyframes rdModalPop {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes rdPop {
-    from { transform: scale(0.8) translateY(20px); opacity: 0; }
-    to { transform: scale(1) translateY(0); opacity: 1; }
+.rd-delete-modal-icon-container {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.rd-error {
+.rd-delete-modal-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.rd-delete-modal-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 30px;
     text-align: center;
-    padding: 100px 20px;
-    color: #999;
+    letter-spacing: -0.5px;
+    line-height: 1.4;
+}
+
+.rd-delete-modal-btns {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rd-delete-btn-yes {
+    width: 100%;
+    height: 56px;
+    background-color: #FF5A7D; /* Pink Theme */
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+.rd-delete-btn-yes:active {
+    transform: scale(0.98);
+}
+
+.rd-delete-btn-no {
+    width: 100%;
+    height: 56px;
+    background-color: #FCE4EC; /* Light Pink Theme */
+    color: #FF5A7D;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+.rd-delete-btn-no:active {
+    transform: scale(0.98);
 }
