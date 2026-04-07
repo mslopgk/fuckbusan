@@ -78,12 +78,12 @@
     }
 
     .pc-nav-link:hover {
-        color: #23BDBB;
-        background-color: #f0fafa;
+        color: #EF4E7B;
+        background-color: #ffeef2;
     }
 
     .pc-nav-link.active {
-        color: #23BDBB;
+        color: #EF4E7B;
     }
 
     /* 드롭다운 */
@@ -131,8 +131,8 @@
     }
 
     .pc-dropdown-item:hover {
-        background-color: #f0fafa;
-        color: #23BDBB;
+        background-color: #ffeef2;
+        color: #EF4E7B;
     }
 
     /* 우측 액션 */
@@ -164,7 +164,7 @@
     }
 
     .pc-auth-link:hover {
-        color: #23BDBB;
+        color: #EF4E7B;
     }
 
     .pc-auth-divider {
@@ -193,8 +193,8 @@
     }
 
     .pc-bell-btn:hover {
-        color: #23BDBB;
-        background-color: #f0fafa;
+        color: #EF4E7B;
+        background-color: #ffeef2;
     }
 
     /* 비활성화된 네비 아이템 (제보) */
