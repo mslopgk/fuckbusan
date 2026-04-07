@@ -30,10 +30,12 @@ const MyProposals = lazy(() => import('./components/MyProposals'));
 const ProposalList = lazy(() => import('./components/ProposalList'));
 const ChangePassword = lazy(() => import('./components/ChangePassword'));
 const MyPage = lazy(() => import('./components/MyPage'));
+const MyActivityHub = lazy(() => import('./components/MyActivityHub'));
 const ReportPostForm = lazy(() => import('./components/ReportPostForm'));
 const ReportDone = lazy(() => import('./components/ReportDone'));
 const ReportList = lazy(() => import('./components/ReportList'));
 const ReportDetail = lazy(() => import('./components/ReportDetail'));
+const MyReports = lazy(() => import('./components/MyReports'));
 
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
 const AdminLoginNew = lazy(() => import('./admin/pages/LoginNew'));
@@ -64,6 +66,8 @@ function App() {
         if (stored === 'adminLogin' || stored === 'adminSignup') return 'home';
         return stored || 'home';
     });
+
+    const [previousView, setPreviousView] = useState('home');
     const [data, setData] = useState({}); // { Big: { Mid: [Questions...] } }
     const [loading, setLoading] = useState(false); // Initial loading not needed until diagnosis starts
     const [selectedBig, setSelectedBig] = useState('');
@@ -104,6 +108,8 @@ function App() {
         }
         return null;
     });
+    const [isReportEdit, setIsReportEdit] = useState(false);
+    const [reportToEdit, setReportToEdit] = useState(null);
 
     const updateDiagnosisPayload = (key, value) => {
         setDiagnosisPayload(prev => ({
@@ -276,6 +282,56 @@ function App() {
         }
     };
 
+    // Persistence logic using localStorage
+    const [deletedReportIds, setDeletedReportIds] = useState(() => {
+        const saved = localStorage.getItem('deleted_report_ids');
+        return saved ? new Set(JSON.parse(saved)) : new Set();
+    });
+    const [likedReportIds, setLikedReportIds] = useState(() => {
+        const saved = localStorage.getItem('liked_report_ids');
+        return saved ? new Set(JSON.parse(saved)) : new Set();
+    });
+    const [userCreatedReports, setUserCreatedReports] = useState(() => {
+        const saved = localStorage.getItem('user_created_reports');
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [updatedReportsMap, setUpdatedReportsMap] = useState(() => {
+        const saved = localStorage.getItem('updated_reports_map');
+        return saved ? JSON.parse(saved) : {};
+    });
+
+    // Side effects to sync with localStorage
+    useEffect(() => {
+        localStorage.setItem('deleted_report_ids', JSON.stringify(Array.from(deletedReportIds)));
+    }, [deletedReportIds]);
+
+    useEffect(() => {
+        localStorage.setItem('liked_report_ids', JSON.stringify(Array.from(likedReportIds)));
+    }, [likedReportIds]);
+
+    useEffect(() => {
+        localStorage.setItem('user_created_reports', JSON.stringify(userCreatedReports));
+    }, [userCreatedReports]);
+
+    useEffect(() => {
+        localStorage.setItem('updated_reports_map', JSON.stringify(updatedReportsMap));
+    }, [updatedReportsMap]);
+
+    const handleReportDelete = (reportId) => {
+        setDeletedReportIds(prev => new Set(prev).add(reportId));
+        alert('제보글이 정상적으로 삭제되었습니다.');
+        setView(previousView);
+    };
+
+    const handleToggleLike = (reportId) => {
+        setLikedReportIds(prev => {
+            const next = new Set(prev);
+            if (next.has(reportId)) next.delete(reportId);
+            else next.add(reportId);
+            return next;
+        });
+    };
+
     const onNavigate = (target, data) => {
         const districtCode = localStorage.getItem('district_code') || '';
         const isExpert = districtCode.startsWith('expert');
@@ -374,13 +430,38 @@ function App() {
             }
             setView('myPage');
         } else if (target === 'reportPostForm') {
+            setIsReportEdit(!!data?.isEdit);
+            setReportToEdit(data?.report || null);
             setView('reportPostForm');
+            return;
         } else if (target === 'reportList') {
             setView('reportList');
         } else if (target === 'reportDetail') {
+            setPreviousView(view);
             setSelectedReport(data);
-            if (data) sessionStorage.setItem('selectedReport', JSON.stringify(data));
+            if (data) {
+                sessionStorage.setItem('selectedReport', JSON.stringify(data));
+                // Set showActions based on where we are coming from
+                setSelectedReport(prev => ({ 
+                    ...prev, 
+                    showActions: data.showActions || (view === 'myReportList' || view === 'myReports')
+                }));
+            }
             setView('reportDetail');
+        } else if (target === 'myActivityHub') {
+            if (!localStorage.getItem('access_token')) {
+                alert('로그인이 필요한 서비스입니다.');
+                setView('login');
+                return;
+            }
+            setView('myActivityHub');
+        } else if (target === 'myReportList') {
+            if (!localStorage.getItem('access_token')) {
+                alert('로그인이 필요한 서비스입니다.');
+                setView('login');
+                return;
+            }
+            setView('myReportList');
         }
     };
 
@@ -394,7 +475,7 @@ function App() {
     if (loading && view !== 'home') return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
 
     // PC 헤더를 표시할 뷰 목록
-    const pcHeaderViews = ['home', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm', 'myPage', 'reportPostForm', 'reportList', 'reportDetail'];
+    const pcHeaderViews = ['home', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm', 'myPage', 'reportPostForm', 'reportList', 'reportDetail', 'myActivityHub', 'myReportList'];
     const showPCHeader = pcHeaderViews.includes(view);
 
     return (
@@ -438,31 +519,6 @@ function App() {
                 )}
                 {view === 'reportForm' && (
                     <ReportForm onBack={() => setView('report')} />
-                )}
-                {view === 'reportPostForm' && (
-                    <ReportPostForm 
-                        onBack={() => setView('home')} 
-                        onNavigate={onNavigate}
-                    />
-                )}
-                {view === 'reportDone' && (
-                    <ReportDone 
-                        onMyReports={() => setView('myProposals')} 
-                        onOthers={() => setView('proposalList')} 
-                    />
-                )}
-                {view === 'reportList' && (
-                    <ReportList 
-                        onBack={() => setView('home')} 
-                        onNavigate={onNavigate}
-                    />
-                )}
-                {view === 'reportDetail' && (
-                    <ReportDetail 
-                        report={selectedReport}
-                        onBack={() => setView('reportList')}
-                        onNavigate={onNavigate}
-                    />
                 )}
                 {view === 'diagnosis' && (
                     <Diagnosis
@@ -840,6 +896,86 @@ function App() {
                 )}
                 {view === 'myPage' && (
                     <MyPage onBack={() => setView('home')} />
+                )}
+                {view === 'myActivityHub' && (
+                    <MyActivityHub 
+                        onBack={() => setView('home')} 
+                        onNavigate={onNavigate}
+                    />
+                )}
+                {view === 'myReportList' && (
+                    <MyReports 
+                        onBack={() => setView('myActivityHub')} 
+                        onNavigate={onNavigate}
+                        deletedIds={deletedReportIds}
+                        likedIds={likedReportIds}
+                        onToggleLike={handleToggleLike}
+                        userCreatedReports={userCreatedReports}
+                        updatedReportsMap={updatedReportsMap}
+                    />
+                )}
+                {view === 'reportPostForm' && (
+                    <ReportPostForm 
+                        onBack={() => setView(isReportEdit ? 'reportDetail' : 'home')} 
+                        onNavigate={onNavigate}
+                        isEdit={isReportEdit}
+                        initialData={reportToEdit}
+                        onComplete={(newData) => {
+                            if (isReportEdit && newData && selectedReport) {
+                                setUpdatedReportsMap(prev => ({
+                                    ...prev,
+                                    [selectedReport.id]: { ...selectedReport, ...newData }
+                                }));
+                                setSelectedReport(prev => ({ ...prev, ...newData }));
+                                setView('reportDetail');
+                            } else if (newData) {
+                                const newReport = {
+                                    ...newData,
+                                    id: Date.now(), // Unique ID
+                                    author: '나',
+                                    date: new Date().toLocaleDateString().replace(/\. /g, '.').replace(/\.$/, ''),
+                                    likes: 0,
+                                    comments: 0,
+                                    views: 0,
+                                    progress_step: 1,
+                                    status: '개선예정',
+                                    comments_list: []
+                                };
+                                setUserCreatedReports(prev => [newReport, ...prev]);
+                                setView('reportDone');
+                            } else {
+                                setView('reportDone');
+                            }
+                        }}
+                    />
+                )}
+                {view === 'reportDone' && (
+                    <ReportDone 
+                        onBack={() => setView('home')} 
+                        onNavigate={onNavigate} 
+                    />
+                )}
+                {view === 'reportList' && (
+                    <ReportList 
+                        onBack={() => setView('home')} 
+                        onNavigate={onNavigate} 
+                        deletedIds={deletedReportIds}
+                        likedIds={likedReportIds}
+                        onToggleLike={handleToggleLike}
+                        userCreatedReports={userCreatedReports}
+                        updatedReportsMap={updatedReportsMap}
+                    />
+                )}
+                {view === 'reportDetail' && (
+                    <ReportDetail 
+                        report={selectedReport} 
+                        onBack={() => setView(previousView)} 
+                        onNavigate={onNavigate}
+                        onDelete={handleReportDelete}
+                        likedIds={likedReportIds}
+                        onToggleLike={handleToggleLike}
+                        showActions={selectedReport?.showActions}
+                    />
                 )}
                 {view === 'changePassword' && (
                     <ChangePassword onBack={() => setView('home')} />

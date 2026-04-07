@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './ReportList.css';
+import { MOCK_MY_REPORTS, MOCK_REPORTS_BASE } from '../data/mockReports';
 
 // Fix for default Leaflet icons in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -46,117 +47,7 @@ const createClusterIcon = (count) => {
     });
 };
 
-const MOCK_REPORTS = [
-    {
-        id: 1,
-        category: '산업·일자리',
-        sub_category: '골목쓰레기통',
-        title: '공원 쓰레기통이 안전조치가 필요해요',
-        author: '동래구 우리디자이너',
-        location: '동래구 수안동',
-        date: '2026.03.13',
-        likes: 12,
-        comments: 12,
-        views: 333,
-        image: '/assets/archieve1.png',
-        lat: 35.1983,
-        lng: 129.0831,
-        region: '동래구',
-        status: '개선중',
-        progress_step: 2, // 1:접수, 2:검토중, 3:검토완료, 4:결과안내
-        comments_list: [
-            { id: 1, author: '동래구 우리디자이너', content: '빠른 조치가 필요하네요', date: '2026.03.13' },
-            { id: 2, author: '동래구 우리디자이너', content: '빠른 조치가 필요하네요', date: '2026.03.13' }
-        ]
-    },
-    {
-        id: 2,
-        category: '환경',
-        sub_category: '가로수/조경 관리',
-        title: '전기자전거 재고 불균형 해결 제안',
-        author: '동래구 시민',
-        location: '동래구 수안동',
-        date: '2026.03.13',
-        likes: 12,
-        comments: 12,
-        views: 250,
-        image: '/assets/archieve2.png',
-        lat: 35.1912,
-        lng: 129.0805,
-        region: '동래구',
-        status: '개선중',
-        progress_step: 2,
-        comments_list: []
-    },
-    {
-        id: 3,
-        category: '교육',
-        sub_category: '도로/교통 시설',
-        title: '학교 앞 횡단보도 신호등 고장',
-        author: '수영구 학부모',
-        location: '수영구 광안동',
-        date: '2026.03.05',
-        likes: 45,
-        comments: 8,
-        views: 1200,
-        image: '/assets/diagnosis_street.png',
-        lat: 35.2048,
-        lng: 129.0786,
-        region: '수영구',
-        status: '개선완료',
-        progress_step: 4,
-        result_details: {
-            title: '개선 결과보기',
-            image: '/assets/archieve3.png',
-            content: 'U+one 마케터로서 그냥 지나칠 수가 없네요..(TT) 전 국민이 애용하는 U+one 앱이 될 수 있도록 더 열심히! 노력해 보겠습니다. 12월에도 런칭 기념 이벤트는 계속 되니 꼬옥 관심 가져주셔야 돼요~ 약속~',
-            manager: '담당자 코멘트',
-            result_date: '2026.01.02'
-        },
-        comments_list: [
-            { id: 1, author: '관리자', content: '조치 완료되었습니다.', date: '2026.03.10' }
-        ]
-    },
-    {
-        id: 4,
-        category: '환경',
-        sub_category: '취업 지원',
-        title: '취업 박람회 홍보 부족',
-        author: '해운대구 취준생',
-        location: '해운대구 우동',
-        date: '2026.02.28',
-        likes: 22,
-        comments: 5,
-        views: 890,
-        image: '/assets/archieve3.png',
-        lat: 35.1631,
-        lng: 129.1589,
-        region: '해운대구',
-        status: '개선예정',
-        progress_step: 1,
-        comments_list: []
-    },
-    {
-        id: 5,
-        category: '교통',
-        sub_category: '불법 주정차',
-        title: '수영역 인근 상습 불법 주정차 구역',
-        author: '수영구 주민',
-        location: '수영구 망미동',
-        date: '2026.03.14',
-        likes: 18,
-        comments: 4,
-        views: 560,
-        image: '/assets/archieve2.png',
-        lat: 35.1645,
-        lng: 129.1123,
-        region: '수영구',
-        status: '검토중',
-        progress_step: 2,
-        comments_list: [
-            { id: 1, author: '수영구 주민', content: '여기 진짜 심각해요.', date: '2026.03.14' }
-        ]
-    }
-];
+// Remove local mock constants as they are now imported
 
 const MapController = ({ center, zoom }) => {
     const map = useMap();
@@ -166,7 +57,7 @@ const MapController = ({ center, zoom }) => {
     return null;
 };
 
-const ReportList = ({ onBack, onNavigate }) => {
+const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, userCreatedReports, updatedReportsMap }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('전체');
     const [sheetLevel, setSheetLevel] = useState(1);
@@ -175,8 +66,8 @@ const ReportList = ({ onBack, onNavigate }) => {
     const [isDragging, setIsDragging] = useState(false);
 
     // Filtering/Modal State
-    const [selectedRegion, setSelectedRegion] = useState('수영구');
-    const [tempRegion, setTempRegion] = useState('수영구');
+    const [selectedRegion, setSelectedRegion] = useState('부산 전 지역');
+    const [tempRegion, setTempRegion] = useState('부산 전 지역');
     const [isRegionModalOpen, setIsRegionModalOpen] = useState(false);
     const [statusFilter, setStatusFilter] = useState('전체');
     const [sortBy, setSortBy] = useState('최신순');
@@ -186,6 +77,21 @@ const ReportList = ({ onBack, onNavigate }) => {
     // GPS Center logic
     const [mapCenter, setMapCenter] = useState([35.1795543, 129.0756416]); // Default: Busan City Hall
     const [hasLocated, setHasLocated] = useState(false);
+
+    // Filter logic – merge user created reports and updates
+    const getFinalReports = () => {
+        let base = [...MOCK_REPORTS_BASE, ...MOCK_MY_REPORTS];
+        if (userCreatedReports && userCreatedReports.length > 0) {
+            base = [...userCreatedReports, ...base];
+        }
+        
+        return base.map(r => {
+            if (updatedReportsMap && updatedReportsMap[r.id]) {
+                return { ...r, ...updatedReportsMap[r.id] };
+            }
+            return r;
+        });
+    };
 
     const sheetRef = useRef(null);
 
@@ -226,7 +132,10 @@ const ReportList = ({ onBack, onNavigate }) => {
         setCurrentY(0);
     };
 
-    const filteredReports = MOCK_REPORTS.filter(r => {
+    const filteredReports = getFinalReports().filter(r => {
+        // 0. Filter out deleted reports
+        if (deletedIds && deletedIds.has(r.id)) return false;
+
         const matchesCategory = selectedCategory === '전체' || r.category === selectedCategory;
         const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                              r.location.toLowerCase().includes(searchQuery.toLowerCase());
@@ -301,7 +210,7 @@ const ReportList = ({ onBack, onNavigate }) => {
                 </MapContainer>
 
                 {/* FAB */}
-                <button className="rl-fab" onClick={() => onNavigate('reportPost')}>
+                <button className="rl-fab" onClick={() => onNavigate('reportPostForm')}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="4" x2="12" y2="20"></line>
                         <line x1="4" y1="12" x2="20" y2="12"></line>
@@ -444,12 +353,21 @@ const ReportList = ({ onBack, onNavigate }) => {
                                         </div>
                                         <div className="rl-card-stats">
                                             <div className="rl-stat">
-                                                <div className="rl-stat-icon">
-                                                    <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                                        <polyline points="20 6 9 17 4 12"></polyline>
-                                                    </svg>
-                                                </div>
-                                                <span>{report.likes}</span>
+                                                <svg 
+                                                    width="14" 
+                                                    height="14" 
+                                                    viewBox="0 0 24 24" 
+                                                    fill={likedIds && likedIds.has(report.id) ? "#E6235A" : "none"} 
+                                                    stroke={likedIds && likedIds.has(report.id) ? "#E6235A" : "#adb5bd"}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (onToggleLike) onToggleLike(report.id);
+                                                    }}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                                </svg>
+                                                <span>{(report.likes || 0) + (likedIds && likedIds.has(report.id) ? 1 : 0)}</span>
                                             </div>
                                             <div className="rl-stat">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="#adb5bd" stroke="none">

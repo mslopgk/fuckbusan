@@ -1,0 +1,249 @@
+/* MyReports.css */
+
+.my-reports-container {
+    min-height: 100vh;
+    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+    background-color: #fff;
+    position: relative;
+    padding-bottom: 100px;
+}
+
+/* Header (ProposalList Style) */
+.mr-header {
+    height: 60px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.mr-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mr-back-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-right: 4px;
+}
+
+.mr-header-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #555;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+/* Tabs (MyProposals Style with Pink Active) */
+.mr-tabs-container {
+    padding: 24px 14px;
+    display: flex;
+    justify-content: center;
+    background-color: #fff;
+}
+
+.mr-tab-switcher {
+    display: flex;
+    width: 100%;
+    height: 50px;
+    border: 1px solid #DDDDDD;
+    border-radius: 30px;
+    overflow: hidden;
+}
+
+.mr-tab-btn {
+    flex: 1;
+    border: none;
+    background: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #777;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: all 0.2s ease;
+    height: 50px;
+}
+
+.mr-tab-btn.active {
+    background-color: #E6235A; /* Pink */
+    color: white;
+}
+
+/* Status Filters (ReportList Style) */
+.mr-status-container {
+    padding: 0 14px;
+    margin-bottom: 16px;
+}
+
+.mr-status-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.mr-status-tab {
+    padding: 8px 16px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    background: #fff;
+    font-size: 14px;
+    color: #999;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mr-status-tab.active {
+    background: #E6235A; /* Pink */
+    color: #fff;
+    border-color: #E6235A;
+}
+
+/* List Content */
+.mr-list {
+    padding: 0 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Card Design (ReportList Style) */
+.mr-card {
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 80px;
+    grid-template-rows: auto auto auto;
+    gap: 4px 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    align-items: center;
+    cursor: pointer;
+}
+
+.mr-badge-row {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.mr-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 12px;
+    width: fit-content;
+}
+
+.mr-badge.region { background-color: #E0F2F1; color: #00796B; } /* Mint-like for region */
+.mr-badge.category { background-color: #FFF9C4; color: #F57F17; } /* Yellow-like for general category */
+.mr-badge.sub { background-color: #FCE4EC; color: #C2185B; } /* Pink-like for sub/거리 */
+
+.mr-card-title {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+}
+
+.mr-card-author {
+    grid-column: 1;
+    grid-row: 3;
+    font-size: 0.9rem;
+    color: #999;
+    margin: 0 0 8px 0;
+}
+
+.mr-card-right {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.mr-card-img-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+.mr-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mr-card-stats {
+    display: flex;
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+.mr-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #adb5bd;
+    font-weight: 500;
+}
+
+.mr-stat-icon-heart {
+    display: flex;
+    align-items: center;
+}
+
+/* Floating Action Button (Pink) */
+.mr-fab {
+    position: fixed;
+    bottom: 30px;
+    right: 14px;
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1000;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.4);
+    font-family: 'GmarketSans', sans-serif;
+}
+
+@media (min-width: 1024px) {
+    .mr-list {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .mr-tabs-container {
+        max-width: 480px;
+        margin: 0 auto;
+    }
+    .mr-status-container {
+        max-width: 800px;
+        margin: 0 auto 16px;
+    }
+}

@@ -6,7 +6,7 @@ import LocationSelector from './common/LocationSelector';
 const LOCATIONS = ['거리', '골목쓰레기통', '공원하수구', '공공장소'];
 const ISSUES = ['미끄러워요', '파손됐어요', '안전조치가 부족해요', '위험이 있어요'];
 
-const ReportPostForm = ({ onBack, onNavigate }) => {
+const ReportPostForm = ({ onBack, onNavigate, isEdit, initialData, onComplete }) => {
     const categories = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 
     const [selectedCategory, setSelectedCategory] = useState('주거');
@@ -14,14 +14,14 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
     const [selectedLocation, setSelectedLocation] = useState('');
     const [selectedIssue, setSelectedIssue] = useState('');
     const [detail, setDetail] = useState('');
-    const [photos, setPhotos] = useState([]); // 다중 사진 배열로 변경
+    const [photos, setPhotos] = useState([]); 
     const [showMap, setShowMap] = useState(false);
     const [showPhotoModal, setShowPhotoModal] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const [searchInput, setSearchInput] = useState('');
     const [mapInitialLocation, setMapInitialLocation] = useState(null);
-    const [tempRegion, setTempRegion] = useState(''); // 임시 선택 위치 상태
-    const [detailedAddress, setDetailedAddress] = useState(''); // 상세 주소 상태
+    const [tempRegion, setTempRegion] = useState(''); 
+    const [detailedAddress, setDetailedAddress] = useState(''); 
 
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
     const [tempLocation, setTempLocation] = useState('');
@@ -35,8 +35,24 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
 
     const fileInputRef = useRef(null);
 
+    // Initial Data Load (Edit Mode)
+    useEffect(() => {
+        if (isEdit && initialData) {
+            setSelectedCategory(initialData.category || '주거');
+            setRegion(initialData.location || '');
+            setDetailedAddress(initialData.detailed_address || '');
+            setSelectedLocation(initialData.sub_category || '');
+            setSelectedIssue(initialData.issue || '');
+            setDetail(initialData.content || '');
+            if (initialData.image) {
+                setPhotos([initialData.image]);
+            }
+        }
+    }, [isEdit, initialData]);
+
     // Load Draft effect
     useEffect(() => {
+        if (isEdit) return; // Don't show draft modal in edit mode
         const savedData = localStorage.getItem('report_draft');
         if (savedData) {
             try {
@@ -46,7 +62,7 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
                 console.error("Draft parse error:", e);
             }
         }
-    }, []);
+    }, [isEdit]);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -63,7 +79,7 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
         setPhotos(prev => prev.filter((_, i) => i !== index));
     };
 
-    const isFormValid = region && selectedLocation && selectedIssue && detail && photos.length > 0;
+    const isFormValid = region && selectedLocation && (isEdit ? true : detail && photos.length > 0);
 
     const handleSearchLocation = async () => {
         if (!searchInput.trim()) return;
@@ -74,7 +90,7 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
                 const { lat, lon, display_name } = data[0];
                 const newPos = { lat: parseFloat(lat), lng: parseFloat(lon) };
                 setMapInitialLocation(newPos);
-                setTempRegion(display_name); // 임시 상태 업데이트
+                setTempRegion(display_name); 
                 setRefreshKey(prev => prev + 1);
             } else {
                 alert('검색 결과가 없습니다.');
@@ -100,7 +116,7 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
             location: selectedLocation,
             issue: selectedIssue,
             detail: detail,
-            photos: photos, // Base64 strings or URLs
+            photos: photos, 
             savedAt: new Date().toISOString()
         };
         localStorage.setItem('report_draft', JSON.stringify(draftData));
@@ -129,8 +145,22 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
 
     const handleSubmit = () => {
         if (!isFormValid) return;
-        // Submit logic
-        onNavigate('reportDone');
+        
+        const resultData = {
+            category: selectedCategory,
+            location: region,
+            sub_category: selectedLocation,
+            issue: selectedIssue,
+            content: detail,
+            image: photos[0],
+            detailed_address: detailedAddress
+        };
+
+        if (onComplete) {
+            onComplete(resultData);
+        } else {
+            onNavigate('reportDone');
+        }
     };
 
     return (
@@ -144,13 +174,16 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
                             <line x1="9" y1="12" x2="15" y2="6"></line>
                         </svg>
                     </button>
-                    <span className="report-post-header-title">홈으로</span>
+                    <span className="report-post-header-title">{isEdit ? '상세페이지로' : '홈으로'}</span>
                 </div>
             </div>
 
             <h1 className="report-post-main-title">
-                문제 상황이 잘 보이도록<br />
-                사진을 등록해 주세요
+                {isEdit ? (
+                    <>문제 상황이 잘 보이도록<br />사진을 수정해 주세요</>
+                ) : (
+                    <>문제 상황이 잘 보이도록<br />사진을 등록해 주세요</>
+                )}
             </h1>
 
             {/* Photo Section */}
@@ -192,7 +225,7 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
             <section className="report-post-section">
                 <h2 className="report-post-section-title">위치정보</h2>
                 <div className="report-post-location-box" onClick={() => {
-                    setTempRegion(region); // 열 때 현재 값을 임시 상태로 복사
+                    setTempRegion(region); 
                     setShowMap(true);
                 }}>
                     <span className={`report-post-location-text ${region ? 'selected' : ''}`}>
@@ -204,13 +237,14 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
                         </svg>
                     </div>
                 </div>
-                {region && (
+                {(region || isEdit) && (
                     <input 
                         type="text" 
                         className="report-post-detail-address"
                         placeholder="건물명, 동/호수 등의 상세주소 입력"
                         value={detailedAddress}
                         onChange={(e) => setDetailedAddress(e.target.value)}
+                        style={{ border: isEdit ? '1px solid #E6235A' : '' }}
                     />
                 )}
             </section>
@@ -280,13 +314,14 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
 
             {/* Footer */}
             <div className="report-post-footer">
-                <button className="report-post-btn-draft" onClick={() => setShowDraftModal(true)}>임시저장</button>
+                {!isEdit && <button className="report-post-btn-draft" onClick={() => setShowDraftModal(true)}>임시저장</button>}
                 <button 
-                    className="report-post-btn-submit" 
+                    className={`report-post-btn-submit ${isEdit ? 'edit-mode' : ''}`}
                     onClick={handleSubmit}
                     disabled={!isFormValid}
+                    style={{ width: isEdit ? '100%' : '' }}
                 >
-                    작성완료
+                    {isEdit ? '수정완료' : '작성완료'}
                 </button>
             </div>
 
@@ -340,7 +375,7 @@ const ReportPostForm = ({ onBack, onNavigate }) => {
                     </div>
                     <footer className="rp-map-footer">
                         <button className="rp-map-done-btn" onClick={() => {
-                            setRegion(tempRegion); // 완료 시 확정
+                            setRegion(tempRegion); 
                             setShowMap(false);
                         }}>위치 선택완료</button>
                     </footer>

@@ -143,6 +143,18 @@ const Home = ({ onNavigate }) => {
                             <div className="card-arrow">→</div>
                         </div>
                     </div>
+                    <div className="action-row" style={{ marginTop: '10px' }}>
+                        <div className="action-item card activity" onClick={() => onNavigate && onNavigate('myActivityHub')} style={{ background: 'linear-gradient(135deg, #491C9C 0%, #190A36 100%)', height: '140px' }}>
+                            <div className="card-top">
+                                <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
+                                    <div className="card-title" style={{ color: 'white' }}>나의 활동</div>
+                                    <img src="/myid.svg" alt="나의 활동 아이콘" className="card-icon-img" style={{ filter: 'brightness(0) invert(1)' }} />
+                                </div>
+                                <div className="card-subtitle" style={{ color: 'white', opacity: 0.8 }}>내가 참여한 기록들을<br />한눈에 확인해보세요.</div>
+                            </div>
+                            <div className="card-arrow" style={{ color: 'white' }}>→</div>
+                        </div>
+                    </div>
                 </div>
 
                 {false && (
@@ -261,7 +273,7 @@ const Home = ({ onNavigate }) => {
                     <img src="/graph.svg" alt="제안" className="nav-icon" style={{ width: '20px', height: '20px', filter: (activeTab === 'proposal' || activeTab === 'stats') ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
                     <span className="nav-text">제안</span>
                 </div>
-                <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('myProposals')} style={{ cursor: 'pointer' }}>
+                <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('myPage')} style={{ cursor: 'pointer' }}>
                     <img src="/myid.svg" alt="내 정보" className="nav-icon" style={{ filter: activeTab === 'mypage' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
                     <span className="nav-text">나의 정보</span>
                 </div>
