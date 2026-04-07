@@ -1,0 +1,142 @@
+/* ExpertEdit CSS - Based on MemberEdit but with separate classes */
+.expert-edit-container {
+    display: flex;
+    height: 100vh;
+    background-color: #fff;
+    color: #333;
+    font-family: 'Pretendard', sans-serif;
+}
+
+.expert-edit-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.expert-edit-content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.ex-edit-header {
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+}
+
+.ex-edit-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.ex-edit-form-box {
+    background-color: transparent;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.ex-edit-row {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.ex-edit-label {
+    width: 120px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #333;
+}
+
+.ex-edit-input {
+    flex: 1;
+    max-width: 400px;
+    height: 48px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 14px;
+    color: #666;
+    background-color: #fff;
+    outline: none;
+}
+
+.ex-edit-input:focus {
+    border-color: #16B5B0;
+}
+
+.ex-edit-input.wide {
+    max-width: 600px;
+}
+
+/* Status Label Style from ExpertManagement */
+.ex-status-display {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ex-status-display.approved-orange {
+    background-color: #ffe0b2;
+    color: #e65100;
+}
+
+.ex-status-display.approved-green {
+    background-color: #c8e6c9;
+    color: #2e7d32;
+}
+
+.ex-status-display.pending-gray {
+    background-color: #e0e0e0;
+    color: #757575;
+}
+
+.ex-edit-text-only {
+    font-size: 14px;
+    color: #333;
+}
+
+.ex-edit-text-only span {
+    font-weight: 700;
+}
+
+/* Footer Buttons */
+.ex-edit-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 2px solid #ccc;
+}
+
+.btn-ex-delete {
+    background-color: #f0f0f0;
+    color: #999;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-ex-confirm {
+    background-color: #16B5B0;
+    color: white;
+    border: none;
+    padding: 0 60px;
+    height: 56px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+}

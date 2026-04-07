@@ -236,50 +236,6 @@ const Home = ({ onNavigate }) => {
 
             </div>
 
-            {false && (
-                <>
-                    {/* Footer */}
-                    <footer className="footer">
-                        <div className="footer-right">
-                            <div className="footer-links">
-                                <a href="#" className="footer-link">이용약관</a>
-                                <a href="#" className="footer-link">개인정보처리방침</a>
-                                <a href="#" className="footer-link">문의하기</a>
-                            </div>
-
-                            <div className="faq-btn">
-                                자주 묻는 질문(FAQ) →
-                            </div>
-                        </div>
-
-                        <div className="footer-left">
-
-
-
-                            <div className="footer-info">
-                                이메일 | support@busan-design.kr<br />
-                                전화 | 051-000-0000<br />
-                                운영시간 | 평일 09:00 - 18:00
-                            </div>
-
-                            <div className="footer-copyright">
-                                © 2025 Busan Public Design Platform. All rights reserved.
-                            </div>
-                        </div>
-                    </footer>
-
-                    {/* Temporary Link for Dev */}
-                    <div style={{ textAlign: 'center', padding: '10px', background: '#f0f0f0' }} onClick={() => onNavigate && onNavigate('diagnosisResult')}>
-                        (Test) 진단 결과 페이지
-                    </div>
-                    <div style={{ textAlign: 'center', padding: '10px', background: '#e0e0e0', borderTop: '1px solid #ccc' }} onClick={() => onNavigate && onNavigate('expertDiagnosisResult')}>
-                        (Test) 전문가 진단 결과 페이지
-                    </div>
-                    <div style={{ textAlign: 'center', padding: '10px', background: '#d0d0d0', borderTop: '1px solid #ccc' }} onClick={() => onNavigate && onNavigate('adminLogin')}>
-                        (Test) 관리자 로그인
-                    </div>
-                </>
-            )}
 
             {/* Fixed Bottom Nav */}
             <nav className="bottom-nav">
@@ -307,7 +263,7 @@ const Home = ({ onNavigate }) => {
                 </div>
                 <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('myProposals')} style={{ cursor: 'pointer' }}>
                     <img src="/myid.svg" alt="내 정보" className="nav-icon" style={{ filter: activeTab === 'mypage' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
-                    <span className="nav-text">내 정보</span>
+                    <span className="nav-text">나의 정보</span>
                 </div>
             </nav>
         </div>

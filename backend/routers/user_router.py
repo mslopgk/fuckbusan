@@ -1,28 +1,25 @@
+from typing import List, Optional
 from fastapi import APIRouter, HTTPException, status, Depends
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
 # 파일 경로에 맞게 import
 from database import get_db
 from models import User
-from schemas import UserCreate, Token
+from schemas import UserCreate, Token, UserOut, UserLogin, UserUpdate
 
-# === 설정 (비밀번호 및 토큰) ===
-# (주의: 이 키는 외부에 노출되면 안 됩니다!)
+router = APIRouter(tags=["users"])
+
+# --- [비밀번호 및 토큰 설정] ---
 SECRET_KEY = "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"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
-oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/users/login", auto_error=False)
 
-router = APIRouter(prefix="/users", tags=["users"])
-
-# --- [함수들] ---
 def get_password_hash(password):
     return pwd_context.hash(password)
 
@@ -33,7 +30,6 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-# [★ 보안요원 함수: 이제 여기서 직접 관리합니다]
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -49,148 +45,120 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
         
     if username == "admin":
-        # Virtual Admin User (Not in DB)
-        return User(
-            user_id=999999,
-            ID="admin",
-            name="관리자",
-            nickname="관리자",
-            district_code="admin"
-        )
+        return User(user_id=999999, ID="admin", name="관리자", nickname="관리자", district_code="admin")
 
     user = db.query(User).filter(User.ID == username).first()
     if user is None:
         raise credentials_exception
     return user
 
-# [★ 선택적 보안요원: 로그인 안 해도 통과, 하지만 누구인지 확인만 함]
-def get_current_user_optional(token: str = Depends(oauth2_scheme_optional), db: Session = Depends(get_db)):
-    if not token:
-        return None
-    try:
-        # oauth2_scheme은 토큰이 없으면 401을 내보내므로, 
-        # 선택적으로 하려면 직접 Header에서 가져오거나 
-        # 별도의 Dependency를 만들어야 할 수도 있습니다. 
-        # 하지만 일단 oauth2_scheme을 쓰면 강제성이 있으므로 수동으로 처리하는 로직을 고려합니다.
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            return None
-        
-        if username == "admin":
-            return User(
-                user_id=999999,
-                ID="admin",
-                name="관리자",
-                nickname="관리자",
-                district_code="admin"
-            )
+# =============================================================================
+# [API - /api/users] 관리자용 엔드포인트
+# =============================================================================
 
-        user = db.query(User).filter(User.ID == username).first()
-        return user
-    except:
-        return None
+@router.get("/api/users", response_model=List[UserOut])
+def list_users(user_type: Optional[str] = None, db: Session = Depends(get_db)):
+    query = db.query(User)
+    if user_type:
+        query = query.filter(User.district_code == user_type)
+    return query.all()
 
-# --- [API] ---
+@router.put("/api/users/{user_id}")
+def update_user(user_id: int, user_data: UserOut, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.name = user_data.name
+    user.nickname = user_data.nickname
+    user.phone_num = user_data.phone_num
+    user.district_code = user_data.district_code
+    db.commit()
+    return {"message": "User updated successfully"}
 
-@router.post("/signup", status_code=status.HTTP_201_CREATED)
+@router.delete("/api/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    db.delete(user)
+    db.commit()
+    return {"message": "User deleted successfully"}
+
+# =============================================================================
+# [API - /users] 일반 사용자용 엔드포인트
+# =============================================================================
+
+@router.post("/users/signup", status_code=status.HTTP_201_CREATED)
 def signup(user: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.ID == user.ID).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="이미 존재하는 아이디입니다.")
-    
     hashed_password = get_password_hash(user.PW)
-    
     new_user = User(
-        ID=user.ID,
-        PW=hashed_password,
-        name=user.name,
-        nickname=user.nickname,
-        phone_num=user.phone_num,
-        district_code=user.district_code
+        ID=user.ID, PW=hashed_password, name=user.name,
+        nickname=user.nickname, phone_num=user.phone_num,
+        district_code=user.district_code, birth_date=user.birth_date
     )
     db.add(new_user)
     db.commit()
     return {"message": "회원가입 성공"}
 
-# --- [추가] 로그인할 때 받을 데이터 모양 정의 ---
-class UserLogin(BaseModel):
-    ID: str
-    PW: str
-
-# --- [수정] JSON을 받는 로그인 함수 ---
-@router.post("/login", response_model=Token)
+@router.post("/users/login", response_model=Token)
 def login(user_input: UserLogin, db: Session = Depends(get_db)):
-    # 0. Virtual Admin Check (No DB required)
     if user_input.ID == "admin" and user_input.PW == "1234":
         access_token = create_access_token(data={"sub": "admin"})
-        return {
-            "access_token": access_token, 
-            "token_type": "bearer", 
-            "user_name": "관리자",
-            "district_code": "admin"
-        }
-
-    # 1. 아이디로 유저 찾기
+        return {"access_token": access_token, "token_type": "bearer", "user_name": "관리자", "district_code": "admin"}
     user = db.query(User).filter(User.ID == user_input.ID).first()
-    
-    # 2. 유저가 없거나 비밀번호가 틀리면 에러
     if not user or not verify_password(user_input.PW, user.PW):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="아이디 또는 비밀번호가 틀렸습니다.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    # 3. 로그인 성공 시 토큰 발급
+        raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 틀렸습니다.")
     access_token = create_access_token(data={"sub": user.ID})
-    
-    # 프론트엔드로 토큰과 유저 이름 전송
+    return {"access_token": access_token, "token_type": "bearer", "user_name": user.name, "district_code": user.district_code}
+
+@router.get("/users/me")
+def get_me(current_user: User = Depends(get_current_user)):
     return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "user_name": user.name,
-        "district_code": user.district_code
+        "user_id": current_user.user_id,
+        "ID": current_user.ID,
+        "name": current_user.name,
+        "nickname": current_user.nickname,
+        "phone_num": current_user.phone_num,
+        "district_code": current_user.district_code,
+        "birth_date": current_user.birth_date or ""
     }
 
-class ChangePasswordRequest(BaseModel):
-    current_pw: str
-    new_pw: str
+@router.put("/users/me", response_model=UserOut)
+def update_my_profile(
+    user_update: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if user_update.name is not None:
+        current_user.name = user_update.name
+    if user_update.phone_num is not None:
+        current_user.phone_num = user_update.phone_num
+    if user_update.birth_date is not None:
+        current_user.birth_date = user_update.birth_date
+    db.commit()
+    db.refresh(current_user)
+    return current_user
 
-@router.put("/change-password")
-def change_password(req: ChangePasswordRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if not verify_password(req.current_pw, current_user.PW):
-        raise HTTPException(status_code=400, detail="현재 비밀번호가 일치하지 않습니다.")
+@router.put("/users/reset-password")
+def reset_password(req: UserUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not req.new_pw:
+        raise HTTPException(status_code=400, detail="새 비밀번호를 입력해주세요.")
     current_user.PW = get_password_hash(req.new_pw)
     db.commit()
     return {"message": "비밀번호가 변경되었습니다."}
 
-class ResetPasswordRequest(BaseModel):
-    new_pw: str
-
-@router.put("/reset-password")
-def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    current_user.PW = get_password_hash(req.new_pw)
-    db.commit()
-    return {"message": "비밀번호가 변경되었습니다."}
-
-class FindIdRequest(BaseModel):
-    name: str
-    phone_num: str
-
-class FindPwRequest(BaseModel):
-    ID: str
-    phone_num: str
-
-@router.post("/find-id")
-def find_id(req: FindIdRequest, db: Session = Depends(get_db)):
+@router.post("/users/find-id")
+def find_id(req: UserUpdate, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.name == req.name, User.phone_num == req.phone_num).first()
     if not user:
         raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")
     return {"ID": user.ID}
 
-@router.post("/find-pw")
-def find_pw(req: FindPwRequest, db: Session = Depends(get_db)):
+@router.post("/users/find-pw")
+def find_pw(req: UserUpdate, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.ID == req.ID, User.phone_num == req.phone_num).first()
     if not user:
         raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")

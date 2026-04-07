@@ -1,0 +1,128 @@
+/* MemberEdit CSS - Matches Image */
+.member-edit-container {
+    display: flex;
+    height: 100vh;
+    background-color: #fff;
+    color: #333;
+    font-family: 'Pretendard', sans-serif;
+}
+
+.member-edit-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.member-edit-content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.edit-form-header {
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+}
+
+.edit-form-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.edit-form-box {
+    background-color: transparent;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border: none;
+    margin-top: 20px;
+}
+
+.edit-form-row {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.edit-form-label {
+    width: 120px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #333;
+}
+
+.edit-form-input {
+    flex: 1;
+    max-width: 400px;
+    height: 48px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 14px;
+    color: #666;
+    background-color: #fff;
+    outline: none;
+}
+
+.edit-form-input:focus {
+    border-color: #16B5B0;
+}
+
+.edit-form-input.wide {
+    max-width: 600px;
+}
+
+.edit-form-text-only {
+    font-size: 14px;
+    color: #333;
+}
+
+.edit-form-text-only span {
+    font-weight: 700;
+}
+
+/* Footer Buttons */
+.edit-form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 2px solid #ccc; /* Match the header line thickness/color from dashboard th */
+}
+
+.btn-delete-member {
+    background-color: #f0f0f0;
+    color: #999;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-delete-member:hover {
+    background-color: #e5e5e5;
+    color: #666;
+}
+
+.btn-confirm-edit {
+    background-color: #16B5B0;
+    color: white;
+    border: none;
+    padding: 0 60px;
+    height: 56px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-confirm-edit:hover {
+    background-color: #139a96;
+}

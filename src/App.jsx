@@ -29,14 +29,22 @@ const ProposalDetail = lazy(() => import('./components/ProposalDetail'));
 const MyProposals = lazy(() => import('./components/MyProposals'));
 const ProposalList = lazy(() => import('./components/ProposalList'));
 const ChangePassword = lazy(() => import('./components/ChangePassword'));
+const MyPage = lazy(() => import('./components/MyPage'));
 const ReportPostForm = lazy(() => import('./components/ReportPostForm'));
 const ReportDone = lazy(() => import('./components/ReportDone'));
 const ReportList = lazy(() => import('./components/ReportList'));
 const ReportDetail = lazy(() => import('./components/ReportDetail'));
 
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
+const AdminLoginNew = lazy(() => import('./admin/pages/LoginNew'));
 const AdminSignup = lazy(() => import('./admin/pages/Signup'));
 const AdminDashboard = lazy(() => import('./admin/pages/Dashboard'));
+const AdminDashboardNew = lazy(() => import('./admin/pages/DashboardNew'));
+const MemberEdit = lazy(() => import('./admin/pages/MemberEdit'));
+const ExpertManagement = lazy(() => import('./admin/pages/ExpertManagement'));
+const ExpertEdit = lazy(() => import('./admin/pages/ExpertEdit'));
+const ProposalManagement = lazy(() => import('./admin/pages/ProposalManagement'));
+const ProposalEdit = lazy(() => import('./admin/pages/ProposalEdit'));
 
 import { fetchWithLogout } from './utils/api'
 import PCHeader from './components/PCHeader'
@@ -45,7 +53,14 @@ function App() {
     // Initialize view from sessionStorage to support page refresh
     // For adminLogin and adminSignup, force redirect to 'home' on refresh as per user request
     const [view, setView] = useState(() => {
+        const path = window.location.pathname;
+        if (path === '/admin' || path === '/admin/') return 'adminLoginNew';
+
         const stored = sessionStorage.getItem('current_view');
+        // If path is not /admin, but stored view is an admin view, reset to home
+        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit'].includes(stored);
+        if (path === '/' && isAdminView) return 'home';
+
         if (stored === 'adminLogin' || stored === 'adminSignup') return 'home';
         return stored || 'home';
     });
@@ -57,6 +72,7 @@ function App() {
 
     // State to pass data to edit page
     const [editData, setEditData] = useState(null);
+    const [selectedMember, setSelectedMember] = useState(null);
 
     // Accumulated Diagnosis Data
     const [diagnosisPayload, setDiagnosisPayload] = useState({
@@ -218,8 +234,12 @@ function App() {
         window.scrollTo(0, 0);
         sessionStorage.setItem('current_view', view);
 
-        if (window.history.state?.view !== view) {
-            window.history.pushState({ view: view }, '', '');
+        const newPath = (view === 'adminLoginNew' || view === 'adminDashboardNew' || view === 'expertManagement' || view === 'proposalManagement' || view === 'memberEdit' || view === 'expertEdit' || view === 'proposalEdit') 
+            ? '/admin' 
+            : '/';
+        
+        if (window.history.state?.view !== view || window.location.pathname !== newPath) {
+            window.history.pushState({ view: view }, '', newPath);
         }
     }, [view]);
 
@@ -311,8 +331,25 @@ function App() {
             setView('expertDiagnosisResult');
         } else if (target === 'adminLogin') {
             setView('adminLogin');
+        } else if (target === 'adminLoginNew') {
+            setView('adminLoginNew');
         } else if (target === 'adminDashboard') {
             setView('adminDashboard');
+        } else if (target === 'adminDashboardNew') {
+            setView('adminDashboardNew');
+        } else if (target === 'memberEdit') {
+            setSelectedMember(data);
+            setView('memberEdit');
+        } else if (target === 'expertManagement') {
+            setView('expertManagement');
+        } else if (target === 'expertEdit') {
+            setSelectedMember(data);
+            setView('expertEdit');
+        } else if (target === 'proposalManagement') {
+            setView('proposalManagement');
+        } else if (target === 'proposalEdit') {
+            setSelectedMember(data); // Reusing selectedMember state for proposal context
+            setView('proposalEdit');
         } else if (target === 'newDiagnosis') {
             setView('proposalList');
         } else if (target === 'proposalForm') {
@@ -329,6 +366,13 @@ function App() {
             setView('myProposals');
         } else if (target === 'proposalList') {
             setView('proposalList');
+        } else if (target === 'myPage') {
+            if (!localStorage.getItem('access_token')) {
+                alert('로그인이 필요한 서비스입니다.');
+                setView('login');
+                return;
+            }
+            setView('myPage');
         } else if (target === 'reportPostForm') {
             setView('reportPostForm');
         } else if (target === 'reportList') {
@@ -350,7 +394,7 @@ function App() {
     if (loading && view !== 'home') return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
 
     // PC 헤더를 표시할 뷰 목록
-    const pcHeaderViews = ['home', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm', 'reportPostForm', 'reportList', 'reportDetail'];
+    const pcHeaderViews = ['home', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm', 'myPage', 'reportPostForm', 'reportList', 'reportDetail'];
     const showPCHeader = pcHeaderViews.includes(view);
 
     return (
@@ -794,11 +838,19 @@ function App() {
                         onNavigate={onNavigate}
                     />
                 )}
+                {view === 'myPage' && (
+                    <MyPage onBack={() => setView('home')} />
+                )}
                 {view === 'changePassword' && (
                     <ChangePassword onBack={() => setView('home')} />
                 )}
                 {view === 'adminLogin' && (
                     <AdminLogin
+                        onNavigate={(target) => setView(target)}
+                    />
+                )}
+                {view === 'adminLoginNew' && (
+                    <AdminLoginNew
                         onNavigate={(target) => setView(target)}
                     />
                 )}
@@ -810,6 +862,39 @@ function App() {
                 {view === 'adminDashboard' && (
                     <AdminDashboard
                         onNavigate={(target) => setView(target)}
+                    />
+                )}
+                {view === 'adminDashboardNew' && (
+                    <AdminDashboardNew
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'memberEdit' && (
+                    <MemberEdit
+                        member={selectedMember}
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'expertManagement' && (
+                    <ExpertManagement
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'expertEdit' && (
+                    <ExpertEdit
+                        member={selectedMember}
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'proposalManagement' && (
+                    <ProposalManagement
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'proposalEdit' && (
+                    <ProposalEdit
+                        proposal={selectedMember}
+                        onNavigate={(target, data) => onNavigate(target, data)}
                     />
                 )}
             </div>

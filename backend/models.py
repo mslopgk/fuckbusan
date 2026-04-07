@@ -83,6 +83,7 @@ class User(Base):
     name = Column(String(50), nullable=False)
     nickname = Column(String(100))
     phone_num = Column(String(20))
+    birth_date = Column(String(20)) # Added birth_date
     created_at = Column(DateTime, default=datetime.now)
     district_code = Column(String(50))
 

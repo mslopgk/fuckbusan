@@ -73,7 +73,6 @@ class AnalysisChartData(BaseModel):
     env: float
     transport: float
     safety: float
-    # ... extensible
 
 class UserCreate(BaseModel):
     ID: str
@@ -83,12 +82,31 @@ class UserCreate(BaseModel):
     phone_num: str
     created_at: Optional[datetime] = None
     district_code: str
+    birth_date: Optional[str] = None
+
+class UserOut(BaseModel):
+    user_id: int
+    ID: str
+    name: str
+    nickname: Optional[str] = None
+    phone_num: Optional[str] = None
+    created_at: Optional[datetime] = None
+    district_code: Optional[str] = None
+    birth_date: Optional[str] = None
+
+    class Config:
+        orm_mode = True
 
 class UserLogin(BaseModel):
     ID: str
     PW: str
 
-# 로그인 성공하면 줄 토큰 데이터
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    phone_num: Optional[str] = None
+    birth_date: Optional[str] = None
+    new_pw: Optional[str] = None # For password reset
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -96,7 +114,6 @@ class Token(BaseModel):
     district_code: Optional[str] = None
 
 class ChecklistCreate(BaseModel):
-    # 필요한 컬럼들을 여기에 다 적어주세요. 예시입니다.
     진단지역: Optional[str] = None
     ID: Optional[str] = None 
     district_code: Optional[str] = None
@@ -110,9 +127,7 @@ class ChecklistCreate(BaseModel):
     리뷰: Optional[str] = None
     만족도: Optional[str] = None
     이미지경로: Optional[str] = None
-    
 
-# 사용자에게 보여줄 내용 (출력용)
 class ChecklistResponse(ChecklistCreate):
     result_id: int
     ID: Optional[str] = None
@@ -142,9 +157,9 @@ class NewProposalRead(NewProposalCreate):
     views_count: int
     likes_count: int
     comments_count: Optional[int] = 0
-    nickname: Optional[str] = None # 작성자 닉네임 추가
-    is_mine: Optional[bool] = False # 본인 글 여부 (동적 판단용)
-    has_voted: Optional[bool] = False # 투표 여부 추가
+    nickname: Optional[str] = None
+    is_mine: Optional[bool] = False
+    has_voted: Optional[bool] = False
     created_at: datetime
 
     class Config:
@@ -158,36 +173,6 @@ class NewProposalRead(NewProposalCreate):
             except:
                 return []
         return v
-
-class ProposalCommentBase(BaseModel):
-    content: str
-    parent_comment_id: Optional[int] = None
-
-class ProposalCommentCreate(ProposalCommentBase):
-    pass
-
-class ProposalCommentUpdate(BaseModel):
-    content: str
-
-class ProposalCommentRead(ProposalCommentBase):
-    id: int
-    user_id: str
-    nickname: str
-    created_at: datetime
-    replies: List['ProposalCommentRead'] = []
-
-    class Config:
-        orm_mode = True
-
-ProposalCommentRead.update_forward_refs()
-
-class SuggestionCreate(BaseModel):
-    location: str
-    title: str
-    description: str
-    improvement_plan: str
-    expected_effect: str
-    files: List[str] = []
 
 class ProposalCommentBase(BaseModel):
     content: str
