@@ -119,7 +119,7 @@ const Home = ({ onNavigate }) => {
                 {/* Action Cards & Survey Row */}
                 <div className="main-actions-container">
                     <div className="action-row">
-                        <div className="action-item card report" onClick={() => alert('준비 중입니다.')}>
+                        <div className="action-item card report" onClick={() => onNavigate && onNavigate('reportPostForm')}>
                             <div className="card-top">
                                 <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
                                     <div className="card-title">제보하기</div>
@@ -243,7 +243,13 @@ const Home = ({ onNavigate }) => {
                     <img src="/home.svg" alt="홈" className="nav-icon" style={{ filter: activeTab === 'home' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
                     <span className="nav-text">홈</span>
                 </div>
-                <div className={`nav-item ${activeTab === 'stats' ? 'active' : ''}`} onClick={() => {
+                <div className={`nav-item ${activeTab === 'report' ? 'active' : ''}`} onClick={() => {
+                    onNavigate && onNavigate('reportList');
+                }}>
+                    <img src="/report.svg" alt="제보" className="nav-icon" style={{ width: '22px', height: '22px', filter: activeTab === 'report' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
+                    <span className="nav-text">제보</span>
+                </div>
+                <div className={`nav-item ${activeTab === 'proposal' ? 'active' : ''}`} onClick={() => {
                     const token = localStorage.getItem('access_token');
                     if (!token) {
                         alert('로그인이 필요한 서비스입니다.');
@@ -252,14 +258,10 @@ const Home = ({ onNavigate }) => {
                     }
                     onNavigate && onNavigate('proposalList');
                 }}>
-                    <img src="/suggest.png" alt="제안" className="nav-icon" style={{ width: '30px', height: '30px', opacity: 0.6, filter: (activeTab === 'stats' || activeTab === 'diagnosis') ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
+                    <img src="/graph.svg" alt="제안" className="nav-icon" style={{ width: '20px', height: '20px', filter: (activeTab === 'proposal' || activeTab === 'stats') ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
                     <span className="nav-text">제안</span>
                 </div>
-                <div className={`nav-item ${activeTab === 'report' ? 'active' : ''}`} onClick={() => alert('준비 중입니다.')}>
-                    <img src="/graph.svg" alt="통계" className="nav-icon" style={{ width: '18px', height: '18px', filter: activeTab === 'report' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
-                    <span className="nav-text">통계</span>
-                </div>
-                <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('myPage')} style={{ cursor: 'pointer' }}>
+                <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('myProposals')} style={{ cursor: 'pointer' }}>
                     <img src="/myid.svg" alt="내 정보" className="nav-icon" style={{ filter: activeTab === 'mypage' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
                     <span className="nav-text">나의 정보</span>
                 </div>

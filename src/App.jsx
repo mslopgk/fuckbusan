@@ -30,6 +30,10 @@ const MyProposals = lazy(() => import('./components/MyProposals'));
 const ProposalList = lazy(() => import('./components/ProposalList'));
 const ChangePassword = lazy(() => import('./components/ChangePassword'));
 const MyPage = lazy(() => import('./components/MyPage'));
+const ReportPostForm = lazy(() => import('./components/ReportPostForm'));
+const ReportDone = lazy(() => import('./components/ReportDone'));
+const ReportList = lazy(() => import('./components/ReportList'));
+const ReportDetail = lazy(() => import('./components/ReportDetail'));
 
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
 const AdminLoginNew = lazy(() => import('./admin/pages/LoginNew'));
@@ -92,6 +96,14 @@ function App() {
     });
     const [isProposalEdit, setIsProposalEdit] = useState(false); // [추가] 제안 수정 모드 여부
     const [proposalToEdit, setProposalToEdit] = useState(null); // [추가] 수정할 제안 데이터
+
+    const [selectedReport, setSelectedReport] = useState(() => {
+        const stored = sessionStorage.getItem('selectedReport');
+        if (stored) {
+            try { return JSON.parse(stored); } catch (e) { return null; }
+        }
+        return null;
+    });
 
     const updateDiagnosisPayload = (key, value) => {
         setDiagnosisPayload(prev => ({
@@ -361,6 +373,14 @@ function App() {
                 return;
             }
             setView('myPage');
+        } else if (target === 'reportPostForm') {
+            setView('reportPostForm');
+        } else if (target === 'reportList') {
+            setView('reportList');
+        } else if (target === 'reportDetail') {
+            setSelectedReport(data);
+            if (data) sessionStorage.setItem('selectedReport', JSON.stringify(data));
+            setView('reportDetail');
         }
     };
 
@@ -374,7 +394,7 @@ function App() {
     if (loading && view !== 'home') return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
 
     // PC 헤더를 표시할 뷰 목록
-    const pcHeaderViews = ['home', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm', 'myPage'];
+    const pcHeaderViews = ['home', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm', 'myPage', 'reportPostForm', 'reportList', 'reportDetail'];
     const showPCHeader = pcHeaderViews.includes(view);
 
     return (
@@ -418,6 +438,31 @@ function App() {
                 )}
                 {view === 'reportForm' && (
                     <ReportForm onBack={() => setView('report')} />
+                )}
+                {view === 'reportPostForm' && (
+                    <ReportPostForm 
+                        onBack={() => setView('home')} 
+                        onNavigate={onNavigate}
+                    />
+                )}
+                {view === 'reportDone' && (
+                    <ReportDone 
+                        onMyReports={() => setView('myProposals')} 
+                        onOthers={() => setView('proposalList')} 
+                    />
+                )}
+                {view === 'reportList' && (
+                    <ReportList 
+                        onBack={() => setView('home')} 
+                        onNavigate={onNavigate}
+                    />
+                )}
+                {view === 'reportDetail' && (
+                    <ReportDetail 
+                        report={selectedReport}
+                        onBack={() => setView('reportList')}
+                        onNavigate={onNavigate}
+                    />
                 )}
                 {view === 'diagnosis' && (
                     <Diagnosis

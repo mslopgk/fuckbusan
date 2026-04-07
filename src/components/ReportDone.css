@@ -1,0 +1,121 @@
+/* ReportDone.css */
+
+.rdone-container {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px; /* Match #root constraint for mobile-first look */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    z-index: 99999;
+    font-family: 'Pretendard Variable', sans-serif;
+    padding: 0 40px;
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* Force override parent root shadow if it exists */
+body, #root {
+    background-color: #fff !important;
+    box-shadow: none !important;
+}
+
+.rdone-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.rdone-icon-wrapper {
+    margin-bottom: 30px; /* Reduced from 50px */
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.rdone-layered-icon {
+    position: relative;
+    width: 120px;
+    height: 140px; /* Reduced height from 160px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.rdone-icon-bg {
+    width: 100%; /* Changed from 90% for better centering */
+    height: auto;
+}
+
+.rdone-icon-check {
+    position: absolute;
+    top: 25%; /* Fine-tuned for center */
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 50px; /* Proportionally larger */
+    height: 50px;
+}
+
+.rdone-text-section {
+    margin-bottom: 40px; /* Reduced from 60px */
+    width: 100%;
+    text-align: center;
+}
+
+.rdone-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #333;
+    line-height: 1.4;
+    margin: 0;
+    text-align: center;
+    width: 100%;
+}
+
+.rdone-button-group {
+    width: 100%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.rdone-btn-primary {
+    width: 100%;
+    height: 64px;
+    background-color: #EF4E7B;
+    color: white;
+    border: none;
+    border-radius: 18px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(239, 78, 123, 0.2);
+}
+
+.rdone-btn-secondary {
+    width: 100%;
+    height: 64px;
+    background-color: #ffeef2;
+    color: #EF4E7B;
+    border: none;
+    border-radius: 18px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.rdone-btn-primary:active, .rdone-btn-secondary:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+}
