@@ -1,0 +1,98 @@
+.pc-survey-detail-page {
+    background: #f7f7f8;
+    min-height: calc(100vh - 60px);
+    padding-bottom: 100px;
+}
+
+.pc-banner-tall {
+    padding: 64px 0 96px;
+}
+
+.pc-floating-card {
+    width: 720px;
+    margin: -56px auto 0;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(34, 12, 80, 0.12);
+    padding: 32px 40px;
+    position: relative;
+}
+
+.pc-info-row {
+    display: flex;
+    align-items: flex-start;
+    padding: 8px 0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.pc-info-label {
+    width: 90px;
+    color: #555;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.pc-info-value {
+    color: #1a1a1b;
+    flex: 1;
+}
+
+.pc-info-multiline {
+    white-space: pre-line;
+}
+
+.pc-detail-body {
+    max-width: 720px;
+    margin: 32px auto 0;
+    text-align: center;
+}
+
+.pc-detail-intro {
+    font-size: 14px;
+    color: #1a1a1b;
+    line-height: 1.7;
+    margin: 0 0 24px;
+}
+
+.pc-bullet-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 28px;
+    max-width: 480px;
+    font-size: 13px;
+    color: #444;
+    line-height: 1.7;
+    text-align: left;
+}
+
+.pc-bullet-list li {
+    position: relative;
+    padding-left: 18px;
+    margin-bottom: 8px;
+}
+
+.pc-bullet-list li::before {
+    content: '⌄';
+    position: absolute;
+    left: 0;
+    top: -4px;
+    color: #5B2EAB;
+    font-weight: 700;
+}
+
+.pc-detail-links {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 36px;
+}
+
+.pc-detail-links a {
+    color: #777;
+    text-decoration: underline;
+}
+
+.pc-detail-action {
+    display: flex;
+    justify-content: center;
+}

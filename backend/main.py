@@ -16,7 +16,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy import text
 
 # Routers
-from routers import auth, dashboard, ai, user_router, checklist_router, report_router
+from routers import auth, dashboard, ai, user_router, checklist_router, report_router, survey_router
 
 import models
 from database import engine
@@ -77,6 +77,7 @@ app.include_router(ai.router)
 app.include_router(user_router.router)
 app.include_router(checklist_router.router)
 app.include_router(report_router.router)
+app.include_router(survey_router.router)
 
 # Static Files & Frontend Serving
 current_dir = os.path.dirname(os.path.abspath(__file__))

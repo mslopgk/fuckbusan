@@ -47,6 +47,29 @@ const ExpertManagement = lazy(() => import('./admin/pages/ExpertManagement'));
 const ExpertEdit = lazy(() => import('./admin/pages/ExpertEdit'));
 const ProposalManagement = lazy(() => import('./admin/pages/ProposalManagement'));
 const ProposalEdit = lazy(() => import('./admin/pages/ProposalEdit'));
+const AdminMain = lazy(() => import('./admin/pages/AdminMain'));
+const AdminUserList = lazy(() => import('./admin/pages/AdminUserList'));
+const ReportManagement = lazy(() => import('./admin/pages/ReportManagement'));
+const SurveyManagement = lazy(() => import('./admin/pages/SurveyManagement'));
+const AdminReportDetail = lazy(() => import('./admin/pages/ReportDetail'));
+const AdminProposalDetail = lazy(() => import('./admin/pages/AdminProposalDetail'));
+const SurveyEditor = lazy(() => import('./admin/pages/SurveyEditor'));
+const SurveyCreated = lazy(() => import('./admin/pages/SurveyCreated'));
+const SurveyResults = lazy(() => import('./admin/pages/SurveyResults'));
+
+// USER:PC pages (Figma node 845:4735 — 설문 series)
+const PCSurveyList = lazy(() => import('./components/PCSurveyList'));
+const PCSurveyDetail = lazy(() => import('./components/PCSurveyDetail'));
+const PCSurveyConsent = lazy(() => import('./components/PCSurveyConsent'));
+const PCSurveyJoin = lazy(() => import('./components/PCSurveyJoin'));
+const PCSurveyResults = lazy(() => import('./components/PCSurveyResults'));
+const PCSurveyDone = lazy(() => import('./components/PCSurveyDone'));
+const PCProposeMap = lazy(() => import('./components/PCProposeMap'));
+const PCProposeForm = lazy(() => import('./components/PCProposeForm'));
+const PCProposeDetail = lazy(() => import('./components/PCProposeDetail'));
+const PCReportMap = lazy(() => import('./components/PCReportMap'));
+const PCReportForm = lazy(() => import('./components/PCReportForm'));
+const PCReportDetail = lazy(() => import('./components/PCReportDetail'));
 
 import { fetchWithLogout } from './utils/api'
 import PCHeader from './components/PCHeader'
@@ -60,7 +83,7 @@ function App() {
 
         const stored = sessionStorage.getItem('current_view');
         // If path is not /admin, but stored view is an admin view, reset to home
-        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit'].includes(stored);
+        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit', 'adminProposalDetail'].includes(stored);
         if (path === '/' && isAdminView) return 'home';
 
         if (stored === 'adminLogin' || stored === 'adminSignup') return 'home';
@@ -110,6 +133,7 @@ function App() {
     });
     const [isReportEdit, setIsReportEdit] = useState(false);
     const [reportToEdit, setReportToEdit] = useState(null);
+    const [selectedSurvey, setSelectedSurvey] = useState(null);
 
     const updateDiagnosisPayload = (key, value) => {
         setDiagnosisPayload(prev => ({
@@ -240,9 +264,8 @@ function App() {
         window.scrollTo(0, 0);
         sessionStorage.setItem('current_view', view);
 
-        const newPath = (view === 'adminLoginNew' || view === 'adminDashboardNew' || view === 'expertManagement' || view === 'proposalManagement' || view === 'memberEdit' || view === 'expertEdit' || view === 'proposalEdit') 
-            ? '/admin' 
-            : '/';
+        const adminViews = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'proposalManagement', 'memberEdit', 'expertEdit', 'proposalEdit', 'adminProposalDetail'];
+        const newPath = adminViews.includes(view) ? '/admin' : '/';
         
         if (window.history.state?.view !== view || window.location.pathname !== newPath) {
             window.history.pushState({ view: view }, '', newPath);
@@ -403,6 +426,26 @@ function App() {
             setView('expertEdit');
         } else if (target === 'proposalManagement') {
             setView('proposalManagement');
+        } else if (target === 'adminMain') {
+            setView('adminMain');
+        } else if (target === 'adminUserList') {
+            setView('adminUserList');
+        } else if (target === 'reportManagement') {
+            setView('reportManagement');
+        } else if (target === 'adminReportDetail') {
+            setSelectedMember(data);
+            setView('adminReportDetail');
+        } else if (target === 'surveyManagement') {
+            setView('surveyManagement');
+        } else if (target === 'surveyEditor') {
+            setView('surveyEditor');
+        } else if (target === 'surveyCreated') {
+            setView('surveyCreated');
+        } else if (target === 'surveyResults') {
+            setView('surveyResults');
+        } else if (target === 'adminProposalDetail') {
+            setSelectedMember(data);
+            setView('adminProposalDetail');
         } else if (target === 'proposalEdit') {
             setSelectedMember(data); // Reusing selectedMember state for proposal context
             setView('proposalEdit');
@@ -462,6 +505,36 @@ function App() {
                 return;
             }
             setView('myReportList');
+        } else if (target === 'pcSurveyList') {
+            setView('pcSurveyList');
+        } else if (target === 'pcSurveyDetail') {
+            setSelectedSurvey(data);
+            setView('pcSurveyDetail');
+        } else if (target === 'pcSurveyConsent') {
+            setSelectedSurvey(data);
+            setView('pcSurveyConsent');
+        } else if (target === 'pcSurveyJoin') {
+            setSelectedSurvey(data);
+            setView('pcSurveyJoin');
+        } else if (target === 'pcSurveyResults') {
+            setSelectedSurvey(data);
+            setView('pcSurveyResults');
+        } else if (target === 'pcSurveyDone') {
+            setView('pcSurveyDone');
+        } else if (target === 'pcProposeMap') {
+            setView('pcProposeMap');
+        } else if (target === 'pcProposeForm') {
+            setView('pcProposeForm');
+        } else if (target === 'pcProposeDetail') {
+            setSelectedProposal(data);
+            setView('pcProposeDetail');
+        } else if (target === 'pcReportMap') {
+            setView('pcReportMap');
+        } else if (target === 'pcReportForm') {
+            setView('pcReportForm');
+        } else if (target === 'pcReportDetail') {
+            setSelectedReport(data);
+            setView('pcReportDetail');
         }
     };
 
@@ -1032,6 +1105,89 @@ function App() {
                         proposal={selectedMember}
                         onNavigate={(target, data) => onNavigate(target, data)}
                     />
+                )}
+                {view === 'adminMain' && (
+                    <AdminMain
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminUserList' && (
+                    <AdminUserList
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'reportManagement' && (
+                    <ReportManagement
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminReportDetail' && (
+                    <AdminReportDetail
+                        report={selectedMember}
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminProposalDetail' && (
+                    <AdminProposalDetail
+                        proposal={selectedMember}
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'surveyEditor' && (
+                    <SurveyEditor
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'surveyCreated' && (
+                    <SurveyCreated
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'surveyResults' && (
+                    <SurveyResults
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'surveyManagement' && (
+                    <SurveyManagement
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'pcSurveyList' && (
+                    <PCSurveyList onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcSurveyDetail' && (
+                    <PCSurveyDetail onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'pcSurveyConsent' && (
+                    <PCSurveyConsent onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'pcSurveyJoin' && (
+                    <PCSurveyJoin onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'pcSurveyResults' && (
+                    <PCSurveyResults onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'pcSurveyDone' && (
+                    <PCSurveyDone onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcProposeMap' && (
+                    <PCProposeMap onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcProposeForm' && (
+                    <PCProposeForm onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcProposeDetail' && (
+                    <PCProposeDetail onNavigate={(target, data) => onNavigate(target, data)} proposal={selectedProposal} />
+                )}
+                {view === 'pcReportMap' && (
+                    <PCReportMap onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcReportForm' && (
+                    <PCReportForm onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcReportDetail' && (
+                    <PCReportDetail onNavigate={(target, data) => onNavigate(target, data)} report={selectedReport} />
                 )}
             </div>
         </Suspense>

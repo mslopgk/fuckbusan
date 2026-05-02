@@ -47,6 +47,104 @@ async def upload_file(file: UploadFile = File(...)):
     except ClientError as e:
         raise HTTPException(status_code=500, detail=f"S3 업로드 실패: {str(e)}")
 
+@router.get("/list")
+def list_reports(db: Session = Depends(get_db)):
+    rows = db.query(models.Report).order_by(models.Report.created_at.desc()).all()
+    return [
+        {
+            "id": r.id,
+            "title": r.title,
+            "type": r.type,
+            "location": r.location,
+            "content": r.content,
+            "author_id": getattr(r, "author_id", None),
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+        for r in rows
+    ]
+
+
+def _serialize_report(r, comments=None):
+    """Convert Report ORM row to the shape the frontend expects."""
+    return {
+        "id": r.id,
+        "user_id": r.user_id,
+        "author": r.author_name,
+        "category": r.category,
+        "sub_category": r.sub_category,
+        "title": r.title,
+        "content": r.content,
+        "region": r.region,
+        "location": r.location,
+        "detailed_address": r.detailed_address,
+        "lat": float(r.lat) if r.lat is not None else None,
+        "lng": float(r.lng) if r.lng is not None else None,
+        "image": r.image_url,
+        "status": r.status,
+        "progress_step": r.progress_step,
+        "views": r.views or 0,
+        "likes": r.likes_count or 0,
+        "comments": r.comments_count or 0,
+        "date": r.created_at.strftime("%Y.%m.%d") if r.created_at else None,
+        "result_details": r.result_details,
+        "comments_list": [
+            {
+                "id": c.id,
+                "author": c.author_name or (c.user.nickname if c.user else "익명"),
+                "content": c.content,
+                "date": c.created_at.strftime("%Y.%m.%d") if c.created_at else None,
+            }
+            for c in (comments or [])
+        ],
+    }
+
+
+@router.get("/full")
+def list_reports_full(
+    db: Session = Depends(get_db),
+    region: Optional[str] = None,
+    category: Optional[str] = None,
+    status: Optional[str] = None,
+):
+    """Return all reports with the full shape the frontend ReportList expects."""
+    q = db.query(models.Report)
+    if region and region != "부산 전 지역":
+        q = q.filter(models.Report.region == region)
+    if category and category != "전체":
+        q = q.filter(models.Report.category == category)
+    if status and status != "전체":
+        q = q.filter(models.Report.status == status)
+    rows = q.order_by(models.Report.created_at.desc()).all()
+
+    # Batch-fetch comments per report
+    ids = [r.id for r in rows]
+    comments_by_report = {}
+    if ids:
+        all_comments = db.query(models.ReportComment).filter(
+            models.ReportComment.report_id.in_(ids)
+        ).order_by(models.ReportComment.created_at.asc()).all()
+        for c in all_comments:
+            comments_by_report.setdefault(c.report_id, []).append(c)
+
+    return [_serialize_report(r, comments_by_report.get(r.id, [])) for r in rows]
+
+
+@router.get("/mine")
+def list_my_reports(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """Reports authored by the current user."""
+    rows = db.query(models.Report).filter(models.Report.user_id == current_user.user_id).order_by(models.Report.created_at.desc()).all()
+    ids = [r.id for r in rows]
+    comments_by_report = {}
+    if ids:
+        all_comments = db.query(models.ReportComment).filter(models.ReportComment.report_id.in_(ids)).all()
+        for c in all_comments:
+            comments_by_report.setdefault(c.report_id, []).append(c)
+    return [_serialize_report(r, comments_by_report.get(r.id, [])) for r in rows]
+
+
 @router.post("/report", status_code=status.HTTP_201_CREATED)
 def create_report(report: schemas.ReportCreate, db: Session = Depends(get_db)):
     new_report = models.Report(

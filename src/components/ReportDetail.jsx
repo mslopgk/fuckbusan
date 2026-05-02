@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { Map, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk';
 import './ReportDetail.css';
 
 const CATEGORY_STYLES = {
@@ -16,6 +14,7 @@ const CATEGORY_STYLES = {
 };
 
 const ReportDetail = ({ report, onBack, onNavigate, onDelete, likedIds, onToggleLike, showActions }) => {
+    useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services', 'clusterer'] });
     const [showResultModal, setShowResultModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [comment, setComment] = useState('');
@@ -92,10 +91,16 @@ const ReportDetail = ({ report, onBack, onNavigate, onDelete, likedIds, onToggle
                     </div>
 
                     <div className="rd-map-preview">
-                        <MapContainer center={[report.lat || 35.1795, report.lng || 129.0756]} zoom={15} className="rd-leaflet-preview" zoomControl={false} dragging={false} touchZoom={false} doubleClickZoom={false} scrollWheelZoom={false}>
-                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                            <div className="rd-map-center-dot"></div>
-                        </MapContainer>
+                        <Map
+                            center={{ lat: report.lat || 35.1795, lng: report.lng || 129.0756 }}
+                            level={4}
+                            className="rd-leaflet-preview"
+                            draggable={false}
+                            zoomable={false}
+                            disableDoubleClickZoom={true}
+                        >
+                            <MapMarker position={{ lat: report.lat || 35.1795, lng: report.lng || 129.0756 }} />
+                        </Map>
                     </div>
                 </section>
 

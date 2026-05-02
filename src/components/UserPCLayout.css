@@ -1,0 +1,224 @@
+/* USER:PC shared shell — matches Figma USER:PC frames (1920px header, teal active state) */
+
+.user-pc-shell {
+    min-height: 100vh;
+    background: #f7f7f8;
+    font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
+    color: #1a1a1b;
+}
+
+.user-pc-header {
+    width: 100%;
+    background: #fff;
+    border-bottom: 1px solid #ececec;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.user-pc-header-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.user-pc-logo {
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.04em;
+    cursor: pointer;
+    color: #1a1a1b;
+}
+
+.user-pc-logo span {
+    font-weight: 600;
+    font-size: 18px;
+    color: #1a1a1b;
+}
+
+.user-pc-nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.user-pc-nav-link {
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1b;
+    cursor: pointer;
+    padding: 6px 4px;
+    transition: color 0.15s;
+    letter-spacing: -0.02em;
+}
+
+.user-pc-nav-link:hover {
+    color: #16B5B0;
+}
+
+.user-pc-nav-link.active {
+    color: #16B5B0;
+}
+
+.user-pc-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-pc-auth {
+    background: none;
+    border: none;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    padding: 4px 6px;
+    transition: color 0.15s;
+}
+
+.user-pc-auth:hover {
+    color: #16B5B0;
+}
+
+.user-pc-divider {
+    color: #ccc;
+    font-size: 11px;
+    margin: 0 2px;
+    user-select: none;
+}
+
+.user-pc-bell {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    padding: 6px;
+    margin-left: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.user-pc-bell:hover {
+    color: #16B5B0;
+}
+
+.user-pc-main {
+    width: 100%;
+}
+
+/* Shared purple banner used by survey detail / participate / results / consent */
+.pc-purple-banner {
+    background: #5B2EAB;
+    color: #fff;
+    padding: 64px 0 88px;
+    text-align: center;
+}
+
+.pc-purple-banner .pc-banner-title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.pc-purple-banner .pc-banner-period {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255,255,255,0.12);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+.pc-banner-copy-btn {
+    position: absolute;
+    right: max(calc(50% - 360px), 24px);
+    bottom: 28px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: 14px;
+}
+
+.pc-banner-copy-btn:hover { background: rgba(255,255,255,0.12); }
+
+.pc-purple-banner { position: relative; }
+
+/* Floating card that overlaps the banner bottom */
+.pc-floating-card {
+    width: 720px;
+    margin: -56px auto 0;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(34, 12, 80, 0.12);
+    padding: 36px 44px;
+    position: relative;
+}
+
+.pc-copy-link {
+    position: absolute;
+    top: 18px;
+    right: 24px;
+    font-size: 12px;
+    color: #888;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.pc-copy-link:hover { color: #5B2EAB; }
+
+.pc-section {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+}
+
+/* Buttons */
+.pc-btn-primary {
+    background: #5B2EAB;
+    color: #fff;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 14px 48px;
+    border-radius: 28px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+}
+.pc-btn-primary:hover { background: #4a1f93; }
+.pc-btn-primary:active { transform: translateY(1px); }
+
+.pc-btn-secondary {
+    background: #fff;
+    color: #1a1a1b;
+    border: 1px solid #d6d6d8;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 48px;
+    border-radius: 28px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.pc-btn-secondary:hover { background: #f3f4f5; }

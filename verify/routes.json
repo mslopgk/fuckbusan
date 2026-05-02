@@ -1,0 +1,84 @@
+{
+  "baseUrl": "http://localhost:8501",
+  "apiUrl": "http://localhost:8000",
+  "viewport": { "width": 390, "height": 844 },
+  "views": [
+    {
+      "id": "home",
+      "view": "home",
+      "path": "/",
+      "auth": false,
+      "waitFor": "body",
+      "assertions": []
+    },
+    {
+      "id": "login",
+      "view": "login",
+      "path": "/",
+      "auth": false,
+      "waitFor": "input"
+    },
+    {
+      "id": "signup",
+      "view": "signup",
+      "path": "/",
+      "auth": false,
+      "waitFor": "input"
+    },
+    {
+      "id": "report",
+      "view": "report",
+      "path": "/",
+      "auth": true,
+      "waitFor": "body"
+    },
+    {
+      "id": "reportList",
+      "view": "reportList",
+      "path": "/",
+      "auth": false,
+      "waitFor": "body"
+    },
+    {
+      "id": "proposalList",
+      "view": "proposalList",
+      "path": "/",
+      "auth": false,
+      "waitFor": "body"
+    },
+    {
+      "id": "myPage",
+      "view": "myPage",
+      "path": "/",
+      "auth": true,
+      "waitFor": "body"
+    },
+    {
+      "id": "diagnosis",
+      "view": "diagnosis",
+      "path": "/",
+      "auth": true,
+      "waitFor": "body"
+    },
+    {
+      "id": "adminLoginNew",
+      "view": "adminLoginNew",
+      "path": "/admin",
+      "auth": false,
+      "waitFor": "input"
+    },
+    {
+      "id": "adminMain",
+      "view": "adminMain",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body"
+    }
+  ],
+  "apiChecks": [
+    { "id": "health-root", "method": "GET", "path": "/", "expectStatus": [200, 404] },
+    { "id": "auth-login-options", "method": "OPTIONS", "path": "/auth/login", "expectStatus": [200, 405] },
+    { "id": "dashboard-summary", "method": "GET", "path": "/dashboard/summary", "expectStatus": [200, 401, 422] },
+    { "id": "checklist-categories", "method": "GET", "path": "/checklist/categories", "expectStatus": [200, 401, 404] }
+  ]
+}

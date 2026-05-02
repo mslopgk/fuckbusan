@@ -137,10 +137,52 @@ class ChecklistResponse(ChecklistCreate):
         orm_mode = True
 
 class ReportCreate(BaseModel):
-    type: str
+    type: Optional[str] = None  # legacy
+    category: Optional[str] = None
+    sub_category: Optional[str] = None
+    title: str
+    content: Optional[str] = None
+    region: Optional[str] = None
+    location: Optional[str] = None
+    detailed_address: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    image_url: Optional[str] = None
+    files: List[str] = []
+
+
+class ReportRead(BaseModel):
+    id: int
+    user_id: Optional[int] = None
+    author: Optional[str] = None
+    category: Optional[str] = None
+    sub_category: Optional[str] = None
+    title: str
+    content: Optional[str] = None
+    region: Optional[str] = None
+    location: Optional[str] = None
+    detailed_address: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    image: Optional[str] = None  # frontend uses `image`
+    status: Optional[str] = None
+    progress_step: Optional[int] = None
+    views: Optional[int] = 0
+    likes: Optional[int] = 0
+    comments: Optional[int] = 0
+    date: Optional[str] = None  # formatted YYYY.MM.DD
+    result_details: Optional[Dict[str, Any]] = None
+    comments_list: List[Dict[str, Any]] = []
+
+    class Config:
+        orm_mode = True
+
+class SuggestionCreate(BaseModel):
     location: str
     title: str
-    content: str
+    description: str
+    improvement_plan: Optional[str] = None
+    expected_effect: Optional[str] = None
     files: List[str] = []
 
 class NewProposalCreate(BaseModel):

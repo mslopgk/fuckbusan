@@ -91,7 +91,7 @@ export default function ProposalEdit({ proposal, onNavigate }) {
         <div className="proposal-edit-container">
             {/* Sidebar */}
             <aside className="admin-sidebar-new">
-                <div className="sidebar-logo-new">PDDP(가안)</div>
+                <div className="sidebar-logo-new"><img src="/WDC.svg" alt="WDC" style={{ height: '32px', display: 'block' }} /></div>
                 <nav className="sidebar-menu-new">
                     <div 
                         className="menu-item-new" 

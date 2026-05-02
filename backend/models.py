@@ -117,13 +117,60 @@ User.results = relationship("ChecklistResult", back_populates="owner")
 
 class Report(Base):
     __tablename__ = "reports"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     id = Column(Integer, primary_key=True, index=True)
-    type = Column(String(50)) # facility, safety, traffic
-    location = Column(String(255))
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    author_name = Column(String(100), nullable=True)
+    category = Column(String(50), nullable=True)
+    sub_category = Column(String(100), nullable=True)
     title = Column(String(255))
-    content = Column(String(2000))
-    files = Column(JSON) # List of file paths/names
+    content = Column(Text, nullable=True)
+    region = Column(String(50), nullable=True)
+    location = Column(String(255), nullable=True)
+    detailed_address = Column(String(255), nullable=True)
+    lat = Column(DECIMAL(10, 8), nullable=True)
+    lng = Column(DECIMAL(11, 8), nullable=True)
+    image_url = Column(String(500), nullable=True)
+    status = Column(String(20), default="개선예정")  # 개선예정, 개선중, 개선완료, 검토중, 결과안내
+    progress_step = Column(Integer, default=1)  # 1:접수, 2:검토중, 3:검토완료, 4:결과안내
+    views = Column(Integer, default=0)
+    likes_count = Column(Integer, default=0)
+    comments_count = Column(Integer, default=0)
+    files = Column(JSON, nullable=True)
+    type = Column(String(50), nullable=True)  # legacy field, kept for backward compat
+    result_details = Column(JSON, nullable=True)  # { title, image, content, manager, result_date }
+    created_at = Column(DateTime, default=datetime.now)
+
+
+class ReportImage(Base):
+    __tablename__ = "report_images"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    report_id = Column(Integer, ForeignKey("reports.id"), nullable=False)
+    image_url = Column(String(500), nullable=False)
+
+
+class ReportLike(Base):
+    __tablename__ = "report_likes"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    report_id = Column(Integer, ForeignKey("reports.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.now)
+
+
+class ReportComment(Base):
+    __tablename__ = "report_comments"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    report_id = Column(Integer, ForeignKey("reports.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    author_name = Column(String(100), nullable=True)  # for seeded comments without real user
+    content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.now)
 
 class Suggestion(Base):

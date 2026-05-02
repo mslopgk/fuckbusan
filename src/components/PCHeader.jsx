@@ -1,13 +1,15 @@
 /* PCHeader.jsx - PC 전용 네비게이션 헤더 */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './PCHeader.css';
 
+const SURVEY_VIEWS = ['pcSurveyList', 'pcSurveyDetail', 'pcSurveyConsent', 'pcSurveyJoin', 'pcSurveyResults', 'pcSurveyDone'];
+const REPORT_SUGGEST_VIEWS = ['pcProposeMap', 'pcProposeForm', 'pcProposeDone', 'pcProposeDetail', 'pcReportMap', 'pcReportForm', 'pcReportDone', 'pcReportDetail', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'reportList', 'reportDetail', 'reportPostForm'];
+const DIAGNOSIS_VIEWS = ['diagnosis', 'diagnosisStep1', 'bigCategory', 'checkList', 'satisfaction', 'review', 'checkDone', 'diagnosisResult', 'diagnosisList', 'diagnosisEdit', 'expertDiagnosisResult'];
+
 const PCHeader = ({ currentView, onNavigate }) => {
-    const [proposalDropdownOpen, setProposalDropdownOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState('');
     const [showLogoutToast, setShowLogoutToast] = useState(false);
-    const dropdownRef = useRef(null);
 
     useEffect(() => {
         const token = localStorage.getItem('access_token');
@@ -15,16 +17,6 @@ const PCHeader = ({ currentView, onNavigate }) => {
         setIsLoggedIn(!!token);
         setUserName(name);
     }, [currentView]);
-
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-                setProposalDropdownOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('access_token');
@@ -39,7 +31,19 @@ const PCHeader = ({ currentView, onNavigate }) => {
         }, 1800);
     };
 
-    const isProposalActive = ['proposalForm', 'proposalList', 'proposalDetail', 'myProposals'].includes(currentView);
+    const handleNav = (target) => {
+        if (target === 'comingSoon') return;
+        onNavigate(target);
+    };
+
+    const disabledStyle = { color: '#9ca3af', cursor: 'not-allowed', opacity: 0.5 };
+
+    const isActive = (key) => {
+        if (key === 'survey') return SURVEY_VIEWS.includes(currentView);
+        if (key === 'reportSuggest') return REPORT_SUGGEST_VIEWS.includes(currentView);
+        if (key === 'diagnosis') return DIAGNOSIS_VIEWS.includes(currentView);
+        return false;
+    };
 
     return (
         <header className="pc-header">
@@ -49,46 +53,39 @@ const PCHeader = ({ currentView, onNavigate }) => {
                     <img src="/WDC.svg" alt="WDC 로고" style={{ height: '32px', display: 'block' }} />
                 </div>
 
-                {/* 네비게이션 */}
+                {/* 네비게이션 (Figma 5-nav) */}
                 <nav className="pc-nav">
                     <button
-                        className={`pc-nav-link ${currentView === 'home' ? 'active' : ''}`}
-                        onClick={() => onNavigate('home')}
+                        className={`pc-nav-link ${isActive('survey') ? 'active' : ''}`}
+                        onClick={() => handleNav('pcSurveyList')}
                     >
-                        홈
+                        설문
                     </button>
-
-                    <div className="pc-nav-dropdown-wrapper" ref={dropdownRef}>
-                        <button
-                            className={`pc-nav-link ${isProposalActive ? 'active' : ''}`}
-                            onClick={() => setProposalDropdownOpen(prev => !prev)}
-                        >
-                            제안
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '4px', transform: proposalDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </button>
-                        {proposalDropdownOpen && (
-                            <div className="pc-dropdown-menu">
-                                <button className="pc-dropdown-item" onClick={() => { setProposalDropdownOpen(false); onNavigate('proposalForm'); }}>
-                                    제안하기
-                                </button>
-                                <button className="pc-dropdown-item" onClick={() => { setProposalDropdownOpen(false); onNavigate('proposalList'); }}>
-                                    제안현황
-                                </button>
-                                <button className="pc-dropdown-item" onClick={() => { setProposalDropdownOpen(false); onNavigate('myProposals'); }}>
-                                    나의제안
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* 제보 */}
-                    <button 
-                        className={`pc-nav-link ${currentView === 'reportList' ? 'active' : ''}`}
-                        onClick={() => onNavigate('reportList')}
+                    <button
+                        className={`pc-nav-link ${isActive('reportSuggest') ? 'active' : ''}`}
+                        onClick={() => handleNav('pcProposeMap')}
                     >
-                        제보
+                        제보/제안
+                    </button>
+                    <button
+                        className={`pc-nav-link ${isActive('diagnosis') ? 'active' : ''}`}
+                        onClick={() => handleNav('diagnosis')}
+                    >
+                        진단
+                    </button>
+                    <button
+                        className="pc-nav-link disabled"
+                        style={disabledStyle}
+                        onClick={() => handleNav('comingSoon')}
+                    >
+                        AI가상시민
+                    </button>
+                    <button
+                        className="pc-nav-link disabled"
+                        style={disabledStyle}
+                        onClick={() => handleNav('comingSoon')}
+                    >
+                        공공데이터
                     </button>
                 </nav>
 
@@ -108,7 +105,11 @@ const PCHeader = ({ currentView, onNavigate }) => {
                             <button className="pc-auth-link" onClick={() => onNavigate('signup')}>회원가입</button>
                         </>
                     )}
-                    <button className="pc-bell-btn" onClick={() => alert('알림 기능은 준비 중입니다.')}>
+                    <button
+                        className="pc-bell-btn disabled"
+                        style={disabledStyle}
+                        onClick={() => {}}
+                    >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>

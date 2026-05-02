@@ -1,0 +1,414 @@
+/* Shared CSS for PCProposeMap and PCReportMap (similar layouts) */
+
+.pc-map-page {
+    width: 100%;
+    background: #f7f7f8;
+    min-height: calc(100vh - 60px);
+}
+
+.pc-map-tabs {
+    display: flex;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.pc-map-tab {
+    flex: 1;
+    border: none;
+    background: #fff;
+    color: #555;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 14px 0;
+    cursor: pointer;
+    transition: color 0.15s, box-shadow 0.15s;
+    border-bottom: 3px solid transparent;
+}
+
+.pc-map-tab:hover {
+    color: #1a1a1b;
+}
+
+.pc-map-tab.active.propose {
+    color: #E6235A;
+    border-bottom-color: #E6235A;
+}
+
+.pc-map-tab.active.report {
+    color: #E6235A;
+    border-bottom-color: #E6235A;
+}
+
+.pc-map-filter-row {
+    display: flex;
+    gap: 8px;
+    padding: 14px 32px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    overflow-x: auto;
+}
+
+.pc-filter-chip {
+    flex-shrink: 0;
+    border: 1px solid #d6d6d8;
+    background: #fff;
+    color: #555;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.pc-filter-chip:hover { border-color: #E6235A; color: #E6235A; }
+
+.pc-filter-chip.active {
+    background: #E6235A;
+    color: #fff;
+    border-color: #E6235A;
+}
+
+.pc-map-body {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 0;
+    height: calc(100vh - 60px - 49px - 60px);
+    min-height: 600px;
+}
+
+.pc-map-canvas {
+    position: relative;
+    background: #f1ebe0;
+    overflow: hidden;
+}
+
+.pc-map-mock {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, #f5efe2 0%, #ebe5d4 100%);
+}
+
+.pc-map-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+}
+
+.pc-map-pin {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 50% 50% 50% 0;
+    transform: translate(-50%, -100%) rotate(-45deg);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.20);
+    cursor: pointer;
+}
+
+.pc-map-pin span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    transform: translate(-50%, -50%);
+}
+
+.pc-map-cluster {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #E6235A;
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.20);
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+.pc-map-cta {
+    position: absolute;
+    right: 24px;
+    bottom: 24px;
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 14px 28px;
+    border-radius: 28px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(230, 35, 90, 0.30);
+    transition: background 0.15s;
+}
+
+.pc-map-cta:hover { background: #c61d4d; }
+
+.pc-map-list {
+    background: #fff;
+    border-left: 1px solid #eee;
+    overflow-y: auto;
+}
+
+.pc-map-list-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1b;
+}
+
+.pc-map-list-head small {
+    color: #888;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.pc-map-list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pc-map-list li {
+    display: flex;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #f4f4f4;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.pc-map-list li:hover {
+    background: #fafafa;
+}
+
+.pc-map-list-thumb {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #f5d97a, #e6a93d);
+    border-radius: 8px;
+}
+
+.pc-map-list-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.pc-map-list-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1b;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-bottom: 6px;
+}
+
+.pc-map-list-meta {
+    font-size: 11px;
+    color: #777;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.pc-map-list-date {
+    font-size: 11px;
+    color: #999;
+}
+
+.pc-cat-tag {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 8px;
+    border-radius: 9px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.pc-cat-traffic { background: #fef0f5; color: #E6235A; }
+.pc-cat-env { background: #e8f8e9; color: #2b8a3e; }
+.pc-cat-housing { background: #fff7e0; color: #c08800; }
+.pc-cat-safety { background: #fde8d4; color: #d9480f; }
+.pc-cat-edu { background: #f0e8fa; color: #5B2EAB; }
+.pc-cat-health { background: #e7f5ff; color: #1971c2; }
+.pc-cat-work { background: #fff0e0; color: #d9480f; }
+.pc-cat-leisure { background: #fff7e0; color: #c08800; }
+
+/* Kakao map pin overlay */
+.pc-kakao-pin {
+    width: 26px;
+    height: 26px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.20);
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    position: relative;
+}
+
+.pc-kakao-pin span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    transform: translate(-50%, -50%);
+}
+
+/* List thumbnail with map-like color */
+.pc-map-list-thumb {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    background:
+        linear-gradient(135deg, #f1ebe0 0%, #ddd1b3 60%, #c2b18b 100%);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.pc-map-list-thumb::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px);
+    background-size: 14px 14px;
+}
+
+.pc-map-list-thumb::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    background: #E6235A;
+    border-radius: 50% 50% 50% 0;
+    transform: translate(-50%, -100%) rotate(-45deg);
+}
+
+.pc-map-list-thumb.report::after { background: #5B2EAB; }
+.pc-map-list-thumb.env::after { background: #2b8a3e; }
+.pc-map-list-thumb.safety::after { background: #d9480f; }
+.pc-map-list-thumb.health::after { background: #1971c2; }
+
+/* Floating popup card on map (Figma 핵심 요소) */
+.pc-map-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+    z-index: 5;
+    overflow: hidden;
+}
+
+.pc-map-popup-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(0, 0, 0, 0.40);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.pc-map-popup-thumb {
+    width: 100%;
+    height: 140px;
+    background:
+        linear-gradient(135deg, #1f2540 0%, #4a3070 60%, #d97a55 100%);
+}
+
+.pc-map-popup-body {
+    padding: 14px 16px 16px;
+}
+
+.pc-map-popup-tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 6px;
+}
+
+.pc-map-popup-region {
+    color: #888;
+}
+
+.pc-map-popup-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.pc-map-popup-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 12px;
+}
+
+.pc-map-popup-cta {
+    width: 100%;
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 0;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.pc-map-popup-cta:hover { background: #c61d4d; }

@@ -1,25 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './MyReports.css';
-import { MOCK_MY_REPORTS, MOCK_REPORTS_BASE } from '../data/mockReports';
 
-// Remove local mock constants as they are now imported
+const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, userCreatedReports, updatedReportsMap }) => {
     const [activeTab, setActiveTab] = useState('mine'); // 'mine' | 'likes'
     const [statusFilter, setStatusFilter] = useState('검토중');
+    const [serverReports, setServerReports] = useState([]);
+    const [myServerReports, setMyServerReports] = useState([]);
+
+    useEffect(() => {
+        // Public list (used for 'likes' tab merge)
+        fetch(`${VITE_API_URL}/api/reports/full`)
+            .then(res => res.ok ? res.json() : [])
+            .then(data => Array.isArray(data) ? setServerReports(data) : setServerReports([]))
+            .catch(err => { console.error('Failed to load reports:', err); setServerReports([]); });
+
+        // My-only list (auth-gated)
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            fetch(`${VITE_API_URL}/api/reports/mine`, { headers: { Authorization: `Bearer ${token}` } })
+                .then(res => res.ok ? res.json() : [])
+                .then(data => Array.isArray(data) ? setMyServerReports(data) : setMyServerReports([]))
+                .catch(err => { console.error('Failed to load my reports:', err); setMyServerReports([]); });
+        }
+    }, []);
 
     const handleCardClick = (report) => {
-        // Mark as coming from myReportList for conditional UI
         onNavigate('reportDetail', { ...report, showActions: activeTab === 'mine' });
     };
 
-    // Filter logic
     const getFinalMyReports = () => {
-        // Combine mine + potentially others for the 'likes' tab search
-        let base = activeTab === 'mine' 
-            ? [...userCreatedReports, ...MOCK_MY_REPORTS]
-            : [...userCreatedReports, ...MOCK_MY_REPORTS, ...MOCK_REPORTS_BASE];
-        
+        let base = activeTab === 'mine'
+            ? [...userCreatedReports, ...myServerReports]
+            : [...userCreatedReports, ...myServerReports, ...serverReports];
         return base.map(r => {
             if (updatedReportsMap && updatedReportsMap[r.id]) {
                 return { ...r, ...updatedReportsMap[r.id] };

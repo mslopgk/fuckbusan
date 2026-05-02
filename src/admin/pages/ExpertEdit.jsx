@@ -83,7 +83,7 @@ export default function ExpertEdit({ member, onNavigate }) {
         <div className="expert-edit-container">
             {/* Sidebar */}
             <aside className="admin-sidebar-new">
-                <div className="sidebar-logo-new">PDDP(가안)</div>
+                <div className="sidebar-logo-new"><img src="/WDC.svg" alt="WDC" style={{ height: '32px', display: 'block' }} /></div>
                 <nav className="sidebar-menu-new">
                     <div 
                         className={`menu-item-new ${isMemberMenuOpen ? 'active' : ''}`}

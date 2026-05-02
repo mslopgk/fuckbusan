@@ -17,7 +17,7 @@ export default function LoginNew({ onNavigate }) {
             if ((email === 'admin' && password === 'admin1234')) {
                 localStorage.setItem('access_token', 'dummy_token');
                 localStorage.setItem('user_info', JSON.stringify({ username: '관리자' }));
-                if (onNavigate) onNavigate('adminDashboardNew');
+                if (onNavigate) onNavigate('adminMain');
             } else {
                 const response = await api.post('/auth/login', {
                     email,
@@ -28,7 +28,7 @@ export default function LoginNew({ onNavigate }) {
                     if (response.data.username) {
                         localStorage.setItem('user_info', JSON.stringify({ username: response.data.username }));
                     }
-                    if (onNavigate) onNavigate('adminDashboard');
+                    if (onNavigate) onNavigate('adminMain');
                 } else {
                     throw new Error('Invalid credentials');
                 }

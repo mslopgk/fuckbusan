@@ -1,17 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { Map, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
 import './ReportList.css';
-import { MOCK_MY_REPORTS, MOCK_REPORTS_BASE } from '../data/mockReports';
 
-// Fix for default Leaflet icons in React
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
+const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 // Category Styles from ProposalList.jsx
 const CATEGORY_STYLES = {
@@ -35,29 +26,21 @@ const REGIONS = [
 const STATUSES = ['개선중', '개선예정', '개선완료'];
 const SORT_OPTIONS = ['최신순', '투표순', '조회수'];
 
-// Updated Cluster Icons Logic
-const createClusterIcon = (count) => {
+const ClusterPin = ({ count }) => {
     const isSingle = count === 1;
     const className = isSingle ? 'rl-cluster-circle' : 'rl-cluster-bubble';
-    return L.divIcon({
-        html: `<div class="${className}">${count}</div>`,
-        className: 'rl-cluster-container',
-        iconSize: L.point(40, 40),
-        iconAnchor: isSingle ? [20, 20] : [20, 48], // Bubble anchor at the tip
-    });
+    return <div className="rl-cluster-container"><div className={className}>{count}</div></div>;
 };
 
-// Remove local mock constants as they are now imported
-
-const MapController = ({ center, zoom }) => {
-    const map = useMap();
-    useEffect(() => {
-        if (center) map.setView(center, zoom);
-    }, [center, zoom, map]);
-    return null;
-};
+const MOCK_CLUSTERS = [
+    { lat: 35.1983, lng: 129.0831, count: 12 },
+    { lat: 35.1912, lng: 129.0805, count: 1 },
+    { lat: 35.2048, lng: 129.0786, count: 1 },
+    { lat: 35.1631, lng: 129.1589, count: 12 },
+];
 
 const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, userCreatedReports, updatedReportsMap }) => {
+    useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services'] });
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('전체');
     const [sheetLevel, setSheetLevel] = useState(1);
@@ -75,16 +58,25 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
     const [isSortModalOpen, setIsSortModalOpen] = useState(false);
     
     // GPS Center logic
-    const [mapCenter, setMapCenter] = useState([35.1795543, 129.0756416]); // Default: Busan City Hall
+    const [mapCenter, setMapCenter] = useState({ lat: 35.1795543, lng: 129.0756416 }); // Default: Busan City Hall
     const [hasLocated, setHasLocated] = useState(false);
 
-    // Filter logic – merge user created reports and updates
+    // Reports loaded from backend
+    const [serverReports, setServerReports] = useState([]);
+
+    useEffect(() => {
+        fetch(`${VITE_API_URL}/api/reports/full`)
+            .then(res => res.ok ? res.json() : [])
+            .then(data => Array.isArray(data) ? setServerReports(data) : setServerReports([]))
+            .catch(err => { console.error('Failed to load reports:', err); setServerReports([]); });
+    }, []);
+
+    // Filter logic – merge user created reports and updates with server data
     const getFinalReports = () => {
-        let base = [...MOCK_REPORTS_BASE, ...MOCK_MY_REPORTS];
+        let base = [...serverReports];
         if (userCreatedReports && userCreatedReports.length > 0) {
             base = [...userCreatedReports, ...base];
         }
-        
         return base.map(r => {
             if (updatedReportsMap && updatedReportsMap[r.id]) {
                 return { ...r, ...updatedReportsMap[r.id] };
@@ -99,7 +91,7 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    setMapCenter([position.coords.latitude, position.coords.longitude]);
+                    setMapCenter({ lat: position.coords.latitude, lng: position.coords.longitude });
                     setHasLocated(true);
                 },
                 (error) => {
@@ -185,29 +177,24 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
 
             {/* Map Area */}
             <div className="rl-map-wrapper">
-                <MapContainer 
-                    center={mapCenter} 
-                    zoom={14} 
-                    zoomControl={false}
-                    attributionControl={false}
+                <Map
+                    center={mapCenter}
+                    level={5}
                     className="rl-leaflet-map"
+                    style={{ width: '100%', height: '100%' }}
                 >
-                    <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
-                    <MapController center={mapCenter} zoom={14} />
-                    
-                    {/* Clusters: Different counts for shape testing */}
-                    <Marker position={[35.1983, 129.0831]} icon={createClusterIcon(12)} />
-                    <Marker position={[35.1912, 129.0805]} icon={createClusterIcon(1)} />
-                    <Marker position={[35.2048, 129.0786]} icon={createClusterIcon(1)} />
-                    <Marker position={[35.1631, 129.1589]} icon={createClusterIcon(12)} />
-                    
+                    {/* Clusters: mock counts for shape testing */}
+                    {MOCK_CLUSTERS.map((c, i) => (
+                        <CustomOverlayMap key={i} position={{ lat: c.lat, lng: c.lng }} yAnchor={c.count === 1 ? 0.5 : 1} xAnchor={0.5}>
+                            <ClusterPin count={c.count} />
+                        </CustomOverlayMap>
+                    ))}
+
                     {/* User Pin */}
-                    <Marker position={mapCenter} icon={L.divIcon({
-                        html: '<div class="rl-user-pin"><div class="rl-user-pin-inner"></div></div>',
-                        className: 'rl-user-pin-container',
-                        iconSize: [24, 24]
-                    })} />
-                </MapContainer>
+                    <CustomOverlayMap position={mapCenter} yAnchor={0.5} xAnchor={0.5}>
+                        <div className="rl-user-pin-container"><div className="rl-user-pin"><div className="rl-user-pin-inner"></div></div></div>
+                    </CustomOverlayMap>
+                </Map>
 
                 {/* FAB */}
                 <button className="rl-fab" onClick={() => onNavigate('reportPostForm')}>
@@ -225,7 +212,7 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
                         style={{ bottom: `calc(${getSheetHeight()} + 16px)` }}
                         onClick={() => {
                            if(navigator.geolocation) {
-                               navigator.geolocation.getCurrentPosition(p => setMapCenter([p.coords.latitude, p.coords.longitude]));
+                               navigator.geolocation.getCurrentPosition(p => setMapCenter({ lat: p.coords.latitude, lng: p.coords.longitude }));
                            }
                         }}
                     >

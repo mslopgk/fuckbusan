@@ -19,6 +19,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/users/login", auto_error=False)
 
 def get_password_hash(password):
     return pwd_context.hash(password)
@@ -51,6 +52,22 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
     return user
+
+def get_current_user_optional(token: Optional[str] = Depends(oauth2_scheme_optional), db: Session = Depends(get_db)):
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: Optional[str] = payload.get("sub")
+        if username is None:
+            return None
+    except JWTError:
+        return None
+
+    if username == "admin":
+        return User(user_id=999999, ID="admin", name="관리자", nickname="관리자", district_code="admin")
+
+    return db.query(User).filter(User.ID == username).first()
 
 # =============================================================================
 # [API - /api/users] 관리자용 엔드포인트
