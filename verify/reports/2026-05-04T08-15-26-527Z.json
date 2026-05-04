@@ -1,0 +1,2043 @@
+{
+  "startedAt": "2026-05-04T08:15:26.527Z",
+  "frontend": null,
+  "api": [
+    {
+      "id": "health-root",
+      "method": "GET",
+      "url": "http://localhost:8000/",
+      "ok": true,
+      "status": 200,
+      "durationMs": 49,
+      "body": {
+        "message": "Busan Design Backend is Running!"
+      }
+    },
+    {
+      "id": "auth-login-options",
+      "method": "OPTIONS",
+      "url": "http://localhost:8000/auth/login",
+      "ok": true,
+      "status": 405,
+      "durationMs": 3,
+      "body": {
+        "detail": "Method Not Allowed"
+      }
+    },
+    {
+      "id": "dashboard-summary",
+      "method": "GET",
+      "url": "http://localhost:8000/dashboard/summary",
+      "ok": true,
+      "status": 200,
+      "durationMs": 9
+    },
+    {
+      "id": "checklist-categories",
+      "method": "GET",
+      "url": "http://localhost:8000/checklist/categories",
+      "ok": true,
+      "status": 401,
+      "durationMs": 5,
+      "body": {
+        "detail": "Not authenticated"
+      }
+    },
+    {
+      "id": "home-stats",
+      "method": "GET",
+      "url": "http://localhost:8000/api/home/stats",
+      "ok": true,
+      "status": 200,
+      "durationMs": 45,
+      "body": {
+        "reports_count": 22,
+        "proposals_count": 10,
+        "diagnoses_count": 15,
+        "citizens_count": 8
+      }
+    },
+    {
+      "id": "home-citizens",
+      "method": "GET",
+      "url": "http://localhost:8000/api/home/citizens",
+      "ok": true,
+      "status": 200,
+      "durationMs": 5,
+      "body": [
+        {
+          "id": 1,
+          "name": "김부산",
+          "age": 32,
+          "tags": [
+            "교통",
+            "안전"
+          ],
+          "desc": "출퇴근 길이 너무 위험해요"
+        },
+        {
+          "id": 2,
+          "name": "이수영",
+          "age": 27,
+          "tags": [
+            "문화",
+            "디자인"
+          ],
+          "desc": "공공디자인이 더 일관됐으면 좋겠어요"
+        },
+        {
+          "id": 3,
+          "name": "박해운",
+          "age": 45,
+          "tags": [
+            "교육",
+            "안전"
+          ],
+          "desc": "통학로 안전이 최우선입니다"
+        },
+        {
+          "id": 4,
+          "name": "최동래",
+          "age": 60,
+          "tags": [
+            "주거",
+            "복지"
+          ],
+          "desc": "노후 시설 개선이 시급합니다"
+        },
+        {
+          "id": 5,
+          "name": "정남구",
+          "age": 22,
+          "tags": [
+            "안전",
+            "교통"
+          ],
+          "desc": "야간 보행 환경이 불안해요"
+        },
+        {
+          "id": 6,
+          "name": "강사하",
+          "age": 38,
+          "tags": [
+            "환경",
+            "문화"
+          ],
+          "desc": "공원과 녹지가 더 필요해요"
+        },
+        {
+          "id": 7,
+          "name": "윤기장",
+          "age": 50,
+          "tags": [
+            "복지",
+            "산업"
+          ],
+          "desc": "지역 균형 발전이 필요합니다"
+        },
+        {
+          "id": 8,
+          "name": "한북구",
+          "age": 30,
+          "tags": [
+            "문화",
+            "산업"
+          ],
+          "desc": "공공 와이파이가 부족해요"
+        }
+      ]
+    },
+    {
+      "id": "home-archives",
+      "method": "GET",
+      "url": "http://localhost:8000/api/home/archives",
+      "ok": true,
+      "status": 200,
+      "durationMs": 3,
+      "body": [
+        {
+          "id": 9,
+          "title": "통학로 안전 그린로드 도입",
+          "desc": "안녕하세요. 해운대구에 거주하는 시민입니다.\n\n통학로 안전 그린로드 도입을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 ",
+          "img": null
+        },
+        {
+          "id": 10,
+          "title": "공유 모빌리티 거치 구역 정비",
+          "desc": "안녕하세요. 사하구에 거주하는 시민입니다.\n\n공유 모빌리티 거치 구역 정비을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요",
+          "img": null
+        },
+        {
+          "id": 1,
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "desc": "안녕하세요. 중구에 거주하는 시민입니다.\n\n전기자전거 재고 불균형 해결 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수",
+          "img": null
+        },
+        {
+          "id": 4,
+          "title": "공공 와이파이 확대 제안",
+          "desc": "안녕하세요. 영도구에 거주하는 시민입니다.\n\n공공 와이파이 확대 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측",
+          "img": null
+        },
+        {
+          "id": 5,
+          "title": "어린이 보호구역 속도 알림 시스템",
+          "desc": "안녕하세요. 부산진구에 거주하는 시민입니다.\n\n어린이 보호구역 속도 알림 시스템을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n-",
+          "img": null
+        },
+        {
+          "id": 7,
+          "title": "분리수거 통합 안내 키오스크",
+          "desc": "안녕하세요. 남구에 거주하는 시민입니다.\n\n분리수거 통합 안내 키오스크을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예",
+          "img": null
+        }
+      ]
+    },
+    {
+      "id": "reports-full",
+      "method": "GET",
+      "url": "http://localhost:8000/api/reports/full",
+      "ok": true,
+      "status": 200,
+      "durationMs": 18,
+      "body": [
+        {
+          "id": 117,
+          "user_id": 12,
+          "author": "박지민",
+          "category": "안전",
+          "sub_category": "CCTV",
+          "title": "골목 CCTV 사각지대 보완 요청",
+          "content": "강서구에 거주하는 시민입니다. 골목 CCTV 사각지대 보완 요청에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "강서구",
+          "location": "강서구",
+          "detailed_address": "강서구 일대",
+          "lat": 35.209695,
+          "lng": 128.977909,
+          "image": null,
+          "status": "개선완료",
+          "progress_step": 4,
+          "views": 130,
+          "likes": 5,
+          "comments": 2,
+          "date": "2026.04.30",
+          "result_details": {
+            "title": "개선 완료 안내",
+            "image": null,
+            "content": "신속히 조치 완료했습니다. 협조해주셔서 감사합니다.",
+            "manager": "동래구청 도시정비과",
+            "result_date": "2026.05.02"
+          },
+          "comments_list": [
+            {
+              "id": 28,
+              "author": "김해운",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.30"
+            },
+            {
+              "id": 29,
+              "author": "이남이",
+              "content": "저도 같은 문제를 겪었어요.",
+              "date": "2026.04.30"
+            }
+          ]
+        },
+        {
+          "id": 115,
+          "user_id": 10,
+          "author": "수영시민",
+          "category": "환경",
+          "sub_category": "녹지",
+          "title": "공원 벤치 노후화 심함",
+          "content": "사하구에 거주하는 시민입니다. 공원 벤치 노후화 심함에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "사하구",
+          "location": "사하구",
+          "detailed_address": "사하구 일대",
+          "lat": 35.106709,
+          "lng": 128.977186,
+          "image": null,
+          "status": "개선예정",
+          "progress_step": 1,
+          "views": 398,
+          "likes": 4,
+          "comments": 2,
+          "date": "2026.04.30",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 25,
+              "author": "박지민",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.30"
+            },
+            {
+              "id": 24,
+              "author": "홍길동",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.30"
+            }
+          ]
+        },
+        {
+          "id": 110,
+          "user_id": 13,
+          "author": "김해운",
+          "category": "교육",
+          "sub_category": "학교 시설",
+          "title": "보도블록이 깨져서 위험합니다",
+          "content": "부산진구에 거주하는 시민입니다. 보도블록이 깨져서 위험합니다에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "부산진구",
+          "location": "부산진구",
+          "detailed_address": "부산진구 일대",
+          "lat": 35.161401,
+          "lng": 129.052634,
+          "image": null,
+          "status": "개선중",
+          "progress_step": 2,
+          "views": 423,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.27",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 14,
+              "author": "이남이",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.28"
+            },
+            {
+              "id": 15,
+              "author": "최사하",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.29"
+            }
+          ]
+        },
+        {
+          "id": 112,
+          "user_id": 15,
+          "author": "최사하",
+          "category": "문화·여가",
+          "sub_category": "광장",
+          "title": "공공자전거 거치대 부족",
+          "content": "남구에 거주하는 시민입니다. 공공자전거 거치대 부족에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "남구",
+          "location": "남구",
+          "detailed_address": "남구 일대",
+          "lat": 35.134277,
+          "lng": 129.08151,
+          "image": null,
+          "status": "개선예정",
+          "progress_step": 1,
+          "views": 372,
+          "likes": 4,
+          "comments": 2,
+          "date": "2026.04.26",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 19,
+              "author": "동래우디",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.27"
+            },
+            {
+              "id": 18,
+              "author": "강서민",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.27"
+            }
+          ]
+        },
+        {
+          "id": 106,
+          "user_id": 9,
+          "author": "동래우디",
+          "category": "주거",
+          "sub_category": "공동주택",
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "content": "중구에 거주하는 시민입니다. 공원 쓰레기통이 안전조치가 필요해요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "중구",
+          "location": "중구",
+          "detailed_address": "중구 일대",
+          "lat": 35.102513,
+          "lng": 129.034616,
+          "image": null,
+          "status": "개선예정",
+          "progress_step": 1,
+          "views": 300,
+          "likes": 5,
+          "comments": 2,
+          "date": "2026.04.26",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 7,
+              "author": "홍길동",
+              "content": "빠른 조치가 필요하네요.",
+              "date": "2026.04.27"
+            },
+            {
+              "id": 6,
+              "author": "수영시민",
+              "content": "빠른 조치가 필요하네요.",
+              "date": "2026.04.28"
+            }
+          ]
+        },
+        {
+          "id": 107,
+          "user_id": 10,
+          "author": "수영시민",
+          "category": "환경",
+          "sub_category": "녹지",
+          "title": "골목 가로등이 자주 꺼집니다",
+          "content": "서구에 거주하는 시민입니다. 골목 가로등이 자주 꺼집니다에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "서구",
+          "location": "서구",
+          "detailed_address": "서구 일대",
+          "lat": 35.09862,
+          "lng": 129.025112,
+          "image": null,
+          "status": "개선중",
+          "progress_step": 2,
+          "views": 479,
+          "likes": 5,
+          "comments": 2,
+          "date": "2026.04.25",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 8,
+              "author": "홍길동",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.25"
+            },
+            {
+              "id": 9,
+              "author": "박지민",
+              "content": "저도 같은 문제를 겪었어요.",
+              "date": "2026.04.27"
+            }
+          ]
+        },
+        {
+          "id": 113,
+          "user_id": 16,
+          "author": "강서민",
+          "category": "보건·복지",
+          "sub_category": "의료시설",
+          "title": "분리수거 함이 고장났어요",
+          "content": "북구에 거주하는 시민입니다. 분리수거 함이 고장났어요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "북구",
+          "location": "북구",
+          "detailed_address": "북구 일대",
+          "lat": 35.194827,
+          "lng": 129.013246,
+          "image": null,
+          "status": "개선중",
+          "progress_step": 2,
+          "views": 458,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.22",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 21,
+              "author": "수영시민",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.22"
+            },
+            {
+              "id": 20,
+              "author": "동래우디",
+              "content": "저도 같은 문제를 겪었어요.",
+              "date": "2026.04.23"
+            }
+          ]
+        },
+        {
+          "id": 114,
+          "user_id": 9,
+          "author": "동래우디",
+          "category": "주거",
+          "sub_category": "공동주택",
+          "title": "지하철 출구 계단이 미끄러워요",
+          "content": "해운대구에 거주하는 시민입니다. 지하철 출구 계단이 미끄러워요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "해운대구",
+          "location": "해운대구",
+          "detailed_address": "해운대구 일대",
+          "lat": 35.1597,
+          "lng": 129.165305,
+          "image": null,
+          "status": "개선완료",
+          "progress_step": 4,
+          "views": 115,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.20",
+          "result_details": {
+            "title": "개선 완료 안내",
+            "image": null,
+            "content": "신속히 조치 완료했습니다. 협조해주셔서 감사합니다.",
+            "manager": "동래구청 도시정비과",
+            "result_date": "2026.05.02"
+          },
+          "comments_list": [
+            {
+              "id": 22,
+              "author": "수영시민",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.22"
+            },
+            {
+              "id": 23,
+              "author": "홍길동",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.22"
+            }
+          ]
+        },
+        {
+          "id": 109,
+          "user_id": 12,
+          "author": "박지민",
+          "category": "안전",
+          "sub_category": "방범",
+          "title": "횡단보도 신호 시간이 너무 짧아요",
+          "content": "영도구에 거주하는 시민입니다. 횡단보도 신호 시간이 너무 짧아요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "영도구",
+          "location": "영도구",
+          "detailed_address": "영도구 일대",
+          "lat": 35.089432,
+          "lng": 129.069286,
+          "image": null,
+          "status": "개선예정",
+          "progress_step": 1,
+          "views": 420,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.15",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 12,
+              "author": "김해운",
+              "content": "빠른 조치가 필요하네요.",
+              "date": "2026.04.15"
+            },
+            {
+              "id": 13,
+              "author": "이남이",
+              "content": "저도 같은 문제를 겪었어요.",
+              "date": "2026.04.15"
+            }
+          ]
+        },
+        {
+          "id": 108,
+          "user_id": 11,
+          "author": "홍길동",
+          "category": "교통",
+          "sub_category": "횡단보도",
+          "title": "버스정류장 지붕이 파손됐어요",
+          "content": "동구에 거주하는 시민입니다. 버스정류장 지붕이 파손됐어요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "동구",
+          "location": "동구",
+          "detailed_address": "동구 일대",
+          "lat": 35.125427,
+          "lng": 129.041367,
+          "image": null,
+          "status": "개선완료",
+          "progress_step": 4,
+          "views": 402,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.14",
+          "result_details": {
+            "title": "개선 완료 안내",
+            "image": null,
+            "content": "신속히 조치 완료했습니다. 협조해주셔서 감사합니다.",
+            "manager": "동래구청 도시정비과",
+            "result_date": "2026.05.02"
+          },
+          "comments_list": [
+            {
+              "id": 11,
+              "author": "김해운",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.15"
+            },
+            {
+              "id": 10,
+              "author": "박지민",
+              "content": "빠른 조치가 필요하네요.",
+              "date": "2026.04.16"
+            }
+          ]
+        },
+        {
+          "id": 111,
+          "user_id": 14,
+          "author": "이남이",
+          "category": "산업·일자리",
+          "sub_category": "공유 시설",
+          "title": "어린이 보호구역 표지판 가림 현상",
+          "content": "동래구에 거주하는 시민입니다. 어린이 보호구역 표지판 가림 현상에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "동래구",
+          "location": "동래구",
+          "detailed_address": "동래구 일대",
+          "lat": 35.194648,
+          "lng": 129.078223,
+          "image": null,
+          "status": "개선완료",
+          "progress_step": 4,
+          "views": 326,
+          "likes": 3,
+          "comments": 2,
+          "date": "2026.04.12",
+          "result_details": {
+            "title": "개선 완료 안내",
+            "image": null,
+            "content": "신속히 조치 완료했습니다. 협조해주셔서 감사합니다.",
+            "manager": "동래구청 도시정비과",
+            "result_date": "2026.05.02"
+          },
+          "comments_list": [
+            {
+              "id": 17,
+              "author": "강서민",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.12"
+            },
+            {
+              "id": 16,
+              "author": "최사하",
+              "content": "저도 같은 문제를 겪었어요.",
+              "date": "2026.04.14"
+            }
+          ]
+        },
+        {
+          "id": 116,
+          "user_id": 11,
+          "author": "홍길동",
+          "category": "교통",
+          "sub_category": "버스정류장",
+          "title": "통학로 보행자 분리대 필요",
+          "content": "금정구에 거주하는 시민입니다. 통학로 보행자 분리대 필요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "금정구",
+          "location": "금정구",
+          "detailed_address": "금정구 일대",
+          "lat": 35.242977,
+          "lng": 129.089589,
+          "image": null,
+          "status": "개선중",
+          "progress_step": 2,
+          "views": 432,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.09",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 27,
+              "author": "김해운",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.10"
+            },
+            {
+              "id": 26,
+              "author": "박지민",
+              "content": "빠른 조치가 필요하네요.",
+              "date": "2026.04.10"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "user_id": null,
+          "author": "동래구 우리디자이너",
+          "category": "환경",
+          "sub_category": "골목쓰레기통",
+          "title": "수안동 골목길 쓰레기 무단투기 해결 완료",
+          "content": "골목길에 쓰레기가 너무 많았는데, 이번에 구청에서 수거함 설치와 CCTV 단속을 강화해주셨습니다. 정말 깨끗해졌어요!",
+          "region": "동래구",
+          "location": "동래구 수안동",
+          "detailed_address": "대호아파트 후문 삼거리",
+          "lat": 35.195,
+          "lng": 129.085,
+          "image": "/assets/archieve1.png",
+          "status": "결과안내",
+          "progress_step": 4,
+          "views": 520,
+          "likes": 24,
+          "comments": 8,
+          "date": "2026.04.01",
+          "result_details": {
+            "title": "골목길 환경 정비 결과 보고",
+            "image": "/assets/archieve1.png",
+            "content": "민원이 접수된 수안동 123-4번지 일대에 이동식 CCTV 1대를 추가 설치하였으며, 지역 주민들의 의견을 수렴하여 대형 쓰레기 수거함 2개를 배치 완료하였습니다. 앞으로도 깨끗한 동래구를 위해 노력하겠습니다.",
+            "manager": "동래구청 자원순환과",
+            "result_date": "2026.04.05"
+          },
+          "comments_list": [
+            {
+              "id": 1,
+              "author": "동래구청",
+              "content": "현장 확인 후 조치 완료되었습니다.",
+              "date": "2026.04.05"
+            }
+          ]
+        },
+        {
+          "id": 105,
+          "user_id": null,
+          "author": "수영구 주민",
+          "category": "교통",
+          "sub_category": "불법 주정차",
+          "title": "수영역 인근 상습 불법 주정차 구역",
+          "content": null,
+          "region": "수영구",
+          "location": "수영구 망미동",
+          "detailed_address": null,
+          "lat": 35.1645,
+          "lng": 129.1123,
+          "image": "/assets/archieve2.png",
+          "status": "검토중",
+          "progress_step": 2,
+          "views": 560,
+          "likes": 18,
+          "comments": 4,
+          "date": "2026.03.14",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 5,
+              "author": "수영구 주민",
+              "content": "여기 진짜 심각해요.",
+              "date": "2026.03.14"
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "user_id": null,
+          "author": "동래구 우리디자이너",
+          "category": "주거",
+          "sub_category": "거리",
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "content": "인도에 방치된 전기자전거로 인해 보행이 너무 불편합니다. 전용 주차구역 확보가 절실해요.",
+          "region": "동래구",
+          "location": "동래구 수안동",
+          "detailed_address": "대호아파트 정문 앞",
+          "lat": 35.1983,
+          "lng": 129.0831,
+          "image": "/assets/archieve1.png",
+          "status": "검토중",
+          "progress_step": 2,
+          "views": 333,
+          "likes": 12,
+          "comments": 12,
+          "date": "2026.03.13",
+          "result_details": null,
+          "comments_list": []
+        },
+        {
+          "id": 2,
+          "user_id": null,
+          "author": "동래구 시민",
+          "category": "주거",
+          "sub_category": "거리",
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "content": "공원 쓰레기통 주변이 너무 지저분합니다. 추가 쓰레기통 설치와 잦은 수거가 필요해 보여요.",
+          "region": "동래구",
+          "location": "동래구 수안동",
+          "detailed_address": "수안커피 뒤편 골목길",
+          "lat": 35.1912,
+          "lng": 129.0805,
+          "image": "/assets/archieve2.png",
+          "status": "검토중",
+          "progress_step": 2,
+          "views": 250,
+          "likes": 12,
+          "comments": 12,
+          "date": "2026.03.13",
+          "result_details": null,
+          "comments_list": []
+        },
+        {
+          "id": 3,
+          "user_id": null,
+          "author": "동래구 홍보단 홍길동",
+          "category": "주거",
+          "sub_category": "거리",
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "content": "횡단보도 앞 보도블럭이 파손되어 유모차나 휠체어가 지나가기 매우 위험합니다. 빠른 수리 부탁드립니다.",
+          "region": "동래구",
+          "location": "동래구 수안동",
+          "detailed_address": null,
+          "lat": 35.2048,
+          "lng": 129.0786,
+          "image": "/assets/archieve3.png",
+          "status": "검토중",
+          "progress_step": 2,
+          "views": 450,
+          "likes": 12,
+          "comments": 12,
+          "date": "2026.03.13",
+          "result_details": null,
+          "comments_list": []
+        },
+        {
+          "id": 4,
+          "user_id": null,
+          "author": "동래구 시민",
+          "category": "주거",
+          "sub_category": "거리",
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "content": "밤길이 너무 어두워요. 골목길 가로등 조도를 높이거나 추가 설치해주시면 감사하겠습니다.",
+          "region": "동래구",
+          "location": "동래구 수안동",
+          "detailed_address": null,
+          "lat": 35.1631,
+          "lng": 129.1589,
+          "image": null,
+          "status": "검토중",
+          "progress_step": 2,
+          "views": 120,
+          "likes": 12,
+          "comments": 12,
+          "date": "2026.03.13",
+          "result_details": null,
+          "comments_list": []
+        },
+        {
+          "id": 101,
+          "user_id": null,
+          "author": "동래구 우리디자이너",
+          "category": "산업·일자리",
+          "sub_category": "골목쓰레기통",
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "content": null,
+          "region": "동래구",
+          "location": "동래구 수안동",
+          "detailed_address": null,
+          "lat": 35.1983,
+          "lng": 129.0831,
+          "image": "/assets/archieve1.png",
+          "status": "개선중",
+          "progress_step": 2,
+          "views": 333,
+          "likes": 12,
+          "comments": 12,
+          "date": "2026.03.13",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 2,
+              "author": "동래구 우리디자이너",
+              "content": "빠른 조치가 필요하네요",
+              "date": "2026.03.13"
+            },
+            {
+              "id": 3,
+              "author": "동래구 우리디자이너",
+              "content": "빠른 조치가 필요하네요",
+              "date": "2026.03.13"
+            }
+          ]
+        },
+        {
+          "id": 102,
+          "user_id": null,
+          "author": "동래구 시민",
+          "category": "환경",
+          "sub_category": "가로수/조경 관리",
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "content": null,
+          "region": "동래구",
+          "location": "동래구 수안동",
+          "detailed_address": null,
+          "lat": 35.1912,
+          "lng": 129.0805,
+          "image": "/assets/archieve2.png",
+          "status": "개선중",
+          "progress_step": 2,
+          "views": 250,
+          "likes": 12,
+          "comments": 12,
+          "date": "2026.03.13",
+          "result_details": null,
+          "comments_list": []
+        },
+        {
+          "id": 103,
+          "user_id": null,
+          "author": "수영구 학부모",
+          "category": "교육",
+          "sub_category": "도로/교통 시설",
+          "title": "학교 앞 횡단보도 신호등 고장",
+          "content": null,
+          "region": "수영구",
+          "location": "수영구 광안동",
+          "detailed_address": null,
+          "lat": 35.2048,
+          "lng": 129.0786,
+          "image": "/assets/diagnosis_street.png",
+          "status": "개선완료",
+          "progress_step": 4,
+          "views": 1200,
+          "likes": 45,
+          "comments": 8,
+          "date": "2026.03.05",
+          "result_details": {
+            "title": "개선 결과보기",
+            "image": "/assets/archieve3.png",
+            "content": "U+one 마케터로서 그냥 지나칠 수가 없네요..(TT) 전 국민이 애용하는 U+one 앱이 될 수 있도록 더 열심히! 노력해 보겠습니다. 12월에도 런칭 기념 이벤트는 계속 되니 꼬옥 관심 가져주셔야 돼요~ 약속~",
+            "manager": "담당자 코멘트",
+            "result_date": "2026.01.02"
+          },
+          "comments_list": [
+            {
+              "id": 4,
+              "author": "관리자",
+              "content": "조치 완료되었습니다.",
+              "date": "2026.03.10"
+            }
+          ]
+        },
+        {
+          "id": 104,
+          "user_id": null,
+          "author": "해운대구 취준생",
+          "category": "환경",
+          "sub_category": "취업 지원",
+          "title": "취업 박람회 홍보 부족",
+          "content": null,
+          "region": "해운대구",
+          "location": "해운대구 우동",
+          "detailed_address": null,
+          "lat": 35.1631,
+          "lng": 129.1589,
+          "image": "/assets/archieve3.png",
+          "status": "개선예정",
+          "progress_step": 1,
+          "views": 890,
+          "likes": 22,
+          "comments": 5,
+          "date": "2026.02.28",
+          "result_details": null,
+          "comments_list": []
+        }
+      ]
+    },
+    {
+      "id": "reports-clusters",
+      "method": "GET",
+      "url": "http://localhost:8000/api/reports/clusters",
+      "ok": true,
+      "status": 200,
+      "durationMs": 4,
+      "body": [
+        {
+          "region": "강서구",
+          "lat": 35.209695,
+          "lng": 128.977909,
+          "count": 1
+        },
+        {
+          "region": "금정구",
+          "lat": 35.242977,
+          "lng": 129.089589,
+          "count": 1
+        },
+        {
+          "region": "남구",
+          "lat": 35.134277,
+          "lng": 129.08151,
+          "count": 1
+        },
+        {
+          "region": "동구",
+          "lat": 35.125427,
+          "lng": 129.041367,
+          "count": 1
+        },
+        {
+          "region": "동래구",
+          "lat": 35.1920685,
+          "lng": 129.090990375,
+          "count": 8
+        },
+        {
+          "region": "부산진구",
+          "lat": 35.161401,
+          "lng": 129.052634,
+          "count": 1
+        },
+        {
+          "region": "북구",
+          "lat": 35.194827,
+          "lng": 129.013246,
+          "count": 1
+        },
+        {
+          "region": "사하구",
+          "lat": 35.106709,
+          "lng": 128.977186,
+          "count": 1
+        },
+        {
+          "region": "서구",
+          "lat": 35.09862,
+          "lng": 129.025112,
+          "count": 1
+        },
+        {
+          "region": "수영구",
+          "lat": 35.18465,
+          "lng": 129.09545,
+          "count": 2
+        },
+        {
+          "region": "영도구",
+          "lat": 35.089432,
+          "lng": 129.069286,
+          "count": 1
+        },
+        {
+          "region": "중구",
+          "lat": 35.102513,
+          "lng": 129.034616,
+          "count": 1
+        },
+        {
+          "region": "해운대구",
+          "lat": 35.1614,
+          "lng": 129.1621025,
+          "count": 2
+        }
+      ]
+    },
+    {
+      "id": "reports-list",
+      "method": "GET",
+      "url": "http://localhost:8000/api/reports/list",
+      "ok": true,
+      "status": 200,
+      "durationMs": 3,
+      "body": [
+        {
+          "id": 117,
+          "title": "골목 CCTV 사각지대 보완 요청",
+          "type": null,
+          "location": "강서구",
+          "content": "강서구에 거주하는 시민입니다. 골목 CCTV 사각지대 보완 요청에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-30T11:00:00"
+        },
+        {
+          "id": 115,
+          "title": "공원 벤치 노후화 심함",
+          "type": null,
+          "location": "사하구",
+          "content": "사하구에 거주하는 시민입니다. 공원 벤치 노후화 심함에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-30T01:00:00"
+        },
+        {
+          "id": 110,
+          "title": "보도블록이 깨져서 위험합니다",
+          "type": null,
+          "location": "부산진구",
+          "content": "부산진구에 거주하는 시민입니다. 보도블록이 깨져서 위험합니다에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-27T23:00:00"
+        },
+        {
+          "id": 112,
+          "title": "공공자전거 거치대 부족",
+          "type": null,
+          "location": "남구",
+          "content": "남구에 거주하는 시민입니다. 공공자전거 거치대 부족에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-26T14:00:00"
+        },
+        {
+          "id": 106,
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "type": null,
+          "location": "중구",
+          "content": "중구에 거주하는 시민입니다. 공원 쓰레기통이 안전조치가 필요해요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-26T06:00:00"
+        },
+        {
+          "id": 107,
+          "title": "골목 가로등이 자주 꺼집니다",
+          "type": null,
+          "location": "서구",
+          "content": "서구에 거주하는 시민입니다. 골목 가로등이 자주 꺼집니다에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-25T20:00:00"
+        },
+        {
+          "id": 113,
+          "title": "분리수거 함이 고장났어요",
+          "type": null,
+          "location": "북구",
+          "content": "북구에 거주하는 시민입니다. 분리수거 함이 고장났어요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-22T03:00:00"
+        },
+        {
+          "id": 114,
+          "title": "지하철 출구 계단이 미끄러워요",
+          "type": null,
+          "location": "해운대구",
+          "content": "해운대구에 거주하는 시민입니다. 지하철 출구 계단이 미끄러워요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-20T22:00:00"
+        },
+        {
+          "id": 109,
+          "title": "횡단보도 신호 시간이 너무 짧아요",
+          "type": null,
+          "location": "영도구",
+          "content": "영도구에 거주하는 시민입니다. 횡단보도 신호 시간이 너무 짧아요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-15T04:00:00"
+        },
+        {
+          "id": 108,
+          "title": "버스정류장 지붕이 파손됐어요",
+          "type": null,
+          "location": "동구",
+          "content": "동구에 거주하는 시민입니다. 버스정류장 지붕이 파손됐어요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-14T02:00:00"
+        },
+        {
+          "id": 111,
+          "title": "어린이 보호구역 표지판 가림 현상",
+          "type": null,
+          "location": "동래구",
+          "content": "동래구에 거주하는 시민입니다. 어린이 보호구역 표지판 가림 현상에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-12T12:00:00"
+        },
+        {
+          "id": 116,
+          "title": "통학로 보행자 분리대 필요",
+          "type": null,
+          "location": "금정구",
+          "content": "금정구에 거주하는 시민입니다. 통학로 보행자 분리대 필요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-09T05:00:00"
+        },
+        {
+          "id": 5,
+          "title": "수안동 골목길 쓰레기 무단투기 해결 완료",
+          "type": null,
+          "location": "동래구 수안동",
+          "content": "골목길에 쓰레기가 너무 많았는데, 이번에 구청에서 수거함 설치와 CCTV 단속을 강화해주셨습니다. 정말 깨끗해졌어요!",
+          "author_id": null,
+          "created_at": "2026-04-01T00:00:00"
+        },
+        {
+          "id": 105,
+          "title": "수영역 인근 상습 불법 주정차 구역",
+          "type": null,
+          "location": "수영구 망미동",
+          "content": null,
+          "author_id": null,
+          "created_at": "2026-03-14T00:00:00"
+        },
+        {
+          "id": 1,
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "type": null,
+          "location": "동래구 수안동",
+          "content": "인도에 방치된 전기자전거로 인해 보행이 너무 불편합니다. 전용 주차구역 확보가 절실해요.",
+          "author_id": null,
+          "created_at": "2026-03-13T00:00:00"
+        },
+        {
+          "id": 2,
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "type": null,
+          "location": "동래구 수안동",
+          "content": "공원 쓰레기통 주변이 너무 지저분합니다. 추가 쓰레기통 설치와 잦은 수거가 필요해 보여요.",
+          "author_id": null,
+          "created_at": "2026-03-13T00:00:00"
+        },
+        {
+          "id": 3,
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "type": null,
+          "location": "동래구 수안동",
+          "content": "횡단보도 앞 보도블럭이 파손되어 유모차나 휠체어가 지나가기 매우 위험합니다. 빠른 수리 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-03-13T00:00:00"
+        },
+        {
+          "id": 4,
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "type": null,
+          "location": "동래구 수안동",
+          "content": "밤길이 너무 어두워요. 골목길 가로등 조도를 높이거나 추가 설치해주시면 감사하겠습니다.",
+          "author_id": null,
+          "created_at": "2026-03-13T00:00:00"
+        },
+        {
+          "id": 101,
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "type": null,
+          "location": "동래구 수안동",
+          "content": null,
+          "author_id": null,
+          "created_at": "2026-03-13T00:00:00"
+        },
+        {
+          "id": 102,
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "type": null,
+          "location": "동래구 수안동",
+          "content": null,
+          "author_id": null,
+          "created_at": "2026-03-13T00:00:00"
+        },
+        {
+          "id": 103,
+          "title": "학교 앞 횡단보도 신호등 고장",
+          "type": null,
+          "location": "수영구 광안동",
+          "content": null,
+          "author_id": null,
+          "created_at": "2026-03-05T00:00:00"
+        },
+        {
+          "id": 104,
+          "title": "취업 박람회 홍보 부족",
+          "type": null,
+          "location": "해운대구 우동",
+          "content": null,
+          "author_id": null,
+          "created_at": "2026-02-28T00:00:00"
+        }
+      ]
+    },
+    {
+      "id": "proposals-list",
+      "method": "GET",
+      "url": "http://localhost:8000/api/reports/proposals",
+      "ok": true,
+      "status": 200,
+      "durationMs": 22,
+      "body": [
+        {
+          "category": "주거",
+          "title": "통학로 안전 그린로드 도입",
+          "content": "안녕하세요. 해운대구에 거주하는 시민입니다.\n\n통학로 안전 그린로드 도입을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "해운대구",
+          "detailed_address": "해운대구 일대",
+          "files": [],
+          "id": 9,
+          "user_id": 9,
+          "views_count": 633,
+          "likes_count": 5,
+          "comments_count": 2,
+          "nickname": "동래우디",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-05-03T10:00:00"
+        },
+        {
+          "category": "환경",
+          "title": "공유 모빌리티 거치 구역 정비",
+          "content": "안녕하세요. 사하구에 거주하는 시민입니다.\n\n공유 모빌리티 거치 구역 정비을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "사하구",
+          "detailed_address": "사하구 일대",
+          "files": [],
+          "id": 10,
+          "user_id": 10,
+          "views_count": 468,
+          "likes_count": 5,
+          "comments_count": 2,
+          "nickname": "수영시민",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-05-03T10:00:00"
+        },
+        {
+          "category": "안전",
+          "title": "공공 와이파이 확대 제안",
+          "content": "안녕하세요. 영도구에 거주하는 시민입니다.\n\n공공 와이파이 확대 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "영도구",
+          "detailed_address": "영도구 일대",
+          "files": [],
+          "id": 4,
+          "user_id": 12,
+          "views_count": 149,
+          "likes_count": 4,
+          "comments_count": 2,
+          "nickname": "박지민",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-05-02T10:00:00"
+        },
+        {
+          "category": "보건·복지",
+          "title": "지하철역 휠체어 경사로 개선",
+          "content": "안녕하세요. 북구에 거주하는 시민입니다.\n\n지하철역 휠체어 경사로 개선을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "북구",
+          "detailed_address": "북구 일대",
+          "files": [],
+          "id": 8,
+          "user_id": 16,
+          "views_count": 267,
+          "likes_count": 2,
+          "comments_count": 2,
+          "nickname": "강서민",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-25T10:00:00"
+        },
+        {
+          "category": "산업·일자리",
+          "title": "공원 벤치 그늘막 추가 설치",
+          "content": "안녕하세요. 동래구에 거주하는 시민입니다.\n\n공원 벤치 그늘막 추가 설치을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "동래구",
+          "detailed_address": "동래구 일대",
+          "files": [],
+          "id": 6,
+          "user_id": 14,
+          "views_count": 521,
+          "likes_count": 2,
+          "comments_count": 2,
+          "nickname": "이남이",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-22T10:00:00"
+        },
+        {
+          "category": "환경",
+          "title": "스마트 횡단보도 도입 제안",
+          "content": "안녕하세요. 서구에 거주하는 시민입니다.\n\n스마트 횡단보도 도입 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "서구",
+          "detailed_address": "서구 일대",
+          "files": [],
+          "id": 2,
+          "user_id": 10,
+          "views_count": 528,
+          "likes_count": 2,
+          "comments_count": 2,
+          "nickname": "수영시민",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-17T10:00:00"
+        },
+        {
+          "category": "주거",
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "content": "안녕하세요. 중구에 거주하는 시민입니다.\n\n전기자전거 재고 불균형 해결 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "중구",
+          "detailed_address": "중구 일대",
+          "files": [],
+          "id": 1,
+          "user_id": 9,
+          "views_count": 296,
+          "likes_count": 4,
+          "comments_count": 2,
+          "nickname": "동래우디",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-16T10:00:00"
+        },
+        {
+          "category": "교통",
+          "title": "야간 보행 안전 LED 가로등 설치",
+          "content": "안녕하세요. 동구에 거주하는 시민입니다.\n\n야간 보행 안전 LED 가로등 설치을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "동구",
+          "detailed_address": "동구 일대",
+          "files": [],
+          "id": 3,
+          "user_id": 11,
+          "views_count": 682,
+          "likes_count": 2,
+          "comments_count": 2,
+          "nickname": "홍길동",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-16T10:00:00"
+        },
+        {
+          "category": "교육",
+          "title": "어린이 보호구역 속도 알림 시스템",
+          "content": "안녕하세요. 부산진구에 거주하는 시민입니다.\n\n어린이 보호구역 속도 알림 시스템을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "부산진구",
+          "detailed_address": "부산진구 일대",
+          "files": [],
+          "id": 5,
+          "user_id": 13,
+          "views_count": 664,
+          "likes_count": 3,
+          "comments_count": 2,
+          "nickname": "김해운",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-15T10:00:00"
+        },
+        {
+          "category": "문화·여가",
+          "title": "분리수거 통합 안내 키오스크",
+          "content": "안녕하세요. 남구에 거주하는 시민입니다.\n\n분리수거 통합 안내 키오스크을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "남구",
+          "detailed_address": "남구 일대",
+          "files": [],
+          "id": 7,
+          "user_id": 15,
+          "views_count": 492,
+          "likes_count": 3,
+          "comments_count": 2,
+          "nickname": "최사하",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-10T10:00:00"
+        }
+      ]
+    },
+    {
+      "id": "surveys-list",
+      "method": "GET",
+      "url": "http://localhost:8000/api/surveys/list",
+      "ok": true,
+      "status": 200,
+      "durationMs": 4,
+      "body": [
+        {
+          "id": 3,
+          "title": "공공디자인 만족도 조사",
+          "minutes": 8,
+          "period": "2026-05-01 ~ 2026-05-18",
+          "status": "active",
+          "response_count": 79
+        },
+        {
+          "id": 2,
+          "title": "소비자 인식 조사",
+          "minutes": 10,
+          "period": "2026-04-29 ~ 2026-06-03",
+          "status": "active",
+          "response_count": 84
+        },
+        {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active",
+          "response_count": 17
+        },
+        {
+          "id": 4,
+          "title": "야간 보행환경 안전도 조사",
+          "minutes": 7,
+          "period": "2026-03-05 ~ 2026-04-24",
+          "status": "result",
+          "response_count": 111
+        },
+        {
+          "id": 5,
+          "title": "학생의 학교 외 생활활동 조사 (학부모 대상)",
+          "minutes": 12,
+          "period": "2026-02-03 ~ 2026-04-04",
+          "status": "result",
+          "response_count": 240
+        }
+      ]
+    },
+    {
+      "id": "surveys-list-active",
+      "method": "GET",
+      "url": "http://localhost:8000/api/surveys/list?tab=active",
+      "ok": true,
+      "status": 200,
+      "durationMs": 2,
+      "body": [
+        {
+          "id": 3,
+          "title": "공공디자인 만족도 조사",
+          "minutes": 8,
+          "period": "2026-05-01 ~ 2026-05-18",
+          "status": "active",
+          "response_count": 79
+        },
+        {
+          "id": 2,
+          "title": "소비자 인식 조사",
+          "minutes": 10,
+          "period": "2026-04-29 ~ 2026-06-03",
+          "status": "active",
+          "response_count": 84
+        },
+        {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active",
+          "response_count": 17
+        }
+      ]
+    },
+    {
+      "id": "surveys-list-result",
+      "method": "GET",
+      "url": "http://localhost:8000/api/surveys/list?tab=result",
+      "ok": true,
+      "status": 200,
+      "durationMs": 3,
+      "body": [
+        {
+          "id": 4,
+          "title": "야간 보행환경 안전도 조사",
+          "minutes": 7,
+          "period": "2026-03-05 ~ 2026-04-24",
+          "status": "result",
+          "response_count": 111
+        },
+        {
+          "id": 5,
+          "title": "학생의 학교 외 생활활동 조사 (학부모 대상)",
+          "minutes": 12,
+          "period": "2026-02-03 ~ 2026-04-04",
+          "status": "result",
+          "response_count": 240
+        }
+      ]
+    },
+    {
+      "id": "survey-detail",
+      "method": "GET",
+      "url": "http://localhost:8000/api/surveys/1",
+      "ok": true,
+      "status": 200,
+      "durationMs": 4,
+      "body": {
+        "id": 1,
+        "title": "사직구장 일대 보행환경 현황 조사",
+        "description": "사직구장 주변 보행자 환경 만족도와 개선 우선순위를 파악합니다.",
+        "minutes": 10,
+        "period": "2026-04-24 ~ 2026-05-24",
+        "status": "active",
+        "response_count": 17,
+        "questions": [
+          {
+            "id": 1,
+            "order_no": 0,
+            "qtype": "single",
+            "text": "사직구장 일대 보행환경에 만족하시나요?",
+            "options": [
+              "매우 만족",
+              "만족",
+              "보통",
+              "불만족",
+              "매우 불만족"
+            ]
+          },
+          {
+            "id": 2,
+            "order_no": 1,
+            "qtype": "multi",
+            "text": "가장 시급히 개선되어야 할 항목을 선택해주세요. (복수)",
+            "options": [
+              "보도 폭",
+              "신호 체계",
+              "가로등",
+              "쓰레기통",
+              "벤치"
+            ]
+          },
+          {
+            "id": 3,
+            "order_no": 2,
+            "qtype": "agree",
+            "text": "야간 보행 안전을 위해 LED 가로등 추가 설치가 필요하다.",
+            "options": [
+              "동의",
+              "비동의"
+            ]
+          },
+          {
+            "id": 4,
+            "order_no": 3,
+            "qtype": "single",
+            "text": "보행로 폭에 대한 의견은?",
+            "options": [
+              "좁다",
+              "적당",
+              "넓다"
+            ]
+          },
+          {
+            "id": 5,
+            "order_no": 4,
+            "qtype": "text",
+            "text": "그 밖의 자유 의견을 적어주세요.",
+            "options": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "checklist-list",
+      "method": "GET",
+      "url": "http://localhost:8000/checklist/list",
+      "ok": true,
+      "status": 200,
+      "durationMs": 3,
+      "body": [
+        {
+          "진단지역": "중구",
+          "ID": "citizen1",
+          "district_code": "중구",
+          "위도": 35.101972,
+          "경도": 129.033042,
+          "대분류": "주거",
+          "중분류": "시설물(거리/골목쓰레기통 등)",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 92,
+          "리뷰": "중구 주거 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "불만족",
+          "이미지경로": null,
+          "result_id": 1,
+          "created_at": "2026-04-28T10:00:00"
+        },
+        {
+          "진단지역": "서구",
+          "ID": "citizen2",
+          "district_code": "서구",
+          "위도": 35.093169,
+          "경도": 129.024578,
+          "대분류": "환경",
+          "중분류": "녹지",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 71,
+          "리뷰": "서구 환경 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "만족",
+          "이미지경로": null,
+          "result_id": 2,
+          "created_at": "2026-04-14T10:00:00"
+        },
+        {
+          "진단지역": "동구",
+          "ID": "citizen3",
+          "district_code": "동구",
+          "위도": 35.12518,
+          "경도": 129.049018,
+          "대분류": "교통",
+          "중분류": "신호등",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 85,
+          "리뷰": "동구 교통 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "만족",
+          "이미지경로": null,
+          "result_id": 3,
+          "created_at": "2026-04-05T10:00:00"
+        },
+        {
+          "진단지역": "영도구",
+          "ID": "citizen4",
+          "district_code": "영도구",
+          "위도": 35.092197,
+          "경도": 129.068789,
+          "대분류": "안전",
+          "중분류": "가로등",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 62,
+          "리뷰": "영도구 안전 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "불만족",
+          "이미지경로": null,
+          "result_id": 4,
+          "created_at": "2026-05-01T10:00:00"
+        },
+        {
+          "진단지역": "부산진구",
+          "ID": "citizen5",
+          "district_code": "부산진구",
+          "위도": 35.161792,
+          "경도": 129.053937,
+          "대분류": "교육",
+          "중분류": "통학로",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 93,
+          "리뷰": "부산진구 교육 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "보통",
+          "이미지경로": null,
+          "result_id": 5,
+          "created_at": "2026-04-04T10:00:00"
+        },
+        {
+          "진단지역": "동래구",
+          "ID": "citizen6",
+          "district_code": "동래구",
+          "위도": 35.194808,
+          "경도": 129.080297,
+          "대분류": "주거",
+          "중분류": "시설물(거리/골목쓰레기통 등)",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 80,
+          "리뷰": "동래구 주거 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "만족",
+          "이미지경로": null,
+          "result_id": 6,
+          "created_at": "2026-04-25T10:00:00"
+        },
+        {
+          "진단지역": "남구",
+          "ID": "citizen7",
+          "district_code": "남구",
+          "위도": 35.135558,
+          "경도": 129.086117,
+          "대분류": "환경",
+          "중분류": "녹지",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 79,
+          "리뷰": "남구 환경 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "보통",
+          "이미지경로": null,
+          "result_id": 7,
+          "created_at": "2026-04-23T10:00:00"
+        },
+        {
+          "진단지역": "북구",
+          "ID": "citizen8",
+          "district_code": "북구",
+          "위도": 35.20149,
+          "경도": 129.016757,
+          "대분류": "교통",
+          "중분류": "신호등",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 60,
+          "리뷰": "북구 교통 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "보통",
+          "이미지경로": null,
+          "result_id": 8,
+          "created_at": "2026-04-14T10:00:00"
+        },
+        {
+          "진단지역": "해운대구",
+          "ID": "citizen1",
+          "district_code": "해운대구",
+          "위도": 35.168085,
+          "경도": 129.168461,
+          "대분류": "안전",
+          "중분류": "가로등",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 64,
+          "리뷰": "해운대구 안전 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "불만족",
+          "이미지경로": null,
+          "result_id": 9,
+          "created_at": "2026-04-27T10:00:00"
+        },
+        {
+          "진단지역": "사하구",
+          "ID": "citizen2",
+          "district_code": "사하구",
+          "위도": 35.104259,
+          "경도": 128.970825,
+          "대분류": "교육",
+          "중분류": "통학로",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 82,
+          "리뷰": "사하구 교육 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "만족",
+          "이미지경로": null,
+          "result_id": 10,
+          "created_at": "2026-04-05T10:00:00"
+        },
+        {
+          "진단지역": "금정구",
+          "ID": "citizen3",
+          "district_code": "금정구",
+          "위도": 35.240343,
+          "경도": 129.09045,
+          "대분류": "주거",
+          "중분류": "시설물(거리/골목쓰레기통 등)",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 88,
+          "리뷰": "금정구 주거 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "불만족",
+          "이미지경로": null,
+          "result_id": 11,
+          "created_at": "2026-04-11T10:00:00"
+        },
+        {
+          "진단지역": "강서구",
+          "ID": "citizen4",
+          "district_code": "강서구",
+          "위도": 35.210325,
+          "경도": 128.985339,
+          "대분류": "환경",
+          "중분류": "녹지",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 93,
+          "리뷰": "강서구 환경 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "만족",
+          "이미지경로": null,
+          "result_id": 12,
+          "created_at": "2026-04-12T10:00:00"
+        },
+        {
+          "진단지역": "연제구",
+          "ID": "citizen5",
+          "district_code": "연제구",
+          "위도": 35.179371,
+          "경도": 129.077594,
+          "대분류": "교통",
+          "중분류": "신호등",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 66,
+          "리뷰": "연제구 교통 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "만족",
+          "이미지경로": null,
+          "result_id": 13,
+          "created_at": "2026-04-25T10:00:00"
+        },
+        {
+          "진단지역": "수영구",
+          "ID": "citizen6",
+          "district_code": "수영구",
+          "위도": 35.141354,
+          "경도": 129.10937,
+          "대분류": "안전",
+          "중분류": "가로등",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 95,
+          "리뷰": "수영구 안전 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "만족",
+          "이미지경로": null,
+          "result_id": 14,
+          "created_at": "2026-04-25T10:00:00"
+        },
+        {
+          "진단지역": "사상구",
+          "ID": "citizen7",
+          "district_code": "사상구",
+          "위도": 35.150318,
+          "경도": 128.988306,
+          "대분류": "교육",
+          "중분류": "통학로",
+          "질문기준": "해당 시설물의 안전성 및 디자인 적정성",
+          "answers": "{\"q1\": 4, \"q2\": 3, \"q3\": 5}",
+          "점수": 81,
+          "리뷰": "사상구 교육 분야 진단 결과 — 일부 항목 개선 필요.",
+          "만족도": "만족",
+          "이미지경로": null,
+          "result_id": 15,
+          "created_at": "2026-04-12T10:00:00"
+        }
+      ]
+    },
+    {
+      "id": "checklist-clusters",
+      "method": "GET",
+      "url": "http://localhost:8000/checklist/clusters",
+      "ok": true,
+      "status": 200,
+      "durationMs": 3,
+      "body": [
+        {
+          "district": "강서구",
+          "lat": 35.210325,
+          "lng": 128.985339,
+          "count": 1,
+          "avg_score": 93
+        },
+        {
+          "district": "금정구",
+          "lat": 35.240343,
+          "lng": 129.09045,
+          "count": 1,
+          "avg_score": 88
+        },
+        {
+          "district": "남구",
+          "lat": 35.135558,
+          "lng": 129.086117,
+          "count": 1,
+          "avg_score": 79
+        },
+        {
+          "district": "동구",
+          "lat": 35.12518,
+          "lng": 129.049018,
+          "count": 1,
+          "avg_score": 85
+        },
+        {
+          "district": "동래구",
+          "lat": 35.194808,
+          "lng": 129.080297,
+          "count": 1,
+          "avg_score": 80
+        },
+        {
+          "district": "부산진구",
+          "lat": 35.161792,
+          "lng": 129.053937,
+          "count": 1,
+          "avg_score": 93
+        },
+        {
+          "district": "북구",
+          "lat": 35.20149,
+          "lng": 129.016757,
+          "count": 1,
+          "avg_score": 60
+        },
+        {
+          "district": "사상구",
+          "lat": 35.150318,
+          "lng": 128.988306,
+          "count": 1,
+          "avg_score": 81
+        },
+        {
+          "district": "사하구",
+          "lat": 35.104259,
+          "lng": 128.970825,
+          "count": 1,
+          "avg_score": 82
+        },
+        {
+          "district": "서구",
+          "lat": 35.093169,
+          "lng": 129.024578,
+          "count": 1,
+          "avg_score": 71
+        },
+        {
+          "district": "수영구",
+          "lat": 35.141354,
+          "lng": 129.10937,
+          "count": 1,
+          "avg_score": 95
+        },
+        {
+          "district": "연제구",
+          "lat": 35.179371,
+          "lng": 129.077594,
+          "count": 1,
+          "avg_score": 66
+        },
+        {
+          "district": "영도구",
+          "lat": 35.092197,
+          "lng": 129.068789,
+          "count": 1,
+          "avg_score": 62
+        },
+        {
+          "district": "중구",
+          "lat": 35.101972,
+          "lng": 129.033042,
+          "count": 1,
+          "avg_score": 92
+        },
+        {
+          "district": "해운대구",
+          "lat": 35.168085,
+          "lng": 129.168461,
+          "count": 1,
+          "avg_score": 64
+        }
+      ]
+    },
+    {
+      "id": "checklist-aggregate",
+      "method": "GET",
+      "url": "http://localhost:8000/checklist/aggregate",
+      "ok": true,
+      "status": 200,
+      "durationMs": 2,
+      "body": [
+        {
+          "category": "교육",
+          "avg_score": 85.3333,
+          "count": 3
+        },
+        {
+          "category": "교통",
+          "avg_score": 70.3333,
+          "count": 3
+        },
+        {
+          "category": "안전",
+          "avg_score": 73.6667,
+          "count": 3
+        },
+        {
+          "category": "주거",
+          "avg_score": 86.6667,
+          "count": 3
+        },
+        {
+          "category": "환경",
+          "avg_score": 81,
+          "count": 3
+        }
+      ]
+    },
+    {
+      "id": "admin-stats",
+      "method": "GET",
+      "url": "http://localhost:8000/api/admin/stats",
+      "ok": true,
+      "status": 401,
+      "durationMs": 1,
+      "body": {
+        "detail": "Not authenticated"
+      }
+    },
+    {
+      "id": "admin-recent",
+      "method": "GET",
+      "url": "http://localhost:8000/api/admin/recent-activity",
+      "ok": true,
+      "status": 401,
+      "durationMs": 1,
+      "body": {
+        "detail": "Not authenticated"
+      }
+    }
+  ],
+  "summary": {
+    "fePass": 0,
+    "feFail": 0,
+    "apiPass": 20,
+    "apiFail": 0,
+    "ok": true
+  },
+  "finishedAt": "2026-05-04T08:15:26.721Z"
+}

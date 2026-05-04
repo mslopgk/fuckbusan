@@ -1,34 +1,37 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
 import MapToolbar from './PCMapToolbar';
 import './PCMapShared.css';
 import './PCMap3.css';
 
+const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
 const DISTRICTS = ['중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'];
 
 const LIVING_CATS = [
-    { key: 'all', label: '전체', icon: 'grid' },
-    { key: 'safety', label: '안전', icon: 'shield' },
-    { key: 'housing', label: '주거', icon: 'home' },
-    { key: 'work', label: '산업·일자리', icon: 'briefcase' },
-    { key: 'edu', label: '교육', icon: 'book' },
-    { key: 'env', label: '환경', icon: 'leaf' },
-    { key: 'leisure', label: '문화·여가', icon: 'heart' },
-    { key: 'health', label: '보건·복지', icon: 'plus' },
-    { key: 'traffic', label: '교통', icon: 'bus' },
+    { key: 'all', label: '전체', icon: 'grid', cat: null },
+    { key: 'safety', label: '안전', icon: 'shield', cat: '안전' },
+    { key: 'housing', label: '주거', icon: 'home', cat: '주거' },
+    { key: 'work', label: '산업·일자리', icon: 'briefcase', cat: '산업·일자리' },
+    { key: 'edu', label: '교육', icon: 'book', cat: '교육' },
+    { key: 'env', label: '환경', icon: 'leaf', cat: '환경' },
+    { key: 'leisure', label: '문화·여가', icon: 'heart', cat: '문화·여가' },
+    { key: 'health', label: '보건·복지', icon: 'plus', cat: '보건·복지' },
+    { key: 'traffic', label: '교통', icon: 'bus', cat: '교통' },
 ];
 
-const ITEMS = [
-    { id: 1, kind: '제안', title: '전기자전거 재고 불균형 해결 제안', subtitle: '해운대구 우리디자이너', category: '교통', categoryKey: 'traffic', region: '해운대구', date: '2026-03-22', views: 12, votes: 12, lat: 35.1631, lng: 129.1638 },
-    { id: 2, kind: '제보', title: '전봇대 불이 나갔어요', subtitle: '동래구 우리디자이너', category: '환경', categoryKey: 'env', region: '동래구', date: '2026-03-20', views: 12, votes: 12, lat: 35.1972, lng: 129.0786 },
-    { id: 3, kind: '제안', title: '학교 앞 횡단보도 안전 시설 보강', subtitle: '부산진구 우리디자이너', category: '안전', categoryKey: 'safety', region: '부산진구', date: '2026-03-18', views: 8, votes: 5, lat: 35.1632, lng: 129.0531 },
-    { id: 4, kind: '제보', title: '광안리 해변 분리수거함 추가', subtitle: '수영구 우리디자이너', category: '환경', categoryKey: 'env', region: '수영구', date: '2026-03-15', views: 6, votes: 4, lat: 35.1530, lng: 129.1186 },
-    { id: 5, kind: '제안', title: '청년 일자리 박람회 정기 개최', subtitle: '연제구 우리디자이너', category: '산업·일자리', categoryKey: 'work', region: '연제구', date: '2026-03-12', views: 5, votes: 3, lat: 35.1769, lng: 129.0794 },
-    { id: 6, kind: '제보', title: '공원 야간 조명 어두움', subtitle: '부산진구 우리디자이너', category: '안전', categoryKey: 'safety', region: '부산진구', date: '2026-03-10', views: 4, votes: 2, lat: 35.1726, lng: 129.0529 },
-    { id: 7, kind: '제안', title: '취약계층 무료 건강검진 확대', subtitle: '사하구 우리디자이너', category: '보건·복지', categoryKey: 'health', region: '사하구', date: '2026-03-08', views: 3, votes: 2, lat: 35.1043, lng: 128.9747 },
-    { id: 8, kind: '제안', title: '청소년 문화공간 확충', subtitle: '남구 우리디자이너', category: '문화·여가', categoryKey: 'leisure', region: '남구', date: '2026-03-05', views: 2, votes: 1, lat: 35.1335, lng: 129.0851 },
-];
+const CAT_TO_KEY = LIVING_CATS.reduce((acc, c) => { if (c.cat) acc[c.cat] = c.key; return acc; }, {});
+
+// 부산 16개 구·군 중심 좌표 (제안에 lat/lng가 없을 때 region으로 매핑)
+const DISTRICT_CENTERS = {
+    '중구': [35.1064, 129.0322], '서구': [35.0976, 129.0245], '동구': [35.1295, 129.0454],
+    '영도구': [35.0915, 129.0680], '부산진구': [35.1626, 129.0531], '동래구': [35.1972, 129.0786],
+    '남구': [35.1366, 129.0844], '북구': [35.1972, 129.0124], '해운대구': [35.1631, 129.1635],
+    '사하구': [35.1042, 128.9745], '금정구': [35.2429, 129.0926], '강서구': [35.2123, 128.9805],
+    '연제구': [35.1762, 129.0796], '수영구': [35.1452, 129.1133], '사상구': [35.1525, 128.9912],
+    '기장군': [35.2444, 129.2222],
+};
 
 const CAT_COLOR = {
     traffic: '#E6235A', safety: '#FF7A00', env: '#16B5B0', work: '#5B2EAB',
@@ -57,8 +60,62 @@ export default function PCProposeMap({ onNavigate }) {
     const [livingCats, setLivingCats] = useState(() => new Set(['all']));
     const [kind, setKind] = useState(null);
     const [sort, setSort] = useState('latest');
-    const [policyItem, setPolicyItem] = useState(ITEMS[0]);
+    const [policyItem, setPolicyItem] = useState(null);
+    const [reports, setReports] = useState([]);
+    const [proposals, setProposals] = useState([]);
     const mapRef = useRef(null);
+
+    useEffect(() => {
+        fetch(`${VITE_API_URL}/api/reports/full`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((rows) => setReports(Array.isArray(rows) ? rows : []))
+            .catch(() => setReports([]));
+        fetch(`${VITE_API_URL}/api/reports/proposals`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((rows) => setProposals(Array.isArray(rows) ? rows : []))
+            .catch(() => setProposals([]));
+    }, []);
+
+    const ITEMS = useMemo(() => {
+        const reportItems = reports.map((r) => ({
+            id: `r-${r.id}`,
+            rawId: r.id,
+            kind: '제보',
+            title: r.title,
+            subtitle: r.author || '익명',
+            category: r.category,
+            categoryKey: CAT_TO_KEY[r.category] || 'safety',
+            region: r.region,
+            date: r.date,
+            views: r.views || 0,
+            votes: r.likes || 0,
+            lat: r.lat,
+            lng: r.lng,
+        }));
+        const proposalItems = proposals.map((p) => {
+            const c = DISTRICT_CENTERS[p.region];
+            return {
+                id: `p-${p.id}`,
+                rawId: p.id,
+                kind: '제안',
+                title: p.title,
+                subtitle: p.nickname || '익명',
+                category: p.category,
+                categoryKey: CAT_TO_KEY[p.category] || 'safety',
+                region: p.region,
+                date: p.created_at ? p.created_at.slice(0, 10) : null,
+                views: p.views_count || 0,
+                votes: p.likes_count || 0,
+                lat: c ? c[0] + (Math.random() - 0.5) * 0.005 : null,
+                lng: c ? c[1] + (Math.random() - 0.5) * 0.005 : null,
+            };
+        });
+        return [...reportItems, ...proposalItems];
+    }, [reports, proposals]);
+
+    useEffect(() => {
+        if (!policyItem && ITEMS.length > 0) setPolicyItem(ITEMS[0]);
+    }, [ITEMS, policyItem]);
 
     const toggleLivingCat = (key) => {
         setLivingCats((prev) => {
@@ -72,18 +129,22 @@ export default function PCProposeMap({ onNavigate }) {
         });
     };
 
-    let filtered = ITEMS;
-    if (!livingCats.has('all')) filtered = filtered.filter((it) => livingCats.has(it.categoryKey));
-    if (kind) filtered = filtered.filter((it) => it.kind === kind);
-    if (sort === 'views') filtered = [...filtered].sort((a, b) => b.views - a.views);
-    if (sort === 'votes') filtered = [...filtered].sort((a, b) => b.votes - a.votes);
+    const filtered = useMemo(() => {
+        let arr = ITEMS;
+        if (!livingCats.has('all')) arr = arr.filter((it) => livingCats.has(it.categoryKey));
+        if (kind) arr = arr.filter((it) => it.kind === kind);
+        if (sort === 'views') arr = [...arr].sort((a, b) => b.views - a.views);
+        else if (sort === 'votes') arr = [...arr].sort((a, b) => b.votes - a.votes);
+        else arr = [...arr].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+        return arr;
+    }, [ITEMS, livingCats, kind, sort]);
 
     const counts = {
         report: ITEMS.filter((i) => i.kind === '제보').length,
         propose: ITEMS.filter((i) => i.kind === '제안').length,
     };
 
-    const pins = filtered.map((it) => ({ ...it, color: CAT_COLOR[it.categoryKey] || '#E6235A' }));
+    const pins = filtered.filter((it) => it.lat && it.lng).map((it) => ({ ...it, color: CAT_COLOR[it.categoryKey] || '#E6235A' }));
 
     return (
         <UserPCLayout currentView="pcProposeMap" onNavigate={onNavigate}>
@@ -151,13 +212,17 @@ export default function PCProposeMap({ onNavigate }) {
 
                     {/* Floating policy info card */}
                     {policyItem && (
-                        <div className="pc-map3-policy">
+                        <div
+                            className="pc-map3-policy"
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.stopPropagation()}
+                        >
                             <div className="pc-map3-policy-head">
                                 <strong>정책 정보</strong>
                                 <button
                                     className="pc-map3-policy-close"
                                     aria-label="닫기"
-                                    onClick={() => setPolicyItem(null)}
+                                    onClick={(e) => { e.stopPropagation(); setPolicyItem(null); }}
                                 >
                                     ×
                                 </button>

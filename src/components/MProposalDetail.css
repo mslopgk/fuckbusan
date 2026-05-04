@@ -1,0 +1,230 @@
+.m-prop-detail-page {
+    min-height: 100vh;
+    background: #fff;
+    padding-bottom: 80px;
+}
+
+.m-detail-topbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    border-bottom: 1px solid #ececec;
+    background: #fff;
+}
+
+.m-detail-back {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.m-detail-cat-tag {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 12px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.m-detail-content {
+    padding: 16px;
+}
+
+.m-detail-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0 0 6px;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+}
+
+.m-detail-author {
+    font-size: 12px;
+    color: #888;
+    margin: 0 0 18px;
+}
+
+.m-detail-body {
+    font-size: 13px;
+    color: #1a1a1b;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.m-detail-body p { margin: 0 0 6px; }
+.m-detail-body li {
+    list-style: disc;
+    margin: 4px 0 4px 22px;
+}
+
+.m-detail-image {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #1f2540 0%, #4a3070 60%, #d97a55 100%);
+    margin-bottom: 14px;
+}
+
+.m-detail-map {
+    width: 100%;
+    height: 160px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+.m-detail-attachment {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 12px;
+    color: #555;
+    padding: 8px 0;
+    border-bottom: 1px solid #ececec;
+}
+
+.m-detail-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #888;
+    padding: 10px 0 14px;
+    border-bottom: 1px solid #ececec;
+    margin-bottom: 14px;
+}
+
+.m-detail-meta-left { color: #888; }
+
+.m-detail-meta-icons {
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.m-detail-meta-icons span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: #888;
+}
+
+/* Comments */
+.m-detail-comments {
+    border-top: 1px solid #ececec;
+    padding-top: 16px;
+}
+
+.m-detail-comments-header {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin-bottom: 14px;
+}
+
+.m-detail-comments ul {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+}
+
+.m-detail-comments li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.m-comment-meta {
+    display: flex;
+    gap: 6px;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.m-comment-meta strong { color: #1a1a1b; }
+.m-comment-meta span  { color: #999; }
+
+.m-detail-comments p {
+    font-size: 12px;
+    color: #444;
+    margin: 0 0 4px;
+    line-height: 1.5;
+}
+
+.m-comment-reply {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #888;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-comment-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.m-comment-input {
+    flex: 1;
+    height: 38px;
+    border: 1px solid #d8d8d8;
+    border-radius: 19px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+}
+
+.m-comment-input:focus { border-color: #E6235A; }
+
+.m-comment-send {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Footer 투표하기 */
+.m-detail-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #ececec;
+    padding: 12px 16px;
+    z-index: 50;
+}
+
+.m-vote-cta {
+    width: 100%;
+    height: 50px;
+    border-radius: 25px;
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.25);
+    font-family: inherit;
+}
+
+.m-vote-cta.on {
+    background: #16B5B0;
+    box-shadow: 0 4px 12px rgba(22, 181, 176, 0.25);
+}

@@ -1,0 +1,70 @@
+.m-prop-done-page {
+    min-height: 100vh;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px 40px;
+    text-align: center;
+}
+
+.m-prop-done-icon {
+    position: relative;
+    width: 132px;
+    height: 132px;
+    margin-bottom: 28px;
+}
+
+.m-prop-done-doc {
+    width: 132px;
+    height: 132px;
+    display: block;
+}
+
+.m-prop-done-check {
+    position: absolute;
+    width: 54px;
+    height: 54px;
+    top: 26px;
+    left: 40px;
+}
+
+.m-prop-done-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0 0 36px;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+}
+
+.m-prop-done-actions {
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.m-prop-done-primary,
+.m-prop-done-secondary {
+    height: 52px;
+    border-radius: 26px;
+    border: none;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-prop-done-primary {
+    background: #E6235A;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.3);
+}
+
+.m-prop-done-secondary {
+    background: #FCDAE3;
+    color: #E6235A;
+}

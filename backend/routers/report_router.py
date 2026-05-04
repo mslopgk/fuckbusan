@@ -146,18 +146,55 @@ def list_my_reports(
 
 
 @router.post("/report", status_code=status.HTTP_201_CREATED)
-def create_report(report: schemas.ReportCreate, db: Session = Depends(get_db)):
+def create_report(
+    report: schemas.ReportCreate,
+    db: Session = Depends(get_db),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
+):
     new_report = models.Report(
+        user_id=current_user.user_id if current_user else None,
+        author_name=(current_user.nickname or current_user.name) if current_user else None,
         type=report.type,
+        category=report.category,
+        sub_category=report.sub_category,
         location=report.location,
+        region=report.region,
+        detailed_address=report.detailed_address,
+        lat=report.lat,
+        lng=report.lng,
+        image_url=report.image_url,
         title=report.title,
         content=report.content,
-        files=json.dumps(report.files) # JSON 문자열로 저장
+        files=json.dumps(report.files),
+        status="개선예정",
+        progress_step=1,
     )
     db.add(new_report)
     db.commit()
     db.refresh(new_report)
     return {"message": "제보가 성공적으로 접수되었습니다.", "id": new_report.id}
+
+
+# --- 지도 클러스터 ---
+@router.get("/clusters")
+def get_report_clusters(db: Session = Depends(get_db)):
+    """region별 lat/lng 평균 + count 집계."""
+    from sqlalchemy import func
+    rows = (
+        db.query(
+            models.Report.region,
+            func.avg(models.Report.lat).label("lat"),
+            func.avg(models.Report.lng).label("lng"),
+            func.count(models.Report.id).label("count"),
+        )
+        .filter(models.Report.lat.isnot(None), models.Report.lng.isnot(None))
+        .group_by(models.Report.region)
+        .all()
+    )
+    return [
+        {"region": r.region, "lat": float(r.lat) if r.lat else None, "lng": float(r.lng) if r.lng else None, "count": r.count}
+        for r in rows
+    ]
 
 @router.post("/suggest", status_code=status.HTTP_201_CREATED)
 def create_suggestion(suggestion: schemas.SuggestionCreate, db: Session = Depends(get_db)):
@@ -542,3 +579,154 @@ def update_comment(
         created_at=comment.created_at,
         replies=[]
     )
+
+
+# =============================================================================
+# 제보 단건 — /{report_id} 패턴 라우트는 /proposals 라우트들보다 *뒤에* 등록.
+# FastAPI는 등록 순서대로 매칭하므로 위 proposals 정적 경로를 먼저 잡아야 함.
+# =============================================================================
+
+@router.get("/{report_id}", response_model=schemas.ReportRead)
+def get_report_detail(report_id: int, db: Session = Depends(get_db)):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    r.views = (r.views or 0) + 1
+    db.commit()
+    comments = db.query(models.ReportComment).filter(
+        models.ReportComment.report_id == report_id
+    ).order_by(models.ReportComment.created_at.asc()).all()
+    return _serialize_report(r, comments)
+
+
+@router.put("/{report_id}")
+def update_report(
+    report_id: int,
+    payload: schemas.ReportCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    if r.user_id != current_user.user_id and current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="본인의 제보만 수정할 수 있습니다.")
+    for k in ("title", "content", "category", "sub_category", "region", "location", "detailed_address", "lat", "lng", "image_url"):
+        v = getattr(payload, k, None)
+        if v is not None:
+            setattr(r, k, v)
+    if payload.files is not None:
+        r.files = json.dumps(payload.files)
+    db.commit()
+    return {"message": "수정되었습니다."}
+
+
+@router.delete("/{report_id}")
+def delete_report(
+    report_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    if r.user_id != current_user.user_id and current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="본인의 제보만 삭제할 수 있습니다.")
+    db.query(models.ReportComment).filter(models.ReportComment.report_id == report_id).delete()
+    db.query(models.ReportLike).filter(models.ReportLike.report_id == report_id).delete()
+    db.query(models.ReportImage).filter(models.ReportImage.report_id == report_id).delete()
+    db.delete(r)
+    db.commit()
+    return {"message": "삭제되었습니다."}
+
+
+@router.post("/{report_id}/like")
+def toggle_report_like(
+    report_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    existing = db.query(models.ReportLike).filter(
+        models.ReportLike.report_id == report_id,
+        models.ReportLike.user_id == current_user.user_id,
+    ).first()
+    if existing:
+        db.delete(existing)
+        r.likes_count = max(0, (r.likes_count or 0) - 1)
+        liked = False
+    else:
+        db.add(models.ReportLike(user_id=current_user.user_id, report_id=report_id))
+        r.likes_count = (r.likes_count or 0) + 1
+        liked = True
+    db.commit()
+    return {"likes_count": r.likes_count, "liked": liked}
+
+
+@router.get("/{report_id}/comments", response_model=List[schemas.ReportCommentRead])
+def list_report_comments(report_id: int, db: Session = Depends(get_db)):
+    rows = db.query(models.ReportComment).filter(
+        models.ReportComment.report_id == report_id
+    ).order_by(models.ReportComment.created_at.asc()).all()
+    return [
+        {
+            "id": c.id,
+            "author": c.author_name or (c.user.nickname if c.user else "익명"),
+            "content": c.content,
+            "date": c.created_at.strftime("%Y.%m.%d") if c.created_at else None,
+        }
+        for c in rows
+    ]
+
+
+@router.post("/{report_id}/comments", response_model=schemas.ReportCommentRead, status_code=201)
+def create_report_comment(
+    report_id: int,
+    payload: schemas.ReportCommentCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    c = models.ReportComment(
+        report_id=report_id,
+        user_id=current_user.user_id,
+        author_name=current_user.nickname or current_user.name,
+        content=payload.content,
+    )
+    db.add(c)
+    r.comments_count = (r.comments_count or 0) + 1
+    db.commit()
+    db.refresh(c)
+    return {
+        "id": c.id,
+        "author": c.author_name,
+        "content": c.content,
+        "date": c.created_at.strftime("%Y.%m.%d") if c.created_at else None,
+    }
+
+
+@router.delete("/{report_id}/comments/{comment_id}")
+def delete_report_comment(
+    report_id: int,
+    comment_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    c = db.query(models.ReportComment).filter(
+        models.ReportComment.id == comment_id,
+        models.ReportComment.report_id == report_id,
+    ).first()
+    if not c:
+        raise HTTPException(status_code=404, detail="댓글을 찾을 수 없습니다.")
+    if c.user_id != current_user.user_id and current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="본인의 댓글만 삭제할 수 있습니다.")
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if r:
+        r.comments_count = max(0, (r.comments_count or 0) - 1)
+    db.delete(c)
+    db.commit()
+    return {"message": "삭제되었습니다."}

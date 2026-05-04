@@ -61,6 +61,146 @@
       "waitFor": "body"
     },
     {
+      "id": "mDiagnosisList",
+      "view": "mDiagnosisList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-diag-list-page"
+    },
+    {
+      "id": "mDiagnosisForm",
+      "view": "mDiagnosisForm",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-diagform-page"
+    },
+    {
+      "id": "mDiagnosisResult",
+      "view": "mDiagnosisResult",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-diagres-page"
+    },
+    {
+      "id": "mDiagnosisDone",
+      "view": "mDiagnosisDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".check-done-container"
+    },
+    {
+      "id": "pcDiagnosisMap",
+      "view": "pcDiagnosisMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-diag-page"
+    },
+    {
+      "id": "pcDiagnosisForm",
+      "view": "pcDiagnosisForm",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-diagform-page"
+    },
+    {
+      "id": "pcDiagnosisDone",
+      "view": "pcDiagnosisDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".check-done-container"
+    },
+    {
+      "id": "mProposalList",
+      "view": "mProposalList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-list-page"
+    },
+    {
+      "id": "mProposalMap",
+      "view": "mProposalMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-map-page"
+    },
+    {
+      "id": "mProposalForm",
+      "view": "mProposalForm",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-form-page"
+    },
+    {
+      "id": "mProposalDetail",
+      "view": "mProposalDetail",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-detail-page"
+    },
+    {
+      "id": "mProposalDone",
+      "view": "mProposalDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-done-page"
+    },
+    {
+      "id": "mReportList",
+      "view": "mReportList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-report-list-page"
+    },
+    {
+      "id": "mReportMap",
+      "view": "mReportMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-map-page"
+    },
+    {
+      "id": "mReportForm",
+      "view": "mReportForm",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-report-form-page"
+    },
+    {
+      "id": "mReportDetail",
+      "view": "mReportDetail",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-report-detail-page"
+    },
+    {
+      "id": "mReportDone",
+      "view": "mReportDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-done-page"
+    },
+    {
+      "id": "mSurveyList",
+      "view": "mSurveyList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-list-page"
+    },
+    {
+      "id": "mSurveyDetail1",
+      "view": "mSurveyDetail1",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-detail-page"
+    },
+    {
+      "id": "mSurveyResults",
+      "view": "mSurveyResults",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-results-page"
+    },
+    {
       "id": "adminLoginNew",
       "view": "adminLoginNew",
       "path": "/admin",
@@ -79,6 +219,27 @@
     { "id": "health-root", "method": "GET", "path": "/", "expectStatus": [200, 404] },
     { "id": "auth-login-options", "method": "OPTIONS", "path": "/auth/login", "expectStatus": [200, 405] },
     { "id": "dashboard-summary", "method": "GET", "path": "/dashboard/summary", "expectStatus": [200, 401, 422] },
-    { "id": "checklist-categories", "method": "GET", "path": "/checklist/categories", "expectStatus": [200, 401, 404] }
+    { "id": "checklist-categories", "method": "GET", "path": "/checklist/categories", "expectStatus": [200, 401, 404] },
+
+    { "id": "home-stats", "method": "GET", "path": "/api/home/stats", "expectStatus": [200], "expectBody": { "minLength": 30 } },
+    { "id": "home-citizens", "method": "GET", "path": "/api/home/citizens", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
+    { "id": "home-archives", "method": "GET", "path": "/api/home/archives", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
+
+    { "id": "reports-full", "method": "GET", "path": "/api/reports/full", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
+    { "id": "reports-clusters", "method": "GET", "path": "/api/reports/clusters", "expectStatus": [200], "expectBody": { "isArray": true } },
+    { "id": "reports-list", "method": "GET", "path": "/api/reports/list", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
+    { "id": "proposals-list", "method": "GET", "path": "/api/reports/proposals", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
+
+    { "id": "surveys-list", "method": "GET", "path": "/api/surveys/list", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
+    { "id": "surveys-list-active", "method": "GET", "path": "/api/surveys/list?tab=active", "expectStatus": [200], "expectBody": { "isArray": true } },
+    { "id": "surveys-list-result", "method": "GET", "path": "/api/surveys/list?tab=result", "expectStatus": [200], "expectBody": { "isArray": true } },
+    { "id": "survey-detail", "method": "GET", "path": "/api/surveys/1", "expectStatus": [200, 404] },
+
+    { "id": "checklist-list", "method": "GET", "path": "/checklist/list", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
+    { "id": "checklist-clusters", "method": "GET", "path": "/checklist/clusters", "expectStatus": [200], "expectBody": { "isArray": true } },
+    { "id": "checklist-aggregate", "method": "GET", "path": "/checklist/aggregate", "expectStatus": [200], "expectBody": { "isArray": true } },
+
+    { "id": "admin-stats", "method": "GET", "path": "/api/admin/stats", "expectStatus": [401, 403] },
+    { "id": "admin-recent", "method": "GET", "path": "/api/admin/recent-activity", "expectStatus": [401, 403] }
   ]
 }

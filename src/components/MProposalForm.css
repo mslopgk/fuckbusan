@@ -1,0 +1,432 @@
+.m-prop-form-page {
+    min-height: 100vh;
+    background: #fff;
+    padding-bottom: 80px;
+}
+
+.m-form-topbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+}
+
+.m-form-back {
+    background: none;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: #1a1a1b;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-form-body {
+    padding: 8px 24px 24px;
+}
+
+.m-form-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0 0 28px;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+}
+
+.m-form-section {
+    margin-bottom: 26px;
+}
+
+.m-form-section-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+}
+
+.m-form-type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 14px;
+    column-gap: 24px;
+}
+
+.m-form-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #1a1a1b;
+    cursor: pointer;
+}
+
+.m-form-type input { display: none; }
+
+.m-form-type-dot {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #d0d0d0;
+    border-radius: 50%;
+    background: #fff;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    position: relative;
+    transition: all 0.15s;
+}
+
+.m-form-type input:checked + .m-form-type-dot {
+    border-color: #E6235A;
+}
+
+.m-form-type input:checked + .m-form-type-dot::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: #E6235A;
+}
+
+.m-form-input {
+    width: 100%;
+    height: 46px;
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    background: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+.m-form-input:focus { border-color: #E6235A; }
+.m-form-input::placeholder { color: #b0b0b0; }
+
+.m-form-textarea {
+    width: 100%;
+    min-height: 140px;
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    background: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+.m-form-textarea:focus { border-color: #E6235A; }
+.m-form-textarea::placeholder {
+    color: #b0b0b0;
+    white-space: pre-line;
+}
+
+/* 위치정보 */
+.m-form-section-sub {
+    font-size: 12px;
+    color: #9aa0a6;
+    font-weight: 500;
+}
+
+.m-form-loc-btn {
+    width: 100%;
+    height: 50px;
+    border: 1px solid #d8d8d8;
+    border-radius: 25px;
+    padding: 0 18px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-form-loc-placeholder { font-size: 13px; color: #b0b0b0; }
+.m-form-loc-text       { font-size: 13px; color: #1a1a1b; }
+.m-form-loc-pin {
+    display: inline-flex;
+    align-items: center;
+    color: #b0b0b0;
+}
+
+/* 첨부자료 */
+.m-form-attach-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.m-form-attach-add {
+    width: 64px;
+    height: 64px;
+    border: 1px dashed #d8d8d8;
+    border-radius: 10px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.m-form-attach-thumb {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f1f3f5;
+    flex-shrink: 0;
+}
+
+.m-form-attach-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.m-form-attach-x {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.m-form-attach-help {
+    font-size: 11px;
+    color: #9aa0a6;
+    margin: 8px 0 0;
+}
+
+/* 위치 선택 picker (full overlay) */
+.m-loc-picker {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px 16px;
+}
+
+.m-loc-picker-top {
+    height: 48px;
+    display: flex;
+    align-items: center;
+}
+
+.m-loc-picker-title {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.4;
+    color: #1a1a1b;
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+}
+
+.m-loc-picker-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    padding: 0 12px;
+    margin-bottom: 12px;
+}
+
+.m-loc-picker-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.m-loc-picker-search button {
+    background: none;
+    border: none;
+    color: #9aa0a6;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.m-loc-picker-map {
+    flex: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f1f3f5;
+    margin-bottom: 8px;
+}
+
+.m-loc-picker-help {
+    text-align: center;
+    font-size: 12px;
+    color: #9aa0a6;
+    margin: 0 0 12px;
+}
+
+.m-loc-picker-confirm {
+    height: 50px;
+    border: none;
+    border-radius: 25px;
+    background: #E6235A;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.25);
+    font-family: inherit;
+}
+
+.m-form-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #ececec;
+    display: flex;
+    gap: 12px;
+    padding: 12px 16px;
+    z-index: 50;
+}
+
+.m-form-save,
+.m-form-submit {
+    flex: 1;
+    height: 48px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-form-save {
+    background: #fef0f5;
+    color: #E6235A;
+    border: none;
+    flex: 0 0 100px;
+}
+
+.m-form-submit {
+    background: #FCDAE3;
+    color: #fff;
+    border: none;
+}
+
+.m-form-submit:not(:disabled) {
+    background: #E6235A;
+    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.25);
+}
+
+.m-form-submit:disabled { cursor: not-allowed; }
+
+.m-form-toast {
+    position: fixed;
+    bottom: 96px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(26, 26, 27, 0.92);
+    color: #fff;
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 22px;
+    z-index: 250;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.m-draft-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+}
+
+.m-draft-modal {
+    width: 100%;
+    max-width: 300px;
+    background: #fff;
+    border-radius: 22px;
+    padding: 28px 22px 24px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.m-draft-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.m-draft-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0 0 8px;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+}
+
+.m-draft-meta {
+    font-size: 12px;
+    color: #555;
+    margin: 0 0 20px;
+}
+
+.m-draft-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.m-draft-btn {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 23px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-draft-btn-ghost {
+    background: #FCDAE3;
+    color: #E6235A;
+}
+
+.m-draft-btn-primary {
+    background: #E6235A;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.25);
+}

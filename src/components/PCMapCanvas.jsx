@@ -88,15 +88,27 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, acc
                     position={{ lat: pin.lat, lng: pin.lng }}
                     yAnchor={1}
                 >
-                    <button
-                        type="button"
-                        onClick={() => onPinClick && onPinClick(pin)}
-                        className="pc-kakao-pin"
-                        style={{ background: pin.color || accentColor }}
-                        aria-label={pin.title}
-                    >
-                        <span></span>
-                    </button>
+                    {pin.count != null ? (
+                        <button
+                            type="button"
+                            onClick={() => onPinClick && onPinClick(pin)}
+                            className="pc-kakao-pin pc-kakao-pin-count"
+                            style={{ background: pin.color || accentColor, '--pin-bg': pin.color || accentColor }}
+                            aria-label={pin.title || `${pin.count}건`}
+                        >
+                            {pin.count}
+                        </button>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => onPinClick && onPinClick(pin)}
+                            className="pc-kakao-pin"
+                            style={{ background: pin.color || accentColor }}
+                            aria-label={pin.title}
+                        >
+                            <span></span>
+                        </button>
+                    )}
                 </CustomOverlayMap>
             ))}
         </Map>

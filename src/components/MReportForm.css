@@ -1,0 +1,94 @@
+.m-photo-add {
+    width: 86px;
+    height: 86px;
+    border: 1px solid #d8d8d8;
+    border-radius: 12px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.m-loc-input {
+    width: 100%;
+    height: 50px;
+    border: 1px solid #d8d8d8;
+    border-radius: 25px;
+    padding: 0 18px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #b0b0b0;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-loc-pin {
+    display: inline-flex;
+    align-items: center;
+    color: #b0b0b0;
+}
+
+.m-rcat-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 16px;
+}
+
+.m-rcat-chips .m-cat-chip {
+    padding: 8px 18px;
+    font-size: 13px;
+}
+
+.m-row-with-suffix {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.m-select {
+    flex: 0 0 60%;
+    height: 46px;
+    border: 1px solid #d8d8d8;
+    border-radius: 12px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-family: inherit;
+    background: #fff;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231a1a1b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    color: #1a1a1b;
+}
+
+.m-select:invalid { color: #b0b0b0; }
+.m-select option[value=""] { color: #b0b0b0; }
+.m-select option { color: #1a1a1b; }
+
+.m-row-suffix {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1b;
+    flex-shrink: 0;
+}
+
+.m-row-input {
+    width: 100%;
+    height: 46px;
+    border: 1px solid #d8d8d8;
+    border-radius: 12px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.m-row-input:focus { border-color: #E6235A; }

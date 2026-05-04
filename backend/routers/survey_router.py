@@ -1,39 +1,235 @@
-"""Stub survey endpoints — returns in-memory mock data until a real Survey model lands."""
-from fastapi import APIRouter
-from datetime import datetime, timedelta
+"""Survey endpoints — DB 기반."""
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from typing import List, Optional
+from collections import Counter
+import json
+
+from database import get_db
+import models, schemas
+from .user_router import get_current_user, get_current_user_optional
+
+
+def _require_admin(user: Optional[models.User]):
+    if not user or user.ID != "admin":
+        raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
 
 router = APIRouter(prefix="/api/surveys", tags=["surveys"])
 
-_now = datetime.utcnow()
 
-_MOCK_SURVEYS = [
-    {
-        "id": 1,
-        "title": "학생의 학교 외 생활활동 조사 (학부모 대상)",
-        "author_id": "admin_kang1",
-        "status": "답변수집중",
-        "response_count": 132,
-        "created_at": (_now - timedelta(days=4)).isoformat(),
-    },
-    {
-        "id": 2,
-        "title": "공공디자인 만족도 조사",
-        "author_id": "admin_kang1",
-        "status": "작성중",
-        "response_count": 0,
-        "created_at": (_now - timedelta(days=10)).isoformat(),
-    },
-    {
-        "id": 3,
-        "title": "야간 보행환경 안전도 조사",
-        "author_id": "admin_oh2",
-        "status": "종료",
-        "response_count": 287,
-        "created_at": (_now - timedelta(days=30)).isoformat(),
-    },
-]
+def _format_period(s: Optional[models.Survey]) -> str:
+    if not s:
+        return ""
+    if s.period_start and s.period_end:
+        return f"{s.period_start.strftime('%Y-%m-%d')} ~ {s.period_end.strftime('%Y-%m-%d')}"
+    if s.period_end:
+        return f"~{s.period_end.strftime('%Y-%m-%d')}"
+    return ""
 
 
 @router.get("/list")
-def list_surveys():
-    return _MOCK_SURVEYS
+def list_surveys(tab: Optional[str] = None, db: Session = Depends(get_db)):
+    """tab=active → 진행중, tab=result → 종료/결과, 미지정 → 전체."""
+    q = db.query(models.Survey)
+    if tab == "active":
+        q = q.filter(models.Survey.status == "active")
+    elif tab == "result":
+        q = q.filter(models.Survey.status.in_(["result", "closed"]))
+    rows = q.order_by(models.Survey.created_at.desc()).all()
+    return [
+        {
+            "id": s.id,
+            "title": s.title,
+            "minutes": s.minutes or 10,
+            "period": _format_period(s),
+            "status": s.status,
+            "response_count": s.response_count or 0,
+        }
+        for s in rows
+    ]
+
+
+@router.get("/{survey_id}")
+def get_survey_detail(survey_id: int, db: Session = Depends(get_db)):
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    questions = db.query(models.SurveyQuestion).filter(
+        models.SurveyQuestion.survey_id == survey_id
+    ).order_by(models.SurveyQuestion.order_no.asc()).all()
+    return {
+        "id": s.id,
+        "title": s.title,
+        "description": s.description,
+        "minutes": s.minutes or 10,
+        "period": _format_period(s),
+        "status": s.status,
+        "response_count": s.response_count or 0,
+        "questions": [
+            {
+                "id": q.id,
+                "order_no": q.order_no,
+                "qtype": q.qtype,
+                "text": q.text,
+                "options": q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else []),
+            }
+            for q in questions
+        ],
+    }
+
+
+@router.post("/{survey_id}/responses", status_code=201)
+def submit_survey_response(
+    survey_id: int,
+    payload: schemas.SurveyResponseSubmit,
+    db: Session = Depends(get_db),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
+):
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    resp = models.SurveyResponse(
+        survey_id=survey_id,
+        user_id=current_user.user_id if current_user else None,
+    )
+    db.add(resp)
+    db.flush()
+    for ans in payload.answers:
+        v = ans.value
+        if isinstance(v, (list, dict)):
+            v = json.dumps(v, ensure_ascii=False)
+        else:
+            v = str(v) if v is not None else ""
+        db.add(models.SurveyAnswer(response_id=resp.id, question_id=ans.question_id, value=v))
+    s.response_count = (s.response_count or 0) + 1
+    db.commit()
+    return {"message": "응답이 제출되었습니다.", "response_id": resp.id}
+
+
+@router.get("/{survey_id}/results")
+def get_survey_results(survey_id: int, db: Session = Depends(get_db)):
+    """질문별 응답 분포 집계."""
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    questions = db.query(models.SurveyQuestion).filter(
+        models.SurveyQuestion.survey_id == survey_id
+    ).order_by(models.SurveyQuestion.order_no.asc()).all()
+    out = []
+    for q in questions:
+        answers = db.query(models.SurveyAnswer).filter(models.SurveyAnswer.question_id == q.id).all()
+        if q.qtype in ("single", "agree"):
+            counter = Counter([a.value for a in answers if a.value])
+            opts = q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else [])
+            distribution = [{"label": opt, "count": counter.get(opt, 0)} for opt in opts]
+            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
+        elif q.qtype == "multi":
+            counter = Counter()
+            for a in answers:
+                try:
+                    vals = json.loads(a.value)
+                    if isinstance(vals, list):
+                        counter.update(vals)
+                except Exception:
+                    pass
+            opts = q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else [])
+            distribution = [{"label": opt, "count": counter.get(opt, 0)} for opt in opts]
+            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
+        else:  # text
+            samples = [a.value for a in answers[:5] if a.value]
+            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "samples": samples, "total": len(answers)})
+    return {
+        "id": s.id,
+        "title": s.title,
+        "response_count": s.response_count or 0,
+        "questions": out,
+    }
+
+
+# =============================================================================
+# Admin CRUD — 관리자만 호출. /admin 하위 prefix로 정적 경로 우선 매칭 보장.
+# =============================================================================
+
+@router.post("/admin", status_code=201)
+def admin_create_survey(
+    payload: schemas.SurveyCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    s = models.Survey(
+        title=payload.title,
+        description=payload.description,
+        minutes=payload.minutes,
+        status=payload.status,
+        period_start=payload.period_start,
+        period_end=payload.period_end,
+        author_id=current_user.user_id if current_user.user_id != 999999 else None,
+        response_count=0,
+    )
+    db.add(s)
+    db.flush()
+    for idx, q in enumerate(payload.questions):
+        db.add(models.SurveyQuestion(
+            survey_id=s.id,
+            order_no=q.order_no if q.order_no is not None else idx,
+            qtype=q.qtype,
+            text=q.text,
+            options=q.options,
+        ))
+    db.commit()
+    return {"id": s.id, "message": "설문이 생성되었습니다."}
+
+
+@router.put("/admin/{survey_id}")
+def admin_update_survey(
+    survey_id: int,
+    payload: schemas.SurveyUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    for k in ("title", "description", "minutes", "status", "period_start", "period_end"):
+        v = getattr(payload, k, None)
+        if v is not None:
+            setattr(s, k, v)
+    if payload.questions is not None:
+        # 질문지 전체 교체
+        db.query(models.SurveyQuestion).filter(models.SurveyQuestion.survey_id == survey_id).delete()
+        for idx, q in enumerate(payload.questions):
+            db.add(models.SurveyQuestion(
+                survey_id=survey_id,
+                order_no=q.order_no if q.order_no is not None else idx,
+                qtype=q.qtype,
+                text=q.text,
+                options=q.options,
+            ))
+    db.commit()
+    return {"message": "수정되었습니다."}
+
+
+@router.delete("/admin/{survey_id}")
+def admin_delete_survey(
+    survey_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    # 응답·답변·질문 cascade 삭제
+    qids = [q.id for q in db.query(models.SurveyQuestion).filter(models.SurveyQuestion.survey_id == survey_id).all()]
+    rids = [r.id for r in db.query(models.SurveyResponse).filter(models.SurveyResponse.survey_id == survey_id).all()]
+    if qids:
+        db.query(models.SurveyAnswer).filter(models.SurveyAnswer.question_id.in_(qids)).delete(synchronize_session=False)
+    if rids:
+        db.query(models.SurveyAnswer).filter(models.SurveyAnswer.response_id.in_(rids)).delete(synchronize_session=False)
+    db.query(models.SurveyResponse).filter(models.SurveyResponse.survey_id == survey_id).delete()
+    db.query(models.SurveyQuestion).filter(models.SurveyQuestion.survey_id == survey_id).delete()
+    db.delete(s)
+    db.commit()
+    return {"message": "삭제되었습니다."}

@@ -4,7 +4,7 @@ import './PCHeader.css';
 
 const SURVEY_VIEWS = ['pcSurveyList', 'pcSurveyDetail', 'pcSurveyConsent', 'pcSurveyJoin', 'pcSurveyResults', 'pcSurveyDone'];
 const REPORT_SUGGEST_VIEWS = ['pcProposeMap', 'pcProposeForm', 'pcProposeDone', 'pcProposeDetail', 'pcReportMap', 'pcReportForm', 'pcReportDone', 'pcReportDetail', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'reportList', 'reportDetail', 'reportPostForm'];
-const DIAGNOSIS_VIEWS = ['diagnosis', 'diagnosisStep1', 'bigCategory', 'checkList', 'satisfaction', 'review', 'checkDone', 'diagnosisResult', 'diagnosisList', 'diagnosisEdit', 'expertDiagnosisResult'];
+const DIAGNOSIS_VIEWS = ['diagnosis', 'diagnosisStep1', 'bigCategory', 'checkList', 'satisfaction', 'review', 'checkDone', 'diagnosisResult', 'diagnosisList', 'diagnosisEdit', 'expertDiagnosisResult', 'pcDiagnosisMap', 'pcDiagnosisForm', 'pcDiagnosisDetail', 'pcDiagnosisDone'];
 
 const PCHeader = ({ currentView, onNavigate }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -69,7 +69,7 @@ const PCHeader = ({ currentView, onNavigate }) => {
                     </button>
                     <button
                         className={`pc-nav-link ${isActive('diagnosis') ? 'active' : ''}`}
-                        onClick={() => handleNav('diagnosis')}
+                        onClick={() => handleNav('pcDiagnosisMap')}
                     >
                         진단
                     </button>

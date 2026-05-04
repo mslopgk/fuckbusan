@@ -39,7 +39,7 @@ export default function ProposalManagement({ onNavigate }) {
     return (
         <AdminLayout onNavigate={onNavigate} currentView="proposalManagement">
             <div className="content-header-new">
-                <h2 className="content-title-new">제안 목록</h2>
+                <h2 className="content-title-new">제안</h2>
                 <div className="total-count-text">전체 제안 <span>{filtered.length}건</span></div>
             </div>
 

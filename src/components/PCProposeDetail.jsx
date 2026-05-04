@@ -57,20 +57,18 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                         />
                     </div>
 
-                    <div className="pc-detail-body">
-                        {data.body.split('\n').map((p, i) => p.trim().startsWith('-') ? (
-                            <li key={i}>{p.replace(/^-\s*/, '')}</li>
-                        ) : (
-                            <p key={i}>{p}</p>
-                        ))}
-                    </div>
-
-                    <div className="pc-detail-vote-row">
-                        <button className="pc-vote-btn" onClick={() => setVoteOpen(true)}>
-                            <span className="pc-vote-circle">👍</span>
-                            <span>응원하기</span>
+                    <div className="pc-detail-body-wrap">
+                        <div className="pc-detail-body">
+                            {data.body.split('\n').map((p, i) => p.trim().startsWith('-') ? (
+                                <li key={i}>{p.replace(/^-\s*/, '')}</li>
+                            ) : (
+                                <p key={i}>{p}</p>
+                            ))}
+                        </div>
+                        <button className="pc-vote-float" onClick={() => setVoteOpen(true)}>
+                            <span className="pc-vote-float-icon">❤</span>
+                            <span className="pc-vote-float-label">{voteResult ? '응원완료' : '응원해'}</span>
                         </button>
-                        {voteResult && <span className="pc-vote-result">투표 완료: {voteResult}</span>}
                     </div>
 
                     <div className="pc-comment-section">

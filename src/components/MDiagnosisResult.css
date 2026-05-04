@@ -1,0 +1,230 @@
+.m-diagres-page {
+    /* 토큰은 src/styles/diagnosis-tokens.css 에서 정의됨 */
+    min-height: 100vh;
+    background: #fff;
+    padding-bottom: 40px;
+    color: var(--diag-text);
+    font-family: inherit;
+}
+
+.m-diagres-topbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+}
+
+.m-diagres-iconbtn {
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.m-diagres-body {
+    padding: 0 20px;
+}
+
+.m-diagres-title {
+    margin: 4px 0 8px;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--diag-green);
+    letter-spacing: -0.03em;
+}
+
+.m-diagres-address {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--diag-text);
+}
+
+.m-diagres-date {
+    margin: 4px 0 16px;
+    font-size: 13px;
+    color: var(--diag-text-sub);
+}
+
+/* ───── 카테고리 그리드 ───── */
+.m-diagres-cats {
+    margin: 16px 0 20px;
+    border: 1px solid var(--diag-border);
+    border-radius: 14px;
+    padding: 12px;
+}
+
+.m-diagres-cats-top {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.m-diagres-cat-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: #f3f4f6;
+    font-size: 13px;
+    color: var(--diag-text);
+    font-weight: 600;
+}
+
+.m-diagres-cat-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.m-diagres-cat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+    padding: 8px 4px;
+    border-radius: 10px;
+    color: var(--diag-text-sub);
+    text-align: center;
+    min-height: 64px;
+}
+
+.m-diagres-cat-item.on {
+    background: var(--diag-green);
+    color: #fff;
+    font-weight: 700;
+}
+
+.m-diagres-cat-icon {
+    display: inline-flex;
+    line-height: 0;
+}
+
+.m-diagres-cat-label {
+    font-size: 11px;
+    line-height: 1.25;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ───── 진단 사진 ───── */
+.m-diagres-photo {
+    margin: 0 auto 20px;
+    width: 196px;
+    height: 196px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f1f2f4;
+}
+
+.m-diagres-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.m-diagres-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ───── 레이더 차트 카드 ───── */
+.m-diagres-card {
+    border: 1px solid var(--diag-border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 28px;
+}
+
+.m-diagres-card-head {
+    margin: 0 0 8px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--diag-text-sub);
+}
+
+.m-diagres-avg {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--diag-text);
+    margin-right: 4px;
+}
+
+.m-diagres-chart {
+    width: 100%;
+    height: 280px;
+}
+
+.m-diagres-tick-label {
+    fill: var(--diag-text);
+    font-size: 11px;
+    font-family: inherit;
+}
+
+.m-diagres-tick-value {
+    fill: var(--diag-text);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: inherit;
+}
+
+/* ───── 세부 정보 ───── */
+.m-diagres-detail {
+    text-align: center;
+}
+
+.m-diagres-detail-title {
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--diag-text);
+}
+
+.m-diagres-detail-desc {
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: var(--diag-text-sub);
+    line-height: 1.5;
+}
+
+.m-diagres-detail-btns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.m-diagres-detail-btn {
+    width: 200px;
+    height: 44px;
+    border: 1.5px solid currentColor;
+    background: #fff;
+    border-radius: 22px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: inherit;
+}
+
+.m-diagres-detail-btn.purple { color: var(--diag-purple); }
+.m-diagres-detail-btn.blue   { color: var(--diag-blue); }
+.m-diagres-detail-btn.green  { color: var(--diag-green); }

@@ -1,0 +1,113 @@
+{
+  "startedAt": "2026-05-04T07:39:29.498Z",
+  "frontend": [
+    {
+      "id": "mProposalList",
+      "view": "mProposalList",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mProposalList.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mProposalMap",
+      "view": "mProposalMap",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mProposalMap.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mProposalForm",
+      "view": "mProposalForm",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mProposalForm.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mProposalDone",
+      "view": "mProposalDone",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mProposalDone.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mReportList",
+      "view": "mReportList",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportList.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mReportMap",
+      "view": "mReportMap",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportMap.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mReportForm",
+      "view": "mReportForm",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportForm.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mReportDetail",
+      "view": "mReportDetail",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportDetail.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mReportDone",
+      "view": "mReportDone",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportDone.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    }
+  ],
+  "api": null,
+  "summary": {
+    "fePass": 9,
+    "feFail": 0,
+    "apiPass": 0,
+    "apiFail": 0,
+    "ok": true
+  },
+  "finishedAt": "2026-05-04T07:39:45.388Z"
+}

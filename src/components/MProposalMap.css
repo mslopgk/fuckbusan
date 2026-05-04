@@ -1,0 +1,172 @@
+.m-prop-map-page {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    background: #f7f7f8;
+}
+
+/* 검색 바 — 사각 형태 (expanded 상태에서는 숨김) */
+.m-map-search-bar {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    right: 16px;
+    height: 44px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 8px;
+    z-index: 50;
+    transition: opacity 0.2s ease;
+}
+
+.m-prop-map-page.expanded .m-map-search-bar {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.m-map-back {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.m-map-search {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+    color: #1a1a1b;
+    font-family: inherit;
+}
+
+.m-map-search-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-map-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+/* 드래그 가능한 sheet */
+.m-map-sheet {
+    position: absolute;
+    bottom: 64px;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.12);
+    height: 42vh;
+    overflow: auto;
+    padding: 0 0 24px;
+    z-index: 30;
+    transition: height 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.m-map-sheet.expanded {
+    height: calc(100vh - 64px);
+    border-radius: 0;
+}
+
+.m-sheet-grab {
+    padding: 10px 0 4px;
+    display: flex;
+    justify-content: center;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+}
+
+.m-sheet-grab:active { cursor: grabbing; }
+
+.m-sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: #d8d8d8;
+    border-radius: 2px;
+}
+
+.m-sheet-region-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 16px 8px;
+}
+
+.m-sheet-region {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a1a1b;
+    letter-spacing: -0.02em;
+}
+
+.m-sheet-region .m-region-arrow {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #E6235A;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-sheet-list-btn {
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-sheet-chips {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    padding: 4px 16px 12px;
+    background: #fff;
+}
+
+.m-prop-map-page:not(.expanded) .m-sheet-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.m-sheet-chips .m-cat-chip {
+    flex-shrink: 0;
+}
+
+.m-sheet-chips::-webkit-scrollbar { display: none; }
+
+.m-sheet-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0 16px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* expanded 모드일 때 fab가 sheet 안에 떠 있게 */
+.m-map-sheet.expanded .m-prop-fab {
+    position: fixed;
+    right: 16px;
+    bottom: 80px;
+    z-index: 60;
+}

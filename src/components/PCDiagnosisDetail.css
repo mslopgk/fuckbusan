@@ -1,0 +1,254 @@
+.pc-detail-page {
+    /* 토큰: src/styles/diagnosis-tokens.css */
+    position: relative;
+    height: calc(100vh - 60px);
+    width: 100%;
+    background: #f0f0f3;
+    overflow: hidden;
+}
+
+/* 중앙 지도 */
+.pc-detail-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.pc-detail-bottom-cta {
+    position: absolute;
+    bottom: 24px;
+    right: 440px;
+    height: 48px;
+    padding: 0 32px;
+    border: none;
+    border-radius: 24px;
+    background: var(--diag-teal);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(35, 189, 187, 0.35);
+    z-index: 6;
+    font-family: inherit;
+}
+
+/* 좌측 필터 (간소화) */
+.pc-detail-filter {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 305px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: var(--diag-panel-shadow);
+    padding: 16px;
+    z-index: 5;
+    font-family: inherit;
+}
+
+.pc-detail-section { padding: 6px 0; }
+
+.pc-detail-section-label {
+    font-size: 14px;
+    color: var(--diag-text-muted);
+    margin-bottom: 6px;
+}
+
+.pc-detail-dropdown {
+    height: 46px;
+    border: 1px solid var(--diag-text);
+    border-radius: 8px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    color: var(--diag-text);
+}
+
+.pc-detail-dropdown-x {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: #efeff2;
+    border-radius: 50%;
+    color: #888;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.pc-detail-back {
+    margin-top: 12px;
+    width: 100%;
+    height: 38px;
+    border: 1px solid var(--diag-border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--diag-teal);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* 우측 분석 패널 */
+.pc-detail-right {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 395px;
+    bottom: 16px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: var(--diag-panel-shadow);
+    z-index: 5;
+    padding: 20px 20px 0;
+    overflow-y: auto;
+    font-family: inherit;
+}
+
+.pc-detail-title {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--diag-teal);
+}
+
+/* 메타 정보 (위치/사진/진단일/...) */
+.pc-detail-meta {
+    margin: 0 0 16px;
+    padding: 0;
+    border-top: 1px solid #f1f2f4;
+}
+
+.pc-detail-meta-row {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f1f2f4;
+    padding: 8px 0;
+    margin: 0;
+}
+
+.pc-detail-meta-row dt {
+    flex: none;
+    width: 76px;
+    padding: 0 12px;
+    font-size: 13px;
+    color: var(--diag-text-muted);
+}
+
+.pc-detail-meta-row dd {
+    margin: 0;
+    flex: 1;
+    padding: 0 16px;
+    font-size: 13px;
+    color: var(--diag-text);
+}
+
+.pc-detail-meta-photo dt { align-self: center; }
+
+.pc-detail-photo-thumb {
+    width: 83px;
+    height: 90px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #d4e9ff, #b8d4ed);
+}
+
+/* 차트 행 */
+.pc-detail-chart-row {
+    display: flex;
+    border-bottom: 1px solid #f1f2f4;
+    padding: 16px 0;
+}
+
+.pc-detail-chart-label {
+    flex: none;
+    width: 76px;
+    padding: 0 12px;
+    font-size: 13px;
+    color: var(--diag-text-muted);
+    align-self: center;
+}
+
+.pc-detail-chart-card {
+    flex: 1;
+    padding: 0 16px;
+}
+
+.pc-detail-chart-title {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--diag-text);
+    text-align: center;
+}
+
+.pc-detail-chart-canvas {
+    width: 100%;
+    height: 220px;
+}
+
+.pc-detail-tick-label {
+    fill: var(--diag-text);
+    font-size: 10px;
+    font-family: inherit;
+}
+
+.pc-detail-tick-value {
+    fill: var(--diag-text);
+    font-size: 11px;
+    font-weight: 700;
+    font-family: inherit;
+}
+
+/* 댓글 영역 */
+.pc-detail-comments {
+    padding: 16px 0 24px;
+}
+
+.pc-detail-comments-head {
+    display: flex;
+    gap: 16px;
+    padding: 0 8px 12px;
+}
+
+.pc-detail-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--diag-text);
+}
+
+.pc-detail-comment-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pc-detail-comment-list li {
+    padding: 12px;
+    border-bottom: 1px solid #f1f2f4;
+}
+
+.pc-detail-comment-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--diag-text);
+    margin-bottom: 8px;
+}
+
+.pc-detail-comment-head strong { font-weight: 700; }
+.pc-detail-comment-head span { color: var(--diag-text-muted); font-size: 12px; }
+
+.pc-detail-comment-list p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--diag-text-sub);
+    line-height: 1.5;
+}

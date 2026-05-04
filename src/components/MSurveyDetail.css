@@ -1,0 +1,310 @@
+.m-survey-detail-page {
+    min-height: 100vh;
+    background: #fff;
+    padding-bottom: 80px;
+}
+
+.m-survey-hero {
+    background: #5B2EAB;
+    padding: 0 16px 56px;
+    color: #fff;
+}
+
+/* Detail1/2: 카드가 hero 밖에 있어 응답시간 행까지만 보라영역 */
+.m-survey-hero.hero-shrunk {
+    padding-bottom: 150px;
+}
+
+.m-hero-topbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.m-hero-back {
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    color: #fff;
+    margin-left: -6px;
+}
+
+.m-hero-copy {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 14px;
+    padding: 5px 10px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: inherit;
+}
+
+.m-hero-title {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.4;
+    text-align: center;
+    margin: 18px 24px 24px;
+    letter-spacing: -0.02em;
+}
+
+.m-hero-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 22px;
+    color: #1a1a1b;
+}
+
+/* hero 박스 밖에서 보라/흰 경계를 가로지르는 카드 — 타이틀 아래 작은 overlap */
+.m-hero-card-overlap {
+    margin: -40px 16px 0;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    position: relative;
+    z-index: 2;
+}
+
+.m-hero-row {
+    display: flex;
+    gap: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 8px 0;
+}
+
+.m-hero-key {
+    flex-shrink: 0;
+    width: 64px;
+    font-weight: 800;
+    color: #1a1a1b;
+}
+
+.m-hero-val {
+    flex: 1;
+    color: #555;
+    word-break: keep-all;
+}
+
+/* Body (lead + bullets + cta) */
+.m-survey-body {
+    padding: 24px 20px 40px;
+}
+
+.m-body-lead {
+    font-size: 13px;
+    color: #1a1a1b;
+    line-height: 1.6;
+    margin: 0 0 18px;
+}
+
+.m-body-bullets {
+    list-style: none;
+    margin: 0 0 24px;
+    padding: 0;
+}
+
+.m-body-bullets li {
+    position: relative;
+    padding-left: 18px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.m-body-bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 8px;
+    height: 4px;
+    border-left: 2px solid #5B2EAB;
+    border-bottom: 2px solid #5B2EAB;
+    transform: rotate(-45deg);
+}
+
+.m-body-terms {
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    margin: 0 0 24px;
+}
+
+.m-body-terms .link {
+    color: #5B2EAB;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.m-survey-cta {
+    display: block;
+    margin: 8px auto 0;
+    width: 180px;
+    height: 46px;
+    border: none;
+    border-radius: 23px;
+    background: #5B2EAB;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(91, 46, 171, 0.25);
+    font-family: inherit;
+}
+
+.m-survey-cta:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Consent card content */
+.m-consent-title {
+    font-size: 14px;
+    font-weight: 800;
+    margin: 0 0 12px;
+    color: #5B2EAB;
+}
+
+.m-consent-section {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin: 14px 0 6px;
+}
+
+.m-consent-bullets {
+    list-style: disc;
+    margin: 0 0 0 18px;
+    padding: 0;
+}
+
+.m-consent-bullets li {
+    font-size: 12px;
+    color: #444;
+    line-height: 1.7;
+    margin-bottom: 4px;
+}
+
+.m-consent-final {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin: 18px 0 8px;
+}
+
+.m-consent-radios {
+    display: flex;
+    gap: 16px;
+    padding: 4px 0;
+}
+
+.m-consent-radios label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #1a1a1b;
+    cursor: pointer;
+}
+
+/* 자체 라디오 — 선택 시 녹색 (#06AB69) */
+.m-consent-radios input[type="radio"],
+.m-form-radios input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #c8c8c8;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    margin: 0;
+    position: relative;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.m-consent-radios input[type="radio"]:checked,
+.m-form-radios input[type="radio"]:checked {
+    border-color: #06AB69;
+}
+
+.m-consent-radios input[type="radio"]:checked::after,
+.m-form-radios input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #06AB69;
+}
+
+/* Form rows */
+.m-form-section-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0 0 18px;
+    letter-spacing: -0.02em;
+}
+
+.m-form-row {
+    margin-bottom: 18px;
+}
+
+.m-form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin-bottom: 8px;
+}
+
+.m-form-label .req { color: #E6235A; }
+
+.m-form-radios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+    padding: 4px 0;
+}
+
+.m-form-radios-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 16px;
+}
+
+.m-form-radios label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #1a1a1b;
+    cursor: pointer;
+}
+
+/* 라디오 스타일은 위쪽 자체개발 블록에서 처리 */
+
+.m-form-input {
+    width: 100%;
+    height: 42px;
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+}
+
+.m-form-input:focus { border-color: #5B2EAB; }

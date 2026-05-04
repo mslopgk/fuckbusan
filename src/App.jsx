@@ -71,6 +71,36 @@ const PCReportMap = lazy(() => import('./components/PCReportMap'));
 const PCReportForm = lazy(() => import('./components/PCReportForm'));
 const PCReportDetail = lazy(() => import('./components/PCReportDetail'));
 
+// USER:MOBILE survey pages (Figma node 848:13553)
+const MSurveyList = lazy(() => import('./components/MSurveyList'));
+const MSurveyDetail1 = lazy(() => import('./components/MSurveyDetail1'));
+const MSurveyDetail2 = lazy(() => import('./components/MSurveyDetail2'));
+const MSurveyJoin = lazy(() => import('./components/MSurveyJoin'));
+const MSurveyDone = lazy(() => import('./components/MSurveyDone'));
+const MSurveyResults = lazy(() => import('./components/MSurveyResults'));
+const MProposalList = lazy(() => import('./components/MProposalList'));
+const MProposalMap = lazy(() => import('./components/MProposalMap'));
+const MProposalForm = lazy(() => import('./components/MProposalForm'));
+const MProposalDetail = lazy(() => import('./components/MProposalDetail'));
+const MProposalDone = lazy(() => import('./components/MProposalDone'));
+const MReportList = lazy(() => import('./components/MReportList'));
+const MReportMap = lazy(() => import('./components/MReportMap'));
+const MReportForm = lazy(() => import('./components/MReportForm'));
+const MReportDetail = lazy(() => import('./components/MReportDetail'));
+const MReportDone = lazy(() => import('./components/MReportDone'));
+
+// USER:MOBILE 진단(Diagnosis) pages (Figma node 941:5782 — 04/23 업데이트)
+const MDiagnosisList = lazy(() => import('./components/MDiagnosisList'));
+const MDiagnosisForm = lazy(() => import('./components/MDiagnosisForm'));
+const MDiagnosisResult = lazy(() => import('./components/MDiagnosisResult'));
+const MDiagnosisDone = lazy(() => import('./components/MDiagnosisDone'));
+
+// USER:PC 진단(Diagnosis) pages (Figma node 941:5782 — 04/23 업데이트)
+const PCDiagnosisMap = lazy(() => import('./components/PCDiagnosisMap'));
+const PCDiagnosisForm = lazy(() => import('./components/PCDiagnosisForm'));
+const PCDiagnosisDetail = lazy(() => import('./components/PCDiagnosisDetail'));
+const PCDiagnosisDone = lazy(() => import('./components/PCDiagnosisDone'));
+
 import { fetchWithLogout } from './utils/api'
 import PCHeader from './components/PCHeader'
 
@@ -535,6 +565,63 @@ function App() {
         } else if (target === 'pcReportDetail') {
             setSelectedReport(data);
             setView('pcReportDetail');
+        } else if (target === 'mSurveyList') {
+            setView('mSurveyList');
+        } else if (target === 'mSurveyDetail1') {
+            setSelectedSurvey(data);
+            setView('mSurveyDetail1');
+        } else if (target === 'mSurveyDetail2') {
+            setSelectedSurvey(data);
+            setView('mSurveyDetail2');
+        } else if (target === 'mSurveyJoin') {
+            setSelectedSurvey(data);
+            setView('mSurveyJoin');
+        } else if (target === 'mSurveyDone') {
+            setView('mSurveyDone');
+        } else if (target === 'mSurveyResults') {
+            setSelectedSurvey(data);
+            setView('mSurveyResults');
+        } else if (target === 'mProposalList') {
+            setView('mProposalList');
+        } else if (target === 'mProposalMap') {
+            setView('mProposalMap');
+        } else if (target === 'mProposalForm') {
+            setView('mProposalForm');
+        } else if (target === 'mProposalDetail') {
+            setSelectedProposal(data);
+            setView('mProposalDetail');
+        } else if (target === 'mProposalDone') {
+            setView('mProposalDone');
+        } else if (target === 'mReportList') {
+            setView('mReportList');
+        } else if (target === 'mReportMap') {
+            setView('mReportMap');
+        } else if (target === 'mReportForm') {
+            setView('mReportForm');
+        } else if (target === 'mReportDetail') {
+            setSelectedReport(data);
+            setView('mReportDetail');
+        } else if (target === 'mReportDone') {
+            setView('mReportDone');
+        } else if (target === 'mDiagnosisList') {
+            setView('mDiagnosisList');
+        } else if (target === 'mDiagnosisForm') {
+            setView('mDiagnosisForm');
+        } else if (target === 'mDiagnosisDetail') {
+            setView('mDiagnosisDetail');
+        } else if (target === 'mDiagnosisResult') {
+            setView('mDiagnosisResult');
+        } else if (target === 'mDiagnosisDone') {
+            setView('mDiagnosisDone');
+        } else if (target === 'pcDiagnosisMap') {
+            setView('pcDiagnosisMap');
+        } else if (target === 'pcDiagnosisForm') {
+            setView('pcDiagnosisForm');
+        } else if (target === 'pcDiagnosisDetail') {
+            setSelectedReport(data);
+            setView('pcDiagnosisDetail');
+        } else if (target === 'pcDiagnosisDone') {
+            setView('pcDiagnosisDone');
         }
     };
 
@@ -1188,6 +1275,78 @@ function App() {
                 )}
                 {view === 'pcReportDetail' && (
                     <PCReportDetail onNavigate={(target, data) => onNavigate(target, data)} report={selectedReport} />
+                )}
+                {view === 'mSurveyList' && (
+                    <MSurveyList onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mSurveyDetail1' && (
+                    <MSurveyDetail1 onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'mSurveyDetail2' && (
+                    <MSurveyDetail2 onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'mSurveyJoin' && (
+                    <MSurveyJoin onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'mSurveyDone' && (
+                    <MSurveyDone onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mSurveyResults' && (
+                    <MSurveyResults onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'mProposalList' && (
+                    <MProposalList onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mProposalMap' && (
+                    <MProposalMap onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mProposalForm' && (
+                    <MProposalForm onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mProposalDetail' && (
+                    <MProposalDetail onNavigate={(target, data) => onNavigate(target, data)} proposal={selectedProposal} />
+                )}
+                {view === 'mProposalDone' && (
+                    <MProposalDone onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mReportList' && (
+                    <MReportList onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mReportMap' && (
+                    <MReportMap onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mReportForm' && (
+                    <MReportForm onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mReportDetail' && (
+                    <MReportDetail onNavigate={(target, data) => onNavigate(target, data)} report={selectedReport} />
+                )}
+                {view === 'mReportDone' && (
+                    <MReportDone onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mDiagnosisList' && (
+                    <MDiagnosisList onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mDiagnosisForm' && (
+                    <MDiagnosisForm onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mDiagnosisResult' && (
+                    <MDiagnosisResult onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mDiagnosisDone' && (
+                    <MDiagnosisDone onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcDiagnosisMap' && (
+                    <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcDiagnosisForm' && (
+                    <PCDiagnosisForm onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcDiagnosisDetail' && (
+                    <PCDiagnosisDetail onNavigate={(target, data) => onNavigate(target, data)} item={selectedReport} />
+                )}
+                {view === 'pcDiagnosisDone' && (
+                    <PCDiagnosisDone onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
             </div>
         </Suspense>

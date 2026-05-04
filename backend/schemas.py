@@ -237,3 +237,106 @@ class ProposalCommentRead(ProposalCommentBase):
         orm_mode = True
 
 ProposalCommentRead.update_forward_refs()
+
+
+# ===== Report comments / detail =====
+
+class ReportCommentCreate(BaseModel):
+    content: str
+
+class ReportCommentRead(BaseModel):
+    id: int
+    author: Optional[str] = None
+    content: str
+    date: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+
+# ===== Surveys =====
+
+class SurveyQuestionRead(BaseModel):
+    id: int
+    order_no: int
+    qtype: str
+    text: str
+    options: Optional[List[str]] = None
+
+    class Config:
+        orm_mode = True
+
+class SurveyListItem(BaseModel):
+    id: int
+    title: str
+    minutes: int
+    period: str
+    status: str
+    response_count: int
+
+class SurveyDetail(BaseModel):
+    id: int
+    title: str
+    description: Optional[str] = None
+    minutes: int
+    period: str
+    status: str
+    response_count: int
+    questions: List[SurveyQuestionRead] = []
+
+class SurveyAnswerSubmit(BaseModel):
+    question_id: int
+    value: Any
+
+class SurveyResponseSubmit(BaseModel):
+    answers: List[SurveyAnswerSubmit]
+
+
+# ===== Home / stats =====
+
+class HomeStats(BaseModel):
+    reports_count: int
+    proposals_count: int
+    diagnoses_count: int
+    citizens_count: int
+
+
+class HomeCitizen(BaseModel):
+    id: int
+    name: str
+    age: int
+    tags: List[str] = []
+    desc: str
+
+class HomeArchive(BaseModel):
+    id: int
+    title: str
+    desc: str
+    img: Optional[str] = None
+
+
+# ===== Survey admin (create/update) =====
+
+class SurveyQuestionCreate(BaseModel):
+    qtype: str
+    text: str
+    options: List[str] = []
+    order_no: Optional[int] = None
+
+class SurveyCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    minutes: int = 10
+    period_start: Optional[datetime] = None
+    period_end: Optional[datetime] = None
+    status: str = "active"
+    questions: List[SurveyQuestionCreate] = []
+
+class SurveyUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    minutes: Optional[int] = None
+    period_start: Optional[datetime] = None
+    period_end: Optional[datetime] = None
+    status: Optional[str] = None
+    questions: Optional[List[SurveyQuestionCreate]] = None

@@ -1,34 +1,27 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
 import MapToolbar from './PCMapToolbar';
 import './PCMapShared.css';
 import './PCMap3.css';
 
+const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
 const DISTRICTS = ['중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'];
 
 const LIVING_CATS = [
-    { key: 'all', label: '전체', icon: 'grid' },
-    { key: 'safety', label: '안전', icon: 'shield' },
-    { key: 'housing', label: '주거', icon: 'home' },
-    { key: 'work', label: '산업·일자리', icon: 'briefcase' },
-    { key: 'edu', label: '교육', icon: 'book' },
-    { key: 'env', label: '환경', icon: 'leaf' },
-    { key: 'leisure', label: '문화·여가', icon: 'heart' },
-    { key: 'health', label: '보건·복지', icon: 'plus' },
-    { key: 'traffic', label: '교통', icon: 'bus' },
+    { key: 'all', label: '전체', icon: 'grid', cat: null },
+    { key: 'safety', label: '안전', icon: 'shield', cat: '안전' },
+    { key: 'housing', label: '주거', icon: 'home', cat: '주거' },
+    { key: 'work', label: '산업·일자리', icon: 'briefcase', cat: '산업·일자리' },
+    { key: 'edu', label: '교육', icon: 'book', cat: '교육' },
+    { key: 'env', label: '환경', icon: 'leaf', cat: '환경' },
+    { key: 'leisure', label: '문화·여가', icon: 'heart', cat: '문화·여가' },
+    { key: 'health', label: '보건·복지', icon: 'plus', cat: '보건·복지' },
+    { key: 'traffic', label: '교통', icon: 'bus', cat: '교통' },
 ];
 
-const ITEMS = [
-    { id: 1, kind: '제보', title: '도로 표면 균열 — 차량 통행 위험', subtitle: '동래구 우리디자이너', category: '안전', categoryKey: 'safety', region: '동래구', date: '2026-04-12', views: 18, votes: 9, status: '처리중', lat: 35.1972, lng: 129.0786 },
-    { id: 2, kind: '제보', title: '가로등 고장 — 야간 보행 어두움', subtitle: '해운대구 우리디자이너', category: '안전', categoryKey: 'safety', region: '해운대구', date: '2026-04-10', views: 12, votes: 8, status: '접수', lat: 35.1631, lng: 129.1638 },
-    { id: 3, kind: '제보', title: '쓰레기 무단투기 — 악취 발생', subtitle: '부산진구 우리디자이너', category: '환경', categoryKey: 'env', region: '부산진구', date: '2026-04-08', views: 9, votes: 5, status: '처리완료', lat: 35.1632, lng: 129.0531 },
-    { id: 4, kind: '제보', title: '버스정류장 안내판 파손', subtitle: '연제구 우리디자이너', category: '교통', categoryKey: 'traffic', region: '연제구', date: '2026-04-06', views: 7, votes: 4, status: '처리중', lat: 35.1769, lng: 129.0794 },
-    { id: 5, kind: '제보', title: '횡단보도 신호등 작동 이상', subtitle: '사하구 우리디자이너', category: '교통', categoryKey: 'traffic', region: '사하구', date: '2026-04-04', views: 6, votes: 3, status: '접수', lat: 35.1043, lng: 128.9747 },
-    { id: 6, kind: '제보', title: '공원 벤치 파손', subtitle: '남구 우리디자이너', category: '문화·여가', categoryKey: 'leisure', region: '남구', date: '2026-04-02', views: 5, votes: 2, status: '처리완료', lat: 35.1335, lng: 129.0851 },
-    { id: 7, kind: '제보', title: '도서관 주변 보행로 미끄럼', subtitle: '수영구 우리디자이너', category: '안전', categoryKey: 'safety', region: '수영구', date: '2026-03-30', views: 4, votes: 2, status: '접수', lat: 35.1530, lng: 129.1186 },
-    { id: 8, kind: '제보', title: '공중화장실 시설 노후', subtitle: '영도구 우리디자이너', category: '보건·복지', categoryKey: 'health', region: '영도구', date: '2026-03-28', views: 3, votes: 1, status: '처리중', lat: 35.0911, lng: 129.0680 },
-];
+const CAT_TO_KEY = LIVING_CATS.reduce((acc, c) => { if (c.cat) acc[c.cat] = c.key; return acc; }, {});
 
 const CAT_COLOR = {
     traffic: '#E6235A', safety: '#FF7A00', env: '#16B5B0', work: '#5B2EAB',
@@ -57,8 +50,41 @@ export default function PCReportMap({ onNavigate }) {
     const [livingCats, setLivingCats] = useState(() => new Set(['all']));
     const [kind, setKind] = useState(null);
     const [sort, setSort] = useState('latest');
-    const [policyItem, setPolicyItem] = useState(ITEMS[0]);
+    const [policyItem, setPolicyItem] = useState(null);
+    const [reports, setReports] = useState([]);
+    const [proposalsCount, setProposalsCount] = useState(0);
     const mapRef = useRef(null);
+
+    useEffect(() => {
+        fetch(`${VITE_API_URL}/api/reports/full`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((rows) => setReports(Array.isArray(rows) ? rows : []))
+            .catch(() => setReports([]));
+        fetch(`${VITE_API_URL}/api/reports/proposals`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((rows) => setProposalsCount(Array.isArray(rows) ? rows.length : 0))
+            .catch(() => setProposalsCount(0));
+    }, []);
+
+    const ITEMS = useMemo(() => reports.map((r) => ({
+        id: r.id,
+        kind: '제보',
+        title: r.title,
+        subtitle: r.author || '익명',
+        category: r.category,
+        categoryKey: CAT_TO_KEY[r.category] || 'safety',
+        region: r.region,
+        date: r.date,
+        views: r.views || 0,
+        votes: r.likes || 0,
+        status: r.status,
+        lat: r.lat,
+        lng: r.lng,
+    })), [reports]);
+
+    useEffect(() => {
+        if (!policyItem && ITEMS.length > 0) setPolicyItem(ITEMS[0]);
+    }, [ITEMS, policyItem]);
 
     const toggleLivingCat = (key) => {
         setLivingCats((prev) => {
@@ -72,17 +98,21 @@ export default function PCReportMap({ onNavigate }) {
         });
     };
 
-    let filtered = ITEMS;
-    if (!livingCats.has('all')) filtered = filtered.filter((it) => livingCats.has(it.categoryKey));
-    if (sort === 'views') filtered = [...filtered].sort((a, b) => b.views - a.views);
-    if (sort === 'votes') filtered = [...filtered].sort((a, b) => b.votes - a.votes);
+    const filtered = useMemo(() => {
+        let arr = ITEMS;
+        if (!livingCats.has('all')) arr = arr.filter((it) => livingCats.has(it.categoryKey));
+        if (sort === 'views') arr = [...arr].sort((a, b) => b.views - a.views);
+        else if (sort === 'votes') arr = [...arr].sort((a, b) => b.votes - a.votes);
+        else arr = [...arr].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+        return arr;
+    }, [ITEMS, livingCats, sort]);
 
     const counts = {
         report: ITEMS.length,
-        propose: 0,
+        propose: proposalsCount,
     };
 
-    const pins = filtered.map((it) => ({ ...it, color: CAT_COLOR[it.categoryKey] || '#E6235A' }));
+    const pins = filtered.filter((it) => it.lat && it.lng).map((it) => ({ ...it, color: CAT_COLOR[it.categoryKey] || '#E6235A' }));
 
     return (
         <UserPCLayout currentView="pcReportMap" onNavigate={onNavigate}>
@@ -146,13 +176,17 @@ export default function PCReportMap({ onNavigate }) {
                     <MapToolbar mapRef={mapRef} />
 
                     {policyItem && (
-                        <div className="pc-map3-policy">
+                        <div
+                            className="pc-map3-policy"
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.stopPropagation()}
+                        >
                             <div className="pc-map3-policy-head">
                                 <strong>정책 정보</strong>
                                 <button
                                     className="pc-map3-policy-close"
                                     aria-label="닫기"
-                                    onClick={() => setPolicyItem(null)}
+                                    onClick={(e) => { e.stopPropagation(); setPolicyItem(null); }}
                                 >
                                     ×
                                 </button>

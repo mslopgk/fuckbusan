@@ -1,15 +1,41 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Home.css';
 import InteractiveMap from './InteractiveMap';
+import MobileBottomNav from './MobileBottomNav';
+
+const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
+// 데이터가 비었을 때 마퀴 깨지지 않도록 fallback
+const FALLBACK_CITIZENS = [
+    { id: 'fb-1', name: '홍길동', age: 72, tags: ['#액티브시니어', '#낭만어부', '#손자바라기'], desc: '다리가 아파서... 우리 집 앞 언덕길에 잠깐 쉴 의자 하나만 있으면 좋겠어.' },
+    { id: 'fb-2', name: '김수현', age: 23, tags: ['#대학생', '#취준생', '#밤길무서워'], desc: '늦게까지 공부하고 집에 가는 길이 너무 어둡고 불안해요.' },
+    { id: 'fb-3', name: '박지민', age: 35, tags: ['#워킹맘', '#유모차', '#안전제일'], desc: '유모차 끌고 공원 가는 길이 너무 울퉁불퉁해요.' },
+];
+const FALLBACK_ARCHIVES = [
+    { id: 'fb-1', title: '보행약자를 위한 길', desc: '모두가 안전하게 이동할 수 있는 환경을 만들었습니다.', img: '/assets/archieve1.png' },
+    { id: 'fb-2', title: '야간 보행 안전 조명', desc: '어두운 골목길을 밝혀 범죄를 예방합니다.', img: '/assets/archieve2.png' },
+    { id: 'fb-3', title: '어린이 보호구역 디자인', desc: '운전자들의 서행을 유도하는 디자인.', img: '/assets/archieve3.png' },
+];
 
 const Home = ({ onNavigate }) => {
     const [activeTab, setActiveTab] = useState('home');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isPC, setIsPC] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
 
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         setIsLoggedIn(!!token);
+
+        const onResize = () => setIsPC(window.innerWidth >= 1024);
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
     }, []);
+
+    // 뷰포트 따라 PC/모바일 라우트 분기
+    const goReport   = () => onNavigate && onNavigate(isPC ? 'pcReportMap'    : 'mReportMap');
+    const goPropose  = () => onNavigate && onNavigate(isPC ? 'pcProposeMap'   : 'mProposalMap');
+    const goSurvey   = () => onNavigate && onNavigate(isPC ? 'pcSurveyList'   : 'mSurveyList');
+    const goDiagnose = () => onNavigate && onNavigate(isPC ? 'diagnosis'      : 'mDiagnosisList');
 
     const handleLogout = () => {
         localStorage.removeItem('access_token');
@@ -119,7 +145,7 @@ const Home = ({ onNavigate }) => {
                 {/* Action Cards & Survey Row */}
                 <div className="main-actions-container">
                     <div className="action-row">
-                        <div className="action-item card report" onClick={() => onNavigate && onNavigate('reportPostForm')}>
+                        <div className="action-item card report" onClick={goReport}>
                             <div className="card-top">
                                 <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
                                     <div className="card-title">제보하기</div>
@@ -131,7 +157,7 @@ const Home = ({ onNavigate }) => {
                         </div>
                         <div className="action-item card diagnose" onClick={() => {
                                 if (!isLoggedIn) { alert('로그인 후 이용할 수 있습니다.'); onNavigate && onNavigate('login'); return; }
-                                onNavigate && onNavigate('proposalList');
+                                goPropose();
                             }}>
                             <div className="card-top">
                                 <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
@@ -144,7 +170,17 @@ const Home = ({ onNavigate }) => {
                         </div>
                     </div>
                     <div className="action-row" style={{ marginTop: '10px' }}>
-                        <div className="action-item card activity" onClick={() => onNavigate && onNavigate('myActivityHub')} style={{ background: 'linear-gradient(135deg, #491C9C 0%, #190A36 100%)', height: '140px' }}>
+                        <div className="action-item card diagnose" onClick={goDiagnose} style={{ background: 'linear-gradient(135deg, #06AB69 0%, #047a4b 100%)' }}>
+                            <div className="card-top">
+                                <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
+                                    <div className="card-title" style={{ color: 'white' }}>진단하기</div>
+                                    <img src="/lighticon.svg" alt="진단하기 아이콘" className="card-icon-img" style={{ filter: 'brightness(0) invert(1)' }} />
+                                </div>
+                                <div className="card-subtitle" style={{ color: 'white', opacity: 0.85 }}>우리 동네 디자인,<br />같이 점검해볼까요?</div>
+                            </div>
+                            <div className="card-arrow" style={{ color: 'white' }}>→</div>
+                        </div>
+                        <div className="action-item card activity" onClick={() => onNavigate && onNavigate('myActivityHub')} style={{ background: 'linear-gradient(135deg, #491C9C 0%, #190A36 100%)' }}>
                             <div className="card-top">
                                 <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
                                     <div className="card-title" style={{ color: 'white' }}>나의 활동</div>
@@ -249,35 +285,7 @@ const Home = ({ onNavigate }) => {
             </div>
 
 
-            {/* Fixed Bottom Nav */}
-            <nav className="bottom-nav">
-                <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>
-                    <img src="/home.svg" alt="홈" className="nav-icon" style={{ filter: activeTab === 'home' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
-                    <span className="nav-text">홈</span>
-                </div>
-                <div className={`nav-item ${activeTab === 'report' ? 'active' : ''}`} onClick={() => {
-                    onNavigate && onNavigate('reportList');
-                }}>
-                    <img src="/report.svg" alt="제보" className="nav-icon" style={{ width: '22px', height: '22px', filter: activeTab === 'report' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
-                    <span className="nav-text">제보</span>
-                </div>
-                <div className={`nav-item ${activeTab === 'proposal' ? 'active' : ''}`} onClick={() => {
-                    const token = localStorage.getItem('access_token');
-                    if (!token) {
-                        alert('로그인이 필요한 서비스입니다.');
-                        onNavigate && onNavigate('login');
-                        return;
-                    }
-                    onNavigate && onNavigate('proposalList');
-                }}>
-                    <img src="/graph.svg" alt="제안" className="nav-icon" style={{ width: '20px', height: '20px', filter: (activeTab === 'proposal' || activeTab === 'stats') ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
-                    <span className="nav-text">제안</span>
-                </div>
-                <div className={`nav-item ${activeTab === 'mypage' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('myPage')} style={{ cursor: 'pointer' }}>
-                    <img src="/myid.svg" alt="내 정보" className="nav-icon" style={{ filter: activeTab === 'mypage' ? 'none' : 'grayscale(100%) opacity(0.6)' }} />
-                    <span className="nav-text">나의 정보</span>
-                </div>
-            </nav>
+            <MobileBottomNav currentView="home" onNavigate={onNavigate} />
         </div>
     );
 };
@@ -346,49 +354,16 @@ const CategoryGrid = () => {
 };
 
 const CitizenCards = () => {
-    // Mock Data
-    const citizens = [
-        {
-            id: 1,
-            name: "홍길동",
-            age: 72,
-            tags: ["#액티브시니어", "#낭만어부", "#손자바라기"],
-            desc: "다리가 아파서... 우리 집 앞 언덕길에 잠깐 쉴 의자 하나만 있으면 좋겠어.",
-            img: null
-        },
-        {
-            id: 2,
-            name: "김수현",
-            age: 23,
-            tags: ["#대학생", "#취준생", "#밤길무서워"],
-            desc: "늦게까지 공부하고 집에 가는 길이 너무 어둡고 불안해요. 학교 앞 골목에 조명이 더 있었으면...",
-            img: null
-        },
-        {
-            id: 3,
-            name: "박지민",
-            age: 35,
-            tags: ["#워킹맘", "#유모차", "#안전제일"],
-            desc: "유모차 끌고 공원 가는 길이 너무 울퉁불퉁해요. 아이가 자꾸 깨서 산책하기가 힘들어요.",
-            img: null
-        },
-        {
-            id: 4,
-            name: "최민수",
-            age: 18,
-            tags: ["#고등학생", "#자전거등교", "#신호등"],
-            desc: "학교 앞 신호등이 너무 짧아서 건너기 힘들어요. 뛰어가다 넘어질 뻔한 적도 있어요.",
-            img: null
-        },
-        {
-            id: 5,
-            name: "정옥자",
-            age: 68,
-            tags: ["#경로당회장", "#골목길", "#쓰레기"],
-            desc: "골목길에 쓰레기가 너무 많이 쌓여서 냄새가 나요. 분리수거함이 제대로 있었으면 좋겠는데...",
-            img: null
-        }
-    ];
+    const [citizens, setCitizens] = useState(FALLBACK_CITIZENS);
+
+    useEffect(() => {
+        fetch(`${VITE_API_URL}/api/home/citizens`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((rows) => {
+                if (Array.isArray(rows) && rows.length > 0) setCitizens(rows);
+            })
+            .catch(() => {});
+    }, []);
 
     // Double data for simple 50% scroll loop
     const displayCitizens = [...citizens, ...citizens];
@@ -465,11 +440,25 @@ const StatsContent = () => {
         return () => observer.disconnect();
     }, []);
 
+    // 백엔드에서 실제 카운트 가져오기
+    const [targets, setTargets] = useState({ personal: 210, report: 330, diagnose: 72 });
+    useEffect(() => {
+        fetch(`${VITE_API_URL}/api/home/stats`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((j) => {
+                if (j) setTargets({
+                    personal: j.proposals_count ?? 0,
+                    report: j.reports_count ?? 0,
+                    diagnose: j.diagnoses_count ?? 0,
+                });
+            })
+            .catch(() => {});
+    }, []);
+
     // Count Up Animation
     useEffect(() => {
         if (!isBarVisible) return;
 
-        const targets = { personal: 210, report: 330, diagnose: 72 };
         const duration = 1500;
         const steps = 60;
         const intervalTime = duration / steps;
@@ -491,7 +480,7 @@ const StatsContent = () => {
         }, intervalTime);
 
         return () => clearInterval(timer);
-    }, [isBarVisible]);
+    }, [isBarVisible, targets]);
 
     return (
         <React.Fragment>
@@ -589,44 +578,20 @@ const StatsContent = () => {
 };
 
 const ArchiveCards = () => {
-    const archives = [
-        {
-            id: 1,
-            title: "보행약자를 위한 길",
-            desc: "모두가 안전하게 이동할 수 있는 환경을 만들었습니다. 휠체어와 유모차도 편안하게 다닐 수 있는...",
-            img: "/assets/archieve1.png"
-        },
-        {
-            id: 2,
-            title: "야간 보행 안전 조명",
-            desc: "어두운 골목길을 밝혀 범죄를 예방하고, 주민들의 귀갓길을 안전하게 지킵니다.",
-            img: "/assets/archieve2.png"
-        },
-        {
-            id: 3,
-            title: "어린이 보호구역 디자인",
-            desc: "운전자들의 서행을 유도하는 디자인으로 아이들의 통학로가 더욱 안전해졌습니다.",
-            img: "/assets/archieve3.png"
-        },
-        {
-            id: 4,
-            title: "셉테드 안심 골목길",
-            desc: "범죄 예방 환경 설계(CPTED)를 적용하여 안심하고 다닐 수 있는 골목길을 조성했습니다.",
-            img: "/assets/archieve1.png" // Reuse placeholder
-        },
-        {
-            id: 5,
-            title: "찾아가는 건강 의료 서비스",
-            desc: "이동식 진료소 디자인을 통해 의료 소외 지역 주민들에게 찾아가는 서비스를 제공합니다.",
-            img: "/assets/archieve2.png" // Reuse placeholder
-        },
-        {
-            id: 6,
-            title: "자원순환 재활용 정거장",
-            desc: "쓰레기 배출 문제를 해결하고 자원 순환을 돕는 깔끔한 재활용 정거장을 설치했습니다.",
-            img: "/assets/archieve3.png" // Reuse placeholder
-        }
-    ];
+    const [archives, setArchives] = useState(FALLBACK_ARCHIVES);
+
+    useEffect(() => {
+        fetch(`${VITE_API_URL}/api/home/archives`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((rows) => {
+                if (Array.isArray(rows) && rows.length > 0) {
+                    // 이미지가 없으면 placeholder 순환 사용
+                    const imgs = ['/assets/archieve1.png', '/assets/archieve2.png', '/assets/archieve3.png'];
+                    setArchives(rows.map((r, i) => ({ ...r, img: r.img || imgs[i % imgs.length] })));
+                }
+            })
+            .catch(() => {});
+    }, []);
 
     // Double data for simple 50% scroll loop
     const displayArchives = [...archives, ...archives];

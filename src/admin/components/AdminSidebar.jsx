@@ -15,8 +15,8 @@ const MENU_TREE = [
         key: 'reportSuggest',
         label: '제안/제보 관리',
         children: [
-            { key: 'reports', label: '제보목록', view: 'reportManagement' },
-            { key: 'proposals', label: '제안목록', view: 'proposalManagement' },
+            { key: 'reports', label: '제보', view: 'reportManagement' },
+            { key: 'proposals', label: '제안', view: 'proposalManagement' },
         ],
     },
     {

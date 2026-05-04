@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, status, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
 from database import get_db
@@ -75,8 +76,8 @@ def submit_checklist(result: ChecklistCreate, db: Session = Depends(get_db), cur
 
 @router.get("/list", response_model=list[ChecklistResponse])
 def get_checklist(
-    skip: int = 0, 
-    limit: int = 100, 
+    skip: int = 0,
+    limit: int = 100,
     db: Session = Depends(get_db)
 ):
     # For now, return all or filter by user?
@@ -85,6 +86,55 @@ def get_checklist(
     # Currently just dumping all for the list page.
     results = db.query(ChecklistResult).offset(skip).limit(limit).all()
     return results
+
+
+@router.get("/clusters")
+def get_checklist_clusters(db: Session = Depends(get_db)):
+    """진단 위치 클러스터 — district_code별 평균 좌표 + 카운트."""
+    from sqlalchemy import func
+    rows = (
+        db.query(
+            ChecklistResult.district_code,
+            func.avg(ChecklistResult.위도).label("lat"),
+            func.avg(ChecklistResult.경도).label("lng"),
+            func.count(ChecklistResult.result_id).label("count"),
+            func.avg(ChecklistResult.점수).label("avg_score"),
+        )
+        .filter(ChecklistResult.위도.isnot(None), ChecklistResult.경도.isnot(None))
+        .group_by(ChecklistResult.district_code)
+        .all()
+    )
+    return [
+        {
+            "district": r.district_code,
+            "lat": float(r.lat) if r.lat else None,
+            "lng": float(r.lng) if r.lng else None,
+            "count": r.count,
+            "avg_score": float(r.avg_score) if r.avg_score else None,
+        }
+        for r in rows
+    ]
+
+
+@router.get("/aggregate")
+def get_checklist_aggregate(
+    district: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    """대분류별 평균 점수 집계 — 레이더/도넛 차트용."""
+    from sqlalchemy import func
+    q = db.query(
+        ChecklistResult.대분류.label("category"),
+        func.avg(ChecklistResult.점수).label("avg_score"),
+        func.count(ChecklistResult.result_id).label("count"),
+    )
+    if district:
+        q = q.filter(ChecklistResult.district_code == district)
+    rows = q.group_by(ChecklistResult.대분류).all()
+    return [
+        {"category": r.category, "avg_score": float(r.avg_score) if r.avg_score else 0, "count": r.count}
+        for r in rows if r.category
+    ]
 
 @router.get("/my", response_model=list[ChecklistResponse])
 def get_my_checklist(

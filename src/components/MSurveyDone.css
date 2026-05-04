@@ -1,0 +1,56 @@
+.m-survey-done-page {
+    min-height: 100vh;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px 90px;
+}
+
+.m-done-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 8px;
+}
+
+.m-done-icon {
+    margin-bottom: 14px;
+}
+
+.m-done-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #5B2EAB;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+}
+
+.m-done-subtitle {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin: 0 0 14px;
+}
+
+.m-done-text {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.m-done-cta {
+    height: 54px;
+    background: #5B2EAB;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 4px 12px rgba(91, 46, 171, 0.25);
+}

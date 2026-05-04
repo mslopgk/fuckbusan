@@ -1,0 +1,48 @@
+.m-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: #fff;
+    border-top: 1px solid #ececec;
+    display: flex;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* PC(≥1024px)에서는 모바일 하단 네비 숨김 */
+@media (min-width: 1024px) {
+    .m-bottom-nav { display: none; }
+}
+
+.m-bnav-item {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    color: #b0b0b0;
+    font-family: inherit;
+}
+
+/* active 색상은 nav 아이템의 inline style(color)로 결정됨 (보라 #5B2EAB) */
+.m-bnav-item.active { font-weight: 700; }
+
+.m-bnav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+}
+
+.m-bnav-label {
+    font-size: 10px;
+    font-weight: 600;
+}
+

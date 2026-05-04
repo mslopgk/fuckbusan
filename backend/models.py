@@ -243,3 +243,51 @@ class ProposalComment(Base):
     user = relationship("User", backref="comments")
     proposal = relationship("NewProposal", backref="comments")
     replies = relationship("ProposalComment", backref="parent_comment", remote_side=[id])
+
+
+class Survey(Base):
+    __tablename__ = "surveys"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    minutes = Column(Integer, default=10)
+    period_start = Column(DateTime, nullable=True)
+    period_end = Column(DateTime, nullable=True)
+    status = Column(String(20), default="active")  # active / result / closed
+    response_count = Column(Integer, default=0)
+    author_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.now)
+
+
+class SurveyQuestion(Base):
+    __tablename__ = "survey_questions"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    survey_id = Column(Integer, ForeignKey("surveys.id"), nullable=False)
+    order_no = Column(Integer, default=0)
+    qtype = Column(String(20), default="single")  # single / multi / text / agree
+    text = Column(String(500), nullable=False)
+    options = Column(JSON, nullable=True)
+
+
+class SurveyResponse(Base):
+    __tablename__ = "survey_responses"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    survey_id = Column(Integer, ForeignKey("surveys.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    submitted_at = Column(DateTime, default=datetime.now)
+
+
+class SurveyAnswer(Base):
+    __tablename__ = "survey_answers"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    response_id = Column(Integer, ForeignKey("survey_responses.id"), nullable=False)
+    question_id = Column(Integer, ForeignKey("survey_questions.id"), nullable=False)
+    value = Column(Text, nullable=True)

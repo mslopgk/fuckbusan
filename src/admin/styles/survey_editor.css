@@ -383,6 +383,460 @@
     border-color: #16B5B0;
 }
 
+/* === Figma 일치 신규 레이아웃 === */
+.survey-edit-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.survey-edit-layout .survey-edit-pane {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    max-width: none;
+}
+
+.se-toolbar {
+    width: 80px;
+    flex-shrink: 0;
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 12px;
+    padding: 10px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: sticky;
+    top: 90px;
+}
+
+.se-tool-btn {
+    border: none;
+    background: transparent;
+    padding: 10px 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border-radius: 8px;
+    color: #555;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.se-tool-btn:hover {
+    background: #f3f4f5;
+    color: #16B5B0;
+}
+
+.se-tool-btn span {
+    word-break: keep-all;
+}
+
+/* 편집 폼 필드 */
+.se-field-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+}
+
+.se-field-label {
+    width: 60px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1b;
+    flex-shrink: 0;
+}
+
+.se-field-label-tight {
+    width: 60px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1b;
+    flex-shrink: 0;
+    margin-bottom: 8px;
+}
+
+.se-field-input {
+    flex: 1;
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+}
+
+.se-field-input:focus { border-color: #16B5B0; }
+
+.se-radio-row {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+}
+
+.se-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #1a1a1b;
+    cursor: pointer;
+}
+
+.se-radio input[type="radio"] {
+    accent-color: #16B5B0;
+    margin: 0;
+}
+
+/* 질문 카드 — 신규 */
+.se-qcard {
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 12px;
+    padding: 14px 18px 18px;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.se-qcard-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+}
+
+.se-qcard-tool {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: #888;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.se-qcard-tool:hover { background: #f3f4f5; color: #16B5B0; }
+
+.se-qcard-required {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #555;
+    margin-right: 4px;
+}
+
+.se-required-toggle {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 30px;
+    height: 16px;
+    border-radius: 8px;
+    background: #d9d9d9;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.se-required-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    transition: left 0.2s;
+}
+
+.se-required-toggle:checked { background: #16B5B0; }
+.se-required-toggle:checked::after { left: 16px; }
+
+.se-qcard-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.se-qcard-img {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    background: #fff;
+    color: #888;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.se-qcard-img:hover { border-color: #16B5B0; color: #16B5B0; }
+
+.se-qtype-select {
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+    min-width: 130px;
+}
+
+.se-qcard-body {
+    padding-left: 0;
+}
+
+.se-meta-input {
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+    min-width: 0;
+    flex: 1;
+}
+
+.se-meta-input:focus { border-color: #16B5B0; }
+.se-meta-input-sm { max-width: 100px; flex: 0 0 100px; }
+
+.se-meta-select {
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+}
+.se-meta-select-sm { width: 80px; }
+
+.se-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.se-option-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.se-option-marker {
+    color: #16B5B0;
+    font-size: 18px;
+    width: 18px;
+    flex: 0 0 18px;
+}
+
+.se-option-input {
+    flex: 1;
+    border: 1px solid #ececec;
+    border-radius: 6px;
+    padding: 7px 10px;
+    outline: none;
+    font-size: 13px;
+}
+
+.se-option-input:focus { border-color: #16B5B0; }
+
+.se-add-option-btn {
+    align-self: flex-start;
+    border: none;
+    background: transparent;
+    color: #16B5B0;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 4px 0;
+    margin-left: 28px;
+}
+
+.se-add-option-btn:hover { text-decoration: underline; }
+
+.se-checkbox-meta {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.se-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.se-scale-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.se-scale-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.se-scale-label-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.se-scale-num {
+    width: 24px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: #1a1a1b;
+}
+
+.se-confirm-btn {
+    display: block;
+    margin: 24px auto 0;
+    width: 240px;
+    height: 44px;
+    border: none;
+    border-radius: 22px;
+    background: #16B5B0;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.se-confirm-btn:hover { filter: brightness(0.95); }
+
+/* === 설정 탭 평면 레이아웃 === */
+.survey-settings-flat {
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 12px;
+    padding: 32px 40px;
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.se-srow {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    align-items: center;
+    gap: 24px;
+    padding: 6px 0;
+}
+
+.se-srow > label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a1b;
+}
+
+.se-select {
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 13px;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+    max-width: 360px;
+    font-family: inherit;
+}
+
+.se-select:focus { border-color: #16B5B0; }
+
+.se-date-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.se-date-wrap {
+    position: relative;
+}
+
+.se-date-input {
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    padding: 9px 36px 9px 12px;
+    font-size: 13px;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+    font-family: inherit;
+    min-width: 150px;
+}
+
+.se-date-input:focus { border-color: #16B5B0; }
+
+.se-date-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    pointer-events: none;
+}
+
+.se-date-sep { color: #888; }
+
+.se-radios {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.se-save-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.se-save-btn {
+    width: 240px;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    background: #16B5B0;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.se-save-btn:hover { filter: brightness(0.95); }
+
 /* Survey results page */
 .survey-results-pane {
     max-width: 1080px;

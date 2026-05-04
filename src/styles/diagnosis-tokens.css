@@ -1,0 +1,44 @@
+/*
+ * 진단 04/23 (Figma 941:5782) 색·shadow 토큰
+ * Mobile/PC 진단 컴포넌트가 공유. 한 군데서 색을 바꾸면 전체에 반영
+ */
+:root {
+    /* Primary brand */
+    --diag-green:        #06AB69;  /* Mobile primary */
+    --diag-green-soft:   #E1F6EC;
+    --diag-teal:         #23BDBB;  /* PC primary */
+    --diag-teal-soft:    #DFF8F8;
+
+    /* Accent (legacy diagnosis modes) */
+    --diag-pink:         #E6235A;  /* general 진단 (recharts fill) */
+    --diag-purple:       #5B2EAB;  /* 친구 모바일 active 색, expert detail 버튼 */
+    --diag-purple-deep:  #542AA3;  /* expert 진단 */
+    --diag-blue:         #3D7DEB;  /* 구역별 detail */
+    --diag-red:          #d0021b;  /* focus pin */
+
+    /* Category chip colors */
+    --cat-주거:          #DFF8F8;
+    --cat-환경:          #C0E6C0;
+    --cat-교통:          #FFE2C9;
+    --cat-안전:          #FFD4D4;
+    --cat-교육:          #FFC9C9;
+    --cat-산업일자리:    #FFE9A8;
+    --cat-문화여가:      #E0D4FF;
+    --cat-보건복지:      #D4E9FF;
+
+    /* Text */
+    --diag-text:         #242424;
+    --diag-text-sub:     #555;
+    --diag-text-muted:   #737373;
+    --diag-text-mute:    #BFBFBF;
+
+    /* Border / surface */
+    --diag-border:       #E6E6E6;
+    --diag-border-soft:  #ececef;
+    --diag-bg:           #f7f8fa;
+
+    /* Shadows */
+    --diag-card-shadow:    0 0 10px rgba(0, 0, 0, 0.1);
+    --diag-panel-shadow:   0 4px 12px rgba(0, 0, 0, 0.12);
+    --diag-popover-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}

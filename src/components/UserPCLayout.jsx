@@ -3,13 +3,14 @@ import './UserPCLayout.css';
 const NAV_ITEMS = [
     { key: 'survey', label: '설문', view: 'pcSurveyList' },
     { key: 'reportSuggest', label: '제보/제안', view: 'pcProposeMap' },
-    { key: 'diagnosis', label: '진단', view: 'comingSoon' },
+    { key: 'diagnosis', label: '진단', view: 'pcDiagnosisMap' },
     { key: 'aiCitizen', label: 'AI가상시민', view: 'comingSoon' },
     { key: 'publicData', label: '공공데이터', view: 'comingSoon' },
 ];
 
 const SURVEY_VIEWS = ['pcSurveyList', 'pcSurveyDetail', 'pcSurveyConsent', 'pcSurveyJoin', 'pcSurveyResults', 'pcSurveyDone'];
 const REPORT_SUGGEST_VIEWS = ['pcProposeMap', 'pcProposeForm', 'pcProposeDone', 'pcProposeDetail', 'pcReportMap', 'pcReportForm', 'pcReportDone', 'pcReportDetail'];
+const DIAGNOSIS_VIEWS = ['pcDiagnosisMap', 'pcDiagnosisForm', 'pcDiagnosisDetail', 'pcDiagnosisDone'];
 
 const disabledStyle = { color: '#9ca3af', cursor: 'not-allowed', opacity: 0.5 };
 
@@ -22,6 +23,7 @@ export default function UserPCLayout({ children, currentView, onNavigate }) {
     const isActive = (key) => {
         if (key === 'survey') return SURVEY_VIEWS.includes(currentView);
         if (key === 'reportSuggest') return REPORT_SUGGEST_VIEWS.includes(currentView);
+        if (key === 'diagnosis') return DIAGNOSIS_VIEWS.includes(currentView);
         return false;
     };
 
