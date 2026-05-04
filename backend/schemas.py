@@ -340,3 +340,62 @@ class SurveyUpdate(BaseModel):
     period_end: Optional[datetime] = None
     status: Optional[str] = None
     questions: Optional[List[SurveyQuestionCreate]] = None
+
+
+# ===== Notifications =====
+
+class NotificationRead(BaseModel):
+    id: int
+    kind: str
+    target_type: Optional[str] = None
+    target_id: Optional[int] = None
+    title: Optional[str] = None
+    body: Optional[str] = None
+    is_read: bool
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+# ===== Activity logs =====
+
+class ActivityLogRead(BaseModel):
+    id: int
+    user_id: Optional[int] = None
+    action: str
+    target_type: Optional[str] = None
+    target_id: Optional[int] = None
+    meta: Optional[Dict[str, Any]] = None
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+# ===== Search =====
+
+class SearchHit(BaseModel):
+    type: str  # report / proposal / survey
+    id: int
+    title: str
+    snippet: Optional[str] = None
+    region: Optional[str] = None
+    category: Optional[str] = None
+    created_at: Optional[datetime] = None
+    score: Optional[float] = None
+
+
+# ===== Admin user management =====
+
+class AdminUserUpdate(BaseModel):
+    nickname: Optional[str] = None
+    phone_num: Optional[str] = None
+    district_code: Optional[str] = None
+    role: Optional[str] = None  # 'admin' / 'user' (only district_code='admin' for admin marker)
+
+
+# ===== Comment update (Report) =====
+
+class ReportCommentUpdate(BaseModel):
+    content: str

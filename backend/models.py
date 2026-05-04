@@ -291,3 +291,32 @@ class SurveyAnswer(Base):
     response_id = Column(Integer, ForeignKey("survey_responses.id"), nullable=False)
     question_id = Column(Integer, ForeignKey("survey_questions.id"), nullable=False)
     value = Column(Text, nullable=True)
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False, index=True)
+    actor_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    kind = Column(String(30), nullable=False)  # like / comment / vote / status / mention / system
+    target_type = Column(String(20), nullable=True)  # report / proposal / survey / diagnosis
+    target_id = Column(Integer, nullable=True)
+    title = Column(String(255), nullable=True)
+    body = Column(String(500), nullable=True)
+    is_read = Column(Boolean, default=False, index=True)
+    created_at = Column(DateTime, default=datetime.now, index=True)
+
+
+class ActivityLog(Base):
+    __tablename__ = "activity_logs"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True, index=True)
+    action = Column(String(50), nullable=False, index=True)  # create / update / delete / like / comment / vote
+    target_type = Column(String(20), nullable=True)
+    target_id = Column(Integer, nullable=True)
+    meta = Column(JSON, nullable=True)
+    created_at = Column(DateTime, default=datetime.now, index=True)

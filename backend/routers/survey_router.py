@@ -233,3 +233,126 @@ def admin_delete_survey(
     db.delete(s)
     db.commit()
     return {"message": "삭제되었습니다."}
+
+
+@router.post("/admin/{survey_id}/close")
+def admin_close_survey(
+    survey_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """설문 종료 → status=result로 전환."""
+    _require_admin(current_user)
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    s.status = "result"
+    db.commit()
+    return {"message": "설문이 종료되었습니다.", "status": s.status}
+
+
+@router.post("/admin/{survey_id}/duplicate", status_code=201)
+def admin_duplicate_survey(
+    survey_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """설문 복제 — 응답은 제외, 질문만 복사."""
+    _require_admin(current_user)
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    new_s = models.Survey(
+        title=f"{s.title} (복사본)",
+        description=s.description,
+        minutes=s.minutes,
+        period_start=s.period_start,
+        period_end=s.period_end,
+        status="active",
+        response_count=0,
+        author_id=s.author_id,
+    )
+    db.add(new_s)
+    db.flush()
+    questions = db.query(models.SurveyQuestion).filter(models.SurveyQuestion.survey_id == survey_id).all()
+    for q in questions:
+        db.add(models.SurveyQuestion(
+            survey_id=new_s.id,
+            order_no=q.order_no,
+            qtype=q.qtype,
+            text=q.text,
+            options=q.options,
+        ))
+    db.commit()
+    return {"id": new_s.id, "message": "설문이 복제되었습니다."}
+
+
+# ----- 개별 질문 CRUD -----
+
+@router.post("/admin/{survey_id}/questions", status_code=201)
+def admin_add_question(
+    survey_id: int,
+    payload: schemas.SurveyQuestionCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    next_order = (
+        db.query(models.SurveyQuestion).filter(models.SurveyQuestion.survey_id == survey_id).count()
+    )
+    q = models.SurveyQuestion(
+        survey_id=survey_id,
+        order_no=payload.order_no if payload.order_no is not None else next_order,
+        qtype=payload.qtype,
+        text=payload.text,
+        options=payload.options,
+    )
+    db.add(q)
+    db.commit()
+    db.refresh(q)
+    return {"id": q.id, "message": "질문이 추가되었습니다."}
+
+
+@router.put("/admin/{survey_id}/questions/{qid}")
+def admin_update_question(
+    survey_id: int,
+    qid: int,
+    payload: schemas.SurveyQuestionCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    q = db.query(models.SurveyQuestion).filter(
+        models.SurveyQuestion.id == qid, models.SurveyQuestion.survey_id == survey_id
+    ).first()
+    if not q:
+        raise HTTPException(status_code=404, detail="질문을 찾을 수 없습니다.")
+    q.qtype = payload.qtype
+    q.text = payload.text
+    q.options = payload.options
+    if payload.order_no is not None:
+        q.order_no = payload.order_no
+    db.commit()
+    return {"message": "질문이 수정되었습니다."}
+
+
+@router.delete("/admin/{survey_id}/questions/{qid}")
+def admin_delete_question(
+    survey_id: int,
+    qid: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    q = db.query(models.SurveyQuestion).filter(
+        models.SurveyQuestion.id == qid, models.SurveyQuestion.survey_id == survey_id
+    ).first()
+    if not q:
+        raise HTTPException(status_code=404, detail="질문을 찾을 수 없습니다.")
+    db.query(models.SurveyAnswer).filter(models.SurveyAnswer.question_id == qid).delete(synchronize_session=False)
+    db.delete(q)
+    db.commit()
+    return {"message": "질문이 삭제되었습니다."}

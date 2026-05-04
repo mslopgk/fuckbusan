@@ -240,6 +240,22 @@
     { "id": "checklist-aggregate", "method": "GET", "path": "/checklist/aggregate", "expectStatus": [200], "expectBody": { "isArray": true } },
 
     { "id": "admin-stats", "method": "GET", "path": "/api/admin/stats", "expectStatus": [401, 403] },
-    { "id": "admin-recent", "method": "GET", "path": "/api/admin/recent-activity", "expectStatus": [401, 403] }
+    { "id": "admin-recent", "method": "GET", "path": "/api/admin/recent-activity", "expectStatus": [401, 403] },
+    { "id": "admin-trends", "method": "GET", "path": "/api/admin/trends?metric=reports&period=month", "expectStatus": [401, 403] },
+    { "id": "admin-category-distribution", "method": "GET", "path": "/api/admin/category-distribution?target=reports", "expectStatus": [401, 403] },
+    { "id": "admin-leaderboard", "method": "GET", "path": "/api/admin/district-leaderboard", "expectStatus": [401, 403] },
+    { "id": "admin-users", "method": "GET", "path": "/api/admin/users", "expectStatus": [401, 403] },
+    { "id": "admin-proposals", "method": "GET", "path": "/api/admin/proposals", "expectStatus": [401, 403] },
+    { "id": "admin-activity-logs", "method": "GET", "path": "/api/admin/activity-logs", "expectStatus": [401, 403] },
+
+    { "id": "notifications-list", "method": "GET", "path": "/api/notifications", "expectStatus": [401, 403] },
+    { "id": "notifications-unread", "method": "GET", "path": "/api/notifications/unread-count", "expectStatus": [401, 403] },
+
+    { "id": "search-empty", "method": "GET", "path": "/api/search?q=", "expectStatus": [200], "expectBody": { "isArray": true } },
+    { "id": "search-keyword", "method": "GET", "path": "/api/search?q=%EB%B6%80%EC%82%B0", "expectStatus": [200], "expectBody": { "isArray": true } },
+    { "id": "search-suggest", "method": "GET", "path": "/api/search/suggest?q=%EA%B0%9C%EC%84%A0", "expectStatus": [200], "expectBody": { "isArray": true } },
+
+    { "id": "checklist-summary", "method": "GET", "path": "/checklist/summary", "expectStatus": [200], "expectBody": { "isArray": true } },
+    { "id": "checklist-recommendations", "method": "GET", "path": "/checklist/recommendations", "expectStatus": [200] }
   ]
 }

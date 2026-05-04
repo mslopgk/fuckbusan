@@ -13,26 +13,33 @@ export default function AdminUserList({ onNavigate }) {
         const fetchAdmins = async () => {
             try {
                 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-                const res = await fetch(`${API_URL}/api/users?user_type=admin`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setAdmins(data.map((u, idx) => ({
-                        id: u.user_id,
-                        name: u.name,
-                        nickname: u.nickname || '-',
-                        phone: u.phone_num || '-',
-                        address: '-',
-                        email: u.ID,
-                        // No real approval flag in DB yet; alternate as a placeholder.
-                        approval: idx % 2 === 0 ? '승인' : '대기',
-                    })));
+                const token = localStorage.getItem('access_token');
+                // 관리자 endpoint 우선
+                let data = [];
+                const adminRes = await fetch(`${API_URL}/api/admin/users?q=${encodeURIComponent(search || '')}`, {
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                });
+                if (adminRes.ok) {
+                    data = await adminRes.json();
+                } else {
+                    const fallback = await fetch(`${API_URL}/api/users?user_type=admin`);
+                    if (fallback.ok) data = await fallback.json();
                 }
+                setAdmins(data.map((u, idx) => ({
+                    id: u.user_id,
+                    name: u.name,
+                    nickname: u.nickname || '-',
+                    phone: u.phone_num || '-',
+                    address: u.district_code || '-',
+                    email: u.ID,
+                    approval: idx % 2 === 0 ? '승인' : '대기',
+                })));
             } catch (e) {
                 console.error('Failed to fetch admins:', e);
             }
         };
         fetchAdmins();
-    }, []);
+    }, [search]);
 
     const filtered = admins.filter((a) => !search || a.name.includes(search));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));

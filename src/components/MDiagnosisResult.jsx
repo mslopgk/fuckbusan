@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import './MDiagnosisResult.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const CATEGORIES = [
     { key: 'home',    label: '주거' },
@@ -71,8 +74,8 @@ const RADAR_DATA = [
     { subject: '심미성',     A: 1.7, fullMark: 5 },
 ];
 
-const TOTAL_AVG = (RADAR_DATA.reduce((sum, d) => sum + d.A, 0) / RADAR_DATA.length).toFixed(2);
-const RESPONSES = 36;
+const FALLBACK_TOTAL_AVG = (RADAR_DATA.reduce((sum, d) => sum + d.A, 0) / RADAR_DATA.length).toFixed(2);
+const FALLBACK_RESPONSES = 36;
 
 function CustomTick({ payload, x, y, textAnchor }) {
     const point = RADAR_DATA.find((d) => d.subject === payload.value);
@@ -88,7 +91,39 @@ function CustomTick({ payload, x, y, textAnchor }) {
     );
 }
 
-export default function MDiagnosisResult({ onNavigate, address = '부산 부산진구 초연로 6', date = '2024/05/16', activeCategory = 'traffic', photo = null }) {
+export default function MDiagnosisResult({ onNavigate, address = '부산 부산진구 초연로 6', date = '2024/05/16', activeCategory = 'traffic', photo = null, district = null, resultId = null }) {
+    const [stats, setStats] = useState({ avg: FALLBACK_TOTAL_AVG, count: FALLBACK_RESPONSES });
+    const [recommendations, setRecommendations] = useState([]);
+
+    useEffect(() => {
+        const params = new URLSearchParams();
+        if (district) params.set('district', district);
+        fetch(`${API_URL}/checklist/aggregate?${params.toString()}`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((rows) => {
+                if (!Array.isArray(rows) || rows.length === 0) return;
+                const sumScore = rows.reduce((s, r) => s + (r.avg_score || 0), 0);
+                const sumCount = rows.reduce((s, r) => s + (r.count || 0), 0);
+                if (rows.length > 0) {
+                    setStats({
+                        avg: (sumScore / rows.length).toFixed(2),
+                        count: sumCount,
+                    });
+                }
+            })
+            .catch(() => {});
+
+        const recParams = new URLSearchParams();
+        if (resultId) recParams.set('result_id', String(resultId));
+        if (district && !resultId) recParams.set('district', district);
+        fetch(`${API_URL}/checklist/recommendations?${recParams.toString()}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((data) => {
+                if (data && Array.isArray(data.proposals)) setRecommendations(data.proposals.slice(0, 3));
+            })
+            .catch(() => {});
+    }, [district, resultId]);
+
     return (
         <div className="m-diagres-page">
             <header className="m-diagres-topbar">
@@ -164,7 +199,7 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                 {/* 레이더 차트 카드 */}
                 <section className="m-diagres-card">
                     <p className="m-diagres-card-head">
-                        <span className="m-diagres-avg">{TOTAL_AVG}</span> 전체 평균 ({RESPONSES})
+                        <span className="m-diagres-avg">{stats.avg}</span> 전체 평균 ({stats.count})
                     </p>
                     <div className="m-diagres-chart">
                         <ResponsiveContainer width="100%" height="100%">
@@ -183,6 +218,26 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         </ResponsiveContainer>
                     </div>
                 </section>
+
+                {recommendations.length > 0 && (
+                    <section className="m-diagres-detail">
+                        <h2 className="m-diagres-detail-title">관련 시민 제안</h2>
+                        <p className="m-diagres-detail-desc">진단 결과와 같은 카테고리의 인기 제안입니다.</p>
+                        <div className="m-diagres-detail-btns">
+                            {recommendations.map((rec) => (
+                                <button
+                                    key={rec.id}
+                                    type="button"
+                                    className="m-diagres-detail-btn purple"
+                                    onClick={() => onNavigate?.('mProposalDetail', rec)}
+                                >
+                                    <span>{rec.title} · 좋아요 {rec.likes}</span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {/* 세부 정보 */}
                 <section className="m-diagres-detail">

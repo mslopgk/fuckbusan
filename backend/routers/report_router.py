@@ -11,6 +11,7 @@ from botocore.exceptions import ClientError
 from database import get_db
 import models, schemas
 from .user_router import get_current_user, get_current_user_optional
+from notification_utils import push_notification, log_activity
 
 router = APIRouter(
     prefix="/api/reports",
@@ -105,8 +106,14 @@ def list_reports_full(
     region: Optional[str] = None,
     category: Optional[str] = None,
     status: Optional[str] = None,
+    page: Optional[int] = None,
+    size: Optional[int] = None,
 ):
-    """Return all reports with the full shape the frontend ReportList expects."""
+    """Return all reports with the full shape the frontend ReportList expects.
+
+    page/size 미지정시 전체 array 반환 (하위호환).
+    page/size 지정시 envelope {items,total,page,size} 반환.
+    """
     q = db.query(models.Report)
     if region and region != "부산 전 지역":
         q = q.filter(models.Report.region == region)
@@ -114,9 +121,26 @@ def list_reports_full(
         q = q.filter(models.Report.category == category)
     if status and status != "전체":
         q = q.filter(models.Report.status == status)
-    rows = q.order_by(models.Report.created_at.desc()).all()
+    q = q.order_by(models.Report.created_at.desc())
 
-    # Batch-fetch comments per report
+    if page is not None or size is not None:
+        page = max(1, page or 1)
+        size = max(1, min(size or 20, 100))
+        total = q.count()
+        rows = q.offset((page - 1) * size).limit(size).all()
+        ids = [r.id for r in rows]
+        comments_by_report = {}
+        if ids:
+            for c in db.query(models.ReportComment).filter(models.ReportComment.report_id.in_(ids)).order_by(models.ReportComment.created_at.asc()).all():
+                comments_by_report.setdefault(c.report_id, []).append(c)
+        return {
+            "items": [_serialize_report(r, comments_by_report.get(r.id, [])) for r in rows],
+            "total": total,
+            "page": page,
+            "size": size,
+        }
+
+    rows = q.all()
     ids = [r.id for r in rows]
     comments_by_report = {}
     if ids:
@@ -398,7 +422,19 @@ def toggle_proposal_vote(
             proposal.likes_count = (proposal.likes_count or 0) + 1
             message = "투표가 완료되었습니다."
             voted = True
-        
+            if proposal.user_id and proposal.user_id != current_user.user_id:
+                push_notification(
+                    db,
+                    user_id=proposal.user_id,
+                    actor_id=current_user.user_id,
+                    kind="vote",
+                    target_type="proposal",
+                    target_id=proposal.id,
+                    title=f"{current_user.nickname or current_user.name}님이 제안에 투표했습니다.",
+                    body=proposal.title or "",
+                )
+        log_activity(db, user_id=current_user.user_id, action="vote" if voted else "unvote",
+                     target_type="proposal", target_id=proposal.id)
         db.commit()
         return {
             "message": message,
@@ -481,6 +517,19 @@ def create_comment(
         parent_comment_id=comment.parent_comment_id
     )
     db.add(new_comment)
+    if proposal.user_id and proposal.user_id != current_user.user_id:
+        push_notification(
+            db,
+            user_id=proposal.user_id,
+            actor_id=current_user.user_id,
+            kind="comment",
+            target_type="proposal",
+            target_id=proposal.id,
+            title=f"{current_user.nickname or current_user.name}님이 제안에 댓글을 남겼습니다.",
+            body=comment.content,
+        )
+    log_activity(db, user_id=current_user.user_id, action="comment", target_type="proposal", target_id=proposal.id,
+                 meta={"snippet": (comment.content or "")[:80]})
     db.commit()
     db.refresh(new_comment)
 
@@ -661,6 +710,20 @@ def toggle_report_like(
         db.add(models.ReportLike(user_id=current_user.user_id, report_id=report_id))
         r.likes_count = (r.likes_count or 0) + 1
         liked = True
+        # 알림 — 작성자에게
+        if r.user_id and r.user_id != current_user.user_id:
+            push_notification(
+                db,
+                user_id=r.user_id,
+                actor_id=current_user.user_id,
+                kind="like",
+                target_type="report",
+                target_id=r.id,
+                title=f"{current_user.nickname or current_user.name}님이 제보에 공감했습니다.",
+                body=r.title or "",
+            )
+    log_activity(db, user_id=current_user.user_id, action="like" if liked else "unlike",
+                 target_type="report", target_id=r.id)
     db.commit()
     return {"likes_count": r.likes_count, "liked": liked}
 
@@ -699,6 +762,47 @@ def create_report_comment(
     )
     db.add(c)
     r.comments_count = (r.comments_count or 0) + 1
+    # 알림 — 작성자에게
+    if r.user_id and r.user_id != current_user.user_id:
+        push_notification(
+            db,
+            user_id=r.user_id,
+            actor_id=current_user.user_id,
+            kind="comment",
+            target_type="report",
+            target_id=r.id,
+            title=f"{current_user.nickname or current_user.name}님이 제보에 댓글을 남겼습니다.",
+            body=payload.content,
+        )
+    log_activity(db, user_id=current_user.user_id, action="comment", target_type="report", target_id=r.id,
+                 meta={"snippet": (payload.content or "")[:80]})
+    db.commit()
+    db.refresh(c)
+    return {
+        "id": c.id,
+        "author": c.author_name,
+        "content": c.content,
+        "date": c.created_at.strftime("%Y.%m.%d") if c.created_at else None,
+    }
+
+
+@router.put("/{report_id}/comments/{comment_id}", response_model=schemas.ReportCommentRead)
+def update_report_comment(
+    report_id: int,
+    comment_id: int,
+    payload: schemas.ReportCommentUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    c = db.query(models.ReportComment).filter(
+        models.ReportComment.id == comment_id,
+        models.ReportComment.report_id == report_id,
+    ).first()
+    if not c:
+        raise HTTPException(status_code=404, detail="댓글을 찾을 수 없습니다.")
+    if c.user_id != current_user.user_id and current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="본인의 댓글만 수정할 수 있습니다.")
+    c.content = payload.content
     db.commit()
     db.refresh(c)
     return {

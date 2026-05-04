@@ -136,6 +136,114 @@ def get_checklist_aggregate(
         for r in rows if r.category
     ]
 
+
+@router.get("/summary")
+def get_checklist_summary(
+    district: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    """대분류별 평균 + 최저/최고/표준편차 요약. district 옵션."""
+    from sqlalchemy import func
+    q = db.query(
+        ChecklistResult.대분류.label("category"),
+        func.avg(ChecklistResult.점수).label("avg_score"),
+        func.min(ChecklistResult.점수).label("min_score"),
+        func.max(ChecklistResult.점수).label("max_score"),
+        func.count(ChecklistResult.result_id).label("count"),
+    )
+    if district:
+        q = q.filter(ChecklistResult.district_code == district)
+    rows = q.group_by(ChecklistResult.대분류).all()
+    out = []
+    for r in rows:
+        if not r.category:
+            continue
+        # 분산은 별도 쿼리로 — 단순화 위해 row 단위로
+        scores = [
+            x[0] for x in db.query(ChecklistResult.점수).filter(
+                ChecklistResult.대분류 == r.category,
+                ChecklistResult.점수.isnot(None),
+                *([ChecklistResult.district_code == district] if district else []),
+            ).all()
+        ]
+        if scores:
+            mean = sum(scores) / len(scores)
+            var = sum((s - mean) ** 2 for s in scores) / len(scores)
+            std = var ** 0.5
+        else:
+            std = 0
+        out.append({
+            "category": r.category,
+            "avg_score": float(r.avg_score) if r.avg_score else 0,
+            "min_score": int(r.min_score) if r.min_score is not None else 0,
+            "max_score": int(r.max_score) if r.max_score is not None else 0,
+            "std_dev": round(std, 2),
+            "count": r.count,
+        })
+    return out
+
+
+@router.get("/recommendations")
+def get_checklist_recommendations(
+    result_id: Optional[int] = None,
+    district: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    """저점 항목 기반 자동 개선 제안 추천.
+
+    1) result_id가 있으면 그 진단의 대분류·점수 우선
+    2) 없으면 district의 평균 저점 카테고리 사용
+    3) 같은 카테고리/지역의 최근 제안 top 5 반환
+    """
+    target_categories: list = []
+    target_district: Optional[str] = district
+
+    if result_id:
+        r = db.query(ChecklistResult).filter(ChecklistResult.result_id == result_id).first()
+        if not r:
+            raise HTTPException(status_code=404, detail="진단 결과를 찾을 수 없습니다.")
+        target_district = target_district or r.district_code
+        if r.대분류:
+            target_categories.append(r.대분류)
+
+    if not target_categories:
+        # district 평균 저점 카테고리 2개
+        from sqlalchemy import func
+        q = db.query(
+            ChecklistResult.대분류,
+            func.avg(ChecklistResult.점수).label("avg_score"),
+        )
+        if target_district:
+            q = q.filter(ChecklistResult.district_code == target_district)
+        rows = q.group_by(ChecklistResult.대분류).all()
+        rows = [(r[0], float(r[1])) for r in rows if r[0] and r[1] is not None]
+        rows.sort(key=lambda x: x[1])
+        target_categories = [r[0] for r in rows[:2]]
+
+    import models as M
+    proposals_q = db.query(M.NewProposal)
+    if target_categories:
+        proposals_q = proposals_q.filter(M.NewProposal.category.in_(target_categories))
+    if target_district:
+        proposals_q = proposals_q.filter(M.NewProposal.region == target_district)
+
+    proposals = proposals_q.order_by(M.NewProposal.likes_count.desc()).limit(5).all()
+    return {
+        "target_district": target_district,
+        "target_categories": target_categories,
+        "proposals": [
+            {
+                "id": p.id,
+                "title": p.title,
+                "category": p.category,
+                "region": p.region,
+                "likes": p.likes_count or 0,
+                "views": p.views_count or 0,
+            }
+            for p in proposals
+        ],
+    }
+
 @router.get("/my", response_model=list[ChecklistResponse])
 def get_my_checklist(
     skip: int = 0,

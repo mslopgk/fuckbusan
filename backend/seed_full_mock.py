@@ -486,10 +486,120 @@ def seed_dashboard_data(db: Session):
     print(f"  district_analysis/insights/personas: 시드 완료")
 
 
+def seed_notifications_and_logs(db: Session):
+    """알림 + 활동 로그 시드.
+
+    - reports/proposals 작성자에게 좋아요/댓글 알림 history 흩뿌림
+    - activity_logs는 좋아요/댓글/제보생성 등 50건+
+    """
+    if db.query(models.Notification).count() > 5:
+        print("  notifications: 이미 시드됨, skip")
+        return
+
+    users = db.query(models.User).filter(models.User.ID.like("citizen%")).all()
+    if not users:
+        return
+    reports = db.query(models.Report).limit(20).all()
+    proposals = db.query(models.NewProposal).limit(20).all()
+
+    KIND_TEMPLATES = {
+        "like": "{actor}님이 제보에 공감했습니다.",
+        "vote": "{actor}님이 제안에 투표했습니다.",
+        "comment": "{actor}님이 댓글을 남겼습니다.",
+        "status": "제보 상태가 업데이트되었습니다.",
+        "system": "[공지] 부산 BDP 신규 기능이 추가되었습니다.",
+    }
+
+    n_count = 0
+    for r in reports:
+        if not r.user_id:
+            continue
+        for _ in range(random.randint(1, 4)):
+            actor = random.choice([u for u in users if u.user_id != r.user_id] or users)
+            kind = random.choice(["like", "comment"])
+            tpl = KIND_TEMPLATES[kind].format(actor=actor.nickname or actor.name)
+            db.add(models.Notification(
+                user_id=r.user_id,
+                actor_id=actor.user_id,
+                kind=kind,
+                target_type="report",
+                target_id=r.id,
+                title=tpl,
+                body=(r.title or "")[:200],
+                is_read=random.random() < 0.4,
+                created_at=NOW - timedelta(days=random.randint(0, 14), hours=random.randint(0, 23)),
+            ))
+            n_count += 1
+
+    for p in proposals:
+        if not p.user_id:
+            continue
+        for _ in range(random.randint(1, 3)):
+            actor = random.choice([u for u in users if u.user_id != p.user_id] or users)
+            kind = random.choice(["vote", "comment"])
+            tpl = KIND_TEMPLATES[kind].format(actor=actor.nickname or actor.name)
+            db.add(models.Notification(
+                user_id=p.user_id,
+                actor_id=actor.user_id,
+                kind=kind,
+                target_type="proposal",
+                target_id=p.id,
+                title=tpl,
+                body=(p.title or "")[:200],
+                is_read=random.random() < 0.5,
+                created_at=NOW - timedelta(days=random.randint(0, 21), hours=random.randint(0, 23)),
+            ))
+            n_count += 1
+
+    # 시스템 공지 1~2건 (모든 시민에게 broadcast)
+    for u in users[:5]:
+        db.add(models.Notification(
+            user_id=u.user_id,
+            actor_id=None,
+            kind="system",
+            target_type=None,
+            target_id=None,
+            title="[공지] 부산 BDP — 5월 업데이트",
+            body="제보·제안 통합 검색과 알림 기능이 새로 추가되었습니다.",
+            is_read=False,
+            created_at=NOW - timedelta(days=2),
+        ))
+        n_count += 1
+
+    # Activity logs
+    log_count = 0
+    actions = ["create", "like", "comment", "vote", "view"]
+    for _ in range(60):
+        u = random.choice(users)
+        action = random.choice(actions)
+        if action in ("like", "comment") and reports:
+            t = random.choice(reports)
+            tt, tid = "report", t.id
+        elif action == "vote" and proposals:
+            t = random.choice(proposals)
+            tt, tid = "proposal", t.id
+        else:
+            tt, tid = ("report", random.choice(reports).id) if reports else (None, None)
+        db.add(models.ActivityLog(
+            user_id=u.user_id,
+            action=action,
+            target_type=tt,
+            target_id=tid,
+            meta={"snippet": "seed"},
+            created_at=NOW - timedelta(days=random.randint(0, 30), hours=random.randint(0, 23)),
+        ))
+        log_count += 1
+
+    db.commit()
+    print(f"  notifications: {n_count}개, activity_logs: {log_count}개 시드 완료")
+
+
 def reset_mock(db: Session):
     """mock 데이터만 삭제. (legacy/관리자/실데이터는 보존하지 못하므로 주의)"""
     print("⚠️  --reset: mock 데이터 삭제 중...")
     for tbl in (
+        models.Notification,
+        models.ActivityLog,
         models.SurveyAnswer,
         models.SurveyResponse,
         models.SurveyQuestion,
@@ -538,6 +648,7 @@ def main():
         seed_surveys(db)
         seed_checklist_results(db)
         seed_dashboard_data(db)
+        seed_notifications_and_logs(db)
         print("✅  시드 완료")
     finally:
         db.close()

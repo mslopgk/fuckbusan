@@ -1,6 +1,6 @@
 # 백엔드 작업 계획서
 
-> **갱신**: 2026-05-04
+> **갱신**: 2026-05-04 (3차 라운드 — notification·search·activity 추가)
 > **목적**: 프론트의 하드코딩 목업 데이터를 DB로 옮기고, 누락된 API를 채워서 화면이 실제 DB에서 데이터를 받게 함.
 > **스택**: FastAPI + SQLAlchemy + MariaDB(docker-compose) / 프론트는 React 19 + Vite
 
@@ -176,13 +176,33 @@ npm run verify -- --views=mReportList,mProposalList,mSurveyList,home --api=dashb
   - 진단 결과 차트 데이터 집계 — `/checklist/clusters`, `/checklist/aggregate`
   - 설문 admin CRUD — `/api/surveys/admin` POST/PUT/DELETE
 
-- 🟨 **P2 — 차후 (보류)**:
+- ✅ **P2 — 3차 완료 (2026-05-04)**:
+  - **알림 시스템** — `Notification` 모델 + `/api/notifications` 라우터
+    - GET /api/notifications, /unread-count
+    - PATCH /api/notifications/{id}/read, POST /read-all, DELETE /{id}
+    - 이벤트 hook: report `/like` `/comments`, proposal `/vote` `/comments`, admin status 변경 시 자동 push
+  - **활동 로그(Audit)** — `ActivityLog` 모델 + `/api/admin/activity-logs`
+    - 좋아요/댓글/투표/관리자 상태변경 등에서 자동 기록
+  - **통합 검색** — `/api/search` 라우터
+    - GET /api/search?q=&type=all|report|proposal|survey&region=
+    - GET /api/search/suggest?q= (제목 prefix 매칭)
+  - **통계 트렌드** — `/api/admin/trends`, `/category-distribution`, `/district-leaderboard`
+  - **관리자 사용자/제안 관리** — `/api/admin/users`, `/api/admin/users/{id}` PATCH, `/api/admin/proposals`, `/api/admin/proposals/{id}` DELETE
+  - **진단 집계/추천** — `/checklist/summary` (avg/min/max/std), `/checklist/recommendations` (저점 카테고리 자동 추천)
+  - **설문 admin 보강** — `/api/surveys/admin/{id}/close`, `/duplicate`, 개별 질문 CRUD
+  - **댓글 수정** — `PUT /api/reports/{id}/comments/{cid}` (Report)
+  - **Pagination 표준화** — `/api/reports/full?page=&size=` envelope 응답 (옵션, 하위호환 유지)
+  - **프론트 와이어링** — `ProposalManagement.jsx`, `AdminUserList.jsx` admin endpoint 사용, `MDiagnosisResult.jsx` aggregate+recommendations 호출
+  - **시드 보강** — notifications 66개, activity_logs 60개
+
+- 🟨 **P3 — 차후 (보류)**:
   - AI 시민 페르소나 자동 생성 파이프라인 (현재는 시드 페르소나로 충분)
   - 대시보드 주요 KPI 캐싱 (현재 직접 집계)
-  - 제안 admin 페이지 와이어링 (`ProposalManagement.jsx`) — 백엔드 API는 이미 있음
-  - 진단 결과 차트 프론트 와이어링 — `MDiagnosisResult.jsx` 등에 `/checklist/aggregate` 적용
-  - 설문 admin 화면 와이어링 — `SurveyEditor.jsx`에 admin CRUD 연결
+  - 설문 admin 화면 풀 와이어링 — `SurveyEditor.jsx`의 개별 질문 CRUD UI 연결
   - admin 토큰 만료/리프레시 처리
+  - 헤더 알림 종 컴포넌트 (PCHeader/모바일 헤더 통합 변경 필요)
+  - 통합 검색 헤더 UI 컴포넌트
+  - 이미지 업로드 표준화 (현재 S3 직접 업로드)
 
 ---
 

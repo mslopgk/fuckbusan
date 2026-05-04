@@ -16,21 +16,46 @@ export default function ProposalManagement({ onNavigate }) {
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
 
-    useEffect(() => {
-        const fetchProposals = async () => {
-            try {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-                const response = await fetch(`${API_URL}/api/reports/proposals`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setProposals(data);
-                }
-            } catch (error) {
-                console.error('Failed to fetch proposals:', error);
+    const fetchProposals = async () => {
+        try {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+            const token = localStorage.getItem('access_token');
+            // 관리자 endpoint 우선, 실패 시 public endpoint로 fallback
+            const tryAdmin = await fetch(`${API_URL}/api/admin/proposals`, {
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            if (tryAdmin.ok) {
+                setProposals(await tryAdmin.json());
+                return;
             }
-        };
+            const response = await fetch(`${API_URL}/api/reports/proposals`);
+            if (response.ok) {
+                setProposals(await response.json());
+            }
+        } catch (error) {
+            console.error('Failed to fetch proposals:', error);
+        }
+    };
+
+    useEffect(() => {
         fetchProposals();
     }, []);
+
+    const handleDelete = async (id) => {
+        if (!confirm('정말 삭제하시겠습니까?')) return;
+        try {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_URL}/api/admin/proposals/${id}`, {
+                method: 'DELETE',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            if (res.ok) fetchProposals();
+            else alert('삭제 실패');
+        } catch (e) {
+            alert('삭제 중 오류: ' + e.message);
+        }
+    };
 
     const filtered = proposals.filter((p) => !search || (p.title || '').includes(search));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
@@ -87,7 +112,7 @@ export default function ProposalManagement({ onNavigate }) {
                                 <td>{p.nickname || '-'}</td>
                                 <td>
                                     <div className="action-btns-new">
-                                        <span className="btn-action-text" onClick={() => onNavigate && onNavigate('adminProposalDetail', p)}>상세</span> | <span className="btn-action-text">삭제</span>
+                                        <span className="btn-action-text" onClick={() => onNavigate && onNavigate('adminProposalDetail', p)}>상세</span> | <span className="btn-action-text" onClick={() => handleDelete(p.id)}>삭제</span>
                                     </div>
                                 </td>
                             </tr>
