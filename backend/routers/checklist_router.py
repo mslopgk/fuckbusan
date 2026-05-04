@@ -183,6 +183,39 @@ def get_checklist_summary(
     return out
 
 
+@router.get("/templates")
+def get_checklist_templates(
+    mode: Optional[str] = "general",
+    db: Session = Depends(get_db),
+):
+    """진단 마스터 카탈로그 (general/expert).
+
+    DB의 ChecklistTemplate (kind='diagnosis', mode=...)에서 payload 그대로 반환.
+    프론트는 기존 /assets/data/{mode}_diagnosis.json 호환 형태로 받음.
+    """
+    import models as M
+    row = db.query(M.ChecklistTemplate).filter(
+        M.ChecklistTemplate.kind == "diagnosis",
+        M.ChecklistTemplate.mode == mode,
+    ).first()
+    if not row:
+        raise HTTPException(status_code=404, detail=f"진단 템플릿 없음: mode={mode}")
+    return row.payload
+
+
+@router.get("/comprehensive-survey")
+def get_comprehensive_survey(db: Session = Depends(get_db)):
+    """종합 진단 설문 (Survey.jsx 호환). 11개 질문 객체 리스트."""
+    import models as M
+    row = db.query(M.ChecklistTemplate).filter(
+        M.ChecklistTemplate.kind == "survey",
+        M.ChecklistTemplate.mode == "comprehensive",
+    ).first()
+    if not row:
+        raise HTTPException(status_code=404, detail="종합 진단 설문 템플릿 없음")
+    return row.payload
+
+
 @router.get("/recommendations")
 def get_checklist_recommendations(
     result_id: Optional[int] = None,

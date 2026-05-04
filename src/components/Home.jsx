@@ -5,17 +5,7 @@ import MobileBottomNav from './MobileBottomNav';
 
 const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
-// 데이터가 비었을 때 마퀴 깨지지 않도록 fallback
-const FALLBACK_CITIZENS = [
-    { id: 'fb-1', name: '홍길동', age: 72, tags: ['#액티브시니어', '#낭만어부', '#손자바라기'], desc: '다리가 아파서... 우리 집 앞 언덕길에 잠깐 쉴 의자 하나만 있으면 좋겠어.' },
-    { id: 'fb-2', name: '김수현', age: 23, tags: ['#대학생', '#취준생', '#밤길무서워'], desc: '늦게까지 공부하고 집에 가는 길이 너무 어둡고 불안해요.' },
-    { id: 'fb-3', name: '박지민', age: 35, tags: ['#워킹맘', '#유모차', '#안전제일'], desc: '유모차 끌고 공원 가는 길이 너무 울퉁불퉁해요.' },
-];
-const FALLBACK_ARCHIVES = [
-    { id: 'fb-1', title: '보행약자를 위한 길', desc: '모두가 안전하게 이동할 수 있는 환경을 만들었습니다.', img: '/assets/archieve1.png' },
-    { id: 'fb-2', title: '야간 보행 안전 조명', desc: '어두운 골목길을 밝혀 범죄를 예방합니다.', img: '/assets/archieve2.png' },
-    { id: 'fb-3', title: '어린이 보호구역 디자인', desc: '운전자들의 서행을 유도하는 디자인.', img: '/assets/archieve3.png' },
-];
+// citizens, archives 데이터는 /api/home/citizens, /api/home/archives에서 받음.
 
 const Home = ({ onNavigate }) => {
     const [activeTab, setActiveTab] = useState('home');
@@ -354,16 +344,16 @@ const CategoryGrid = () => {
 };
 
 const CitizenCards = () => {
-    const [citizens, setCitizens] = useState(FALLBACK_CITIZENS);
+    const [citizens, setCitizens] = useState([]);
 
     useEffect(() => {
         fetch(`${VITE_API_URL}/api/home/citizens`)
             .then((r) => (r.ok ? r.json() : []))
-            .then((rows) => {
-                if (Array.isArray(rows) && rows.length > 0) setCitizens(rows);
-            })
-            .catch(() => {});
+            .then((rows) => setCitizens(Array.isArray(rows) ? rows : []))
+            .catch(() => setCitizens([]));
     }, []);
+
+    if (citizens.length === 0) return null;
 
     // Double data for simple 50% scroll loop
     const displayCitizens = [...citizens, ...citizens];
@@ -578,20 +568,24 @@ const StatsContent = () => {
 };
 
 const ArchiveCards = () => {
-    const [archives, setArchives] = useState(FALLBACK_ARCHIVES);
+    const [archives, setArchives] = useState([]);
 
     useEffect(() => {
         fetch(`${VITE_API_URL}/api/home/archives`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => {
-                if (Array.isArray(rows) && rows.length > 0) {
+                if (Array.isArray(rows)) {
                     // 이미지가 없으면 placeholder 순환 사용
                     const imgs = ['/assets/archieve1.png', '/assets/archieve2.png', '/assets/archieve3.png'];
                     setArchives(rows.map((r, i) => ({ ...r, img: r.img || imgs[i % imgs.length] })));
+                } else {
+                    setArchives([]);
                 }
             })
-            .catch(() => {});
+            .catch(() => setArchives([]));
     }, []);
+
+    if (archives.length === 0) return null;
 
     // Double data for simple 50% scroll loop
     const displayArchives = [...archives, ...archives];

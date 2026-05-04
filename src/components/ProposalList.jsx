@@ -45,7 +45,7 @@ const ProposalList = ({ onNavigate, onBack }) => {
     const [search, setSearch] = useState('');
     const [appliedSearch, setAppliedSearch] = useState('');
 
-    const VITE_API_URL = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
+    const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
     const fetchProposals = useCallback(async () => {
         setLoading(true);

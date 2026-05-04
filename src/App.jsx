@@ -97,9 +97,6 @@ const MDiagnosisDone = lazy(() => import('./components/MDiagnosisDone'));
 
 // USER:PC 진단(Diagnosis) pages (Figma node 941:5782 — 04/23 업데이트)
 const PCDiagnosisMap = lazy(() => import('./components/PCDiagnosisMap'));
-const PCDiagnosisForm = lazy(() => import('./components/PCDiagnosisForm'));
-const PCDiagnosisDetail = lazy(() => import('./components/PCDiagnosisDetail'));
-const PCDiagnosisDone = lazy(() => import('./components/PCDiagnosisDone'));
 
 import { fetchWithLogout } from './utils/api'
 import PCHeader from './components/PCHeader'
@@ -191,32 +188,34 @@ function App() {
     };
 
 
-    const rawApiUrl = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
+    const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
     const VITE_API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
-    // Fetch data whenever diagnosisMode changes
+    // Fetch diagnosis catalog (general/expert) from backend; fallback to static JSON for offline dev.
     useEffect(() => {
+        const ctrl = new AbortController();
         const fetchData = async () => {
             setLoading(true);
+            const mode = diagnosisMode === 'expert' ? 'expert' : 'general';
             try {
-                const fileName = diagnosisMode === 'expert'
-                    ? '/assets/data/expert_diagnosis.json'
-                    : '/assets/data/general_diagnosis.json';
-
-                const response = await fetch(fileName);
+                let response = await fetch(`${VITE_API_URL}/checklist/templates?mode=${mode}`, { signal: ctrl.signal });
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch ${fileName}`);
+                    response = await fetch(`/assets/data/${mode}_diagnosis.json`, { signal: ctrl.signal });
                 }
+                if (!response.ok) throw new Error(`Failed to fetch ${mode} catalog`);
                 const jsonData = await response.json();
-                setData(jsonData);
+                if (!ctrl.signal.aborted) setData(jsonData);
             } catch (error) {
+                // 컴포넌트 unmount 또는 view 전환으로 abort된 fetch는 무시
+                if (ctrl.signal.aborted || error.name === 'AbortError' || error.name === 'TypeError') return;
                 console.error("Failed to load diagnosis data:", error);
             } finally {
-                setLoading(false);
+                if (!ctrl.signal.aborted) setLoading(false);
             }
         };
 
         fetchData();
+        return () => ctrl.abort();
     }, [diagnosisMode]);
 
     // Fetch user's diagnosis pins from backend
@@ -912,7 +911,7 @@ function App() {
                         onComplete={async (formData) => {
                             try {
                                 const token = localStorage.getItem('access_token');
-                                const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
+                                const VITE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
     
                                 // [1] 신규 파일 업로드 처리
                                 const uploadNewFiles = async (files) => {
@@ -1337,16 +1336,16 @@ function App() {
                     <MDiagnosisDone onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'pcDiagnosisMap' && (
-                    <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} />
+                    <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} initialPanel="list" />
                 )}
                 {view === 'pcDiagnosisForm' && (
-                    <PCDiagnosisForm onNavigate={(target, data) => onNavigate(target, data)} />
+                    <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} initialPanel="form" />
                 )}
                 {view === 'pcDiagnosisDetail' && (
-                    <PCDiagnosisDetail onNavigate={(target, data) => onNavigate(target, data)} item={selectedReport} />
+                    <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} initialPanel="detail" initialItem={selectedReport} />
                 )}
                 {view === 'pcDiagnosisDone' && (
-                    <PCDiagnosisDone onNavigate={(target, data) => onNavigate(target, data)} />
+                    <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} initialPanel="done" />
                 )}
             </div>
         </Suspense>

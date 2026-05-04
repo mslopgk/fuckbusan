@@ -1,29 +1,92 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
 import './PCDetailShared.css';
 
-const SAMPLE_COMMENTS = [
-    { author: '동래주민01', date: '20분 전', body: '저도 동의합니다.' },
-    { author: '동래주민01', date: '20분 전', body: '저도 동의합니다.' },
-];
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 export default function PCReportDetail({ onNavigate, report }) {
-    const DEFAULT_BODY = '안녕하세요. 부산 해운대구에 거주하는 학생입니다.\n\n현재 공유 전기자전거 운영 과정에서 시간대 사용량 차이로 인해 대여소 간 재고 불균형이 심각하게 발생되고 있습니다.\n\n특히 출퇴근 시간 또는 등하교 시간에:\n- 시간대 보유, 보지 작전 적사 차이가 그러나 일부 자전거는 약 30%의 일대 부족\n\n해당 문제를 막기 위해 아래의 의견을 드립니다:\n1. 실시간 자전거 재고 모니터링 시스템 마련\n2. 실시간 자전거 재공의 재고 적사 가이즈\n3. 절대 시민이 자전거 운영 적사 가지원\n\n본 제보가 채택돼서 부산 해운대구가 보다 편리하고 한자한 도시가 되었으면 합니다.';
-
-    const data = {
-        title: report?.title || '전기자전거 재고 불균형 해결 제안',
-        author_id: report?.region || report?.author_id || '해운대구',
-        date: report?.date || '2026-03-22',
-        likes: report?.votes || report?.likes || 213,
-        category: report?.category || '공공시설물',
-        body: report?.body || DEFAULT_BODY,
-        lat: report?.lat || 35.1631,
-        lng: report?.lng || 129.1638,
-    };
-
+    const [detail, setDetail] = useState(report || null);
+    const [comments, setComments] = useState([]);
     const [comment, setComment] = useState('');
     const [liked, setLiked] = useState(false);
+    const [likeCount, setLikeCount] = useState(0);
+
+    useEffect(() => {
+        if (!report?.id) return;
+        fetch(`${API_URL}/api/reports/${report.id}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => {
+                if (!d) return;
+                setDetail(d);
+                setLikeCount(d.likes ?? 0);
+            })
+            .catch(() => {});
+        fetch(`${API_URL}/api/reports/${report.id}/comments`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((rows) => setComments(Array.isArray(rows) ? rows : []))
+            .catch(() => setComments([]));
+    }, [report?.id]);
+
+    const data = {
+        title: detail?.title || '',
+        author_id: detail?.author || detail?.region || '',
+        date: detail?.date || '',
+        likes: likeCount,
+        category: detail?.category || '',
+        body: detail?.content || detail?.body || '',
+        lat: detail?.lat ?? 35.1631,
+        lng: detail?.lng ?? 129.1638,
+        status: detail?.status || '',
+    };
+
+    const submitComment = async () => {
+        if (!comment.trim() || !report?.id) return;
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
+        try {
+            const res = await fetch(`${API_URL}/api/reports/${report.id}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ content: comment.trim() }),
+            });
+            if (res.ok) {
+                const created = await res.json();
+                setComments((prev) => [...prev, created]);
+                setComment('');
+            }
+        } catch (e) {
+            console.error('comment failed', e);
+        }
+    };
+
+    const toggleLike = async () => {
+        if (!report?.id) {
+            setLiked((v) => !v);
+            return;
+        }
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
+        try {
+            const res = await fetch(`${API_URL}/api/reports/${report.id}/like`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+                const j = await res.json();
+                setLiked(!!j.liked);
+                setLikeCount(j.likes_count ?? likeCount);
+            }
+        } catch (e) {
+            console.error('like failed', e);
+        }
+    };
 
     return (
         <UserPCLayout currentView="pcReportDetail" onNavigate={onNavigate}>
@@ -31,12 +94,12 @@ export default function PCReportDetail({ onNavigate, report }) {
                 <div className="pc-detail-inner">
                     <div className="pc-detail-tags">
                         <span className="pc-status-tag pc-status-public">제보/제안</span>
-                        <span className="pc-status-tag pc-status-cat">{data.category}</span>
+                        {data.category && <span className="pc-status-tag pc-status-cat">{data.category}</span>}
                         <span style={{ marginLeft: 'auto' }}>
-                            <span className="pc-status-tag pc-status-pending">처리중</span>
+                            <span className="pc-status-tag pc-status-pending">{data.status || '처리중'}</span>
                         </span>
                     </div>
-                    <h2 className="pc-detail-title">{data.title}</h2>
+                    <h2 className="pc-detail-title">{data.title || '(제목 없음)'}</h2>
                     <div className="pc-detail-meta">
                         <span>{data.date}</span>
                         <span>·</span>
@@ -51,20 +114,22 @@ export default function PCReportDetail({ onNavigate, report }) {
                         <PCMapCanvas
                             pins={[{ id: 'this', lat: data.lat, lng: data.lng, color: '#E6235A', title: data.title }]}
                             accentColor="#E6235A"
+                            initialCenter={{ lat: data.lat, lng: data.lng }}
+                            initialLevel={4}
                         />
                     </div>
 
                     <div className="pc-detail-body-wrap">
                         <div className="pc-detail-body">
-                            {data.body.split('\n').map((p, i) => p.trim().startsWith('-') ? (
+                            {data.body ? data.body.split('\n').map((p, i) => p.trim().startsWith('-') ? (
                                 <li key={i}>{p.replace(/^-\s*/, '')}</li>
                             ) : (
                                 <p key={i}>{p}</p>
-                            ))}
+                            )) : <p style={{ color: '#999' }}>본문이 없습니다.</p>}
                         </div>
                         <button
                             className={`pc-vote-float ${liked ? 'on' : ''}`}
-                            onClick={() => setLiked((v) => !v)}
+                            onClick={toggleLike}
                         >
                             <span className="pc-vote-float-icon">❤</span>
                             <span className="pc-vote-float-label">{liked ? '응원완료' : '응원해'}</span>
@@ -78,24 +143,36 @@ export default function PCReportDetail({ onNavigate, report }) {
                                 placeholder="댓글을 입력해주세요"
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
+                                onKeyDown={(e) => { if (e.key === 'Enter') submitComment(); }}
                                 className="pc-comment-input"
                             />
-                            <button className="pc-comment-send" onClick={() => setComment('')}>
+                            <button className="pc-comment-send" onClick={submitComment}>
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
                             </button>
                         </div>
 
                         <ul className="pc-comment-list">
-                            {SAMPLE_COMMENTS.map((c, i) => (
-                                <li key={i}>
+                            {comments.length === 0 ? (
+                                <li style={{ color: '#999', padding: '12px 0' }}>아직 댓글이 없습니다.</li>
+                            ) : comments.map((c, i) => (
+                                <li key={c.id || i}>
                                     <div className="pc-comment-meta">
-                                        <strong>{c.author}</strong>
-                                        <span>{c.date}</span>
+                                        <strong>{c.author || '익명'}</strong>
+                                        <span>{c.date || ''}</span>
                                     </div>
-                                    <p>{c.body}</p>
+                                    <p>{c.content}</p>
                                 </li>
                             ))}
                         </ul>
+                    </div>
+
+                    <div className="pc-detail-bottom-actions">
+                        <button
+                            className="pc-btn-back-to-list"
+                            onClick={() => onNavigate && onNavigate('pcReportMap')}
+                        >
+                            ← 목록으로
+                        </button>
                     </div>
                 </div>
             </div>

@@ -30,7 +30,7 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
     const [proposals, setProposals] = useState([]); // Real data from backend
     const [loading, setLoading] = useState(true);
 
-    const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
+    const VITE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
     useEffect(() => {
         const fetchProposals = async () => {

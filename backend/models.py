@@ -320,3 +320,22 @@ class ActivityLog(Base):
     target_id = Column(Integer, nullable=True)
     meta = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.now, index=True)
+
+
+class ChecklistTemplate(Base):
+    """진단 카탈로그 (general/expert) + 종합 설문 마스터 페이로드.
+
+    1 row per (kind, mode):
+      - kind='diagnosis', mode='general' / 'expert' → 카테고리·중분류·질문 트리
+      - kind='survey',    mode='comprehensive'      → 11개 질문 객체 리스트
+    payload는 트리·리스트 그대로 JSON 저장.
+    """
+    __tablename__ = "checklist_templates"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    kind = Column(String(20), nullable=False, index=True)
+    mode = Column(String(30), nullable=False, index=True)
+    title = Column(String(200), nullable=True)
+    payload = Column(JSON, nullable=False)
+    updated_at = Column(DateTime, default=datetime.now)

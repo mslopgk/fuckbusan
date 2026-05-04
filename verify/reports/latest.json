@@ -1,5 +1,5 @@
 {
-  "startedAt": "2026-05-04T14:15:48.355Z",
+  "startedAt": "2026-05-04T14:39:20.208Z",
   "frontend": [
     {
       "id": "home",
@@ -345,7 +345,7 @@
       "url": "http://localhost:8000/",
       "ok": true,
       "status": 200,
-      "durationMs": 35,
+      "durationMs": 57,
       "body": {
         "message": "Busan Design Backend is Running!"
       }
@@ -356,7 +356,7 @@
       "url": "http://localhost:8000/auth/login",
       "ok": true,
       "status": 405,
-      "durationMs": 3,
+      "durationMs": 4,
       "body": {
         "detail": "Method Not Allowed"
       }
@@ -367,7 +367,7 @@
       "url": "http://localhost:8000/dashboard/summary",
       "ok": true,
       "status": 200,
-      "durationMs": 9
+      "durationMs": 3
     },
     {
       "id": "checklist-categories",
@@ -375,7 +375,7 @@
       "url": "http://localhost:8000/checklist/categories",
       "ok": true,
       "status": 401,
-      "durationMs": 1,
+      "durationMs": 4,
       "body": {
         "detail": "Not authenticated"
       }
@@ -386,10 +386,10 @@
       "url": "http://localhost:8000/api/home/stats",
       "ok": true,
       "status": 200,
-      "durationMs": 19,
+      "durationMs": 24,
       "body": {
-        "reports_count": 34,
-        "proposals_count": 20,
+        "reports_count": 46,
+        "proposals_count": 30,
         "diagnoses_count": 15,
         "citizens_count": 8
       }
@@ -400,7 +400,7 @@
       "url": "http://localhost:8000/api/home/citizens",
       "ok": true,
       "status": 200,
-      "durationMs": 8,
+      "durationMs": 5,
       "body": [
         {
           "id": 1,
@@ -517,15 +517,15 @@
           "img": null
         },
         {
-          "id": 1,
-          "title": "전기자전거 재고 불균형 해결 제안",
-          "desc": "안녕하세요. 중구에 거주하는 시민입니다.\n\n전기자전거 재고 불균형 해결 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수",
+          "id": 29,
+          "title": "통학로 안전 그린로드 도입",
+          "desc": "안녕하세요. 해운대구에 거주하는 시민입니다.\n\n통학로 안전 그린로드 도입을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 ",
           "img": null
         },
         {
-          "id": 4,
-          "title": "공공 와이파이 확대 제안",
-          "desc": "안녕하세요. 영도구에 거주하는 시민입니다.\n\n공공 와이파이 확대 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측",
+          "id": 30,
+          "title": "공유 모빌리티 거치 구역 정비",
+          "desc": "안녕하세요. 사하구에 거주하는 시민입니다.\n\n공유 모빌리티 거치 구역 정비을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요",
           "img": null
         }
       ]
@@ -536,7 +536,7 @@
       "url": "http://localhost:8000/api/reports/full",
       "ok": true,
       "status": 200,
-      "durationMs": 13,
+      "durationMs": 9,
       "body": [
         {
           "id": 117,
@@ -623,6 +623,48 @@
           ]
         },
         {
+          "id": 141,
+          "user_id": 12,
+          "author": "박지민",
+          "category": "안전",
+          "sub_category": "CCTV",
+          "title": "골목 CCTV 사각지대 보완 요청",
+          "content": "강서구에 거주하는 시민입니다. 골목 CCTV 사각지대 보완 요청에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "강서구",
+          "location": "강서구",
+          "detailed_address": "강서구 일대",
+          "lat": 35.209695,
+          "lng": 128.977909,
+          "image": null,
+          "status": "개선완료",
+          "progress_step": 4,
+          "views": 130,
+          "likes": 5,
+          "comments": 2,
+          "date": "2026.04.30",
+          "result_details": {
+            "title": "개선 완료 안내",
+            "image": null,
+            "content": "신속히 조치 완료했습니다. 협조해주셔서 감사합니다.",
+            "manager": "동래구청 도시정비과",
+            "result_date": "2026.05.02"
+          },
+          "comments_list": [
+            {
+              "id": 76,
+              "author": "김해운",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.30"
+            },
+            {
+              "id": 77,
+              "author": "이남이",
+              "content": "저도 같은 문제를 겪었어요.",
+              "date": "2026.04.30"
+            }
+          ]
+        },
+        {
           "id": 115,
           "user_id": 10,
           "author": "수영시민",
@@ -688,6 +730,42 @@
             },
             {
               "id": 48,
+              "author": "홍길동",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.30"
+            }
+          ]
+        },
+        {
+          "id": 139,
+          "user_id": 10,
+          "author": "수영시민",
+          "category": "환경",
+          "sub_category": "녹지",
+          "title": "공원 벤치 노후화 심함",
+          "content": "사하구에 거주하는 시민입니다. 공원 벤치 노후화 심함에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "사하구",
+          "location": "사하구",
+          "detailed_address": "사하구 일대",
+          "lat": 35.106709,
+          "lng": 128.977186,
+          "image": null,
+          "status": "개선예정",
+          "progress_step": 1,
+          "views": 398,
+          "likes": 4,
+          "comments": 2,
+          "date": "2026.04.30",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 73,
+              "author": "박지민",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.30"
+            },
+            {
+              "id": 72,
               "author": "홍길동",
               "content": "사진을 보니 심각하네요.",
               "date": "2026.04.30"
@@ -767,6 +845,42 @@
           ]
         },
         {
+          "id": 134,
+          "user_id": 13,
+          "author": "김해운",
+          "category": "교육",
+          "sub_category": "학교 시설",
+          "title": "보도블록이 깨져서 위험합니다",
+          "content": "부산진구에 거주하는 시민입니다. 보도블록이 깨져서 위험합니다에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "부산진구",
+          "location": "부산진구",
+          "detailed_address": "부산진구 일대",
+          "lat": 35.161401,
+          "lng": 129.052634,
+          "image": null,
+          "status": "개선중",
+          "progress_step": 2,
+          "views": 423,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.27",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 62,
+              "author": "이남이",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.28"
+            },
+            {
+              "id": 63,
+              "author": "최사하",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.29"
+            }
+          ]
+        },
+        {
           "id": 112,
           "user_id": 15,
           "author": "최사하",
@@ -832,6 +946,42 @@
             },
             {
               "id": 42,
+              "author": "강서민",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.27"
+            }
+          ]
+        },
+        {
+          "id": 136,
+          "user_id": 15,
+          "author": "최사하",
+          "category": "문화·여가",
+          "sub_category": "광장",
+          "title": "공공자전거 거치대 부족",
+          "content": "남구에 거주하는 시민입니다. 공공자전거 거치대 부족에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "남구",
+          "location": "남구",
+          "detailed_address": "남구 일대",
+          "lat": 35.134277,
+          "lng": 129.08151,
+          "image": null,
+          "status": "개선예정",
+          "progress_step": 1,
+          "views": 372,
+          "likes": 4,
+          "comments": 2,
+          "date": "2026.04.26",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 67,
+              "author": "동래우디",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.27"
+            },
+            {
+              "id": 66,
               "author": "강서민",
               "content": "사진을 보니 심각하네요.",
               "date": "2026.04.27"
@@ -911,6 +1061,42 @@
           ]
         },
         {
+          "id": 130,
+          "user_id": 9,
+          "author": "동래우디",
+          "category": "주거",
+          "sub_category": "공동주택",
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "content": "중구에 거주하는 시민입니다. 공원 쓰레기통이 안전조치가 필요해요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "중구",
+          "location": "중구",
+          "detailed_address": "중구 일대",
+          "lat": 35.102513,
+          "lng": 129.034616,
+          "image": null,
+          "status": "개선예정",
+          "progress_step": 1,
+          "views": 300,
+          "likes": 5,
+          "comments": 2,
+          "date": "2026.04.26",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 55,
+              "author": "홍길동",
+              "content": "빠른 조치가 필요하네요.",
+              "date": "2026.04.27"
+            },
+            {
+              "id": 54,
+              "author": "수영시민",
+              "content": "빠른 조치가 필요하네요.",
+              "date": "2026.04.28"
+            }
+          ]
+        },
+        {
           "id": 107,
           "user_id": 10,
           "author": "수영시민",
@@ -983,6 +1169,42 @@
           ]
         },
         {
+          "id": 131,
+          "user_id": 10,
+          "author": "수영시민",
+          "category": "환경",
+          "sub_category": "녹지",
+          "title": "골목 가로등이 자주 꺼집니다",
+          "content": "서구에 거주하는 시민입니다. 골목 가로등이 자주 꺼집니다에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "서구",
+          "location": "서구",
+          "detailed_address": "서구 일대",
+          "lat": 35.09862,
+          "lng": 129.025112,
+          "image": null,
+          "status": "개선중",
+          "progress_step": 2,
+          "views": 479,
+          "likes": 5,
+          "comments": 2,
+          "date": "2026.04.25",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 56,
+              "author": "홍길동",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.25"
+            },
+            {
+              "id": 57,
+              "author": "박지민",
+              "content": "저도 같은 문제를 겪었어요.",
+              "date": "2026.04.27"
+            }
+          ]
+        },
+        {
           "id": 113,
           "user_id": 16,
           "author": "강서민",
@@ -1048,6 +1270,42 @@
             },
             {
               "id": 44,
+              "author": "동래우디",
+              "content": "저도 같은 문제를 겪었어요.",
+              "date": "2026.04.23"
+            }
+          ]
+        },
+        {
+          "id": 137,
+          "user_id": 16,
+          "author": "강서민",
+          "category": "보건·복지",
+          "sub_category": "의료시설",
+          "title": "분리수거 함이 고장났어요",
+          "content": "북구에 거주하는 시민입니다. 분리수거 함이 고장났어요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "북구",
+          "location": "북구",
+          "detailed_address": "북구 일대",
+          "lat": 35.194827,
+          "lng": 129.013246,
+          "image": null,
+          "status": "개선중",
+          "progress_step": 2,
+          "views": 458,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.22",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 69,
+              "author": "수영시민",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.22"
+            },
+            {
+              "id": 68,
               "author": "동래우디",
               "content": "저도 같은 문제를 겪었어요.",
               "date": "2026.04.23"
@@ -1139,6 +1397,48 @@
           ]
         },
         {
+          "id": 138,
+          "user_id": 9,
+          "author": "동래우디",
+          "category": "주거",
+          "sub_category": "공동주택",
+          "title": "지하철 출구 계단이 미끄러워요",
+          "content": "해운대구에 거주하는 시민입니다. 지하철 출구 계단이 미끄러워요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "해운대구",
+          "location": "해운대구",
+          "detailed_address": "해운대구 일대",
+          "lat": 35.1597,
+          "lng": 129.165305,
+          "image": null,
+          "status": "개선완료",
+          "progress_step": 4,
+          "views": 115,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.20",
+          "result_details": {
+            "title": "개선 완료 안내",
+            "image": null,
+            "content": "신속히 조치 완료했습니다. 협조해주셔서 감사합니다.",
+            "manager": "동래구청 도시정비과",
+            "result_date": "2026.05.02"
+          },
+          "comments_list": [
+            {
+              "id": 70,
+              "author": "수영시민",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.22"
+            },
+            {
+              "id": 71,
+              "author": "홍길동",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.22"
+            }
+          ]
+        },
+        {
           "id": 109,
           "user_id": 12,
           "author": "박지민",
@@ -1204,6 +1504,42 @@
             },
             {
               "id": 37,
+              "author": "이남이",
+              "content": "저도 같은 문제를 겪었어요.",
+              "date": "2026.04.15"
+            }
+          ]
+        },
+        {
+          "id": 133,
+          "user_id": 12,
+          "author": "박지민",
+          "category": "안전",
+          "sub_category": "방범",
+          "title": "횡단보도 신호 시간이 너무 짧아요",
+          "content": "영도구에 거주하는 시민입니다. 횡단보도 신호 시간이 너무 짧아요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "영도구",
+          "location": "영도구",
+          "detailed_address": "영도구 일대",
+          "lat": 35.089432,
+          "lng": 129.069286,
+          "image": null,
+          "status": "개선예정",
+          "progress_step": 1,
+          "views": 420,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.15",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 60,
+              "author": "김해운",
+              "content": "빠른 조치가 필요하네요.",
+              "date": "2026.04.15"
+            },
+            {
+              "id": 61,
               "author": "이남이",
               "content": "저도 같은 문제를 겪었어요.",
               "date": "2026.04.15"
@@ -1295,6 +1631,48 @@
           ]
         },
         {
+          "id": 132,
+          "user_id": 11,
+          "author": "홍길동",
+          "category": "교통",
+          "sub_category": "횡단보도",
+          "title": "버스정류장 지붕이 파손됐어요",
+          "content": "동구에 거주하는 시민입니다. 버스정류장 지붕이 파손됐어요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "동구",
+          "location": "동구",
+          "detailed_address": "동구 일대",
+          "lat": 35.125427,
+          "lng": 129.041367,
+          "image": null,
+          "status": "개선완료",
+          "progress_step": 4,
+          "views": 402,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.14",
+          "result_details": {
+            "title": "개선 완료 안내",
+            "image": null,
+            "content": "신속히 조치 완료했습니다. 협조해주셔서 감사합니다.",
+            "manager": "동래구청 도시정비과",
+            "result_date": "2026.05.02"
+          },
+          "comments_list": [
+            {
+              "id": 59,
+              "author": "김해운",
+              "content": "사진을 보니 심각하네요.",
+              "date": "2026.04.15"
+            },
+            {
+              "id": 58,
+              "author": "박지민",
+              "content": "빠른 조치가 필요하네요.",
+              "date": "2026.04.16"
+            }
+          ]
+        },
+        {
           "id": 111,
           "user_id": 14,
           "author": "이남이",
@@ -1379,6 +1757,48 @@
           ]
         },
         {
+          "id": 135,
+          "user_id": 14,
+          "author": "이남이",
+          "category": "산업·일자리",
+          "sub_category": "공유 시설",
+          "title": "어린이 보호구역 표지판 가림 현상",
+          "content": "동래구에 거주하는 시민입니다. 어린이 보호구역 표지판 가림 현상에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "동래구",
+          "location": "동래구",
+          "detailed_address": "동래구 일대",
+          "lat": 35.194648,
+          "lng": 129.078223,
+          "image": null,
+          "status": "개선완료",
+          "progress_step": 4,
+          "views": 326,
+          "likes": 3,
+          "comments": 2,
+          "date": "2026.04.12",
+          "result_details": {
+            "title": "개선 완료 안내",
+            "image": null,
+            "content": "신속히 조치 완료했습니다. 협조해주셔서 감사합니다.",
+            "manager": "동래구청 도시정비과",
+            "result_date": "2026.05.02"
+          },
+          "comments_list": [
+            {
+              "id": 65,
+              "author": "강서민",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.12"
+            },
+            {
+              "id": 64,
+              "author": "최사하",
+              "content": "저도 같은 문제를 겪었어요.",
+              "date": "2026.04.14"
+            }
+          ]
+        },
+        {
           "id": 116,
           "user_id": 11,
           "author": "홍길동",
@@ -1444,6 +1864,42 @@
             },
             {
               "id": 50,
+              "author": "박지민",
+              "content": "빠른 조치가 필요하네요.",
+              "date": "2026.04.10"
+            }
+          ]
+        },
+        {
+          "id": 140,
+          "user_id": 11,
+          "author": "홍길동",
+          "category": "교통",
+          "sub_category": "버스정류장",
+          "title": "통학로 보행자 분리대 필요",
+          "content": "금정구에 거주하는 시민입니다. 통학로 보행자 분리대 필요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "region": "금정구",
+          "location": "금정구",
+          "detailed_address": "금정구 일대",
+          "lat": 35.242977,
+          "lng": 129.089589,
+          "image": null,
+          "status": "개선중",
+          "progress_step": 2,
+          "views": 432,
+          "likes": 2,
+          "comments": 2,
+          "date": "2026.04.09",
+          "result_details": null,
+          "comments_list": [
+            {
+              "id": 75,
+              "author": "김해운",
+              "content": "공감합니다. 꼭 개선되었으면 좋겠어요.",
+              "date": "2026.04.10"
+            },
+            {
+              "id": 74,
               "author": "박지민",
               "content": "빠른 조치가 필요하네요.",
               "date": "2026.04.10"
@@ -1734,61 +2190,61 @@
       "url": "http://localhost:8000/api/reports/clusters",
       "ok": true,
       "status": 200,
-      "durationMs": 4,
+      "durationMs": 7,
       "body": [
         {
           "region": "강서구",
           "lat": 35.209695,
           "lng": 128.977909,
-          "count": 2
+          "count": 3
         },
         {
           "region": "금정구",
           "lat": 35.242977,
           "lng": 129.089589,
-          "count": 2
+          "count": 3
         },
         {
           "region": "남구",
           "lat": 35.134277,
           "lng": 129.08151,
-          "count": 2
+          "count": 3
         },
         {
           "region": "동구",
           "lat": 35.125427,
           "lng": 129.041367,
-          "count": 2
+          "count": 3
         },
         {
           "region": "동래구",
-          "lat": 35.192355111111,
-          "lng": 129.089571777778,
-          "count": 9
+          "lat": 35.1925844,
+          "lng": 129.0884369,
+          "count": 10
         },
         {
           "region": "부산진구",
           "lat": 35.161401,
           "lng": 129.052634,
-          "count": 2
+          "count": 3
         },
         {
           "region": "북구",
           "lat": 35.194827,
           "lng": 129.013246,
-          "count": 2
+          "count": 3
         },
         {
           "region": "사하구",
           "lat": 35.106709,
           "lng": 128.977186,
-          "count": 2
+          "count": 3
         },
         {
           "region": "서구",
           "lat": 35.09862,
           "lng": 129.025112,
-          "count": 2
+          "count": 3
         },
         {
           "region": "수영구",
@@ -1800,19 +2256,19 @@
           "region": "영도구",
           "lat": 35.089432,
           "lng": 129.069286,
-          "count": 2
+          "count": 3
         },
         {
           "region": "중구",
           "lat": 35.102513,
           "lng": 129.034616,
-          "count": 2
+          "count": 3
         },
         {
           "region": "해운대구",
-          "lat": 35.160833333333,
-          "lng": 129.16317,
-          "count": 3
+          "lat": 35.16055,
+          "lng": 129.16370375,
+          "count": 4
         }
       ]
     },
@@ -1822,7 +2278,7 @@
       "url": "http://localhost:8000/api/reports/list",
       "ok": true,
       "status": 200,
-      "durationMs": 4,
+      "durationMs": 6,
       "body": [
         {
           "id": 117,
@@ -1835,6 +2291,15 @@
         },
         {
           "id": 129,
+          "title": "골목 CCTV 사각지대 보완 요청",
+          "type": null,
+          "location": "강서구",
+          "content": "강서구에 거주하는 시민입니다. 골목 CCTV 사각지대 보완 요청에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-30T11:00:00"
+        },
+        {
+          "id": 141,
           "title": "골목 CCTV 사각지대 보완 요청",
           "type": null,
           "location": "강서구",
@@ -1861,6 +2326,15 @@
           "created_at": "2026-04-30T01:00:00"
         },
         {
+          "id": 139,
+          "title": "공원 벤치 노후화 심함",
+          "type": null,
+          "location": "사하구",
+          "content": "사하구에 거주하는 시민입니다. 공원 벤치 노후화 심함에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-30T01:00:00"
+        },
+        {
           "id": 110,
           "title": "보도블록이 깨져서 위험합니다",
           "type": null,
@@ -1871,6 +2345,15 @@
         },
         {
           "id": 122,
+          "title": "보도블록이 깨져서 위험합니다",
+          "type": null,
+          "location": "부산진구",
+          "content": "부산진구에 거주하는 시민입니다. 보도블록이 깨져서 위험합니다에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-27T23:00:00"
+        },
+        {
+          "id": 134,
           "title": "보도블록이 깨져서 위험합니다",
           "type": null,
           "location": "부산진구",
@@ -1897,6 +2380,15 @@
           "created_at": "2026-04-26T14:00:00"
         },
         {
+          "id": 136,
+          "title": "공공자전거 거치대 부족",
+          "type": null,
+          "location": "남구",
+          "content": "남구에 거주하는 시민입니다. 공공자전거 거치대 부족에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-26T14:00:00"
+        },
+        {
           "id": 106,
           "title": "공원 쓰레기통이 안전조치가 필요해요",
           "type": null,
@@ -1907,6 +2399,15 @@
         },
         {
           "id": 118,
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "type": null,
+          "location": "중구",
+          "content": "중구에 거주하는 시민입니다. 공원 쓰레기통이 안전조치가 필요해요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-26T06:00:00"
+        },
+        {
+          "id": 130,
           "title": "공원 쓰레기통이 안전조치가 필요해요",
           "type": null,
           "location": "중구",
@@ -1933,6 +2434,15 @@
           "created_at": "2026-04-25T20:00:00"
         },
         {
+          "id": 131,
+          "title": "골목 가로등이 자주 꺼집니다",
+          "type": null,
+          "location": "서구",
+          "content": "서구에 거주하는 시민입니다. 골목 가로등이 자주 꺼집니다에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-25T20:00:00"
+        },
+        {
           "id": 113,
           "title": "분리수거 함이 고장났어요",
           "type": null,
@@ -1943,6 +2453,15 @@
         },
         {
           "id": 125,
+          "title": "분리수거 함이 고장났어요",
+          "type": null,
+          "location": "북구",
+          "content": "북구에 거주하는 시민입니다. 분리수거 함이 고장났어요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-22T03:00:00"
+        },
+        {
+          "id": 137,
           "title": "분리수거 함이 고장났어요",
           "type": null,
           "location": "북구",
@@ -1969,6 +2488,15 @@
           "created_at": "2026-04-20T22:00:00"
         },
         {
+          "id": 138,
+          "title": "지하철 출구 계단이 미끄러워요",
+          "type": null,
+          "location": "해운대구",
+          "content": "해운대구에 거주하는 시민입니다. 지하철 출구 계단이 미끄러워요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-20T22:00:00"
+        },
+        {
           "id": 109,
           "title": "횡단보도 신호 시간이 너무 짧아요",
           "type": null,
@@ -1979,6 +2507,15 @@
         },
         {
           "id": 121,
+          "title": "횡단보도 신호 시간이 너무 짧아요",
+          "type": null,
+          "location": "영도구",
+          "content": "영도구에 거주하는 시민입니다. 횡단보도 신호 시간이 너무 짧아요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-15T04:00:00"
+        },
+        {
+          "id": 133,
           "title": "횡단보도 신호 시간이 너무 짧아요",
           "type": null,
           "location": "영도구",
@@ -2005,6 +2542,15 @@
           "created_at": "2026-04-14T02:00:00"
         },
         {
+          "id": 132,
+          "title": "버스정류장 지붕이 파손됐어요",
+          "type": null,
+          "location": "동구",
+          "content": "동구에 거주하는 시민입니다. 버스정류장 지붕이 파손됐어요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-14T02:00:00"
+        },
+        {
           "id": 111,
           "title": "어린이 보호구역 표지판 가림 현상",
           "type": null,
@@ -2023,6 +2569,15 @@
           "created_at": "2026-04-12T12:00:00"
         },
         {
+          "id": 135,
+          "title": "어린이 보호구역 표지판 가림 현상",
+          "type": null,
+          "location": "동래구",
+          "content": "동래구에 거주하는 시민입니다. 어린이 보호구역 표지판 가림 현상에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-12T12:00:00"
+        },
+        {
           "id": 116,
           "title": "통학로 보행자 분리대 필요",
           "type": null,
@@ -2033,6 +2588,15 @@
         },
         {
           "id": 128,
+          "title": "통학로 보행자 분리대 필요",
+          "type": null,
+          "location": "금정구",
+          "content": "금정구에 거주하는 시민입니다. 통학로 보행자 분리대 필요에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은 첨부된 사진을 참고 부탁드립니다.",
+          "author_id": null,
+          "created_at": "2026-04-09T05:00:00"
+        },
+        {
+          "id": 140,
           "title": "통학로 보행자 분리대 필요",
           "type": null,
           "location": "금정구",
@@ -2138,7 +2702,7 @@
       "url": "http://localhost:8000/api/reports/proposals",
       "ok": true,
       "status": 200,
-      "durationMs": 34,
+      "durationMs": 33,
       "body": [
         {
           "category": "주거",
@@ -2209,6 +2773,40 @@
           "created_at": "2026-05-03T10:00:00"
         },
         {
+          "category": "주거",
+          "title": "통학로 안전 그린로드 도입",
+          "content": "안녕하세요. 해운대구에 거주하는 시민입니다.\n\n통학로 안전 그린로드 도입을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "해운대구",
+          "detailed_address": "해운대구 일대",
+          "files": [],
+          "id": 29,
+          "user_id": 9,
+          "views_count": 633,
+          "likes_count": 5,
+          "comments_count": 2,
+          "nickname": "동래우디",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-05-03T10:00:00"
+        },
+        {
+          "category": "환경",
+          "title": "공유 모빌리티 거치 구역 정비",
+          "content": "안녕하세요. 사하구에 거주하는 시민입니다.\n\n공유 모빌리티 거치 구역 정비을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "사하구",
+          "detailed_address": "사하구 일대",
+          "files": [],
+          "id": 30,
+          "user_id": 10,
+          "views_count": 468,
+          "likes_count": 5,
+          "comments_count": 2,
+          "nickname": "수영시민",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-05-03T10:00:00"
+        },
+        {
           "category": "안전",
           "title": "공공 와이파이 확대 제안",
           "content": "안녕하세요. 영도구에 거주하는 시민입니다.\n\n공공 와이파이 확대 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
@@ -2233,6 +2831,23 @@
           "detailed_address": "영도구 일대",
           "files": [],
           "id": 14,
+          "user_id": 12,
+          "views_count": 149,
+          "likes_count": 4,
+          "comments_count": 2,
+          "nickname": "박지민",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-05-02T10:00:00"
+        },
+        {
+          "category": "안전",
+          "title": "공공 와이파이 확대 제안",
+          "content": "안녕하세요. 영도구에 거주하는 시민입니다.\n\n공공 와이파이 확대 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "영도구",
+          "detailed_address": "영도구 일대",
+          "files": [],
+          "id": 24,
           "user_id": 12,
           "views_count": 149,
           "likes_count": 4,
@@ -2277,6 +2892,23 @@
           "created_at": "2026-04-25T10:00:00"
         },
         {
+          "category": "보건·복지",
+          "title": "지하철역 휠체어 경사로 개선",
+          "content": "안녕하세요. 북구에 거주하는 시민입니다.\n\n지하철역 휠체어 경사로 개선을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "북구",
+          "detailed_address": "북구 일대",
+          "files": [],
+          "id": 28,
+          "user_id": 16,
+          "views_count": 267,
+          "likes_count": 2,
+          "comments_count": 2,
+          "nickname": "강서민",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-25T10:00:00"
+        },
+        {
           "category": "산업·일자리",
           "title": "공원 벤치 그늘막 추가 설치",
           "content": "안녕하세요. 동래구에 거주하는 시민입니다.\n\n공원 벤치 그늘막 추가 설치을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
@@ -2311,6 +2943,23 @@
           "created_at": "2026-04-22T10:00:00"
         },
         {
+          "category": "산업·일자리",
+          "title": "공원 벤치 그늘막 추가 설치",
+          "content": "안녕하세요. 동래구에 거주하는 시민입니다.\n\n공원 벤치 그늘막 추가 설치을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "동래구",
+          "detailed_address": "동래구 일대",
+          "files": [],
+          "id": 26,
+          "user_id": 14,
+          "views_count": 521,
+          "likes_count": 2,
+          "comments_count": 2,
+          "nickname": "이남이",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-22T10:00:00"
+        },
+        {
           "category": "환경",
           "title": "스마트 횡단보도 도입 제안",
           "content": "안녕하세요. 서구에 거주하는 시민입니다.\n\n스마트 횡단보도 도입 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
@@ -2335,6 +2984,23 @@
           "detailed_address": "서구 일대",
           "files": [],
           "id": 12,
+          "user_id": 10,
+          "views_count": 528,
+          "likes_count": 2,
+          "comments_count": 2,
+          "nickname": "수영시민",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-17T10:00:00"
+        },
+        {
+          "category": "환경",
+          "title": "스마트 횡단보도 도입 제안",
+          "content": "안녕하세요. 서구에 거주하는 시민입니다.\n\n스마트 횡단보도 도입 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "서구",
+          "detailed_address": "서구 일대",
+          "files": [],
+          "id": 22,
           "user_id": 10,
           "views_count": 528,
           "likes_count": 2,
@@ -2413,6 +3079,40 @@
           "created_at": "2026-04-16T10:00:00"
         },
         {
+          "category": "주거",
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "content": "안녕하세요. 중구에 거주하는 시민입니다.\n\n전기자전거 재고 불균형 해결 제안을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "중구",
+          "detailed_address": "중구 일대",
+          "files": [],
+          "id": 21,
+          "user_id": 9,
+          "views_count": 296,
+          "likes_count": 4,
+          "comments_count": 2,
+          "nickname": "동래우디",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-16T10:00:00"
+        },
+        {
+          "category": "교통",
+          "title": "야간 보행 안전 LED 가로등 설치",
+          "content": "안녕하세요. 동구에 거주하는 시민입니다.\n\n야간 보행 안전 LED 가로등 설치을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "동구",
+          "detailed_address": "동구 일대",
+          "files": [],
+          "id": 23,
+          "user_id": 11,
+          "views_count": 682,
+          "likes_count": 2,
+          "comments_count": 2,
+          "nickname": "홍길동",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-16T10:00:00"
+        },
+        {
           "category": "교육",
           "title": "어린이 보호구역 속도 알림 시스템",
           "content": "안녕하세요. 부산진구에 거주하는 시민입니다.\n\n어린이 보호구역 속도 알림 시스템을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
@@ -2437,6 +3137,23 @@
           "detailed_address": "부산진구 일대",
           "files": [],
           "id": 15,
+          "user_id": 13,
+          "views_count": 664,
+          "likes_count": 3,
+          "comments_count": 2,
+          "nickname": "김해운",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-15T10:00:00"
+        },
+        {
+          "category": "교육",
+          "title": "어린이 보호구역 속도 알림 시스템",
+          "content": "안녕하세요. 부산진구에 거주하는 시민입니다.\n\n어린이 보호구역 속도 알림 시스템을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "부산진구",
+          "detailed_address": "부산진구 일대",
+          "files": [],
+          "id": 25,
           "user_id": 13,
           "views_count": 664,
           "likes_count": 3,
@@ -2479,6 +3196,23 @@
           "is_mine": false,
           "has_voted": false,
           "created_at": "2026-04-10T10:00:00"
+        },
+        {
+          "category": "문화·여가",
+          "title": "분리수거 통합 안내 키오스크",
+          "content": "안녕하세요. 남구에 거주하는 시민입니다.\n\n분리수거 통합 안내 키오스크을(를) 통해 지역 공공디자인 개선이 필요하다고 생각합니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 제공 및 위치 안내 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.",
+          "region": "남구",
+          "detailed_address": "남구 일대",
+          "files": [],
+          "id": 27,
+          "user_id": 15,
+          "views_count": 492,
+          "likes_count": 3,
+          "comments_count": 2,
+          "nickname": "최사하",
+          "is_mine": false,
+          "has_voted": false,
+          "created_at": "2026-04-10T10:00:00"
         }
       ]
     },
@@ -2488,7 +3222,7 @@
       "url": "http://localhost:8000/api/surveys/list",
       "ok": true,
       "status": 200,
-      "durationMs": 3,
+      "durationMs": 2,
       "body": [
         {
           "id": 3,
@@ -2538,7 +3272,7 @@
       "url": "http://localhost:8000/api/surveys/list?tab=active",
       "ok": true,
       "status": 200,
-      "durationMs": 1,
+      "durationMs": 3,
       "body": [
         {
           "id": 3,
@@ -2572,7 +3306,7 @@
       "url": "http://localhost:8000/api/surveys/list?tab=result",
       "ok": true,
       "status": 200,
-      "durationMs": 2,
+      "durationMs": 5,
       "body": [
         {
           "id": 4,
@@ -2598,7 +3332,7 @@
       "url": "http://localhost:8000/api/surveys/1",
       "ok": true,
       "status": 200,
-      "durationMs": 5,
+      "durationMs": 3,
       "body": {
         "id": 1,
         "title": "사직구장 일대 보행환경 현황 조사",
@@ -2671,7 +3405,7 @@
       "url": "http://localhost:8000/checklist/list",
       "ok": true,
       "status": 200,
-      "durationMs": 3,
+      "durationMs": 4,
       "body": [
         {
           "진단지역": "중구",
@@ -2936,7 +3670,7 @@
       "url": "http://localhost:8000/checklist/clusters",
       "ok": true,
       "status": 200,
-      "durationMs": 2,
+      "durationMs": 5,
       "body": [
         {
           "district": "강서구",
@@ -3051,7 +3785,7 @@
       "url": "http://localhost:8000/checklist/aggregate",
       "ok": true,
       "status": 200,
-      "durationMs": 2,
+      "durationMs": 4,
       "body": [
         {
           "category": "교육",
@@ -3152,7 +3886,7 @@
       "url": "http://localhost:8000/api/admin/proposals",
       "ok": true,
       "status": 401,
-      "durationMs": 1,
+      "durationMs": 0,
       "body": {
         "detail": "Not authenticated"
       }
@@ -3163,7 +3897,7 @@
       "url": "http://localhost:8000/api/admin/activity-logs",
       "ok": true,
       "status": 401,
-      "durationMs": 0,
+      "durationMs": 1,
       "body": {
         "detail": "Not authenticated"
       }
@@ -3185,7 +3919,7 @@
       "url": "http://localhost:8000/api/notifications/unread-count",
       "ok": true,
       "status": 401,
-      "durationMs": 1,
+      "durationMs": 0,
       "body": {
         "detail": "Not authenticated"
       }
@@ -3205,7 +3939,7 @@
       "url": "http://localhost:8000/api/search?q=%EB%B6%80%EC%82%B0",
       "ok": true,
       "status": 200,
-      "durationMs": 4,
+      "durationMs": 131,
       "body": [
         {
           "type": "report",
@@ -3219,6 +3953,15 @@
         {
           "type": "report",
           "id": 122,
+          "title": "보도블록이 깨져서 위험합니다",
+          "snippet": "부산진구에 거주하는 시민입니다. 보도블록이 깨져서 위험합니다에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은",
+          "region": "부산진구",
+          "category": "교육",
+          "created_at": "2026-04-27T23:00:00"
+        },
+        {
+          "type": "report",
+          "id": 134,
           "title": "보도블록이 깨져서 위험합니다",
           "snippet": "부산진구에 거주하는 시민입니다. 보도블록이 깨져서 위험합니다에 대한 신속한 조치를 부탁드립니다.\n\n자세한 상황은",
           "region": "부산진구",
@@ -3242,6 +3985,15 @@
           "region": "부산진구",
           "category": "교육",
           "created_at": "2026-04-15T10:00:00"
+        },
+        {
+          "type": "proposal",
+          "id": 25,
+          "title": "어린이 보호구역 속도 알림 시스템",
+          "snippet": "안녕하세요. 부산진구에 거주하는 시민입니다.\n\n어린이 보호구역 속도 알림 시스템을(를) 통해 지역 공공디자인 개선이 필요하다",
+          "region": "부산진구",
+          "category": "교육",
+          "created_at": "2026-04-15T10:00:00"
         }
       ]
     },
@@ -3251,7 +4003,7 @@
       "url": "http://localhost:8000/api/search/suggest?q=%EA%B0%9C%EC%84%A0",
       "ok": true,
       "status": 200,
-      "durationMs": 2,
+      "durationMs": 8,
       "body": []
     },
     {
@@ -3260,7 +4012,7 @@
       "url": "http://localhost:8000/checklist/summary",
       "ok": true,
       "status": 200,
-      "durationMs": 5,
+      "durationMs": 31,
       "body": [
         {
           "category": "교육",
@@ -3310,7 +4062,7 @@
       "url": "http://localhost:8000/checklist/recommendations",
       "ok": true,
       "status": 200,
-      "durationMs": 2,
+      "durationMs": 8,
       "body": {
         "target_district": null,
         "target_categories": [
@@ -3335,6 +4087,14 @@
             "views": 149
           },
           {
+            "id": 24,
+            "title": "공공 와이파이 확대 제안",
+            "category": "안전",
+            "region": "영도구",
+            "likes": 4,
+            "views": 149
+          },
+          {
             "id": 3,
             "title": "야간 보행 안전 LED 가로등 설치",
             "category": "교통",
@@ -3352,14 +4112,925 @@
           }
         ]
       }
+    },
+    {
+      "id": "checklist-template-general",
+      "method": "GET",
+      "url": "http://localhost:8000/checklist/templates?mode=general",
+      "ok": true,
+      "status": 200,
+      "durationMs": 3,
+      "body": {
+        "보도": {
+          "보행공간": [
+            "간판, 전신주, 가로등, 가로수 등의 장애물이 보행을 방해하지 않고 있나요?",
+            "보행로는 모든 사람들이 편안하고 안전하게 통행할 수 있도록 조성되어져 있나요?",
+            "보행로는 노인, 어린이, 유아차, 여성, 장애인, 휠체어 등 누구나 편안하고 안전하게 통행할 수 있도록 쾌적하고 친환경적인 보행 공간을 구성하고 있나요?",
+            "보행 시 보행안전구역과 그 외 구역의 바닥재의 질감과 색상차이가 명확한가요?"
+          ],
+          "차량진입구역": [
+            "주차장 진출입구에 보도면이 오르내리거나 옆으로 기울어지지 않도록 보행안전구역이 평탄하게 마감되어있나요?",
+            "차량 운전자는 진입 시 보행자를 확인할 수 있도록 시야를 방해하는 시설물, 안내사인, 광고물이 있나요?",
+            "차량 진입구 주변 바닥이 파손되거나 움푹 패여 있어, 걷기에 불편하거나 기분이 나쁘다고 느끼시나요?",
+            "보행공간이 차량 진출입으로 인한 차량 통행로와 교차하는 지점에서는 바닥의 색상, 패턴 등을 달리하여 보행자가 위험지역임을 인지하도록 설치되어 있나요?"
+          ],
+          "건물 앞 열린 광장, 쉼터(공개공지)": [
+            "간판이나, 차양, 진열대 등이 있더라도 보행자가 서로 비켜 지나가기 충분한 폭이 확보되어 있다고 느끼시나요?",
+            "이 공간 위쪽에 설치된 간판, 차양, 구조물 등이 머리나 몸에 부딪힐 걱정 없이 지나갈 수 있을 만큼 충분한 높이가 확보되어 있다고 느끼시나요?(우천시)",
+            "보행에 방해되지 않도록 시설물 등이 설치되어 있나요?",
+            "일반 대중에게 상시 개방되는 소규모 휴식 공간임을 나타내는 표지판이 있나요?"
+          ],
+          "자전거도로": [
+            "보행 시 자전거로 인해 통행의 불편을 느끼고 계시나요?",
+            "자전거와 함께 보행해도 충돌이 없도록 도보 면적이 충분히 확보되어 있나요?",
+            "자전거도에 물이 고여 우천시 보행자를 방해하나요?",
+            "자전거도로와 도보의 경계가 울타리나 노면표시 등으로 안내되어 있나요?"
+          ],
+          "시설물구역": [
+            "시설물이 모여 있는 구역에서도 보행자가 서로 비켜 지나가기 충분한 폭이 확보되어 있다고 느끼시나요?",
+            "시설물 주변에 돌출된 부분이나 날카로운 모서리, 노출된 선·배관 등으로 인해 걸려 넘어지거나 몸을 부딪힐 위험이 크지 않다고 느끼시나요?",
+            "시설물이 너무 어지럽게 배치되어 있거나, 쓰레기·악취 등으로 인해 그 구역을 지날 때 불쾌하거나 피하고 싶다고 느끼는 정도가 크지 않으신가요?",
+            "시설물이 설치된 구역과 보행 동선이 바닥 포장, 색상, 안내표지 등으로 구분되어 있어 어디를 걸어야 하는지 쉽게 알아볼 수 있다고 느끼시나요?"
+          ]
+        },
+        "차도": {
+          "생활도로(국지도로, 동네에서 차가 다니는 길)": [
+            "보도나 갓길·차도 가장자리 등 보행할 수 있는 공간이 중간에 끊기지 않고 이어져 있어 계속 걸어가기 편하다고 느끼시나요?",
+            "국지도로에서는 차량 속도가 충분히 낮고, 보행자와 차량 사이를 구분해 주는 선이나 시설(보행자 가장자리선, 과속방지턱 등)이 있어 보행 중 사고 위험이 크지 않다고 느끼시나요?",
+            "국지도로를 걸을 때 불법주차·적치물·쓰레기 등으로 인해 차도 가장자리를 아슬아슬하게 걸어야 하거나, 매연·소음 때문에 불쾌감을 크게 느끼지 않으시나요?",
+            "국지도로에서 보행자가 어디를 걸어야 하는지, 차량의 제한속도나 보행자 우선구간 여부 등을 알 수 있는 노면표시·표지판 등이 분명하다고 느끼시나요?"
+          ],
+          "횡단보도": [
+            "휠체어·유모차·노인 보행자가 함께 대기하고 건너기에도 충분한 공간(대기 공간 폭)이 있다고 느끼시나요?",
+            "횡단보도는 대기 보행자 보호를 위해 운전자의 눈에 잘 띄면서 차량집인은 불가능한 안전한 구조인가요?",
+            "신호 대기 공간이 좁아서 사람들과 부딪히거나, 바닥에 물이 고여 있어 불편하지는 않나요?",
+            "횡단보도는 보행자와 운전자의 눈에 띄일 수 있도록 바닥과 대비되는 색상으로 설치되어 있나요?"
+          ],
+          "속도저감장치": [
+            "차량 속도가 적절히 조절되어, 신호나 보행자 횡단 시에 급하게 뛰지 않고도 건널 수 있다고 느끼시나요?",
+            "차도에 과속방지턱, 차로 폭 좁힘, 중앙분리대 등 차량 속도를 줄이기 위한 시설이 충분히 설치되어 있다고 느끼시나요?",
+            "과속방지턱·요철 포장 등 속도 저감시설로 인해 발생하는 소음·진동이 보행하기 불편할 정도로 크다고 느끼신 적이 자주 있나요?",
+            "제한속도와 속도 저감구간(예: 어린이보호구역, 생활도로구간 등)이 표지판·노면표시·노란색 도색 등으로 표시되어 있나요?"
+          ]
+        },
+        "공원, 광장": {
+          "진입공간(보행 접근로)": [
+            "공원 진입로는 누구나 쉽고 안전하게 접근이 가능한가요?",
+            "공원 입구까지 차량 또는 자전거의 간섭을 받지 않고 안전하게 진입이 가능한가요?",
+            "주차구역에는 비상시 도움을 요청 할 수 있는 호출 도움벨이 있나요?",
+            "어린이, 유아차, 임산부, 장애인 등이 안전하고 쉽게 동행할 수 있도록 유도블럭 등 기타 부착물들이 설치되어 있나요?"
+          ],
+          "산책로": [
+            "산책로는 공원의 주요시설과 유기적으로 연결되어 있나요?",
+            "야간에 산책을 하는 사람들을 배려하여 보행로 및 휴게 공간에는 적절한 조도를 확보해두었나요?",
+            "산책로에 양방 소통이 가능한 CCTV(통화, 비상호출 등 통합형)가 설치되어져 있나요?",
+            "산책로는 쾌적하게 조성되어 있나요?"
+          ],
+          "위생공간(화장실)": [
+            "공원 어디서나 식별 가능하고 접근하기 쉬운 장소에 있나요?",
+            "화장실은 미끄러지지 않는 소재의 타일이며, 화장실 내 손이 닾는곳에 비상벨이 있나요?",
+            "화잘실 주변은 조명기구가 설치되어 밝게 유지되고 있나요?",
+            "공중화장실을 쉽게 인지하고 사용하도록 간결하고 명료한 시각 사인물로되어 있나요?"
+          ],
+          "편의공간(편의시설, 안내시설)": [
+            "방문자센터, 매점 등 이용객을 위한 공원 내 건축물에 자유로운 출입이 가능한가요?",
+            "안내표지판을 멈춰 서서 읽어도 다른 사용자의 통행을 방해하지 않는 장소에 설치되어 있나요?",
+            "어린이, 외국인, 장애인의 이용을 고려한 안내 사인물(음성안내, 촉지도)가 설치되어 있나요?",
+            "각종 안내판이나 유도사인은 누구나 알기 쉬운 표기 내용과 방법 및 사용하기 쉬운 형상으로 되어있나요?"
+          ],
+          "휴게공간": [
+            "공원 내 경치를 감상할 수 있는 곳이나 잠시 쉬어 갈 수 있는 휴게시설이 있나요?",
+            "공원·광장 안의 편의공간으로 가는 길은 누구나 안전하게 접근 가능한 곳인가요?",
+            "야간 사용을 고려하여 적절한 조명이 설치되어 있나요?",
+            "‘앉아서 쉬어야 하는 곳’이 어디인지 한눈에 알아볼 수 있다고 느끼시나요?"
+          ]
+        },
+        "공공시설물": {
+          "안내시설": [
+            "안내시설 및 표지판 정보를 편리하게 알 수 있나요?",
+            "안내시설 및 표지판이 위험 또는 다소 불안하게 배치되어 있다고 느끼시나요?",
+            "안내시설 및 표지판은 누구나 알기 쉽도록 잘 정리되어져 있나요?",
+            "안내시설 및 표지판은 한눈에 알기쉬운 장소에 있나요?"
+          ],
+          "가로등(보행등)": [
+            "가로등 조명기구는 적절한 조명기구(컷오프) 종류와 높이에 설치되어 야간시 보행자가 시야를 방해하지 않고 이동할 수 있도록 지원하나요?",
+            "가로등은 누전, 파손 등의 위험으로부터 안전하게 관리되고, 방범등과 같은 기능을 제공하고 있나요?",
+            "가로등은 시민들의 편의를 위한 생활정보 적절하게 제공하나요?",
+            "가로등은 심미적으로 주변 환경과 조화를 이루도록 디자인 되었나요?"
+          ],
+          "신호등": [
+            "신호등은 보행자가 편안하게 차도를 건널 수 있도록 충분한 시간과  적절한 알람을 제공하나요?",
+            "신호등은 누전, 파손 등의 위험으로부터 안전하게 관리되고 있나요?",
+            "신호등은 주/야간 모두 적절한 시인성을 제공하며, 교행 잔여 시간 또는 다음 신호시 까지 대기 시간과 같은 정보를 잘 제공하나요?",
+            "신호등의 디자인은 직관적이고, 심미적으로 주변 환경과 조화를 이루고 있나요?"
+          ],
+          "버스승차대": [
+            "버스 승차대 주변은 장애물을 최소화하고, 대기중인 승객들이 이동하기에 편안한가요?",
+            "버스 승차대는 미끄럼, 차량 경로이탈 등으로 인한 위험을 방지할 수 있도록 구성되었나요?",
+            "버스 승차대는 버스노선, 운행정보와 관련하여 통합적 안내시스템을 제공하나요?",
+            "버스 승차대는 심미적으로 주변 환경과 조화를 이루도록 디자인 되었나요?"
+          ],
+          "택시승차대": [
+            "택시 승차대 주변은 장애물 없이 사용자들이 이동하기에 편안한가요?",
+            "택시 승차대는 미끄럼, 차량 경로이탈 등으로 인한 위험을 방지할 수 있도록 구성되었나요?",
+            "택시 승차대는 시설 활용과 관련하여 통합적 안내시스템을 제공하나요?",
+            "택시 승차대는 심미적으로 주변 환경과 조화를 이루도록 디자인 되었나요?"
+          ],
+          "두리발승차대": [
+            "두리발 주변은 장애물 없이 휠체어 등의 보조장비 사용자들이 이동하기에 편안한가요?",
+            "두리발은 미끄럼, 경로이탈 등으로 인한 이동의 위험을 방지할 수 있도록 구성되었나요?",
+            "두리발은 시설 활용과 관련하여 통합적 안내시스템을 제공하나요?",
+            "두리발은 심미적으로 주변 환경과 조화를 이루도록 디자인 되었나요?"
+          ],
+          "지하철출입구": [
+            "지하철 출입구 주변은 장애물을 최소화하고 지하철 탑승을 위한 승객들이 이동하기에 편안한가요?",
+            "지하철 출입구는 미끄럼 등으로 인한 넘어짐, 혼잡상황 등으로 인한 위험을 방지할 수 있도록 구성되었나요?",
+            "지하철 출입구는 지하철 노선, 환승, 운행정보와 관련하여 통합적 안내시스템을 제공하나요?",
+            "지하철 출입구는 심미적으로 주변 환경과 조화를 이루도록 디자인 되었나요?"
+          ],
+          "휴게(벤치)": [
+            "벤치 주변은 장애물을 최소화해 보행자들이 벤치까지 이동하기에 편안한가요?",
+            "벤치는 날카로운 모서리, 금속부품, 파손 등으로 인한 위험을 방지하도록 관리되었나요?",
+            "벤치는 다음 벤치까지의 거리, 벤치 위치 등 주변의 정보를 제공하나요?",
+            "벤치는 심미적으로 주변 환경과 조화를 이루도록 디자인 되었나요?"
+          ],
+          "휴게(파고라)": [
+            "파고라 주변은 장애물을 최소화해 보행자들이 파고라까지 이동하기에 편안한가요?",
+            "파고라는 날카로운 모서리, 운행중 차량으로 인한 위험으로부터 안전한가요?",
+            "파고라는 횡단보도 신호등 등 주변의 교통정보를 쉽게 확인할 수 있도록 지원하나요?",
+            "파고라는 심미적으로 주변 환경과 조화를 이루도록 디자인 되었나요?"
+          ],
+          "휴지통": [
+            "휴지통 주변은 장애물을 최소화해 보행자들이 휴지통까지 이동하기에 편안한가요?",
+            "휴지통은 날카로운 모서리, 오염, 화재 등으로 인한 위험을 방지하도록 관리되고 있나요?",
+            "휴지통은 쓰레기 종류, 분리수거 종류, 금연 등의 정보를 제공하나요?",
+            "휴지통은 심미적으로 주변 환경과 조화를 이루도록 디자인 되었나요?"
+          ],
+          "음수대": [
+            "음수대 주변은 장애물을 최소화해 보행자들이 음수대까지 이동하기에 편안하게 관리되고 있나요?",
+            "음수대는 미끄럼, 경로이탈 등으로 인한 이동의 위험을 방지할 수 있도록 관리되고 있나요?",
+            "음수대는 수질, 식용가능 여부 등의 정보를 제공하나요?",
+            "음수대는 심미적으로 주변 환경과 조화를 이루도록 디자인 되었나요?"
+          ],
+          "기타지원시설": [
+            "가로수는 보행자들의 이동을 방해하지 않도록 적당한 위치에 식재되었나요?",
+            "가로수의 가지 또는 가로수 고정 시설은 보행자의 안전을 위해 적절하게 관리되고 있나요?",
+            "가로수는 남/여/장애등/노약자에 상관없이 잘 알아볼 수 있나요?",
+            "가로수는 심미적으로 주변 환경과 조화를 이루도록 디자인 되었나요?"
+          ]
+        },
+        "공공건축": {
+          "접근공간": [
+            "공공건축물은 건축물과 보행로가 단차없이 보행자가 이동하기 편안하게 마감되었나요?",
+            "공공건축물의 도로부터 건축물 내부까지 안전하게 이동할 수 있나요?",
+            "공공건축물은 건물 내외부 시설명판, 안내도, 출입구 표지 등을 친절하게 안내하나요?",
+            "공공건축물의 외관은 심미적으로 주변 환경과 잘 어우러져 있나요?"
+          ],
+          "진입공간": [
+            "진입 시 보도의 높이와 보행환경은 편리했나요?",
+            "보행 환경은 보행자의 혼란을 최소화해 안전하게 이동하기에 편리했나요?",
+            "보행 안전과 관련된 시설물은 잘 보이는 위치와 높이에 설치되었나요?",
+            "모든 보행자가 이용하기에 쾌적하게 관리되어 있나요?"
+          ],
+          "이동공간": [
+            "건축물의 이동공간은 도로 및 주출입구까지 쉽게 접근할 수 있나요?",
+            "건축물의 보행자 이동공간은 단차 등의 장애물이 없으며, 계단이나 경사로에 손잡이와 같은 시설은 설치해 안전을 확보했나요?",
+            "건축물의 문자안내와 안내판은 외국어를 병기하거나 픽토그램 등을  활용해 외국인 등의 방문을 고려하였나요 ?",
+            "건축물의 이동공간은 심미적으로 주변 환경과 조화를 이루도록 디자인 되었나요?"
+          ],
+          "위생공간": [
+            "위생공간은 개방성이 확보되고, 내부와 주변 보도는 사용자들이 이동하기에 편안하게 관리되고 있나요?",
+            "위생공간은 미끄럼 등으로 인한 사용중 위험을 방지하고 시설의 위생을 안전하게 관리하고 있나요?",
+            "위생공간은 남/여/장애인/어린이 전용에 대한 정보를 쉽게 제공하나요?",
+            "위생공간은 청결하게 관리되어지고 있나요?"
+          ]
+        }
+      }
+    },
+    {
+      "id": "checklist-template-expert",
+      "method": "GET",
+      "url": "http://localhost:8000/checklist/templates?mode=expert",
+      "ok": true,
+      "status": 200,
+      "durationMs": 4,
+      "body": {
+        "보도": {
+          "보행공간": [
+            "보도는 최소 2m이상의 유효 보도폭을 확보하고 있다.(불가피한 경우 1.5m까지 가능)",
+            "보도폭이 1.5m 미만인 경우에는 50m 마다 1.5×1.5m 이상의 교행구역이 설치되어져 있다.",
+            "유효안전높이는 2.1m 이상 확보되어 있다.",
+            "시설물이나 차량진입로 등으로 단절되지 않는 보행로가 연속되어 있다.",
+            "간판, 가로수 등의 장애물이 없는 유효높이를 확보하고 있다.(2.1m이상)",
+            "보행 이동동선 상에 단차는 없다.(0cm)",
+            "진행 방향으로 종·횡단 기울기가 동시에 발생하는 구간은 없다.",
+            "진행 방향의 종단기울기는 1/20 이하로 되어있다.",
+            "진행 방향의 횡단기울기는 1/50 이하로 되어있다.",
+            "블록 포장, 각종 덮개, 재료 분리 구간의 경계 및 바닥 마감 등은 무단차로 처리되어 있다.",
+            "바닥표면은 미끄러지지 않는 재질로 평탄하게 마감되어 있다.",
+            "보도블록 등으로 포장 후 이음새 틈이 벌어지지 않아있다.",
+            "안전 관련 주의 및 경고 목적의 경우 마감재 색의 명도가 4도 이상 차이가 난다.",
+            "유도 및 안내 관련 배색의 경우 마감재 색의 명도가 3도 이상 차이가 난다.",
+            "배수구 덮개 및 맨흘 등의 표면은 보도와 같은 높이로 하고, 구멍 또는 틈새가 1cm 이하이다.",
+            "보도블록은 사각형의 형태를 원칙으로 했나요?",
+            "보도블록 흩뿌리기 강조색은 2가지 색 이내인가요?"
+          ],
+          "차량진입구역": [
+            "차량 진출입부 경사로는 보도 유효폭을 침범하지 않도록 한다",
+            "진행 방향 횡단경사는 1/50 이하가 되도록 한다",
+            "차량 진출입구는 보행자가 인식할 수 있도록 바닥 마감을 다르게 한다.",
+            "차량 진출입구 경계에는 주의·경고 표시 시설과 차량 속도 저감 유도 시설을 설치한다",
+            "차량 진출입부 경계에는 시각장애인용 점자블록을 설치한다",
+            "차량 진출입부 경계 볼라드 설치시 볼라드 전면 0.3m 구간에 점자블록을 설치한다"
+          ],
+          "자전거도로": [
+            "자전거 전용도로의 도로 폭은 1.5m로 설치한다",
+            "자전거 전용도로의 측면에는 0.5m 이상의 측방 여유폭을 확보한다",
+            "자전거 전용도로 차도 분리형의 경우 중간에 분리대를 설치한다",
+            "물이 고이지 않도록 1.5%~2%의 횡단경사로 설치한다",
+            "자전거 전용도로 노면표시는 100m 간격으로 표시하고 안전표지는 도시지역 200m, 지방지역 400m 간격으로 설치한다.",
+            "자전거·보행자 겸용도로의 측면에 0.25m 이상의 측방 여유폭을 확보한다",
+            "자전거·보행자 겸용도로 분리형의 경우 자전거 도로를 차도측에 설치한다.",
+            "자전거·보행자 겸용도로 비분리형은 보도부에 양측 편 방향으로 설치한다.",
+            "자전거 전용차로의 유효 폭은 1.5m 이상 확보한다",
+            "자전거 전용차로의 측면에 0.25m 이상의 측방여유(보도측)폭을 확보한다",
+            "자전거 전용차로 분리 공간은 제한속도 60km/h 이하 구간에는 백색 복선으로 표시한다",
+            "자전거 전용차로 분리 공간은 제한속도 50km/h 이하 구간에는 백색 단선으로 표시한다",
+            "자전거 전용차로 노면표시는 50m ~ 100m 간격으로 표시하고 안전표지는 도시지역은 200m 간격으로 설치한다"
+          ],
+          "시설물 구역": [
+            "모든 보행접근로는 보행자와 차량 동선의 공간을 분할하였는가요?",
+            "유아차, 휠체어, 자전거 이동을 위한 엘리베이터가 설치되었나요?",
+            "난간의 높이는 1m 이상으로 하고 간격 100mm 이내 세로살로 디자인되었나요?",
+            "바닥면은 잘 미끄러지지 않는 재질로 평탄하며, 충격을 흡수하고 울림이 적은 마감재로 사용되었나요?",
+            "보행접근로가 동일한 레벨로 되었나요?",
+            "문자안내와 안내판은 외국인 등의 방문을 고려하여 외국어를 표기하거나 픽토그램 등이 활용되고 있나요?",
+            "안전성을 고려하여 계단의 측면에는 2단 손잡이를 연속 설치하였나요?",
+            "볼라드 설치 간격은 1.5m인가요?",
+            "볼라드의 규격은 높이 0.8m ~ 1.0m, 지름은 100~150mm인가요?",
+            "반사시트, 반사체 등 적용시 20mm ~ 30mm 폭으로 1~2줄, 흰색으로 표시되었나요?",
+            "보도가 경사면인 경우에도 볼라드는 수직 설치했나요?",
+            "볼라드의 형태는 원통형 기본구조를 원칙으로 했나요?",
+            "보행자 안전을 고려하여 외피는 탄성 재료로 마감했나요?",
+            "보호펜스는 높이 1.1m, 1경간(지지대간 단위 거리) 당 2m 내외 범위로 설치되었나요?",
+            "횡단금지나 출입금지 목적은 세로살로 디자인했나요?",
+            "개방감 있는 선적 형태로 했나요?",
+            "원색 및 고채도의 색체사용을 금지했나요?",
+            "시설물 구역 또는 공개공지 등 보행을 방해하지 않는 위치에 설치되었나요?",
+            "하단부 기초 콘크리트가 돌출되지 않도록 설치되었나요?",
+            "지상변압기 외부에 그래픽요소 표현 금지가 지켜졌나요?",
+            "원색 및 고채도의 색체사용을 금지했나요?"
+          ]
+        },
+        "차도": {
+          "생활도로(국지도로, 동네에서 차가 다니는 길)": [
+            "지하보도의 폭은 6m 이상인가요?",
+            "채광, 환기, 연기 배출을 위해 지하도상가 면적의 2/100이상 천창 설치가 되었나요?",
+            "지하도 출입시설의 출입구 너비는 2m 이상을 확보했나요?",
+            "지하도상가 출입구가 보도에 설치된 경우 보도폭 2m 이상을 확보했나요?",
+            "고가도로 하부 공간과 보행로가 연결되었나요?"
+          ],
+          "횡단보도": [
+            "보도와 횡단보도의 높이와 수평부 폭이 동일하거나 넓게 조성되어있다.",
+            "고원식 횡단보도는 교차로로 둘러싸인 면과 횡단보도를 함께 높여 보도와 단차가 제거되어 있다.",
+            "고원식 횡단보도의 면 전체가 주변 도로와 구분되도록 포장되어 있다.",
+            "교통섬식 횡단보도는 도로와 단차 없이 조성하고 1.5m 이상의 보행자 대기 공간이 확보되어 있다.",
+            "교통섬 대기 공간 전후 차도 경계에 0.3m 이격하여 점자블록이 설치되어 있다.",
+            "교통신호기는 횡단보도 대기공간에 위치하여, 차량을 위한 신호와 보행자를 위한 신호가 같은 위치에 설치되었나요?",
+            "교통신호 잔여시간을 숫자와 기호로 병기하고 있나요?",
+            "음향신호기는 녹색신호로 바뀔 때 음향으로 안내를 하며, 녹색신호가 켜져 있는 동안에는 계속 균일한 신호음으로 안내하나요?"
+          ],
+          "속도저감 장치": [
+            "보행자 안전이 우선되는 지역은 속도 저감 시설을 설치한다.",
+            "차량 속도 저감 유도를 위하여 차도의 폭을 좁게 하거나 지그재그 차선 등을 사용한다",
+            "과속방지턱은 차로 횡단 길이 3.6m 높이 0.1m의 원호 형태로 설치한다",
+            "과속방지턱은 연속으로 2개 이상 설치한다",
+            "속도 저감 시설이 설치된 구역은 입식 표지판, 바닥 표시 등으로 안내 및 경고한다.",
+            "점자블록은 KS규격의 점자블록을 사용한다",
+            "선형블록은 연결된 접근로에서 유도 방향에 따라 평행하게 연속 설치한다",
+            "점자블록은 높이가 바닥재의 높이와 동일하게 설치한다.",
+            "선형블록 좌우 0.6m 이내에는 보행 장애물이 없도록 한다.",
+            "시각장애인을 위한 음향 신호기 전면에는 점형블록을 설치한다",
+            "경고 및 주의 환기용 점형블록은 대상 시설 전면 0.3m에 설치한다"
+          ]
+        },
+        "공원, 광장": {
+          "진입공간(보행 접근로)": [
+            "광장 주출입구 수평접근 기울기는 1.15°(1/50) 이하인가요?",
+            "광장 주출입구는 유효폭 1.8m 이상 확보했나요?",
+            "화장실 접근과 이용 등에 대한 표식이 설치되었나요?",
+            "안내정보가 사용자 특성을 반영하여 우회정보 및 다국어 등의 제공이 가능하도록 설치되었나요?"
+          ],
+          "산책로": [
+            "친수공간의 산책로는 수풀 또는 하천으로부터 3m 이상 거리를 확보했나요?",
+            "지형의 단차 발생시 산책로는 완만한 경사로 적용하며, 시각 장애인이 돌아가지 않도록 계단을 병행 설치했나요?",
+            "수변공간 산책로에는 보행등을 설치하고 CCTV 또는 비상벨을 설치했나요?"
+          ]
+        },
+        "공공시설물": {
+          "안내시설": [
+            "종합안내시설은 안전하게 접근 가능한 곳에 설치한다",
+            "안내 정보판의 중심부가 바닥에서 1.2m 높이 내외에 위치하도록 한다.",
+            "종합안내시설이 보행에 방해가 되지 않도록 설치한다",
+            "보행 공간 경계 등 독립형으로 설치 시 충돌 방지나 충격 완화가 가능한 형태로 설치한다",
+            "글자의 크기 및 색 대비 등이 이해하기 쉽고 인지하기 쉬운 형태로 설치한다",
+            "외국인, 문맹자 등을 고려하여 그림이나 외국어 표기를 병행하여 안내한다.",
+            "시각장애인 등을 위한 촉지도 또는 점자 음성 변환용 QR코드 등을 설치한다.",
+            "방향 안내시설은 방향과 소요거리 정도를 표기한다.",
+            "장애인·임산부·노인 등이 이용하기 어려운 동선은 사전 정보 제공과 우회 정보를 제시한다.",
+            "안내데스크 상단까지의 높이는 0.7m~0.9m 이내로 한다",
+            "안내 데스크의 하부는 바닥면으로부터 높이 0.65m 이상, 깊이 0.45m 이상으로 한다",
+            "어린이와 노인이 앉아 기록 작업을 할 수 있는 높이 0.8m 정도의 선반을 별도로 설치한다",
+            "시각장애인 시설인 경우 음향 음성 유도 장치도 함께 설치한다.",
+            "외국인을 위해 외국어를 병기한 안내 사인과 문자 안내를 제공한다",
+            "종합안내시설은 가독 가능 거리까지 접근할 수 있는 위치에 설치한다",
+            "안내판 중심부가 바닥에서 높이 1.2m 내외에 위치하도록 한다.",
+            "글자의 크기를 1.5cm 이상으로 하고 색 대비를 고려하여 설치한다",
+            "외국인, 문맹자 등을 고려하여 그림과 외국어 등을 병행하여 안내한다.",
+            "야간에 인지가 가능하도록 안내판의 적절한 조도를 확보한다.",
+            "시각장애인 이용을 고려하여 점자 촉지도, 음성안내 장치를 함께 설치한다.",
+            "점자 및 촉지도식 안내판은 중심선이 바닥면으로부터 1.0m~1.2m 범위 안에 위치하도록 설치한다",
+            "주출입구 부근 중 쉽게 접근 가능한 곳에 설치한다",
+            "직원 호출 버튼 및 음성 안내를 지원하는 수동식 버튼을 설치한다.",
+            "지도상에 현 위치가 뚜렷이 표시되도록 도드라지게 설치한다",
+            "배치도는 A3 크기 내외로 계단, 승강기, 위생시설, 실명 등을 표기한다",
+            "전면 0.3m에 점형 점자블록 3장 설치 및 선형 점자블록으로 유도한다."
+          ],
+          "신호등": [
+            "원색 또는 고채도의 색체 사용을 금지했나요?",
+            "지면 결합부는 매립처리하였나요?",
+            "바닥표시 신호등 점멸패널 설치시 무단차로 설치하였나요?"
+          ],
+          "버스 승차대": [
+            "승차대 접근 및 진출입 통로 폭은 1.5m 이상 확보하고 인근의 보도 시설물 등은 승차대로부터 1.5m 이상 이격한다.",
+            "보도폭이 좁아 표지판만 설치하는 경우 표지판에 접한 대기공간은 2m×2m 이상 확보한다",
+            "승강대에는 지붕 및 조명을 설치한다",
+            "경계 구간의 연석 높이는 0.25m 이하로 설치한다",
+            "저상버스의 승하차 공간에서 휠체어 사용자 탑승 위치를 표시한다.",
+            "승차대에 부착된 안내도는 중심 바닥에서 높이 1.5m 이하로 설치하고 외국어·점자 안내·음성 안내를 제공한다",
+            "정보 안내 단말기는 바닥에서 1.2m 이하로 디스플레이 화면 등을 설치한다."
+          ],
+          "택시 승차대": [
+            "대중교통과 환승되거나 주요시설이 집중되는 곳을 선정하여, 안전한 택시 승차대를 설치하고 설치 위치를 표시하는 안내판을 설치하였나요?",
+            "영유아 동반자 등이 승하차하기 쉽도록 보도 등 주변 여건에 따라 차도와의 경계부분을 낮추거나 완만한 경사로를 설치하였나요?",
+            "야간에도 사용자가 안심하고 이용할 수 있도록 CCTV를 설치였나요?"
+          ],
+          "두리발 승차대": [
+            "보도폭이 2m 이상인 경우에 장애인/노약자를 위한 승차대가 설치되었나요?",
+            "보도폭이 2m 이하인 경우, 폴사인이 설치되었나요?",
+            "승차대 및 폴사인 설치 시 주변 보행로에 방향전화의 점자블로과 승하차 구간의 유도블록을 함께 설치했나요?",
+            "폴사인에는 시각장애인을 위한 음향안내기가 함께 설치되었나요?",
+            "노면에 휠체어 승하차구간임을 알 수 있는 표시가 되어있나요?",
+            "색각이상자, 저시력자, 고령자를 위해 명시성이 높은 대비색체를 사용했나요?"
+          ],
+          "지하철 출입구": [
+            "지하철출입구 설치 시 측면 보행 유효폭 2m 이상 확보하여 설치했나요?",
+            "내부 진입을 하지 않고도 안내가 가능하도록 했나요?",
+            "캐노피 벽면에 광고성 조성 및 그래픽요소 부착은 금지했나요?",
+            "안내사인 설치 시 캐노피 사용색체와 동일 색체 사용을 원칙으로 했나요?",
+            "지하철 캐노피 천장에 쉽게 오를 수 없는 구조로 했나요?",
+            "벽면 소재의 색체는 투명으로 했나요?",
+            "지하철 환기구는 보행로 설치를 금지하고 있나요?",
+            "지상으로 노출되는 돌출형 환기구는 추락사고 방지를 위한 안전난간 또는 가림막을 설치했나요?",
+            "지하철 환기구의 높이는 최소 2m 이상인가요?"
+          ],
+          "휴게(벤치)": [
+            "보행에 방해가 되지 않도록 설치되었나요?",
+            "벤치의 좌판 높이는 400mm ~ 450mm 내외를 만족하나요? (한국인 신체표준치수 규격)",
+            "신체와 직접 접촉되는 부위에 금속재료 사용은 금지했나요?",
+            "벤치 결합부의 볼트 등이 돌출되지 않도록 설치되었나요?",
+            "벤치 재료의 자체색이 표현되었나요?"
+          ],
+          "휴게(파고라)": [
+            "그늘막 기둥 기초 및 체결부는 지면 아래로 매립되었나요?",
+            "그늘막과 벤치는 함께 설치되었나요?",
+            "보행 유효폭을 침범하지 않으면서 무단차로 파고라가 설치되어 있나요?"
+          ],
+          "휴지통": [
+            "휴게시설물 인접설치시 900mm 이상 거리를 확보했나요?",
+            "바닥 마감처리부는 볼트 등이 노출되지 않도록 정밀하게 설치되었나요?"
+          ],
+          "음수대": [
+            "주변과 구분되는 음수대 배수면을 설치했나요?",
+            "주변 보도와 음수대 배수면은 무단차로 연결되었나요?",
+            "휠체어 사용자 접근이 가능한 구조인가요?",
+            "배수면 바닥은 미끄럼 방지 재료를 사용했나요?"
+          ],
+          "기타지원시설": [
+            "보행환경에 불편을 주지 않도록 시설물 구역에 설치되었나요?",
+            "침수 및 적설에 의한 피해의 우려가 없는 곳에 설치되었나요?",
+            "소화 시설을 명확히 인지할 수  있는 붉은 색채를 주조색으로 사용했나요?",
+            "설치 위치 주변에 다른 시설물의 설치 금지가 지켜졌나요?",
+            "기초 결합부는 지면 아래로 매립되었나요?",
+            "비상벨과 통합 설치되었나요?",
+            "다른 시설물과 통합설치(비상벨, 야간감시를 위한 조명 연계 등) 되었나요?",
+            "기초 결합부는 지면 아래로 매립되었나요?"
+          ]
+        },
+        "공공건축": {
+          "접근공간": [
+            "바닥은 우천시 잘 미끄러지지 않는 재질로 평탄하게 마감한다",
+            "블록 등으로 포장하는 경우 이음새 틈에 유아차 등이 빠지지 않아야 하며, 평탄하게 설치한다",
+            "줄눈 간격은 0.5cm 이하로 한다",
+            "광장 등 넓은 공간의 바닥 마감 및 재질은 시각장애인을 위한 유도 및 경고의 기능을 고려한다.",
+            "측방 여유폭은 0.3m를 확보하고 보행 유효폭 2.0m 이상 확보한다",
+            "보행 접근로의 수직 유효폭은 지면에서 높이 2.5m 이상 확보한다",
+            "주출입구와 연결된 접근로에서는 선형블록을 연속적으로 설치한다",
+            "2개 이상의 보도가 만나는 지점에는 교행 구역을 설치한다",
+            "경사진 접근로가 연속된 경우 30m마다 1.5m×1.5m 이상의 수평참을 설치한다",
+            "경사로는 상하 기울기 1/24 이하, 좌우 기울기 1/50 이하로 설치한다",
+            "보행 접근로는 보행자와 차량이 분리되도록 한다",
+            "보차도 분리를 위해 보도 연석(경계석)은 6cm~15cm 내외 높이로 설치한다",
+            "보도와 연석(경계석)의 높이가 같도록 설치한다",
+            "장애인 전용 주차구역은 최소한 폭 3.5m 이상, 길이 5.0m 이상으로 한다.",
+            "평행주차를 하는 경우에는 폭 2.0m 이상, 길이 6.0m 이상 확보한다",
+            "주차면의 바닥면 기울기는 1/50 이하로 한다",
+            "장애인 전용 주차구역의 주차면수는 2면 이상 복수로 설치한다.",
+            "주차공간의 바닥 표면은 미끄럽지 않는 재질로 평탄하게 마감한다.",
+            "가족 주차장 구역은 폭 3.0m, 길이 5.0m 이상을 확보한다",
+            "보행 안전 통로는 주출입구 또는 보도까지 연결한다",
+            "보행 안전 통로는 유효폭 1.2m 이상 확보한다",
+            "보행 안전 통로의 경사로는 1/20 이하로 설치한다",
+            "보행 안전 통로 경사로 전·후면에 1.5m 이상의 활동 공간을 확보한다.",
+            "안내표지는 주차장입구에서 장애인 전용 주차구역까지 연속으로 설치한다",
+            "장애인 전용 주차구역 입식 안내표지의 규격은 가로 0.7m, 세로 0.6m로 설치한다",
+            "장애인 전용 주차구역 입식 안내표지의 설치 높이는 지면에서 표지판까지 1.5m로 설치한다"
+          ],
+          "진입공간": [
+            "주출입문은 누구나 접근 및 이동이 편리한 자동문을 설치한다",
+            "자동문이 아닌 경우 문손잡이 높이는 0.8m~0.9m 이내에 설치한다",
+            "문손잡이 쪽 옆에 최소 0.6m 이상의 활동 공간을 확보한다",
+            "전면이 투명유리로 된 출입문은 충돌 방지를 위한 표식 등을 부착한다",
+            "자동문의 개방시간이 충분하게 확보되도록 설치한다",
+            "자동문과 함께 여닫이문이나 미닫이문을 병행 설치한다",
+            "시설 관리자를 호출할 수 있는 호출 벨을 설치한다"
+          ],
+          "이동공간": [
+            "복도 유효폭은 1.5m 이상 확보한다",
+            "통행량이 많은 복도는 휠체어가 상호 교행할 수 있도록 1.8m 이상 확보한다",
+            "복도 상부는 2.1m 이상의 유효 높이를 확보한다",
+            "휠체어 사용자 등이 많이 방문하는 시설은 바닥면으로부터 0.15m~0.35m의 높이로 킥플레이트를 설치한다.",
+            "벽이나 기둥 모서리는 각 벽면 0.3m 이상을 면 처리하거나 둥글게 마감한다.",
+            "소화기는 벽 매입식으로 설치한다",
+            "호실 안내판은 이동에 지장을 주지 않도록 벽면 상부에 설치한다",
+            "바닥은 단차 없이 미끄럽지 않고, 평탄하게 마감한다",
+            "통행량이 많은 주요 실의 출입문은 자동문으로 설치한다",
+            "여닫이문에 도어체크를 설치하고 문이 닫히는 시간을 3초 이상 충분하게 확보한다",
+            "유리 출입문이 아닌 경우, 바닥에서부터 높이 0.6m 되는 지점에 폭 0.2m, 높이 0.9m의 투시창을 설치한다",
+            "전면 유리 출입문의 경우 충돌 방지를 위한 주의 환기용 표식을 보기 쉬운 높이에 설치한다.",
+            "문 손잡이는 손잡이 조작부 중심에서 바닥면으로부터 0.8m~0.9m 사이에 설치한다.",
+            "문잡이의 형태는 수평 또는 수직 막대형이나 레버형으로 한다.",
+            "출입구 벽면 1.5m의 높이에 실명 표지판을 설치한다",
+            "실명 표지판은 점자, 다국어, 픽토그램을 활용하여 필요한 정보를 제공한다.",
+            "실내 출입문의 열리는 방향의 복도 손잡이에 실명을 점자 표기한다.",
+            "실내 출입문 하부 바닥에 점형블록을 설치한다",
+            "돌출형 실명표지판은 바닥에서 높이 2.1m 이상에 설치한다",
+            "경사로의 유효폭은 복도와 동일한 1.5m 이상으로 확보한다",
+            "바닥면으로부터 높이 0.75m 이내마다 수평 휴식참을 설치한다",
+            "경사로의 시작과 끝지점, 휴식참에 1.5m×1.5m 이상의 활동 공간을 확보한다",
+            "경사로의 기울기는 1/15 이하로 설치한다",
+            "경사로의 시작과 끝지점, 참 등의 0.3m 전면에 점형블록을 설치한다",
+            "경사로의 길이가 1.8m 이상이거나 높이가 0.15m 이상인 경우에는 손잡이를 연속하여 설치한다",
+            "다양한 이용자를 배려하여 경사로 손잡이는 2단으로 설치한다",
+            "2단 손잡이는 위쪽은 0.85m 내외, 아래쪽 손잡이는 0.65m 내외로 한다",
+            "수평 손잡이의 양끝 부분 및 굴절 부분에 점자 표지판을 설치한다",
+            "다양한 이용자를 고려하여 고정 손잡이는 2단으로 설치한다",
+            "2단 손잡이는 위쪽은 0.85m 내외, 아래쪽 손잡이는 0.65m 내외로 설치한다.",
+            "벽면에 설치하는 경우, 벽과 손잡이 사이 간격은 5cm로 한다",
+            "손잡이와 벽, 난간과 연결되는 부분이 아래 방향이 되도록 설치한다",
+            "손잡이의 단면 형태는 원형이고, 직경은 3.2cm~3.8cm로 한다",
+            "손잡이의 양쪽 부분 및 굴절 부분에는 점자 표지판을 부착한다",
+            "에스컬레이터는 눈에 잘 띄고 접근성이 좋은 위치에 설치한다",
+            "에스컬레이터 가까운 거리에 엘리베이터나 계단을 병행 설치한다.",
+            "에스컬레이터 바닥은 미끄럽지 않고 쉽게 인지할 수 있도록 설치한다",
+            "주출입구와 가까운 위치에 접근 가능한 통로로 연결하여 설치한다",
+            "승강 로비는 1.5m×1.5m 이상의 활동 공간을 확보한다",
+            "노인, 임산부 등이 잠시 기다릴 수 있도록 의자 등을 둘 수 있는 공간을 확보한다",
+            "출입문의 통과 유효폭은 0.9m 이상으로 한다.",
+            "승강장 바닥과 승강기 바닥 사이에는 턱이 없도록 한다.",
+            "승강기 바닥 틈새 간격은 휠체어, 목발 등 사용자를 고려하여 2cm 이하로 한다",
+            "개폐 장치의 감지 높이 범위는 바닥면으로부터 0.3m~1.4m 이하로 한다",
+            "승강기 조작 버튼의 0.3m 전면에는 점형블록을 설치한다",
+            "승강기 내부의 유효 바닥면적 폭은 1.6m 이상으로 한다",
+            "승강기 내부에 연속된 수평 손잡이를 설치한다.",
+            "수평 손잡이의 설치 높이는 0.8m~0.9m 내외로 한다",
+            "손잡이 직경은 3.2cm~3.8cm, 벽과 손잡이의 이격 거리는 5cm 내외로 한다.",
+            "휠체어 사용자를 고려하여 승강기 후면 0.6m 이상 높이에 거울을 설치한다.",
+            "승강기 내부에 휴게 의자 등을 설치한다",
+            "내외부 조도를 150lx 이상 확보한다.",
+            "승강기 내부에 CCTV를 설치한다",
+            "바닥면으로부터 높이 1.8m 이내마다 수평 휴식참을 설치한다",
+            "계단 상부는 안전을 고려하여 높이 2.1m 이상을 확보한다",
+            "계단의 측면 난간 하부 높이 바닥면으로부터 2cm 이상의 추락방지턱을 설치한다",
+            "계단 및 휴식참의 유효 폭은 1.5m 이상 확보한다",
+            "디딤판의 끝부분 챌면의 기울기는 60°이상으로 한다",
+            "계단코는 3cm 이상 돌출되지 않게 한다",
+            "다양한 이용자를 배려하여 경사로 손잡이는 2단으로 설치한다",
+            "2단 손잡이는 위쪽은 0.85m 내외, 아래쪽 손잡이는 0.65m 내외로 한다",
+            "경사면에 설치된 손잡이의 끝부분에 0.3m 이상의 수평 손잡이를 설치한다",
+            "계단코에는 줄눈 넣기를 하거나 미끄럼 방지재로 마감한다.",
+            "계단의 시작과 끝지점, 참 등의 0.3m 전면에 점형블록을 설치한다."
+          ],
+          "위생공간": [
+            "출입문 전면은 1.5m×1.5m 이상의 활동 공간을 확보한다",
+            "화장실 내부로 연결되는 통로 입구 유효폭은 0.9m 이상 확보한다",
+            "남녀화장실을 완전 분리시켜 출입구를 따로 설치한다",
+            "화장실 출입문은 설치하지 않거나 자동문을 설치한다",
+            "출입문으로 인해 문턱이나 단차가 발생하지 않도록 한다",
+            "바닥표면은 미끄러지지 않는 재질로 평탄하게 마감되도록 한다",
+            "타일 혹은 판석 마감인 경우 0.5cm 이하의 줄 눈으로 평탄하게 마감한다.",
+            "배수를 위한 바닥 구배는 1/100 이하로 최대한 완만한 기울기가 되도록 한다.",
+            "대변기의 좌대 높이는 바닥면으로부터 0.4m~0.45m 범위내로 한다.",
+            "화장실 내에 조작하기 쉬운 형태의 비상호출 장치를 설치한다",
+            "수평 및 수직 손잡이는 바닥면으로부터 0.6~0.7m 이내의 높이에 설치한다",
+            "수평 손잡이는 변기 중심에서 0.4m 이내의 지점에 설치한다",
+            "키가 작은 어린이를 위한 소변기를 별도로 설치한다",
+            "장애인 등을 위한 소변기는 출입구 근처에 설치하고 후면에는 여유 공간을 확보한다.",
+            "장애인 등을 위한 소변기의 양옆에는 수평 및 수직 손잡이를 설치한다",
+            "수평 손잡이의 높이는 바닥면으로부터 0.8m~0.9m 이내로 한다",
+            "수평 손잡이의 길이는 벽면으로부터 0.55m 내외로 한다",
+            "수평 손잡이의 좌우 손잡이의 간격은 0.6m 내외로 한다",
+            "수직 손잡이의 높이는 바닥면으로부터 1.1m~1.2m 이내로 한다.",
+            "수직 손잡이의 돌출폭은 벽면으로부터 0.25m 내외로 한다",
+            "다목적 화장실의 유효 바닥면적은 폭 2.0m 이상, 깊이 2.1m 이상 확보한다.",
+            "화장실 사용 여부를 시각적으로 알 수 있는 문자형 시각 설비를 설치한다.",
+            "다목적 화장실 내 대변기, 세면대, 손잡이 등을 설치한다",
+            "다목적 화장실 통로와 출입구의 유효폭은 0.9m 이상 확보한다",
+            "다목적 화장실 출입문의 전면 공간은 폭 1.5m 이상 확보한다",
+            "대변기 전면에는 1.5m×1.5m 이상의 활동 공간을 확보한다",
+            "대변기 측면에는 0.75m 이상의 활동 공간을 확보한다",
+            "수유실의 접근로는 단차나 기울기가 없이 평탄하게 한다",
+            "수유실의 출입문은 자동문이나 미닫이문으로 설치한다",
+            "출입문의 유효폭은 0.9m 이상 확보한다.",
+            "기저귀 교환대와 세면대는 상단 높이 0.85m 이하, 하단 높이 0.65m 이상으로 설치한다",
+            "수유실은 남녀가 같이 이용할 수 있도록 하고 모유를 주는 공간은 독립된 실 또는 커튼 등을 설치한다",
+            "기저귀 교환대, 세면대 등은 1.4m×1.4m 이상의 활동 공간을 확보한다"
+          ]
+        },
+        "관광시설": {
+          "수변보행로": [
+            "보행로 시설물 설치 시 내부식성, 내오염성, 내구성이 강한 재료를 사용한다",
+            "수상 사고를 고려하여 안전시설을 적절한 곳에 배치한다",
+            "추락 및 낙상 사고 발생 위험 구역에 추락방지시설을 1.1m 이상의 높이로 설치한다",
+            "보행자가 미끄러지지 않도록 미끄럼 방지를 위한 재료나 마감 방법을 적용한다",
+            "수변 보행로의 유효폭은 2.0m 이상 확보한다",
+            "유효폭이 1.5m 미만인 경우 30m 이내마다 폭 1.5m 이상, 길이 2.5m 이상인 수평 교행 구역을 설치한다",
+            "경사로는 상하 기울기 1/24 이하, 좌우 기울기 1/50 이하로 설치한다",
+            "보행 구간에는 2.1m 이상의 유효 안전 높이를 확보한다"
+          ],
+          "전망대": [
+            "관광지 내 전망대 시설은 누구나 접근 가능한 위치에 설치한다",
+            "접근로의 노면은 단차가 없고 평탄하게 한다",
+            "전망대 주변 공간은 1.5m×1.5m 이상의 활동 공간을 확보한다",
+            "전망 공간이 보행로에 인접한 경우 보행로의 유효폭을 침범하지 않도록 이격한다",
+            "전망대는 눈높이가 낮은 휠체어 사용자의 시야를 가리지 않는 구조로 설치한다",
+            "시야가 가려지는 형태의 난간은 바닥에서 0.8m로 설치하고 최소 조망 영역 0.6m를 유리 난간 등으로 설치하여 조망권을 확보한다"
+          ],
+          "방파제": [
+            "추락 방지 시설로 사용하는 난간의 높이는 1.1m 이상으로 설치하고 자전거를 대상으로 하는 경우 1.2m 이상으로 설치한다.",
+            "난간 기둥의 중심 간격은 2.0m~3.0m 이내로 설치한다",
+            "난간의 중간 가로대 또는 세로대의 내부 간격(중심간격)은 0.3m로 설치한다",
+            "사고 발생의 위험 구역에는 추락 방지 시설을 1.1m 이상의 높이로 설치한다.",
+            "난간의 매설 깊이는 0.15m~0.2m 이상으로 설치한다",
+            "경사로의 길이가 1.8m 이상이거나 수직 높이가 0.15m 이상인 경우 연속으로 안전 손잡이를 설치한다",
+            "난간의 2단 손잡이는 위쪽은 바닥면으로부터 0.85m 내외, 아래쪽은 0.65m로 설치하고 손잡이 직경은 3.2㎝~3.8㎝ 이하로 한다.",
+            "손잡이의 양 끝부분 및 굴절 부분에는 점자 표지판을 부착한다"
+          ],
+          "여객터미널": [
+            "안내 데스크는 어린이 등 다양한 사용자를 고려하여 카운터 높이를 2단으로 구분하여 조성한다",
+            "카운터 높이는 바닥면에서 0.7m~0.9m 이하로 계획한다",
+            "카운터의 하부 공간은 높이 0.65m, 깊이 0.45m 이상의 공간을 확보한다.",
+            "안내데스크 전면에는 최소 1.5×1.5m의 활동 공간을 확보한다",
+            "정보안내기는 키오스크형으로 점자 키패드와 음성 안내, 수어 안내, 화면 확대 서비스 등을 제공한다.",
+            "키오스크형 정보안내기는 누구나 쉽게 이용할 수 있는 구조로 한다",
+            "연결 램프의 유효폭은 0.9m 이상, 기울기는 1/12 이하로 한다.",
+            "연결 램프 양측에 난간과 추락방지턱을 설치한다.",
+            "연결 램프 상부에는 그늘 등을 제공하기 위한 지붕 시설물을 설치한다",
+            "마감재는 내부식성, 내오염성, 내구성이 강한 재료를 사용한다",
+            "바닥은 보행자가 미끄러지지 않도록 재료나 마감 방법을 적용 한다",
+            "바닥 연결부 사이에 단차가 최소화 되도록 한다"
+          ],
+          "관광시설": [
+            "안내소는 유효 보도폭이 4m 이상인 위치에 설치되었나요?",
+            "진입 경사각은 3.18°(1/18) 이하인가요?",
+            "출입문은 자동문으로 설치하고 개방 시간을 충분히 확보한다",
+            "출입구 바닥은 단차 없이 조성한다",
+            "출입구의 통행 유효폭은 0.9m 이상, 전면 유효거리는 1.4m 이상 확보한다.",
+            "출입문의 0.3m 전후면에는 문의 폭만큼 점형블록을 설치한다.",
+            "판매공간 내 이동 동선은 유효폭 1.2m~1.5m 이상을 확보한다.",
+            "다양한 사용자 유형을 고려하여 카운터 높이는 2단으로 구분하여 조성한다.",
+            "카운터 전면에는 최소 1.4m×1.4m의 활동 공간을 확보한다",
+            "상품진열대는 다양한 사용자를 고려하여 높이와 하부 공간 폭을 계획한다",
+            "벽부형 진열대는 바닥에서 높이 0.4m~1.2m 이내에 상품을 진열한다."
+          ]
+        }
+      }
+    },
+    {
+      "id": "comprehensive-survey",
+      "method": "GET",
+      "url": "http://localhost:8000/checklist/comprehensive-survey",
+      "ok": true,
+      "status": 200,
+      "durationMs": 4,
+      "body": [
+        {
+          "id": "Q1",
+          "category": "종합만족도",
+          "text": "우리 동네의 전반적인 공공환경(안전, 편리함)에 대해 만족하시나요?",
+          "type": "scale_5",
+          "options": [
+            "매우 불만족",
+            "불만족",
+            "보통",
+            "만족",
+            "매우 만족"
+          ],
+          "subQuestions": [
+            {
+              "id": "Q1-1",
+              "category": "영역 평가",
+              "text": "[주거] 현재 거주하시는 동네에서 **주거(노후 주택, 골목길 등)**은 얼마나 더 개선될 필요가 있다고 느끼십니까?",
+              "type": "scale_5",
+              "options": [
+                "매우 불만족",
+                "불만족",
+                "보통",
+                "만족",
+                "매우 만족"
+              ],
+              "subQuestions": []
+            },
+            {
+              "id": "Q1-2",
+              "category": "영역 평가",
+              "text": "[환경] **환경(쓰레기, 미세먼지, 녹지 등)**은 얼마나 더 개선될 필요가 있다고 느끼십니까?",
+              "type": "scale_5",
+              "options": [
+                "매우 불만족",
+                "불만족",
+                "보통",
+                "만족",
+                "매우 만족"
+              ],
+              "subQuestions": []
+            },
+            {
+              "id": "Q1-3",
+              "category": "영역 평가",
+              "text": "[교통] **교통(주차, 대중교통 이용 등)**은 얼마나 더 개선될 필요가 있다고 느끼십니까?",
+              "type": "scale_5",
+              "options": [
+                "매우 불만족",
+                "불만족",
+                "보통",
+                "만족",
+                "매우 만족"
+              ],
+              "subQuestions": []
+            },
+            {
+              "id": "Q1-4",
+              "category": "영역 평가",
+              "text": "[안전] **안전(범죄예방, CCTV, 야간조명 등)**은 얼마나 더 개선될 필요가 있다고 느끼십니까?",
+              "type": "scale_5",
+              "options": [
+                "매우 불만족",
+                "불만족",
+                "보통",
+                "만족",
+                "매우 만족"
+              ],
+              "subQuestions": []
+            },
+            {
+              "id": "Q1-5",
+              "category": "영역 평가",
+              "text": "[교육] **교육(통학로, 학교 주변 시설 등)**은 얼마나 더 개선될 필요가 있다고 느끼십니까?",
+              "type": "scale_5",
+              "options": [
+                "매우 불만족",
+                "불만족",
+                "보통",
+                "만족",
+                "매우 만족"
+              ],
+              "subQuestions": []
+            },
+            {
+              "id": "Q1-6",
+              "category": "영역 평가",
+              "text": "[산업·일자리] **산업·일자리(시장, 상가 거리 등)**는 얼마나 더 개선될 필요가 있다고 느끼십니까?",
+              "type": "scale_5",
+              "options": [
+                "매우 불만족",
+                "불만족",
+                "보통",
+                "만족",
+                "매우 만족"
+              ],
+              "subQuestions": []
+            },
+            {
+              "id": "Q1-7",
+              "category": "영역 평가",
+              "text": "[문화·여가] **문화·여가(공원, 쉼터, 운동시설 등)**는 얼마나 더 개선될 필요가 있다고 느끼십니까?",
+              "type": "scale_5",
+              "options": [
+                "매우 불만족",
+                "불만족",
+                "보통",
+                "만족",
+                "매우 만족"
+              ],
+              "subQuestions": []
+            },
+            {
+              "id": "Q1-8",
+              "category": "영역 평가",
+              "text": "[보건·복지] **보건·복지(경로당, 장애인 편의시설 등)**는 얼마나 더 개선될 필요가 있다고 느끼십니까?",
+              "type": "scale_5",
+              "options": [
+                "매우 불만족",
+                "불만족",
+                "보통",
+                "만족",
+                "매우 만족"
+              ],
+              "subQuestions": []
+            }
+          ]
+        },
+        {
+          "id": "Q2",
+          "category": "영역 우선순위",
+          "text": "현재 거주하시는 동네에서, <span class='text-highlight'>가장 시급하게 개선이 필요하다</span>고 생각하는 영역을 골라 주세요.",
+          "type": "multi_select",
+          "options": [
+            "주거 (골목/빈집)",
+            "환경 (쓰레기/소음)",
+            "교통 (주차/대중교통)",
+            "안전 (범죄/CCTV)",
+            "보행 (인도/통학로)",
+            "교육 (학교시설)",
+            "산업 (일자리/시장)",
+            "복지 (노인/장애인)"
+          ],
+          "subQuestions": []
+        },
+        {
+          "id": "Q3",
+          "category": "선택이유",
+          "text": "위 분야를 선택하신 가장 큰 이유는 무엇인가요?",
+          "type": "multi_select",
+          "options": [
+            "너무 낡아서 (노후화)",
+            "시설이 부족해서 (공급)",
+            "이용하기 불편해서 (편의)",
+            "위험해서 (안전)",
+            "보기에 안 좋아서 (미관)",
+            "방치되어서 (관리)"
+          ],
+          "subQuestions": [],
+          "refersTo": "Q2"
+        },
+        {
+          "id": "Q4",
+          "category": "보행안전",
+          "text": "현재 거주하시는 동네에서, 보행환경 전반(보도, 횡단보도, 차량 속도, 야간 보행 등)에 얼마나 만족하시나요?",
+          "type": "scale_5",
+          "options": [
+            "매우 불만족",
+            "불만족",
+            "보통",
+            "만족",
+            "매우 만족"
+          ],
+          "subQuestions": []
+        },
+        {
+          "id": "Q5",
+          "category": "보행안전",
+          "text": "동네에서 걸어서 이동할 때, <span class='text-highlight'>사고나 범죄 등의 위험을 느끼는 빈도</span>는 어느 정도인가요?",
+          "type": "scale_5",
+          "options": [
+            "전혀 느끼지 않는다",
+            "거의 느끼지 않는다",
+            "가끔 느낀다",
+            "자주 느낀다",
+            "매우 자주 느낀다"
+          ],
+          "subQuestions": []
+        },
+        {
+          "id": "Q6",
+          "category": "보행 위험요인",
+          "text": "동네에서 걸을 때, <span class='text-highlight'>가장 위험하거나 불편하다고 느끼는 상황</span>을 골라 주세요.",
+          "type": "multi_select",
+          "options": [
+            "차도·보도 미분리 또는 보도 폭이 너무 좁다",
+            "불법주정차 차량 때문에 보도·차도를 함께 걷게 된다",
+            "차량 속도가 너무 빠르다",
+            "신호를 지키지 않는 차량이 많다",
+            "횡단보도·신호등이 부족하거나 이용이 불편하다",
+            "야간에 조명이 부족해 어두운 구간이 많다",
+            "사람 눈이 닿지 않는 골목·공터가 많아 불안하다",
+            "통학로(아이들의 등·하교 길)가 위험해 보인다",
+            "노인·장애인 등이 걷기 불편한 경사·계단·턱 등이 많다",
+            "기타(직접 작성)"
+          ],
+          "subQuestions": []
+        },
+        {
+          "id": "Q7",
+          "category": "보행 시간대",
+          "text": "주로 동네에서 <span class='text-highlight'>걸어서 이동하는 시간대</span>(또는 가장 불안함을 느끼는 시간대)를 골라 주세요.",
+          "type": "multi_select",
+          "options": [
+            "이른 아침 (05~08시)",
+            "오전 (08~12시)",
+            "오후 (12~18시)",
+            "저녁 (18~22시)",
+            "늦은 밤 (22~익일 01시)",
+            "새벽 (01~05시)"
+          ],
+          "subQuestions": []
+        },
+        {
+          "id": "Q8",
+          "category": "핫스팟 유형",
+          "text": "위 시간대에 귀하가 주로 머무는 장소는 어디인가요?",
+          "type": "multi_select",
+          "options": [
+            "주택가 골목길",
+            "학교 주변",
+            "상가·시장 주변",
+            "공원·쉼터 주변",
+            "버스·지하철역 주변",
+            "기타"
+          ],
+          "subQuestions": [],
+          "refersTo": "Q7"
+        },
+        {
+          "id": "Q9",
+          "category": "구·군 우선순위",
+          "text": "부산 전체 16개 구·군 중, <span class='text-highlight'>보행안전 측면에서 우선적으로 개선이 필요하다</span>고 생각하는 구·군을 선택해 주세요.",
+          "type": "multi_select",
+          "options": [
+            "강서구",
+            "금정구",
+            "기장군",
+            "남구",
+            "동구",
+            "동래구",
+            "부산진구",
+            "북구",
+            "사상구",
+            "사하구",
+            "서구",
+            "수영구",
+            "연제구",
+            "영도구",
+            "중구",
+            "해운대구"
+          ],
+          "subQuestions": []
+        },
+        {
+          "id": "Q10",
+          "category": "감성키워드",
+          "text": "우리 동네 분위기를 가장 잘 나타내는 단어는?",
+          "type": "multi_select",
+          "options": [
+            "활기찬/젊은",
+            "조용한",
+            "복잡한",
+            "낡은/정체된",
+            "불안한",
+            "깨끗한",
+            "정이 많은",
+            "답답한"
+          ],
+          "subQuestions": []
+        },
+        {
+          "id": "Q11",
+          "category": "자유의견",
+          "text": "우리 동네 보행환경이 더 안전하고 편안해지기 위해, 반드시 바뀌었으면 하는 점이나, 평소 느끼셨던 생각·경험을 자유롭게 적어 주세요.",
+          "type": "text",
+          "options": [],
+          "subQuestions": []
+        }
+      ]
     }
   ],
   "summary": {
     "fePass": 30,
     "feFail": 0,
-    "apiPass": 33,
+    "apiPass": 36,
     "apiFail": 0,
     "ok": true
   },
-  "finishedAt": "2026-05-04T14:16:57.636Z"
+  "finishedAt": "2026-05-04T14:40:29.393Z"
 }

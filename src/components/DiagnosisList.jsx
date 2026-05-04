@@ -11,7 +11,7 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
     const [isSortOpen, setIsSortOpen] = useState(false);
 
     const [listData, setListData] = useState([]);
-    const API_URL = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
     React.useEffect(() => {
         const fetchList = async () => {

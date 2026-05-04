@@ -486,6 +486,44 @@ def seed_dashboard_data(db: Session):
     print(f"  district_analysis/insights/personas: 시드 완료")
 
 
+def seed_checklist_templates(db: Session):
+    """진단 마스터 카탈로그(general/expert) + 종합 설문(comprehensive)을 ChecklistTemplate에 시드.
+
+    원본: public/assets/data/{general,expert}_diagnosis.json, survey.json
+    멱등: 동일 (kind, mode) 행 있으면 payload 갱신.
+    """
+    import json as _json
+    repo_root = Path(__file__).resolve().parent.parent
+    data_dir = repo_root / "public" / "assets" / "data"
+    if not data_dir.exists():
+        print("  checklist_templates: public/assets/data/ 없음 — skip")
+        return
+
+    targets = [
+        ("diagnosis", "general", "일반 진단 카탈로그", data_dir / "general_diagnosis.json"),
+        ("diagnosis", "expert",  "전문가 진단 카탈로그", data_dir / "expert_diagnosis.json"),
+        ("survey",    "comprehensive", "종합 진단 설문", data_dir / "survey.json"),
+    ]
+    inserted, updated = 0, 0
+    for kind, mode, title, fp in targets:
+        if not fp.exists():
+            print(f"  checklist_templates: {fp.name} 파일 없음 — skip")
+            continue
+        with open(fp, "r", encoding="utf-8") as f:
+            payload = _json.load(f)
+        existing = db.query(models.ChecklistTemplate).filter_by(kind=kind, mode=mode).first()
+        if existing:
+            existing.payload = payload
+            existing.title = title
+            existing.updated_at = NOW
+            updated += 1
+        else:
+            db.add(models.ChecklistTemplate(kind=kind, mode=mode, title=title, payload=payload, updated_at=NOW))
+            inserted += 1
+    db.commit()
+    print(f"  checklist_templates: 신규 {inserted}, 갱신 {updated}")
+
+
 def seed_notifications_and_logs(db: Session):
     """알림 + 활동 로그 시드.
 
@@ -598,6 +636,7 @@ def reset_mock(db: Session):
     """mock 데이터만 삭제. (legacy/관리자/실데이터는 보존하지 못하므로 주의)"""
     print("⚠️  --reset: mock 데이터 삭제 중...")
     for tbl in (
+        models.ChecklistTemplate,
         models.Notification,
         models.ActivityLog,
         models.SurveyAnswer,
@@ -647,6 +686,7 @@ def main():
         seed_proposals(db)
         seed_surveys(db)
         seed_checklist_results(db)
+        seed_checklist_templates(db)
         seed_dashboard_data(db)
         seed_notifications_and_logs(db)
         print("✅  시드 완료")

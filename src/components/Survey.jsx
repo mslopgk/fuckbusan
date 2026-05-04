@@ -7,16 +7,21 @@ const Survey = ({ onBack, onComplete }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('/assets/data/survey.json')
-            .then(res => res.json())
-            .then(data => {
-                setQuestions(data);
-                setLoading(false);
-            })
-            .catch(err => {
+        const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+        const load = async () => {
+            try {
+                let res = await fetch(`${API_URL}/checklist/comprehensive-survey`);
+                if (!res.ok) res = await fetch('/assets/data/survey.json');
+                const data = await res.json();
+                setQuestions(Array.isArray(data) ? data : []);
+            } catch (err) {
                 console.error("Failed to load survey:", err);
+                setQuestions([]);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+        load();
     }, []);
 
     const [currentStep, setCurrentStep] = useState(0);

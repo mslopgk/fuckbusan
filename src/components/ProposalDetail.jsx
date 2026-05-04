@@ -25,7 +25,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
     const isMine = safeProposal.is_mine === true || safeProposal.isMine === true;
 
     // [중요] 127.0.0.1을 우선 사용하여 주소 충돌 방지
-    const rawApiUrl = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
+    const rawApiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
     const VITE_API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
     const parseAddress = (region) => {

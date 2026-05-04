@@ -32,13 +32,6 @@ const ClusterPin = ({ count }) => {
     return <div className="rl-cluster-container"><div className={className}>{count}</div></div>;
 };
 
-const MOCK_CLUSTERS = [
-    { lat: 35.1983, lng: 129.0831, count: 12 },
-    { lat: 35.1912, lng: 129.0805, count: 1 },
-    { lat: 35.2048, lng: 129.0786, count: 1 },
-    { lat: 35.1631, lng: 129.1589, count: 12 },
-];
-
 const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, userCreatedReports, updatedReportsMap }) => {
     useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services'] });
     const [searchQuery, setSearchQuery] = useState('');
@@ -63,12 +56,18 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
 
     // Reports loaded from backend
     const [serverReports, setServerReports] = useState([]);
+    const [clusters, setClusters] = useState([]);
 
     useEffect(() => {
         fetch(`${VITE_API_URL}/api/reports/full`)
             .then(res => res.ok ? res.json() : [])
             .then(data => Array.isArray(data) ? setServerReports(data) : setServerReports([]))
             .catch(err => { console.error('Failed to load reports:', err); setServerReports([]); });
+
+        fetch(`${VITE_API_URL}/api/reports/clusters`)
+            .then(res => res.ok ? res.json() : [])
+            .then(data => Array.isArray(data) ? setClusters(data.filter(c => c.lat && c.lng)) : setClusters([]))
+            .catch(() => setClusters([]));
     }, []);
 
     // Filter logic – merge user created reports and updates with server data
@@ -183,9 +182,9 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
                     className="rl-leaflet-map"
                     style={{ width: '100%', height: '100%' }}
                 >
-                    {/* Clusters: mock counts for shape testing */}
-                    {MOCK_CLUSTERS.map((c, i) => (
-                        <CustomOverlayMap key={i} position={{ lat: c.lat, lng: c.lng }} yAnchor={c.count === 1 ? 0.5 : 1} xAnchor={0.5}>
+                    {/* Clusters from /api/reports/clusters */}
+                    {clusters.map((c, i) => (
+                        <CustomOverlayMap key={c.region || i} position={{ lat: c.lat, lng: c.lng }} yAnchor={c.count === 1 ? 0.5 : 1} xAnchor={0.5}>
                             <ClusterPin count={c.count} />
                         </CustomOverlayMap>
                     ))}

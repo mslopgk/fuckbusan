@@ -16,28 +16,23 @@ const CAT_STYLES = {
     '주거': { bg: '#E0F4F1', color: '#2C9A8F' },
 };
 
-const DEFAULT_RESULT = {
-    body: 'U+one 마케터로서 그냥 지나칠 수가 없네요..(TT) 전 국민이 애용하는 U+one 앱이 될 수 있도록 더 열심히! 노력해 보겠습니다. 12월에도 런칭 기념 이벤트는 계속 되니 꼬옥 관심 가져주셔야 돼요~ 약속~',
-    date: '2026.01.02',
-};
-
 export default function MReportDetail({ onNavigate, report }) {
     const data = {
-        title: report?.title || '공원 쓰레기통이 안전조치가 필요해요',
-        cat: report?.cat || '주거',
-        sub: report?.sub || '골목쓰레기통',
-        region: report?.region || '동래구',
-        author: report?.author || '동래구 우리디자이너',
-        authorRegion: '수안동',
-        createdAt: report?.createdAt || '2026.03.13',
-        date: report?.date || '2026.01.02',
-        views: report?.views ?? 333,
-        likes: report?.likes ?? 12,
-        comments: report?.comments ?? 12,
-        currentStage: report?.currentStage || 'review',
+        title: report?.title || '',
+        cat: report?.cat || report?.category || '',
+        sub: report?.sub || report?.sub_category || '',
+        region: report?.region || '',
+        author: report?.author || '',
+        authorRegion: report?.authorRegion || '',
+        createdAt: report?.createdAt || report?.date || '',
+        date: report?.date || '',
+        views: report?.views ?? 0,
+        likes: report?.likes ?? 0,
+        comments: report?.comments ?? 0,
+        currentStage: report?.currentStage || (report?.progress_step === 4 ? 'notice' : report?.progress_step === 3 ? 'inspect' : report?.progress_step === 2 ? 'review' : 'received'),
         lat: report?.lat || 35.197,
         lng: report?.lng || 129.063,
-        result: report?.result || DEFAULT_RESULT,
+        result: report?.result || report?.result_details || null,
     };
     const stageIdx = STAGES.findIndex((s) => s.key === data.currentStage);
     const style = CAT_STYLES[data.cat] || { bg: '#E0F4F1', color: '#2C9A8F' };
@@ -220,10 +215,10 @@ export default function MReportDetail({ onNavigate, report }) {
                     <div className="m-result-modal" onClick={(e) => e.stopPropagation()}>
                         <h3 className="m-result-title">개선 결과보기</h3>
                         <div className="m-result-image" />
-                        <p className="m-result-body">{data.result.body}</p>
+                        <p className="m-result-body">{data.result?.body || data.result?.content || '결과가 아직 등록되지 않았습니다.'}</p>
                         <div className="m-result-divider" />
                         <p className="m-result-comment-label">담당자 코멘트</p>
-                        <p className="m-result-date">{data.result.date}</p>
+                        <p className="m-result-date">{data.result?.date || data.result?.result_date || ''}</p>
                     </div>
                 </div>
             )}

@@ -26,7 +26,7 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
     // 수정 모드 시 기존 이미지 로드
     useEffect(() => {
         if (isEdit && initialData && initialData.files) {
-            const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
+            const VITE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
             const existingFiles = initialData.files.map(filename => {
                 const url = filename.startsWith('http') ? filename : `${VITE_API_URL}/uploads/${filename}`;
                 return {

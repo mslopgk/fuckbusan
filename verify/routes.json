@@ -256,6 +256,9 @@
     { "id": "search-suggest", "method": "GET", "path": "/api/search/suggest?q=%EA%B0%9C%EC%84%A0", "expectStatus": [200], "expectBody": { "isArray": true } },
 
     { "id": "checklist-summary", "method": "GET", "path": "/checklist/summary", "expectStatus": [200], "expectBody": { "isArray": true } },
-    { "id": "checklist-recommendations", "method": "GET", "path": "/checklist/recommendations", "expectStatus": [200] }
+    { "id": "checklist-recommendations", "method": "GET", "path": "/checklist/recommendations", "expectStatus": [200] },
+    { "id": "checklist-template-general", "method": "GET", "path": "/checklist/templates?mode=general", "expectStatus": [200] },
+    { "id": "checklist-template-expert", "method": "GET", "path": "/checklist/templates?mode=expert", "expectStatus": [200] },
+    { "id": "comprehensive-survey", "method": "GET", "path": "/checklist/comprehensive-survey", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } }
   ]
 }

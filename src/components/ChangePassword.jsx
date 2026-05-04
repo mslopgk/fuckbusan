@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Login.css';
 
 const ChangePassword = ({ onBack }) => {
-    const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
+    const VITE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
     const [form, setForm] = useState({ next: '', confirm: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
