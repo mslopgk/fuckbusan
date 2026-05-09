@@ -5,86 +5,97 @@ import './PCDetailShared.css';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
-const CATEGORY_KEYS = {
-    '주거': 'housing', '환경': 'env', '교통': 'traffic', '안전': 'safety',
-    '교육': 'edu', '산업·일자리': 'work', '문화·여가': 'culture', '보건·복지': 'health',
+const getImgSrc = (file) => {
+    if (!file) return null;
+    if (file.startsWith('http') || file.startsWith('/assets/')) return file;
+    if (file.startsWith('/uploads/')) return `${API_URL}${file}`;
+    return `${API_URL}/uploads/${file}`;
 };
 
 export default function PCProposeDetail({ onNavigate, proposal }) {
     const [detail, setDetail] = useState(proposal || null);
     const [comments, setComments] = useState([]);
     const [comment, setComment] = useState('');
-    const [voteOpen, setVoteOpen] = useState(false);
-    const [voteDoneOpen, setVoteDoneOpen] = useState(false);
+    const [voteDoneType, setVoteDoneType] = useState(null); // null | 'voted' | 'cancelled'
     const [voted, setVoted] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
 
     useEffect(() => {
         if (!proposal?.id) return;
+        const rawId = proposal.id;
+        const numId = typeof rawId === 'string' ? parseInt(rawId.replace(/\D/g, ''), 10) : rawId;
+        if (!numId) return;
         const token = localStorage.getItem('access_token');
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        fetch(`${API_URL}/api/reports/proposals/${proposal.id}`, { headers })
+        fetch(`${API_URL}/api/reports/proposals/${numId}`, { headers })
             .then((r) => (r.ok ? r.json() : null))
             .then((d) => {
                 if (!d) return;
                 setDetail(d);
                 setLikeCount(d.likes_count ?? 0);
                 setVoted(!!d.has_voted);
+                try { sessionStorage.setItem('selectedProposal', JSON.stringify(d)); } catch (_) {}
             })
             .catch(() => {});
-        fetch(`${API_URL}/api/reports/proposals/${proposal.id}/comments`)
+        fetch(`${API_URL}/api/reports/proposals/${numId}/comments`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setComments(Array.isArray(rows) ? rows : []))
             .catch(() => setComments([]));
     }, [proposal?.id]);
 
-    const data = {
-        title: detail?.title || '',
-        author_id: detail?.nickname || detail?.region || '',
-        date: detail?.created_at ? String(detail.created_at).slice(0, 10) : '',
-        likes: likeCount,
-        category: detail?.category || '',
-        categoryKey: CATEGORY_KEYS[detail?.category] || 'traffic',
-        body: detail?.content || '',
-        lat: detail?.lat ?? 35.1631,
-        lng: detail?.lng ?? 129.1638,
-    };
+    const district = detail?.region
+        ? (detail.region.match(/[가-힣]+(?:구|군)/) || [''])[0]
+        : '';
+    const photoSrc = detail?.files?.[0]
+        ? getImgSrc(detail.files[0])
+        : detail?.image ? getImgSrc(detail.image) : null;
+    const lat = detail?.lat ?? 35.1631;
+    const lng = detail?.lng ?? 129.1638;
+    const dateStr = detail?.created_at
+        ? String(detail.created_at).slice(0, 10).replace(/-/g, '.')
+        : '';
+    const isMine = detail?.is_mine || false;
 
     const submitVote = async () => {
-        if (!proposal?.id) return;
+        const rawId = detail?.id ?? proposal?.id;
+        const proposalId = typeof rawId === 'string' ? parseInt(rawId.replace(/\D/g, ''), 10) : rawId;
+        if (!proposalId) return;
         const token = localStorage.getItem('access_token');
-        // 토큰 없어도 클라 사이드 시뮬: 투표 완료 팝업은 보여줌
-        if (token) {
-            try {
-                const res = await fetch(`${API_URL}/api/reports/proposals/${proposal.id}/vote`, {
-                    method: 'POST',
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                if (res.ok) {
-                    const j = await res.json();
-                    setVoted(!!j.has_voted);
-                    setLikeCount(j.likes_count ?? likeCount);
-                }
-            } catch (_) {}
-        } else {
-            setVoted(true);
-            setLikeCount((c) => c + 1);
+        if (!token) { alert('로그인이 필요합니다.'); return; }
+        try {
+            const res = await fetch(`${API_URL}/api/reports/proposals/${proposalId}/vote`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+                const j = await res.json();
+                const nowVoted = !!j.has_voted;
+                setVoted(nowVoted);
+                setLikeCount(j.likes_count ?? likeCount);
+                setVoteDoneType(nowVoted ? 'voted' : 'cancelled');
+                setTimeout(() => setVoteDoneType(null), 2000);
+            } else {
+                const errText = await res.text().catch(() => '');
+                console.error(`vote ${res.status}:`, errText, 'proposalId=', proposalId);
+                let msg;
+                try { const e = JSON.parse(errText); msg = typeof e.detail === 'string' ? e.detail : `투표 실패 (${res.status})`; }
+                catch { msg = `투표 실패 (${res.status})`; }
+                alert(msg);
+            }
+        } catch (e) {
+            console.error('vote error', e);
+            alert('서버 연결 오류가 발생했습니다.');
         }
-        setVoteOpen(false);
-        setVoteDoneOpen(true);
-        // 1.6초 후 자동 닫기
-        setTimeout(() => setVoteDoneOpen(false), 1600);
     };
 
     const submitComment = async () => {
-        if (!comment.trim() || !proposal?.id) return;
+        const rawId = detail?.id ?? proposal?.id;
+        const proposalId = typeof rawId === 'string' ? parseInt(rawId.replace(/\D/g, ''), 10) : rawId;
+        if (!comment.trim() || !proposalId) return;
         const token = localStorage.getItem('access_token');
-        if (!token) {
-            alert('로그인이 필요합니다.');
-            return;
-        }
+        if (!token) { alert('로그인이 필요합니다.'); return; }
         try {
-            const res = await fetch(`${API_URL}/api/reports/proposals/${proposal.id}/comments`, {
+            const res = await fetch(`${API_URL}/api/reports/proposals/${proposalId}/comments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ content: comment.trim() }),
@@ -93,118 +104,144 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                 const created = await res.json();
                 setComments((prev) => [...prev, created]);
                 setComment('');
+            } else {
+                const err = await res.json().catch(() => ({}));
+                const msg = typeof err.detail === 'string' ? err.detail : `댓글 등록 실패 (${res.status})`;
+                alert(msg);
             }
         } catch (e) {
             console.error('comment failed', e);
+            alert('서버 연결 오류가 발생했습니다.');
         }
     };
 
     return (
         <UserPCLayout currentView="pcProposeDetail" onNavigate={onNavigate}>
-            <div className="pc-detail-page">
-                <div className="pc-detail-inner">
-                    <div className="pc-detail-tags">
-                        {data.category && <span className={`pc-cat-tag pc-cat-${data.categoryKey}`}>{data.category}</span>}
-                    </div>
-                    <h2 className="pc-detail-title">{data.title || '(제목 없음)'}</h2>
-                    <div className="pc-detail-meta">
-                        <span>{data.date}</span>
-                        <span>·</span>
-                        <span>{data.author_id}</span>
-                        <span>·</span>
-                        <span>❤️ {data.likes}</span>
+            <div className="pcd-page">
+                <div className="pcd-inner">
+
+                    {/* 태그 행: 지역 + 카테고리 */}
+                    <div className="pcd-tags">
+                        {district && <span className="pcd-region-pill">{district}</span>}
+                        {detail?.category && <span className="pcd-cat-pill">{detail.category}</span>}
                     </div>
 
-                    <div className="pc-detail-image" />
+                    <h1 className="pcd-title">{detail?.title || '(제목 없음)'}</h1>
 
-                    <div className="pc-detail-map">
+                    {/* 메타: 작성자 왼쪽 | 날짜·조회수 오른쪽 */}
+                    <div className="pcd-meta">
+                        <span>{detail?.nickname || detail?.region || '작성자 정보 없음'}</span>
+                        <span>{dateStr}{dateStr && ' · '}조회수 {detail?.views_count || 0}</span>
+                    </div>
+
+                    <div className="pcd-divider" />
+
+                    {/* 대표 이미지 */}
+                    {photoSrc && (
+                        <img
+                            src={photoSrc}
+                            alt="제안 사진"
+                            className="pcd-photo"
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                    )}
+
+                    {/* 카카오 지도 */}
+                    <div className="pcd-map-wrap">
                         <PCMapCanvas
-                            pins={[{ id: 'this', lat: data.lat, lng: data.lng, color: '#E6235A', title: data.title }]}
+                            pins={[{ id: 'this', lat, lng, color: '#E6235A', title: detail?.title || '' }]}
                             accentColor="#E6235A"
-                            initialCenter={{ lat: data.lat, lng: data.lng }}
+                            initialCenter={{ lat, lng }}
                             initialLevel={4}
                         />
                     </div>
 
-                    <div className="pc-detail-body-wrap">
-                        <div className="pc-detail-body">
-                            {data.body ? data.body.split('\n').map((p, i) => p.trim().startsWith('-') ? (
-                                <li key={i}>{p.replace(/^-\s*/, '')}</li>
-                            ) : (
-                                <p key={i}>{p}</p>
-                            )) : <p style={{ color: '#999' }}>본문이 없습니다.</p>}
+                    {/* 본문 + 투표 버튼 */}
+                    <div className="pcd-body-wrap">
+                        <div className="pcd-body">
+                            {(detail?.content || detail?.body)
+                                ? (detail.content || detail.body).split('\n').map((line, i) =>
+                                    line.trim().startsWith('-')
+                                        ? <li key={i}>{line.replace(/^-\s*/, '')}</li>
+                                        : <p key={i}>{line}</p>
+                                  )
+                                : <p style={{ color: '#999' }}>본문이 없습니다.</p>
+                            }
                         </div>
-                        <button className={`pc-vote-float ${voted ? 'on' : ''}`} onClick={() => setVoteOpen(true)}>
-                            <span className="pc-vote-float-icon">{voted ? '✓' : '🗳'}</span>
-                            <span className="pc-vote-float-label">{voted ? '투표완료' : '투표하기'}</span>
-                        </button>
+                        {!isMine && (
+                            <button
+                                className={`pcd-vote-circle${voted ? ' voted' : ''}`}
+                                onClick={submitVote}
+                            >
+                                <span className="pcd-vote-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                </span>
+                                <span className="pcd-vote-count">{likeCount}</span>
+                                <span className="pcd-vote-label">{voted ? '투표완료' : '투표하기'}</span>
+                            </button>
+                        )}
                     </div>
 
-                    <div className="pc-comment-section">
-                        <div className="pc-comment-input-row">
+                    {/* 댓글 입력 + 목록 */}
+                    <div className="pcd-comment-section">
+                        <div className="pcd-comment-input-row">
                             <input
                                 type="text"
+                                className="pcd-comment-input"
                                 placeholder="댓글을 입력해주세요"
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
                                 onKeyDown={(e) => { if (e.key === 'Enter') submitComment(); }}
-                                className="pc-comment-input"
                             />
-                            <button className="pc-comment-send" onClick={submitComment}>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                            <button className="pcd-comment-send" onClick={submitComment}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M22 2L11 13" />
+                                    <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+                                </svg>
                             </button>
                         </div>
 
-                        <ul className="pc-comment-list">
+                        <ul className="pcd-comment-list">
                             {comments.length === 0 ? (
-                                <li style={{ color: '#999', padding: '12px 0' }}>아직 댓글이 없습니다.</li>
+                                <li className="pcd-comment-empty">아직 댓글이 없습니다.</li>
                             ) : comments.map((c, i) => (
-                                <li key={c.id || i}>
-                                    <div className="pc-comment-meta">
-                                        <strong>{c.nickname || '익명'}</strong>
-                                        <span>{c.created_at ? String(c.created_at).slice(0, 10) : ''}</span>
-                                    </div>
-                                    <p>{c.content}</p>
+                                <li key={c.id || i} className="pcd-comment-item">
+                                    <div className="pcd-comment-author">{c.nickname || '익명'}</div>
+                                    <p className="pcd-comment-text">{c.content}</p>
+                                    <button className="pcd-comment-reply-btn">답글쓰기</button>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    {/* 맨 아래 목록으로 버튼 */}
-                    <div className="pc-detail-bottom-actions">
-                        <button
-                            className="pc-btn-back-to-list"
-                            onClick={() => onNavigate && onNavigate('pcProposeMap')}
-                        >
+                    <div className="pcd-bottom-actions">
+                        <button className="pcd-back-btn" onClick={() => onNavigate && onNavigate('pcProposeMap')}>
                             ← 목록으로
                         </button>
                     </div>
                 </div>
 
-                {voteOpen && (
-                    <div className="pc-modal-backdrop" onClick={() => setVoteOpen(false)}>
-                        <div className="pc-modal" onClick={(e) => e.stopPropagation()}>
-                            <h3>이 제안에 투표하시겠습니까?</h3>
-                            <p className="pc-vote-modal-text">투표는 한 번만 가능합니다.<br/>여러분의 의견이 정책 반영에 큰 도움이 됩니다.</p>
-                            <div className="pc-vote-options">
-                                <button className="pc-vote-option pc-vote-yes" onClick={submitVote}>투표하기</button>
-                                <button className="pc-vote-option pc-vote-no" onClick={() => setVoteOpen(false)}>취소</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {voteDoneOpen && (
-                    <div className="pc-modal-backdrop pc-vote-done-backdrop">
-                        <div className="pc-vote-done-card">
-                            <div className="pc-vote-done-icon">
-                                <svg width="44" height="44" viewBox="0 0 60 60" fill="none">
-                                    <rect x="8" y="6" width="44" height="48" rx="4" fill="#fff" stroke="#E6235A" strokeWidth="2"/>
-                                    <rect x="14" y="14" width="32" height="3" rx="1.5" fill="#E6235A" opacity="0.4"/>
-                                    <path d="M20 32l6 6 14-16" stroke="#E6235A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                {/* 투표 완료/취소 팝업 */}
+                {voteDoneType && (
+                    <div className="pcd-vote-modal-overlay" onClick={() => setVoteDoneType(null)}>
+                        <div className="pcd-vote-modal-box">
+                            <div className="pcd-vote-modal-icon">
+                                <svg width="90" height="100" viewBox="0 0 90 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    {/* 문서 본체 — 두꺼운 검정 아웃라인, 우상단 도그이어 */}
+                                    <path d="M10 6 H58 L80 28 V92 Q80 96 76 96 H14 Q10 96 10 92 Z" fill="white" stroke="#1a1a1a" strokeWidth="4.5" strokeLinejoin="round"/>
+                                    {/* 도그이어 폴드 선 */}
+                                    <path d="M58 6 L80 28 H58 Z" fill="white" stroke="#1a1a1a" strokeWidth="4.5" strokeLinejoin="round"/>
+                                    {/* 핑크 체크마크 */}
+                                    <g transform="translate(45,62) rotate(-5)">
+                                        <path d="M-18 2 L-5 16 L20 -14" stroke="#E6235A" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                                    </g>
                                 </svg>
                             </div>
-                            <p className="pc-vote-done-text">투표가<br/>완료되었습니다</p>
+                            <p className="pcd-vote-modal-text">
+                                투표가<br />{voteDoneType === 'voted' ? '완료되었습니다' : '취소되었습니다'}
+                            </p>
                         </div>
                     </div>
                 )}

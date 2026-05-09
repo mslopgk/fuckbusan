@@ -1,9 +1,11 @@
+import os
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
+from pydantic import BaseModel
 
 # 파일 경로에 맞게 import
 from database import get_db
@@ -13,9 +15,10 @@ from schemas import UserCreate, Token, UserOut, UserLogin, UserUpdate
 router = APIRouter(tags=["users"])
 
 # --- [비밀번호 및 토큰 설정] ---
-SECRET_KEY = "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"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = os.getenv("SECRET_KEY", "busan-public-design-secret-key-2026")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin1234")
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
@@ -122,7 +125,7 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/users/login", response_model=Token)
 def login(user_input: UserLogin, db: Session = Depends(get_db)):
-    if user_input.ID == "admin" and user_input.PW == "1234":
+    if user_input.ID == "admin" and user_input.PW == ADMIN_PASSWORD:
         access_token = create_access_token(data={"sub": "admin"})
         return {"access_token": access_token, "token_type": "bearer", "user_name": "관리자", "district_code": "admin"}
     user = db.query(User).filter(User.ID == user_input.ID).first()
@@ -167,15 +170,23 @@ def reset_password(req: UserUpdate, db: Session = Depends(get_db), current_user:
     db.commit()
     return {"message": "비밀번호가 변경되었습니다."}
 
+class FindIdRequest(BaseModel):
+    name: str
+    phone_num: str
+
+class FindPwRequest(BaseModel):
+    ID: str
+    phone_num: str
+
 @router.post("/users/find-id")
-def find_id(req: UserUpdate, db: Session = Depends(get_db)):
+def find_id(req: FindIdRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.name == req.name, User.phone_num == req.phone_num).first()
     if not user:
         raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")
     return {"ID": user.ID}
 
 @router.post("/users/find-pw")
-def find_pw(req: UserUpdate, db: Session = Depends(get_db)):
+def find_pw(req: FindPwRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.ID == req.ID, User.phone_num == req.phone_num).first()
     if not user:
         raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")
