@@ -31,6 +31,21 @@
     margin-bottom: 6px;
 }
 
+.m-report-author-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.m-report-author-stat-row .m-prop-author {
+    margin: 0;
+}
+
+.m-report-list-page .m-prop-title {
+    font-size: 15px;
+    font-weight: 700;
+}
+
 .m-report-sub-tag {
     background: #FCDAE3;
     color: #C2456A;

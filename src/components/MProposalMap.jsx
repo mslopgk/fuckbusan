@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import MobileBottomNav from './MobileBottomNav';
+import { CAT_STYLES } from './catStyles';
 import './MProposalList.css';
 import './MProposalMap.css';
 
@@ -9,16 +10,6 @@ const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').r
 const REGIONS = ['부산전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'];
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '산업·일자리', '문화·여가', '보건·복지'];
 const SORTS = ['조회수', '투표순', '최신순'];
-const CAT_STYLES = {
-    '주거':       { bg: '#E0F4F1', color: '#2C9A8F' },
-    '환경':       { bg: '#E5F3DA', color: '#5B8E2E' },
-    '교통':       { bg: '#E0EAF7', color: '#2D5BA1' },
-    '교육':       { bg: '#FAE2E5', color: '#C24656' },
-    '안전':       { bg: '#FFE0DA', color: '#C2522E' },
-    '산업·일자리':  { bg: '#FAEEDA', color: '#A07321' },
-    '문화·여가':    { bg: '#EBE0F7', color: '#6E3FA1' },
-    '보건·복지':    { bg: '#F5DDEC', color: '#A33780' },
-};
 
 // 부산 16개 구·군 중심 좌표 (DB region 문자열 → 핀 좌표 변환용)
 const DISTRICT_CENTERS = {
@@ -41,6 +32,7 @@ export default function MProposalMap({ onNavigate }) {
     const [search, setSearch] = useState('');
     const [expanded, setExpanded] = useState(false);
     const [proposals, setProposals] = useState([]);
+    const [selectedPinId, setSelectedPinId] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem('access_token');
@@ -62,7 +54,7 @@ export default function MProposalMap({ onNavigate }) {
         .map((p) => {
             const c = DISTRICT_CENTERS[p.region];
             if (!c) return null;
-            return { id: p.id, lat: c[0] + (Math.random() - 0.5) * 0.005, lng: c[1] + (Math.random() - 0.5) * 0.005, count: 1 };
+            return { id: p.id, lat: c[0] + (Math.random() - 0.5) * 0.005, lng: c[1] + (Math.random() - 0.5) * 0.005 };
         })
         .filter(Boolean), [filtered]);
 
@@ -118,8 +110,9 @@ export default function MProposalMap({ onNavigate }) {
 
             <div className="m-map-canvas">
                 <PCMapCanvas
-                    pins={PINS.map((p) => ({ ...p, color: '#E6235A', title: `${p.count}건` }))}
+                    pins={PINS.map((p) => ({ ...p, color: '#E6235A' }))}
                     accentColor="#E6235A"
+                    onPinClick={(pin) => { setSelectedPinId(pin.id); setExpanded(false); }}
                 />
             </div>
 
@@ -185,7 +178,10 @@ export default function MProposalMap({ onNavigate }) {
                 )}
 
                 <ul className="m-sheet-cards">
-                    {ITEMS.map((it) => {
+                    {(!expanded && selectedPinId
+                        ? ITEMS.filter((it) => it.id === selectedPinId)
+                        : ITEMS
+                    ).map((it) => {
                         const style = CAT_STYLES[it.cat] || { bg: '#eee', color: '#555' };
                         return (
                             <li

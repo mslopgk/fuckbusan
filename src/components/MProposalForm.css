@@ -80,14 +80,25 @@
 
 .m-form-type input:checked + .m-form-type-dot {
     border-color: #E6235A;
+    background: #E6235A;
 }
 
 .m-form-type input:checked + .m-form-type-dot::after {
     content: '';
     position: absolute;
-    inset: 3px;
-    border-radius: 50%;
-    background: #E6235A;
+    left: 4px;
+    top: 6px;
+    width: 6px;
+    height: 3px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg);
+    border-radius: 1px;
+}
+
+.m-form-type:has(input:checked) {
+    color: #E6235A;
+    font-weight: 700;
 }
 
 .m-form-input {
@@ -156,6 +167,10 @@
     display: inline-flex;
     align-items: center;
     color: #b0b0b0;
+}
+
+.m-form-loc-detail {
+    margin-top: 8px;
 }
 
 /* 첨부자료 */

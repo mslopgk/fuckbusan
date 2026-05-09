@@ -30,7 +30,7 @@ export default function AdminUserList({ onNavigate }) {
                     name: u.name,
                     nickname: u.nickname || '-',
                     phone: u.phone_num || '-',
-                    address: u.district_code || '-',
+                    address: u.address || u.location || u.district_code || '-',
                     email: u.ID,
                     approval: idx % 2 === 0 ? '승인' : '대기',
                 })));

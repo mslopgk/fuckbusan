@@ -12,26 +12,13 @@ router = APIRouter(
 class UserCreate(BaseModel):
     email: str
     password: str
-    username: str = "User" # Default for backwards compat if needed, but signup will require it
+    username: str = "User"
 
 class Token(BaseModel):
     access_token: str
     token_type: str
-    username: str # Add username to response
-    district_code: str = None # Add district_code to response
-
-@router.post("/signup", response_model=dict)
-def signup(user: UserCreate, db: Session = Depends(database.get_db)):
-    db_user = db.query(models.LegacyUser).filter(models.LegacyUser.email == user.email).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="이미 등록된 이메일입니다.")
-    
-    hashed_password = utils.get_password_hash(user.password)
-    new_user = models.LegacyUser(email=user.email, hashed_password=hashed_password, username=user.username)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return {"message": "회원가입이 완료되었습니다.", "email": new_user.email, "username": new_user.username}
+    username: str
+    district_code: str = None
 
 @router.post("/login", response_model=Token)
 def login(user: UserCreate, db: Session = Depends(database.get_db)):

@@ -1,15 +1,17 @@
+import os
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import jwt
+from dotenv import load_dotenv
 
-# 비밀번호 해싱 설정
+load_dotenv()
+
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
-# JWT 설정 (실제 운영 시에는 .env에서 가져와야 함)
-SECRET_KEY = "supersecretkey_change_me_in_production"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = os.getenv("SECRET_KEY", "busan-public-design-secret-key-2026")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)

@@ -29,3 +29,32 @@ package-lock.json
 
 # Binary archives
 *.zip
+
+# Figma exports & reference assets (작업용, 배포 불필요)
+figma-pages/
+figma-pages-thumb/
+figma.pdf
+public/figma-assets/
+verify/figma-refs/
+verify/screenshots/figma_*.png
+
+# Work-only markdown docs
+FIGMA_DIFF.md
+FIGMA_FIX_REPORT.md
+DEV_PLAN.md
+CHANGES_*.md
+
+# Backend logs
+backend/output.log
+
+# Playwright MCP session logs
+.playwright-mcp/
+
+# User uploads (runtime generated)
+backend/uploads/
+
+# Root-level debug/verify screenshots
+map_debug.mjs
+current-*.png
+*-verify.png
+*-debug.png

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import MobileBottomNav from './MobileBottomNav';
+import { CAT_STYLES } from './catStyles';
 import './MProposalList.css';
 import './MReportList.css';
 
@@ -12,16 +13,6 @@ const STAGES = [
     { key: 'planned',    label: '개선예정', apiValue: '개선예정' },
     { key: 'done',       label: '개선완료', apiValue: '개선완료' },
 ];
-const CAT_STYLES = {
-    '주거':       { bg: '#E0F4F1', color: '#2C9A8F' },
-    '환경':       { bg: '#E5F3DA', color: '#5B8E2E' },
-    '교통':       { bg: '#E0EAF7', color: '#2D5BA1' },
-    '교육':       { bg: '#FAE2E5', color: '#C24656' },
-    '산업·일자리':  { bg: '#FAEEDA', color: '#A07321' },
-    '안전':       { bg: '#FFE0DA', color: '#C2522E' },
-    '문화·여가':    { bg: '#EBE0F7', color: '#6E3FA1' },
-    '보건·복지':    { bg: '#F5DDEC', color: '#A33780' },
-};
 
 export default function MReportList({ onNavigate }) {
     const [region, setRegion] = useState('부산전체');
@@ -33,6 +24,9 @@ export default function MReportList({ onNavigate }) {
     const [sortDraft, setSortDraft] = useState('최신순');
     const [sortOpen, setSortOpen] = useState(false);
     const [items, setItems] = useState([]);
+    const [likedIds, setLikedIds] = useState(() => {
+        try { return new Set(JSON.parse(localStorage.getItem('likedReportIds') || '[]')); } catch { return new Set(); }
+    });
     const [loading, setLoading] = useState(true);
 
     const SORTS = ['조회수', '투표순', '최신순'];
@@ -62,6 +56,22 @@ export default function MReportList({ onNavigate }) {
     const openSort = () => { setSortDraft(sort); setSortOpen(true); };
     const confirmRegion = () => { setRegion(regionDraft); setRegionOpen(false); };
     const confirmSort = () => { setSort(sortDraft); setSortOpen(false); };
+
+    const toggleLike = async (e, id) => {
+        e.stopPropagation();
+        const token = localStorage.getItem('access_token');
+        const isLiked = likedIds.has(id);
+        const next = new Set(likedIds);
+        if (isLiked) next.delete(id); else next.add(id);
+        setLikedIds(next);
+        localStorage.setItem('likedReportIds', JSON.stringify([...next]));
+        setItems((prev) => prev.map((it) => it.id === id ? { ...it, likes: (it.likes ?? 0) + (isLiked ? -1 : 1) } : it));
+        if (token) {
+            try {
+                await fetch(`${VITE_API_URL}/api/reports/${id}/like`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+            } catch (_) {}
+        }
+    };
 
     return (
         <div className="m-prop-list-page m-report-list-page">
@@ -131,10 +141,24 @@ export default function MReportList({ onNavigate }) {
                                     {it.sub_category && <span className="m-report-sub-tag">{it.sub_category}</span>}
                                 </div>
                                 <h3 className="m-prop-title">{it.title}</h3>
-                                <p className="m-prop-author">{it.author || '익명'}</p>
-                                <div className="m-prop-stats">
-                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> {it.likes ?? 0}</span>
-                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> {it.comments ?? 0}</span>
+                                <div className="m-report-author-stat-row">
+                                    <p className="m-prop-author">{it.author || '익명'}</p>
+                                    <div className="m-prop-stats">
+                                        <span
+                                            onClick={(e) => toggleLike(e, it.id)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            <img
+                                                src={likedIds.has(it.id) ? '/figma-assets/icons/icon_heart.svg' : '/figma-assets/icons/icon_heart_inactive.svg'}
+                                                alt=""
+                                                width={14}
+                                                height={14}
+                                                style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}
+                                            />
+                                            {it.likes ?? 0}
+                                        </span>
+                                        <span><img src="/figma-assets/icons/icon_comment.svg" alt="" width={14} height={14} style={{display:'inline-block',verticalAlign:'middle',marginRight:2}} />{it.comments ?? 0}</span>
+                                    </div>
                                 </div>
                             </div>
                             {it.image && <div className="m-prop-card-img" style={{ backgroundImage: `url(${it.image})` }} />}

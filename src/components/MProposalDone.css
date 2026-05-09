@@ -5,29 +5,17 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 60px 24px 40px;
+    padding: 40px 24px 100px;
     text-align: center;
 }
 
 .m-prop-done-icon {
-    position: relative;
     width: 132px;
     height: 132px;
     margin-bottom: 28px;
-}
-
-.m-prop-done-doc {
-    width: 132px;
-    height: 132px;
-    display: block;
-}
-
-.m-prop-done-check {
-    position: absolute;
-    width: 54px;
-    height: 54px;
-    top: 26px;
-    left: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .m-prop-done-title {

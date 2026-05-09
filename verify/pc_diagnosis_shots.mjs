@@ -7,15 +7,25 @@
 import { chromium } from 'playwright';
 
 const VIEWS = [
-    { id: 'pcDiagnosisMap',    waitFor: '.pc-diag-page' },
-    { id: 'pcDiagnosisForm',   waitFor: '.pc-diagform-page' },
-    { id: 'pcDiagnosisDetail', waitFor: '.pc-detail-page' },
-    { id: 'pcDiagnosisDone',   waitFor: '.check-done-container' },
+    { id: 'pcDiagnosisMap',    waitFor: '.pc-diag-right-list' },
+    { id: 'pcDiagnosisForm',   waitFor: '.pc-diag-right-form' },
+    { id: 'pcDiagnosisDetail', waitFor: '.pc-diag-right-detail' },
+    { id: 'pcDiagnosisDone',   waitFor: '.pc-diag-right-done' },
 ];
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await ctx.newPage();
+
+const errors = [];
+page.on('pageerror', (err) => errors.push(`PAGE_ERROR ${page.url()}: ${err.message}`));
+page.on('console', (msg) => {
+    if (msg.type() === 'error') {
+        const t = msg.text();
+        if (t.includes('Failed to load diagnosis') || t.includes('Failed to fetch')) return;
+        errors.push(`CONSOLE ${page.url()}: ${t}`);
+    }
+});
 
 let pass = 0;
 let fail = 0;
@@ -38,4 +48,8 @@ for (const v of VIEWS) {
 
 await browser.close();
 console.log(`\n${pass} passed, ${fail} failed`);
-process.exit(fail === 0 ? 0 : 1);
+if (errors.length) {
+    console.log('\n--- Page/console errors ---');
+    for (const e of errors) console.log(e);
+}
+process.exit(fail === 0 && errors.length === 0 ? 0 : 1);

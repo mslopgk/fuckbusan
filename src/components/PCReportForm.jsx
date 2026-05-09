@@ -1,27 +1,154 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { Map, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk';
 import UserPCLayout from './UserPCLayout';
-import PCHeroIllu from './PCHeroIllu';
 import './PCFormShared.css';
+
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const TYPES = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 const FACILITIES = ['공공/시설물', '도로/보도', '하수/배수', '가로등/조명', '벤치/쉼터', '쓰레기/청소', '안내판/표지판'];
 const ISSUES = ['파손', '오염', '고장', '미흡', '안전위험', '기타'];
+const BUSAN_CENTER = { lat: 35.158, lng: 129.06 };
+
+function LocationPickerModal({ onCancel, onConfirm }) {
+    const [kakaoLoading] = useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services'] });
+    const [center, setCenter] = useState(BUSAN_CENTER);
+    const [address, setAddress] = useState('');
+    const [search, setSearch] = useState('');
+
+    useEffect(() => {
+        if (kakaoLoading) return;
+        const timer = setTimeout(() => {
+            try {
+                const geocoder = new window.kakao.maps.services.Geocoder();
+                geocoder.coord2Address(center.lng, center.lat, (result, status) => {
+                    if (status === 'OK' && result.length > 0) {
+                        setAddress(result[0].road_address?.address_name || result[0].address?.address_name || '');
+                    } else {
+                        setAddress('');
+                    }
+                });
+            } catch { setAddress(''); }
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [center, kakaoLoading]);
+
+    const handleSearch = () => {
+        if (!search.trim() || !window.kakao?.maps?.services) return;
+        const ps = new window.kakao.maps.services.Places();
+        ps.keywordSearch(search.trim(), (results, status) => {
+            if (status === 'OK' && results.length > 0) {
+                setCenter({ lat: parseFloat(results[0].y), lng: parseFloat(results[0].x) });
+            }
+        });
+    };
+
+    const handleConfirm = () => {
+        onConfirm({ lat: center.lat, lng: center.lng, address });
+    };
+
+    const handleCurrentLocation = () => {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(
+            (pos) => setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+            () => {}
+        );
+    };
+
+    return (
+        <div className="pc-modal-backdrop" onClick={onCancel}>
+            <div className="pc-loc-picker-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="pc-loc-picker-head">
+                    <button className="pc-loc-picker-close" onClick={onCancel} aria-label="닫기">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                    <p className="pc-loc-picker-title">우리동네 공공디자인을<br/>제보하고 싶은 장소를 선택해주세요.</p>
+                </div>
+                <div className="pc-loc-picker-search">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pc-loc-search-icon">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input
+                        type="text"
+                        className="pc-loc-search-input"
+                        placeholder="장소 또는 주소 검색"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    />
+                    {search && (
+                        <button className="pc-loc-search-clear" onClick={() => setSearch('')}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    )}
+                </div>
+                <div className="pc-loc-picker-map">
+                    {!kakaoLoading ? (
+                        <Map
+                            center={center}
+                            level={5}
+                            style={{ width: '100%', height: '100%' }}
+                            draggable
+                            zoomable
+                            onCenterChanged={(m) => {
+                                const c = m.getCenter();
+                                setCenter({ lat: c.getLat(), lng: c.getLng() });
+                            }}
+                        >
+                            <MapMarker position={center} />
+                        </Map>
+                    ) : (
+                        <div className="pc-loc-map-loading">지도 로딩 중...</div>
+                    )}
+                    <div className="pc-loc-picker-hint">지도를 움직여서 선택해보세요</div>
+                    <button className="pc-loc-current-btn" onClick={handleCurrentLocation} title="현재 위치">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
+                        </svg>
+                    </button>
+                </div>
+                <button className="pc-loc-picker-confirm" onClick={handleConfirm}>
+                    위치 선택완료
+                </button>
+            </div>
+        </div>
+    );
+}
 
 export default function PCReportForm({ onNavigate }) {
-    const [photo, setPhoto] = useState(null);
-    const [location, setLocation] = useState('');
+    const [photo, setPhoto] = useState(null); // { url, name, type }
+    const [location, setLocation] = useState(null); // { lat, lng }
     const [type, setType] = useState('');
     const [facility, setFacility] = useState('공공/시설물');
     const [issue, setIssue] = useState('문제사항');
     const [description, setDescription] = useState('');
 
-    const [showPhoto, setShowPhoto] = useState(false);
     const [showMap, setShowMap] = useState(false);
     const [showFacilityDrop, setShowFacilityDrop] = useState(false);
     const [showIssueDrop, setShowIssueDrop] = useState(false);
     const [showDone, setShowDone] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState('');
+    const fileInputRef = useRef(null);
 
-    const valid = photo && location && type && description.trim();
+    const valid = photo && location && type && description.trim() && !submitting;
+
+    const handlePhotoChange = (e) => {
+        const f = e.target.files?.[0];
+        if (!f) return;
+        if (photo?.url) URL.revokeObjectURL(photo.url);
+        setPhoto({ name: f.name, type: f.type, url: URL.createObjectURL(f) });
+        e.target.value = '';
+    };
+
+    const removePhoto = () => {
+        if (photo?.url) URL.revokeObjectURL(photo.url);
+        setPhoto(null);
+    };
+
+    const locationLabel = location
+        ? (location.address || `${location.lat.toFixed(5)}, ${location.lng.toFixed(5)}`)
+        : '지도로 위치 설정하기';
 
     return (
         <UserPCLayout currentView="pcReportForm" onNavigate={onNavigate}>
@@ -33,22 +160,39 @@ export default function PCReportForm({ onNavigate }) {
                         <div>
                             <h3>문제 상황이 잘 보이도록<br/>사진을 등록해 주세요</h3>
                         </div>
-                        <PCHeroIllu accent="#c89500" height={140} />
+                        <img className="pc-form-hero-img" src="/figma-assets/propose-hero.png" alt="" />
                     </div>
 
                     <div className="pc-form-section">
                         <label className="pc-form-label">사진 등록</label>
-                        <button className="pc-photo-btn" onClick={() => setShowPhoto(true)}>
-                            {photo ? <img src={photo} alt="등록 사진" /> : (
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={handlePhotoChange}
+                        />
+                        <div className="pc-attach-grid">
+                            {photo && (
+                                <div className="pc-attach-item-thumb">
+                                    <img src={photo.url} alt={photo.name} className="pc-attach-thumb-img" />
+                                    <button className="pc-attach-remove" onClick={removePhoto} aria-label="삭제">×</button>
+                                </div>
                             )}
-                        </button>
+                            <button className="pc-photo-btn" onClick={() => fileInputRef.current?.click()} type="button">
+                                {photo ? (
+                                    <span style={{ fontSize: '22px' }}>＋</span>
+                                ) : (
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     <div className="pc-form-section">
                         <label className="pc-form-label">위치정보</label>
                         <button className="pc-form-input pc-form-clickable" onClick={() => setShowMap(true)}>
-                            <span className={location ? '' : 'placeholder'}>{location || '지도로 위치 설정하기'}</span>
+                            <span className={location ? '' : 'placeholder'}>{locationLabel}</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="10" r="3"/><path d="M12 22s7-7.5 7-13a7 7 0 0 0-14 0c0 5.5 7 13 7 13z"/></svg>
                         </button>
                     </div>
@@ -114,59 +258,63 @@ export default function PCReportForm({ onNavigate }) {
                         <button
                             className={`pc-btn-pink ${valid ? '' : 'disabled'}`}
                             disabled={!valid}
-                            onClick={() => setShowDone(true)}
+                            onClick={async () => {
+                                setSubmitting(true);
+                                setSubmitError('');
+                                const token = localStorage.getItem('access_token');
+                                const title = `${facility}에 ${issue} 불편해요`;
+                                const payload = {
+                                    category: type,
+                                    sub_category: `${facility} · ${issue}`,
+                                    title,
+                                    content: description.trim(),
+                                    lat: location?.lat,
+                                    lng: location?.lng,
+                                };
+                                try {
+                                    const res = await fetch(`${API_URL}/api/reports/report`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                                        },
+                                        body: JSON.stringify(payload),
+                                    });
+                                    if (res.ok) {
+                                        setShowDone(true);
+                                    } else {
+                                        setSubmitError('제출에 실패했습니다. 다시 시도해주세요.');
+                                    }
+                                } catch {
+                                    setSubmitError('네트워크 오류가 발생했습니다.');
+                                } finally {
+                                    setSubmitting(false);
+                                }
+                            }}
                         >
-                            작성완료
+                            {submitting ? '제출 중...' : '작성완료'}
                         </button>
                     </div>
+                    {submitError && <p style={{ color: '#E6235A', marginTop: 8, fontSize: 13 }}>{submitError}</p>}
                 </div>
 
-                {showPhoto && (
-                    <div className="pc-modal-backdrop" onClick={() => setShowPhoto(false)}>
-                        <div className="pc-modal" onClick={(e) => e.stopPropagation()}>
-                            <h3>사진 등록</h3>
-                            <div className="pc-file-pick-grid">
-                                <button onClick={() => { setPhoto('/preview.jpg'); setShowPhoto(false); }}>📷 카메라</button>
-                                <button onClick={() => { setPhoto('/preview.jpg'); setShowPhoto(false); }}>🖼 갤러리</button>
-                            </div>
-                            <div className="pc-modal-actions">
-                                <button className="pc-btn-light" onClick={() => setShowPhoto(false)}>취소</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {showMap && (
-                    <div className="pc-modal-backdrop" onClick={() => setShowMap(false)}>
-                        <div className="pc-modal" onClick={(e) => e.stopPropagation()}>
-                            <h3>주소 검색</h3>
-                            <input
-                                type="text"
-                                placeholder="도로명, 지번, 건물명으로 검색"
-                                className="pc-form-input"
-                                autoFocus
-                            />
-                            <div className="pc-modal-list">
-                                {['해운대구 우동 123-45', '동래구 사직동 100-1', '부산진구 부전동 200-2'].map((a) => (
-                                    <div key={a} className="pc-modal-list-item" onClick={() => { setLocation(a); setShowMap(false); }}>
-                                        {a}
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="pc-modal-actions">
-                                <button className="pc-btn-light" onClick={() => setShowMap(false)}>취소</button>
-                            </div>
-                        </div>
-                    </div>
+                    <LocationPickerModal
+                        onCancel={() => setShowMap(false)}
+                        onConfirm={({ lat, lng, address }) => { setLocation({ lat, lng, address }); setShowMap(false); }}
+                    />
                 )}
 
                 {showDone && (
                     <div className="pc-modal-backdrop">
                         <div className="pc-modal pc-modal-done" onClick={(e) => e.stopPropagation()}>
                             <div className="pc-done-illu">
-                                <svg width="80" height="80" viewBox="0 0 100 100" fill="none">
-                                    <rect x="22" y="14" width="56" height="76" rx="6" fill="#FFE9C8" stroke="#E6235A" strokeWidth="2"/>
-                                    <path d="M40 56l8 8 14-16" stroke="#E6235A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                                <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                                    <rect x="20" y="14" width="80" height="92" rx="8" fill="#FCDAE3" stroke="#E6235A" strokeWidth="2.5"/>
+                                    <rect x="32" y="26" width="56" height="6" rx="3" fill="#E6235A" opacity="0.4"/>
+                                    <rect x="32" y="38" width="40" height="4" rx="2" fill="#E6235A" opacity="0.25"/>
+                                    <circle cx="60" cy="70" r="22" fill="#fff" stroke="#E6235A" strokeWidth="2"/>
+                                    <path d="M48 71l8 8 16-18" stroke="#E6235A" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                                 </svg>
                             </div>
                             <h3>제보 작성이<br/>완료되었습니다</h3>

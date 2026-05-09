@@ -2,8 +2,14 @@ import { useEffect, useState } from 'react';
 import UserPCLayout from './UserPCLayout';
 import './PCSurveyList.css';
 
+const formatEndDate = (period) => {
+    if (!period) return '';
+    const parts = period.split('~');
+    return parts.length >= 2 ? `~${parts[1].trim()}` : period;
+};
+
 export default function PCSurveyList({ onNavigate }) {
-    const [tab, setTab] = useState(null); // 초기 미선택 — 두 토글 모두 비활성 상태로 시작
+    const [tab, setTab] = useState('active');
     const [items, setItems] = useState([]);
 
     useEffect(() => {
@@ -64,7 +70,7 @@ export default function PCSurveyList({ onNavigate }) {
                             <div className="pc-survey-card-info">
                                 <div className="pc-survey-card-title">{s.title}</div>
                                 <div className="pc-survey-card-meta">응답시간 : {s.duration}</div>
-                                <div className="pc-survey-card-meta">조사기간 : {s.period}</div>
+                                <div className="pc-survey-card-meta">조사기간 : {formatEndDate(s.period)}</div>
                             </div>
                             <button className="pc-survey-card-arrow" aria-label="이동">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">

@@ -1,0 +1,47 @@
+{
+  "startedAt": "2026-05-05T14:49:22.219Z",
+  "frontend": [
+    {
+      "id": "mDiagnosisList",
+      "view": "mDiagnosisList",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mDiagnosisList.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mProposalMap",
+      "view": "mProposalMap",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mProposalMap.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mReportMap",
+      "view": "mReportMap",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportMap.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    }
+  ],
+  "api": null,
+  "summary": {
+    "fePass": 3,
+    "feFail": 0,
+    "apiPass": 0,
+    "apiFail": 0,
+    "ok": true
+  },
+  "finishedAt": "2026-05-05T14:49:28.395Z"
+}

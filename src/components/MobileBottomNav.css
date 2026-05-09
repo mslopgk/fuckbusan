@@ -46,3 +46,119 @@
     font-weight: 600;
 }
 
+/* 제보·제안 분기 chooser 시트 */
+.m-bnav-chooser-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 9999;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: m-bnav-fade 0.18s ease-out;
+}
+
+@keyframes m-bnav-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.m-bnav-chooser-sheet {
+    width: 100%;
+    max-width: 480px;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 12px 20px 28px;
+    margin-bottom: 64px;
+    animation: m-bnav-slide 0.22s ease-out;
+}
+
+@keyframes m-bnav-slide {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.m-bnav-chooser-grip {
+    width: 40px;
+    height: 4px;
+    background: #d6d6d8;
+    border-radius: 2px;
+    margin: 0 auto 14px;
+}
+
+.m-bnav-chooser-title {
+    margin: 0 0 18px;
+    font-size: 16px;
+    font-weight: 800;
+    text-align: center;
+    color: #1a1a1b;
+    letter-spacing: -0.02em;
+}
+
+.m-bnav-chooser-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.m-bnav-chooser-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 18px 10px 16px;
+    border: 1.5px solid #ececec;
+    border-radius: 14px;
+    background: #fff;
+    color: #5B2EAB;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+
+.m-bnav-chooser-card:hover,
+.m-bnav-chooser-card:active {
+    background: #f3edff;
+    border-color: #5B2EAB;
+}
+
+.m-bnav-chooser-icon {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #f3edff;
+    color: #5B2EAB;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.m-bnav-chooser-card strong {
+    font-size: 14px;
+    font-weight: 800;
+    color: #1a1a1b;
+    letter-spacing: -0.02em;
+}
+
+.m-bnav-chooser-desc {
+    font-size: 11px;
+    color: #888;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.m-bnav-chooser-cancel {
+    width: 100%;
+    background: #f3f4f5;
+    color: #444;
+    border: none;
+    padding: 12px 0;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+}
+

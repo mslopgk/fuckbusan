@@ -1,0 +1,113 @@
+{
+  "startedAt": "2026-05-06T08:07:17.419Z",
+  "frontend": [
+    {
+      "id": "mReportList",
+      "view": "mReportList",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportList.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mReportMap",
+      "view": "mReportMap",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportMap.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mReportForm",
+      "view": "mReportForm",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportForm.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mReportDetail",
+      "view": "mReportDetail",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportDetail.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mReportDone",
+      "view": "mReportDone",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportDone.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mMyReportDetail",
+      "view": "mMyReportDetail",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mMyReportDetail.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mMyReportEdit",
+      "view": "mMyReportEdit",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mMyReportEdit.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "pcMyReportList",
+      "view": "pcMyReportList",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/pcMyReportList.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "pcMyReportEdit",
+      "view": "pcMyReportEdit",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/pcMyReportEdit.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    }
+  ],
+  "api": null,
+  "summary": {
+    "fePass": 9,
+    "feFail": 0,
+    "apiPass": 0,
+    "apiFail": 0,
+    "ok": true
+  },
+  "finishedAt": "2026-05-06T08:07:32.299Z"
+}

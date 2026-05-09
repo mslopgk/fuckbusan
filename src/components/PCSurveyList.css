@@ -7,7 +7,7 @@
 .pc-hero-card {
     background: #DDD0F2;
     border-radius: 20px;
-    padding: 36px 48px;
+    padding: 20px 48px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -25,6 +25,9 @@
 
 .pc-hero-illu {
     flex-shrink: 0;
+    height: 110px;
+    width: auto;
+    object-fit: contain;
 }
 
 .pc-tabs {
@@ -39,8 +42,8 @@
     color: #555;
     font-size: 14px;
     font-weight: 600;
-    padding: 9px 20px;
-    border-radius: 22px;
+    padding: 10px 22px;
+    border-radius: 20px;
     cursor: pointer;
     transition: all 0.15s;
 }

@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
 
 export default function MultiSelectDropdown({ label, options, selectedValues, onChange, color = 'bg-primary' }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -45,7 +44,7 @@ export default function MultiSelectDropdown({ label, options, selectedValues, on
                             ? '전체 선택됨'
                             : `${selectedValues.length}개 선택됨`}
                 </span>
-                <ChevronDown className={`w-4 h-4 text-text-sub transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s', color: '#6b7280' }}><polyline points="6 9 12 15 18 9"/></svg>
             </button>
 
             {isOpen && (
@@ -55,7 +54,7 @@ export default function MultiSelectDropdown({ label, options, selectedValues, on
                         onClick={handleSelectAll}
                     >
                         <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedValues.length === options.length ? 'bg-primary border-primary' : 'border-gray-300 bg-white'}`}>
-                            {selectedValues.length === options.length && <Check className="w-3 h-3 text-white" />}
+                            {selectedValues.length === options.length && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
                         </div>
                         <span className="text-sm font-medium text-text-main">전체 선택</span>
                     </div>
@@ -68,7 +67,7 @@ export default function MultiSelectDropdown({ label, options, selectedValues, on
                                 onClick={() => toggleOption(option.value)}
                             >
                                 <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${isSelected ? 'bg-primary border-primary' : 'border-gray-300 bg-white'}`}>
-                                    {isSelected && <Check className="w-3 h-3 text-white" />}
+                                    {isSelected && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
                                 </div>
                                 <span className={`text-sm ${isSelected ? 'font-medium text-primary' : 'text-text-main'}`}>
                                     {option.label}

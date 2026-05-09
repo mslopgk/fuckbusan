@@ -16,7 +16,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy import text
 
 # Routers
-from routers import auth, dashboard, ai, user_router, checklist_router, report_router, survey_router, home_router, admin_router, notification_router, search_router
+from routers import auth, dashboard, ai, user_router, checklist_router, report_router, survey_router, home_router, admin_router, notification_router, search_router, ai_citizens
 
 import models
 from database import engine
@@ -54,17 +54,18 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS Configuration
-origins = [
-    "http://localhost:8501",
-    "http://127.0.0.1:8501",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+# Lambda 환경 감지 (AWS_LAMBDA_FUNCTION_NAME 자동 주입)
+IS_LAMBDA = bool(os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+
+# CORS — 로컬 dev + CloudFront 배포 모두 허용
+_cors_origins = ["*"]
+_extra_origins = os.getenv("CORS_ORIGINS", "")  # CloudFront URL 등 콤마 구분
+if _extra_origins:
+    _cors_origins = [o.strip() for o in _extra_origins.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -82,37 +83,45 @@ app.include_router(home_router.router)
 app.include_router(admin_router.router)
 app.include_router(notification_router.router)
 app.include_router(search_router.router)
+app.include_router(ai_citizens.router)
 
-# Static Files & Frontend Serving
+# Static Files & Frontend Serving (로컬 전용 — Lambda/CloudFront 환경에선 스킵)
 current_dir = os.path.dirname(os.path.abspath(__file__))
-dist_dir = os.path.join(current_dir, "../dist")
-assets_dir = os.path.join(dist_dir, "assets")
 
-if os.path.exists(assets_dir):
-    app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+# 업로드 디렉토리 — 로컬 파일 저장 폴백용 (Lambda에선 /tmp 써야 하므로 조건부)
+if IS_LAMBDA:
+    uploads_dir = "/tmp/uploads"
+else:
+    uploads_dir = os.path.join(current_dir, "uploads")
+os.makedirs(os.path.join(uploads_dir, "avatars"), exist_ok=True)
+
+if not IS_LAMBDA:
+    app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
+
+    dist_dir = os.path.join(current_dir, "../dist")
+    assets_dir = os.path.join(dist_dir, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
 
 @app.get("/")
 def read_root():
     return {"message": "Busan Design Backend is Running!"}
 
-@app.get("/{full_path:path}")
-async def serve_react_app(full_path: str):
-    # Static files check (images, assets etc.)
-    file_path = os.path.join(dist_dir, full_path)
-    if os.path.exists(file_path) and os.path.isfile(file_path):
-        return FileResponse(file_path)
-    
-    # Specific 404 for common browser-auto-requested icons if they aren't provided
-    if full_path in ["favicon.ico", "favicon.svg", "apple-touch-icon.png"]:
-        raise HTTPException(status_code=404, detail="Icon not found")
-    
-    # Fallback to index.html for SPA routing
-    index_file = os.path.join(dist_dir, "index.html")
-    if os.path.exists(index_file):
-        return FileResponse(index_file)
-    
-    return {"error": "Frontend build not found. Please run 'npm run build'."}
+
+if not IS_LAMBDA:
+    @app.get("/{full_path:path}")
+    async def serve_react_app(full_path: str):
+        dist_dir = os.path.join(current_dir, "../dist")
+        file_path = os.path.join(dist_dir, full_path)
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            return FileResponse(file_path)
+        if full_path in ["favicon.ico", "favicon.svg", "apple-touch-icon.png"]:
+            raise HTTPException(status_code=404, detail="Icon not found")
+        index_file = os.path.join(dist_dir, "index.html")
+        if os.path.exists(index_file):
+            return FileResponse(index_file)
+        return {"error": "Frontend build not found. Please run 'npm run build'."}
 
 # Lambda 핸들러
 from mangum import Mangum

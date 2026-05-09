@@ -5,13 +5,10 @@ const CheckList = lazy(() => import('./components/CheckList'));
 const Satisfaction = lazy(() => import('./components/Satisfaction'));
 const Review = lazy(() => import('./components/Review'));
 const CheckDone = lazy(() => import('./components/CheckDone'));
-const Survey = lazy(() => import('./components/Survey'));
 const Home = lazy(() => import('./components/Home'));
 const Login = lazy(() => import('./components/Login'));
 const Signup = lazy(() => import('./components/Signup'));
 const SignupDone = lazy(() => import('./components/SignupDone'));
-const Report = lazy(() => import('./components/Report'));
-const ReportForm = lazy(() => import('./components/ReportForm'));
 const Diagnosis = lazy(() => import('./components/Diagnosis'));
 const DiagnosisStep1 = lazy(() => import('./components/DiagnosisStep1'));
 const DiagnosisList = lazy(() => import('./components/DiagnosisList'));
@@ -21,7 +18,6 @@ const DiagnosisResult = lazy(() => import('./components/DiagnosisResult'));
 const ExpertDiagnosisResult = lazy(() => import('./components/ExpertDiagnosisResult'));
 const ExpertDiagnosisDetail = lazy(() => import('./components/ExpertDiagnosisDetail'));
 const DiagnosisDetail = lazy(() => import('./components/DiagnosisDetail'));
-const NewDiagnosis = lazy(() => import('./components/NewDiagnosis'));
 const ProposalForm = lazy(() => import('./components/ProposalForm'));
 const ProposalPreview = lazy(() => import('./components/ProposalPreview'));
 const ProposalDone = lazy(() => import('./components/ProposalDone'));
@@ -97,6 +93,17 @@ const MDiagnosisDone = lazy(() => import('./components/MDiagnosisDone'));
 
 // USER:PC 진단(Diagnosis) pages (Figma node 941:5782 — 04/23 업데이트)
 const PCDiagnosisMap = lazy(() => import('./components/PCDiagnosisMap'));
+
+// USER: AI 가상시민 (Figma file TCuOzEqNhoLKjhF0reBDks — Phase 1)
+const PCAICitizen = lazy(() => import('./components/PCAICitizen'));
+const MAICitizen = lazy(() => import('./components/MAICitizen'));
+
+// USER 04/01 업데이트 — 마이페이지 제보 (Figma node 830:4381)
+const MMyReportDetail = lazy(() => import('./components/MMyReportDetail'));
+const MMyReportEdit = lazy(() => import('./components/MMyReportEdit'));
+const PCMyReportList = lazy(() => import('./components/PCMyReportList'));
+const PCMyReportEdit = lazy(() => import('./components/PCMyReportEdit'));
+const PCMyProposalDetail = lazy(() => import('./components/PCMyProposalDetail'));
 
 import { fetchWithLogout } from './utils/api'
 import PCHeader from './components/PCHeader'
@@ -411,20 +418,6 @@ function App() {
             setView('signup');
         } else if (target === 'signupDone') {
             setView('signupDone');
-        } else if (target === 'report') {
-            if (!localStorage.getItem('access_token')) {
-                alert('로그인이 필요한 서비스입니다.');
-                setView('login');
-                return;
-            }
-            setView('report');
-        } else if (target === 'survey') {
-            if (!localStorage.getItem('access_token')) {
-                alert('로그인이 필요한 서비스입니다.');
-                setView('login');
-                return;
-            }
-            setView('survey');
         } else if (target === 'diagnosisResult') {
             if (isExpert) {
                 setDiagnosisMode('expert');
@@ -467,10 +460,12 @@ function App() {
         } else if (target === 'surveyManagement') {
             setView('surveyManagement');
         } else if (target === 'surveyEditor') {
+            setSelectedSurvey(data || null);
             setView('surveyEditor');
         } else if (target === 'surveyCreated') {
             setView('surveyCreated');
         } else if (target === 'surveyResults') {
+            setSelectedSurvey(data || null);
             setView('surveyResults');
         } else if (target === 'adminProposalDetail') {
             setSelectedMember(data);
@@ -478,8 +473,6 @@ function App() {
         } else if (target === 'proposalEdit') {
             setSelectedMember(data); // Reusing selectedMember state for proposal context
             setView('proposalEdit');
-        } else if (target === 'newDiagnosis') {
-            setView('proposalList');
         } else if (target === 'proposalForm') {
             setIsProposalEdit(!!data?.isEdit); // 데이터로 수정 모드 판단
             setProposalToEdit(data?.proposal || null);
@@ -510,14 +503,12 @@ function App() {
             setView('reportList');
         } else if (target === 'reportDetail') {
             setPreviousView(view);
-            setSelectedReport(data);
             if (data) {
-                sessionStorage.setItem('selectedReport', JSON.stringify(data));
-                // Set showActions based on where we are coming from
-                setSelectedReport(prev => ({ 
-                    ...prev, 
-                    showActions: data.showActions || (view === 'myReportList' || view === 'myReports')
-                }));
+                const merged = { ...data, showActions: data.showActions ?? (view === 'myReportList' || view === 'myReports') };
+                setSelectedReport(merged);
+                sessionStorage.setItem('selectedReport', JSON.stringify(merged));
+            } else {
+                setSelectedReport(null);
             }
             setView('reportDetail');
         } else if (target === 'myActivityHub') {
@@ -556,6 +547,7 @@ function App() {
             setView('pcProposeForm');
         } else if (target === 'pcProposeDetail') {
             setSelectedProposal(data);
+            if (data) sessionStorage.setItem('selectedProposal', JSON.stringify(data));
             setView('pcProposeDetail');
         } else if (target === 'pcReportMap') {
             setView('pcReportMap');
@@ -563,6 +555,7 @@ function App() {
             setView('pcReportForm');
         } else if (target === 'pcReportDetail') {
             setSelectedReport(data);
+            if (data) sessionStorage.setItem('selectedReport', JSON.stringify(data));
             setView('pcReportDetail');
         } else if (target === 'mSurveyList') {
             setView('mSurveyList');
@@ -607,11 +600,17 @@ function App() {
         } else if (target === 'mDiagnosisForm') {
             setView('mDiagnosisForm');
         } else if (target === 'mDiagnosisDetail') {
+            if (data) setSelectedReport(data);
             setView('mDiagnosisDetail');
         } else if (target === 'mDiagnosisResult') {
+            if (data) setSelectedReport(data);
             setView('mDiagnosisResult');
         } else if (target === 'mDiagnosisDone') {
             setView('mDiagnosisDone');
+        } else if (target === 'pcAICitizen') {
+            setView('pcAICitizen');
+        } else if (target === 'mAICitizen') {
+            setView('mAICitizen');
         } else if (target === 'pcDiagnosisMap') {
             setView('pcDiagnosisMap');
         } else if (target === 'pcDiagnosisForm') {
@@ -621,6 +620,22 @@ function App() {
             setView('pcDiagnosisDetail');
         } else if (target === 'pcDiagnosisDone') {
             setView('pcDiagnosisDone');
+        } else if (target === 'mMyReportDetail') {
+            setSelectedReport(data);
+            setView('mMyReportDetail');
+        } else if (target === 'mMyReportEdit') {
+            setSelectedReport(data || selectedReport);
+            setView('mMyReportEdit');
+        } else if (target === 'pcMyReportList') {
+            setView('pcMyReportList');
+        } else if (target === 'pcMyReportEdit') {
+            setSelectedReport(data || selectedReport);
+            setView('pcMyReportEdit');
+        } else if (target === 'pcMyProposalDetail') {
+            const proposalData = data || selectedProposal;
+            setSelectedProposal(proposalData);
+            if (proposalData) sessionStorage.setItem('selectedProposal', JSON.stringify(proposalData));
+            setView('pcMyProposalDetail');
         }
     };
 
@@ -633,9 +648,22 @@ function App() {
 
     if (loading && view !== 'home') return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
 
-    // PC 헤더를 표시할 뷰 목록
-    const pcHeaderViews = ['home', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm', 'myPage', 'reportPostForm', 'reportList', 'reportDetail', 'myActivityHub', 'myReportList'];
-    const showPCHeader = pcHeaderViews.includes(view);
+    // 어드민·인증 뷰, UserPCLayout 자체 헤더 보유 PC 뷰에서는 PCHeader 숨김
+    const noHeaderViews = [
+        'login', 'signup', 'signupDone', 'changePassword',
+        'adminLogin', 'adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList',
+        'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor',
+        'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit',
+        'proposalManagement', 'proposalEdit', 'adminProposalDetail',
+        // UserPCLayout 자체 헤더를 가진 PC 전용 뷰 (PCHeader 중복 방지)
+        'pcSurveyList', 'pcSurveyDetail', 'pcSurveyConsent', 'pcSurveyJoin', 'pcSurveyResults', 'pcSurveyDone',
+        'pcProposeMap', 'pcProposeForm', 'pcProposeDetail',
+        'pcReportMap', 'pcReportForm', 'pcReportDetail',
+        'pcMyReportList', 'pcMyReportEdit', 'pcMyProposalDetail',
+        'pcAICitizen',
+        'pcDiagnosisMap', 'pcDiagnosisForm', 'pcDiagnosisDetail', 'pcDiagnosisDone',
+    ];
+    const showPCHeader = !noHeaderViews.includes(view);
 
     return (
         <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#16B5B0', fontWeight: 'bold' }}>화면을 불러오는 중입니다...</div>}>
@@ -669,15 +697,6 @@ function App() {
                     <SignupDone
                         onLogin={() => setView('login')}
                     />
-                )}
-                {view === 'report' && (
-                    <Report
-                        onBack={() => setView('home')}
-                        onNext={(type) => setView('reportForm')}
-                    />
-                )}
-                {view === 'reportForm' && (
-                    <ReportForm onBack={() => setView('report')} />
                 )}
                 {view === 'diagnosis' && (
                     <Diagnosis
@@ -894,12 +913,6 @@ function App() {
                         type="survey"
                         color="#E6235A"
                         onGoHome={() => setView('home')}
-                    />
-                )}
-                {view === 'survey' && (
-                    <Survey
-                        onBack={() => setView('home')}
-                        onComplete={() => setView('surveyDone')}
                     />
                 )}
                 {view === 'proposalForm' && (
@@ -1221,6 +1234,7 @@ function App() {
                 )}
                 {view === 'surveyEditor' && (
                     <SurveyEditor
+                        surveyData={selectedSurvey}
                         onNavigate={(target, data) => onNavigate(target, data)}
                     />
                 )}
@@ -1231,6 +1245,7 @@ function App() {
                 )}
                 {view === 'surveyResults' && (
                     <SurveyResults
+                        survey={selectedSurvey}
                         onNavigate={(target, data) => onNavigate(target, data)}
                     />
                 )}
@@ -1329,11 +1344,25 @@ function App() {
                 {view === 'mDiagnosisForm' && (
                     <MDiagnosisForm onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
-                {view === 'mDiagnosisResult' && (
-                    <MDiagnosisResult onNavigate={(target, data) => onNavigate(target, data)} />
+                {(view === 'mDiagnosisResult' || view === 'mDiagnosisDetail') && (
+                    <MDiagnosisResult
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        address={selectedReport?.region || selectedReport?.address || '부산 부산진구 초연로 6'}
+                        date={selectedReport?.date || '2024/05/16'}
+                        activeCategory={selectedReport?.categoryKey || 'traffic'}
+                        photo={selectedReport?.thumb || null}
+                        district={selectedReport?.region || null}
+                        resultId={selectedReport?.id || null}
+                    />
                 )}
                 {view === 'mDiagnosisDone' && (
                     <MDiagnosisDone onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcAICitizen' && (
+                    <PCAICitizen onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mAICitizen' && (
+                    <MAICitizen onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'pcDiagnosisMap' && (
                     <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} initialPanel="list" />
@@ -1346,6 +1375,59 @@ function App() {
                 )}
                 {view === 'pcDiagnosisDone' && (
                     <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} initialPanel="done" />
+                )}
+                {view === 'mMyReportDetail' && (
+                    <MMyReportDetail
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        report={selectedReport}
+                        onDelete={handleReportDelete}
+                        onEdit={(rep) => onNavigate('mMyReportEdit', rep)}
+                    />
+                )}
+                {view === 'mMyReportEdit' && (
+                    <MMyReportEdit
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        report={selectedReport}
+                        onComplete={(updated) => {
+                            if (updated && selectedReport) {
+                                setUpdatedReportsMap((prev) => ({
+                                    ...prev,
+                                    [selectedReport.id]: { ...selectedReport, ...updated },
+                                }));
+                                setSelectedReport((prev) => ({ ...prev, ...updated }));
+                            }
+                        }}
+                    />
+                )}
+                {view === 'pcMyReportList' && (
+                    <PCMyReportList
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        deletedIds={deletedReportIds}
+                        likedIds={likedReportIds}
+                        userCreatedReports={userCreatedReports}
+                        updatedReportsMap={updatedReportsMap}
+                    />
+                )}
+                {view === 'pcMyReportEdit' && (
+                    <PCMyReportEdit
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        report={selectedReport}
+                        onComplete={(updated) => {
+                            if (updated && selectedReport) {
+                                setUpdatedReportsMap((prev) => ({
+                                    ...prev,
+                                    [selectedReport.id]: { ...selectedReport, ...updated },
+                                }));
+                                setSelectedReport((prev) => ({ ...prev, ...updated }));
+                            }
+                        }}
+                    />
+                )}
+                {view === 'pcMyProposalDetail' && (
+                    <PCMyProposalDetail
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        proposal={selectedProposal}
+                    />
                 )}
             </div>
         </Suspense>

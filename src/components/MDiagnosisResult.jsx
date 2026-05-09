@@ -257,7 +257,7 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         </button>
                         <button
                             type="button"
-                            className="m-diagres-detail-btn blue"
+                            className="m-diagres-detail-btn purple"
                             onClick={() => onNavigate?.('mDiagnosisDetailZone')}
                         >
                             <span>구역별 세부 정보</span>

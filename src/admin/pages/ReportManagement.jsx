@@ -3,14 +3,16 @@ import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 
-const TYPE_CLASS = {
-    교통: 'traffic', 안전: 'safety', 교육: 'education', 환경: 'environment',
-    주거: 'housing', '산업·일자리': 'work', '문화·여가': 'leisure', '보건·복지': 'health',
-};
+const SearchIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+);
 
 export default function ReportManagement({ onNavigate }) {
     const [reports, setReports] = useState([]);
     const [search, setSearch] = useState('');
+    const [authorSearch, setAuthorSearch] = useState('');
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -19,7 +21,6 @@ export default function ReportManagement({ onNavigate }) {
             const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
             const token = localStorage.getItem('access_token');
             try {
-                // 관리자 토큰이 있으면 admin 엔드포인트로 풍부한 데이터 가져오기
                 let res = token
                     ? await fetch(`${API_URL}/api/admin/reports`, { headers: { Authorization: `Bearer ${token}` } })
                     : null;
@@ -37,46 +38,63 @@ export default function ReportManagement({ onNavigate }) {
         fetchReports();
     }, []);
 
-    const filtered = reports.filter((r) => !search || (r.title || '').includes(search));
+    const filtered = reports.filter((r) =>
+        (!search || (r.title || '').includes(search)) &&
+        (!authorSearch || (r.author || r.author_id || '').includes(authorSearch))
+    );
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
     return (
         <AdminLayout onNavigate={onNavigate} currentView="reportManagement">
-            <div className="content-header-new">
-                <h2 className="content-title-new">제보</h2>
-                <div className="total-count-text">전체 제보 <span>{filtered.length}건</span></div>
-            </div>
+            <h2 className="content-title-new" style={{ marginBottom: 30 }}>제보</h2>
 
-            <div className="search-box-new">
-                <div className="search-label-new">제목</div>
-                <div className="search-input-wrapper-new">
-                    <input
-                        type="text"
-                        className="search-input-new"
-                        placeholder="제목을 입력해 주세요"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
+            <div className="search-box-new-col">
+                <div className="search-row">
+                    <div className="search-label-new">회원검색</div>
+                    <div className="search-input-wrapper-new" style={{ maxWidth: 'none' }}>
+                        <input
+                            type="text"
+                            className="search-input-new"
+                            placeholder="이름을 입력해 주세요"
+                            value={authorSearch}
+                            onChange={(e) => setAuthorSearch(e.target.value)}
+                            style={{ paddingRight: 40 }}
+                        />
+                        <SearchIcon />
+                    </div>
                 </div>
-                <button className="btn-search-new" onClick={() => setPage(1)}>검색</button>
+                <div className="search-row">
+                    <div className="search-label-new">제목</div>
+                    <div className="search-input-wrapper-new" style={{ maxWidth: 'none' }}>
+                        <input
+                            type="text"
+                            className="search-input-new"
+                            placeholder="제목을 입력해 주세요"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            style={{ paddingRight: 40 }}
+                        />
+                        <SearchIcon />
+                    </div>
+                    <button className="btn-search-new" onClick={() => setPage(1)}>검색</button>
+                </div>
             </div>
 
             <div className="table-container-new">
                 <table className="admin-table-new">
                     <thead>
                         <tr>
-                            <th style={{ width: '40%' }}>제보 제목</th>
+                            <th style={{ width: '50%', textAlign: 'left' }}>제보 제목</th>
+                            <th>작성자 ID</th>
                             <th>유형</th>
                             <th>위치</th>
-                            <th>작성자 ID</th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         {visible.length === 0 ? (
                             <tr>
-                                <td colSpan={5} style={{ padding: '40px 0', color: '#999' }}>
+                                <td colSpan={4} style={{ padding: '40px 0', color: '#999' }}>
                                     등록된 제보가 없습니다.
                                 </td>
                             </tr>
@@ -85,23 +103,15 @@ export default function ReportManagement({ onNavigate }) {
                             const loc = r.region || r.location;
                             const author = r.author || r.author_id;
                             return (
-                            <tr key={r.id}>
+                            <tr
+                                key={r.id}
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => onNavigate && onNavigate('adminReportDetail', r)}
+                            >
                                 <td style={{ textAlign: 'left' }}>{r.title}</td>
-                                <td>
-                                    <span className={`type-tag ${TYPE_CLASS[cat] || ''}`}>{cat || '-'}</span>
-                                </td>
-                                <td>{loc || '-'}</td>
                                 <td>{author || '-'}</td>
-                                <td>
-                                    <div className="action-btns-new">
-                                        <span
-                                            className="btn-action-text"
-                                            onClick={() => onNavigate && onNavigate('adminReportDetail', r)}
-                                        >
-                                            상세
-                                        </span> | <span className="btn-action-text">삭제</span>
-                                    </div>
-                                </td>
+                                <td>{cat || '-'}</td>
+                                <td>{loc || '-'}</td>
                             </tr>
                             );
                         })}
@@ -121,7 +131,7 @@ export default function ReportManagement({ onNavigate }) {
                         <span
                             key={n}
                             className={`page-num-new ${page === n ? 'active' : ''}`}
-                            onClick={() => setPage(n)}
+                            onClick={(e) => { e.stopPropagation(); setPage(n); }}
                         >
                             {n}
                         </span>

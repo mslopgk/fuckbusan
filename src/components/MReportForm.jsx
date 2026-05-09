@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
+import PCMapCanvas from './PCMapCanvas';
 import './MProposalForm.css';
 import './MProposalList.css';
 import './MReportForm.css';
 
-const CATS = ['주거', '환경', '교통', '안전'];
+const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
+const CATS = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 const POSITIONS = ['위치', '도로', '인도', '공원', '주차장'];
 const ISSUES = ['문제사항', '훼손', '오염', '불편', '위험'];
 const DRAFT_KEY = 'mReportForm:draft';
@@ -22,9 +25,14 @@ export default function MReportForm({ onNavigate }) {
     const [position, setPosition] = useState('');
     const [issue, setIssue] = useState('');
     const [body, setBody] = useState('');
+    const [location, setLocation] = useState('');
+    const [locationPickerOpen, setLocationPickerOpen] = useState(false);
+    const [pickedLat, setPickedLat] = useState(35.197);
+    const [pickedLng, setPickedLng] = useState(129.063);
     const [restoreOpen, setRestoreOpen] = useState(false);
     const [draftMeta, setDraftMeta] = useState(null);
     const [toast, setToast] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         try {
@@ -40,7 +48,7 @@ export default function MReportForm({ onNavigate }) {
         }
     }, []);
 
-    const canSubmit = cat && position && issue && body.trim();
+    const canSubmit = cat && position && issue && body.trim() && !submitting;
 
     const handleSaveDraft = () => {
         const draft = { cat, position, issue, body, savedAt: new Date().toISOString() };
@@ -69,9 +77,41 @@ export default function MReportForm({ onNavigate }) {
         setRestoreOpen(false);
     };
 
-    const handleSubmit = () => {
-        try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
-        onNavigate && onNavigate('mReportDone');
+    const handleSubmit = async () => {
+        setSubmitting(true);
+        const token = localStorage.getItem('access_token');
+        const title = `${position}에 ${issue} 불편해요`;
+        const payload = {
+            category: cat,
+            sub_category: `${position} · ${issue}`,
+            title,
+            content: body,
+            detailed_address: location || undefined,
+            lat: location ? pickedLat : undefined,
+            lng: location ? pickedLng : undefined,
+        };
+        try {
+            const res = await fetch(`${VITE_API_URL}/api/reports/report`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify(payload),
+            });
+            if (res.ok) {
+                try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+                onNavigate && onNavigate('mReportDone');
+            } else {
+                setToast('제출에 실패했습니다. 다시 시도해주세요.');
+                setTimeout(() => setToast(''), 2500);
+            }
+        } catch {
+            setToast('네트워크 오류가 발생했습니다.');
+            setTimeout(() => setToast(''), 2500);
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -95,8 +135,8 @@ export default function MReportForm({ onNavigate }) {
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">위치정보</h3>
-                    <button className="m-loc-input" type="button">
-                        <span>지도로 위치 설정하기</span>
+                    <button className="m-loc-input" type="button" onClick={() => setLocationPickerOpen(true)}>
+                        <span className={location ? 'm-form-loc-text' : ''}>{location || '지도로 위치 설정하기'}</span>
                         <span className="m-loc-pin">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="2.5"/></svg>
                         </span>
@@ -151,11 +191,42 @@ export default function MReportForm({ onNavigate }) {
                     type="button"
                     disabled={!canSubmit}
                     onClick={handleSubmit}
-                >작성완료</button>
+                >{submitting ? '제출 중...' : '작성완료'}</button>
             </footer>
 
             {toast && (
                 <div className="m-form-toast" role="status">{toast}</div>
+            )}
+
+            {locationPickerOpen && (
+                <div className="m-loc-picker">
+                    <header className="m-loc-picker-top">
+                        <button
+                            className="m-form-back"
+                            onClick={() => setLocationPickerOpen(false)}
+                            type="button"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                            <span>돌아가기</span>
+                        </button>
+                    </header>
+                    <h2 className="m-loc-picker-title">제보할 위치를<br/>지도에서 선택해주세요.</h2>
+                    <div className="m-loc-picker-map">
+                        <PCMapCanvas
+                            pins={[{ id: 'pick', lat: pickedLat, lng: pickedLng, color: '#E6235A', title: '제보 위치' }]}
+                            accentColor="#E6235A"
+                        />
+                    </div>
+                    <p className="m-loc-picker-help">지도를 움직여서 선택해주세요</p>
+                    <button
+                        className="m-loc-picker-confirm"
+                        type="button"
+                        onClick={() => {
+                            setLocation(`위도 ${pickedLat.toFixed(4)}, 경도 ${pickedLng.toFixed(4)}`);
+                            setLocationPickerOpen(false);
+                        }}
+                    >위치 선택완료</button>
+                </div>
             )}
 
             {restoreOpen && draftMeta && (

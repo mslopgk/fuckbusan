@@ -2,7 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import './MProposalForm.css';
 
-const TYPES = ['주거', '환경', '교육', '안전', '산업 및 고용', '교통', '문화 및 레저', '보건 및 복지'];
+const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
+const TYPES = ['주거', '환경', '교육', '안전', '산업·일자리', '교통', '문화·여가', '보건·복지'];
 const DRAFT_KEY = 'mProposalForm:draft';
 
 const formatDraftDate = (iso) => {
@@ -26,6 +28,7 @@ export default function MProposalForm({ onNavigate }) {
     const [restoreOpen, setRestoreOpen] = useState(false);
     const [draftMeta, setDraftMeta] = useState(null);
     const [toast, setToast] = useState('');
+    const [submitting, setSubmitting] = useState(false);
     const fileInputRef = useRef(null);
 
     useEffect(() => {
@@ -42,7 +45,7 @@ export default function MProposalForm({ onNavigate }) {
         }
     }, []);
 
-    const canSubmit = type && title.trim() && body.trim();
+    const canSubmit = type && title.trim() && body.trim() && !submitting;
 
     const handleSaveDraft = () => {
         const draft = {
@@ -88,13 +91,39 @@ export default function MProposalForm({ onNavigate }) {
         setRestoreOpen(false);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        setSubmitting(true);
+        const token = localStorage.getItem('access_token');
+        const payload = {
+            category: type,
+            title: title.trim(),
+            content: body.trim(),
+            region: '부산',
+            detailed_address: location || undefined,
+            files: [],
+        };
         try {
-            localStorage.removeItem(DRAFT_KEY);
+            const res = await fetch(`${VITE_API_URL}/api/reports/new-proposal`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify(payload),
+            });
+            if (res.ok) {
+                try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+                onNavigate && onNavigate('mProposalDone');
+            } else {
+                setToast('제출에 실패했습니다. 다시 시도해주세요.');
+                setTimeout(() => setToast(''), 2500);
+            }
         } catch {
-            // ignore
+            setToast('네트워크 오류가 발생했습니다.');
+            setTimeout(() => setToast(''), 2500);
+        } finally {
+            setSubmitting(false);
         }
-        onNavigate && onNavigate('mProposalDone');
     };
 
     const handleFiles = (e) => {
@@ -214,7 +243,7 @@ export default function MProposalForm({ onNavigate }) {
                     type="button"
                     disabled={!canSubmit}
                     onClick={handleSubmit}
-                >작성완료</button>
+                >{submitting ? '제출 중...' : '작성완료'}</button>
             </footer>
 
             {toast && (
@@ -255,7 +284,7 @@ export default function MProposalForm({ onNavigate }) {
                             <span>홈으로</span>
                         </button>
                     </header>
-                    <h2 className="m-loc-picker-title">우리동네 공공디자인을<br/>제안하고 싶은 장소를 선택해주세요</h2>
+                    <h2 className="m-loc-picker-title">우리동네 공공디자인을<br/>제안하고 싶은 장소를 선택해주세요.</h2>
                     <div className="m-loc-picker-search">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                         <input type="text" placeholder="" />
@@ -267,7 +296,7 @@ export default function MProposalForm({ onNavigate }) {
                             accentColor="#E6235A"
                         />
                     </div>
-                    <p className="m-loc-picker-help">지도를 움직여서 선택해보세요</p>
+                    <p className="m-loc-picker-help">지도를 움직여서 선택해주세요</p>
                     <button
                         className="m-loc-picker-confirm"
                         type="button"

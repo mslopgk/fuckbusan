@@ -1,21 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import MobileBottomNav from './MobileBottomNav';
+import { CAT_STYLES } from './catStyles';
 import './MProposalList.css';
 
 const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const REGIONS = ['부산전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'];
 const CATEGORIES = ['전체', '주거', '환경', '교통', '산업·일자리', '교육', '안전', '문화·여가', '보건·복지'];
-const CAT_STYLES = {
-    '주거':       { bg: '#E0F4F1', color: '#2C9A8F' },
-    '환경':       { bg: '#E5F3DA', color: '#5B8E2E' },
-    '교통':       { bg: '#E0EAF7', color: '#2D5BA1' },
-    '산업·일자리':  { bg: '#FAEEDA', color: '#A07321' },
-    '교육':       { bg: '#FAE2E5', color: '#C24656' },
-    '안전':       { bg: '#FFE0DA', color: '#C2522E' },
-    '문화·여가':    { bg: '#EBE0F7', color: '#6E3FA1' },
-    '보건·복지':    { bg: '#F5DDEC', color: '#A33780' },
-};
 
 export default function MProposalList({ onNavigate }) {
     const [region, setRegion] = useState('부산전체');
@@ -112,12 +103,15 @@ export default function MProposalList({ onNavigate }) {
                             onClick={() => onNavigate && onNavigate('mProposalDetail', { ...it, cat: it.category, author, votes: it.likes_count, comments: it.comments_count })}
                         >
                             <div className="m-prop-card-text">
-                                <span className="m-prop-cat-tag" style={{ background: style.bg, color: style.color }}>{it.category}</span>
+                                <div className="m-report-tags">
+                                    <span className="m-prop-cat-tag" style={{ background: style.bg, color: style.color }}>{it.category}</span>
+                                    {it.sub_category && <span className="m-report-sub-tag">{it.sub_category}</span>}
+                                </div>
                                 <h3 className="m-prop-title">{it.title}</h3>
                                 <p className="m-prop-author">{author}</p>
                                 <div className="m-prop-stats">
-                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg> {it.likes_count ?? 0}</span>
-                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> {it.comments_count ?? 0}</span>
+                                    <span><img src="/figma-assets/icons/icon_heart_inactive.svg" alt="" width={14} height={14} style={{display:'inline-block',verticalAlign:'middle',marginRight:2}} />{it.likes_count ?? 0}</span>
+                                    <span><img src="/figma-assets/icons/icon_comment.svg" alt="" width={14} height={14} style={{display:'inline-block',verticalAlign:'middle',marginRight:2}} />{it.comments_count ?? 0}</span>
                                 </div>
                             </div>
                             {hasImage && <div className="m-prop-card-img" />}

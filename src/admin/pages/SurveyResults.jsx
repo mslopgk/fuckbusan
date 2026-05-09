@@ -1,9 +1,87 @@
 import { useEffect, useState } from 'react';
-import { Download } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import '../styles/survey_editor.css';
+import {
+    RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer,
+    PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid,
+} from 'recharts';
+
+const PIE_COLORS = ['#16B5B0', '#5B2EAB', '#E6235A', '#F59E0B', '#10B981', '#6366F1'];
+
+function SummaryRadar({ scores }) {
+    if (!scores.length) return <div style={{ padding: '20px', color: '#999', textAlign: 'center' }}>응답 데이터가 없습니다.</div>;
+    const data = scores.map(s => ({ subject: s.label, value: parseFloat(s.value.toFixed(1)), fullMark: 5 }));
+    return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+            <div style={{ flex: '0 0 260px', height: 260 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart data={data}>
+                        <PolarGrid stroke="#e5e7eb" />
+                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12, fill: '#555', fontWeight: 600 }} />
+                        <Radar dataKey="value" stroke="#5B2EAB" fill="#5B2EAB" fillOpacity={0.25} strokeWidth={2} />
+                    </RadarChart>
+                </ResponsiveContainer>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {data.map(d => (
+                    <div key={d.subject} style={{ display: 'flex', justifyContent: 'space-between', gap: 32, fontSize: 14 }}>
+                        <span style={{ color: '#555' }}>{d.subject}</span>
+                        <span style={{ fontWeight: 700, color: '#5B2EAB' }}>{d.value}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function QuestionChart({ q }) {
+    const isPie = q.qtype === 'select' || (q.distribution.length <= 5 && q.qtype !== 'text');
+    if (q.qtype === 'text') {
+        return (
+            <div style={{ color: '#666', fontSize: 13 }}>
+                {Array.isArray(q.samples) && q.samples.length > 0
+                    ? q.samples.map((s, i) => <p key={i} style={{ margin: '4px 0' }}>· {s}</p>)
+                    : <p>주관식 응답이 없습니다.</p>}
+            </div>
+        );
+    }
+    if (isPie && q.distribution.length >= 2) {
+        const data = q.distribution.map(d => ({ name: d.label, value: d.pct }));
+        return (
+            <div style={{ height: 200 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                        <Pie data={data} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={2}>
+                            {data.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                        </Pie>
+                        <Tooltip formatter={(v) => `${v}%`} />
+                    </PieChart>
+                </ResponsiveContainer>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', marginTop: 8 }}>
+                    {data.map((d, i) => (
+                        <span key={i} style={{ fontSize: 12, color: '#555', display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: PIE_COLORS[i % PIE_COLORS.length], display: 'inline-block' }} />
+                            {d.name} {d.value}%
+                        </span>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {q.distribution.map((d) => (
+                <div key={d.label} className="dist-row">
+                    <span className="label">{d.label}</span>
+                    <div className="dist-bar"><div className="dist-bar-fill" style={{ width: `${d.pct}%` }} /></div>
+                    <span className="dist-pct">{d.pct}%</span>
+                </div>
+            ))}
+        </div>
+    );
+}
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
@@ -65,7 +143,7 @@ export default function SurveyResults({ onNavigate, survey }) {
     return (
         <AdminLayout onNavigate={onNavigate} currentView="surveyResults">
             <div className="content-header-new">
-                <h2 className="content-title-new">{results?.title || '설문 결과'}</h2>
+                <h2 className="content-title-new">{results?.title || '설문관리'}</h2>
                 <button
                     className="btn-search-new"
                     style={{ height: 40, padding: '0 24px', background: '#f1f3f5', color: '#333' }}
@@ -75,71 +153,51 @@ export default function SurveyResults({ onNavigate, survey }) {
                 </button>
             </div>
 
-            <div className="survey-tabs">
-                <button className={`survey-tab ${tab === 'edit' ? 'active' : ''}`} onClick={() => setTab('edit')}>편집</button>
-                <button className={`survey-tab ${tab === 'settings' ? 'active' : ''}`} onClick={() => setTab('settings')}>설정</button>
-                <button className={`survey-tab ${tab === 'results' ? 'active' : ''}`} onClick={() => setTab('results')}>결과</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+                <div className="survey-tabs" style={{ margin: 0 }}>
+                    <button className={`survey-tab ${tab === 'edit' ? 'active' : ''}`} onClick={() => setTab('edit')}>편집</button>
+                    <button className={`survey-tab ${tab === 'settings' ? 'active' : ''}`} onClick={() => setTab('settings')}>설정</button>
+                    <button className={`survey-tab ${tab === 'results' ? 'active' : ''}`} onClick={() => setTab('results')}>결과</button>
+                </div>
+
+                {tab === 'results' && (
+                    <div className="results-toolbar" style={{ margin: 0 }}>
+                        <button className={`results-view-btn ${viewMode === 'summary' ? 'on' : ''}`} onClick={() => setViewMode('summary')}>요약보기</button>
+                        <button className={`results-view-btn ${viewMode === 'individual' ? 'on' : ''}`} onClick={() => setViewMode('individual')}>개별보기</button>
+                        <button className="results-sheets-btn" onClick={() => alert('CSV 다운로드는 준비 중입니다.')}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+                            Sheets 다운받기
+                        </button>
+                    </div>
+                )}
             </div>
 
             {tab === 'results' && (
                 <div className="survey-results-pane">
-                    <div className="results-toolbar">
-                        <button
-                            className={`chip ${viewMode === 'summary' ? 'on' : ''}`}
-                            onClick={() => setViewMode('summary')}
-                        >요약보기</button>
-                        <button
-                            className={`chip ${viewMode === 'individual' ? 'on' : ''}`}
-                            onClick={() => setViewMode('individual')}
-                        >개별보기</button>
-                        <button className="pill-btn" onClick={() => alert('CSV 다운로드는 준비 중입니다.')}>
-                            <Download size={14} style={{ marginRight: 4 }} /> Sheets 다운받기
-                        </button>
-                    </div>
-
                     <section className="results-summary-card">
                         <h3 className="results-summary-title">종합결과 ({results?.response_count ?? 0}명 응답)</h3>
-                        <div className="score-grid">
-                            {compositeScores.length === 0 ? (
-                                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px', color: '#999' }}>
-                                    아직 집계할 응답이 없습니다.
-                                </div>
-                            ) : compositeScores.map((s) => (
-                                <div key={s.key} className="score-tile">
-                                    <div className="score-tile-label">{s.label}</div>
-                                    <div className="score-tile-value">{s.value.toFixed(1)}</div>
-                                    <div className="score-bar">
-                                        <div className="score-bar-fill" style={{ width: `${(s.value / 5) * 100}%` }} />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <SummaryRadar scores={compositeScores} />
+                        {compositeScores.length > 0 && (
+                            <div style={{ marginTop: 16, textAlign: 'center' }}>
+                                <button className="btn-outline-new" style={{ fontSize: 13, height: 36, padding: '0 20px' }}>자세히보기 ∨</button>
+                            </div>
+                        )}
                     </section>
 
                     {questionResults.length === 0 ? (
                         <div style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
                             등록된 질문이 없습니다.
                         </div>
-                    ) : questionResults.map((q) => (
-                        <section key={q.id} className="question-result-card">
-                            <h3 className="question-result-title">{q.title}</h3>
-                            {q.qtype === 'text' ? (
-                                <div style={{ paddingLeft: 12, color: '#666' }}>
-                                    {Array.isArray(q.samples) && q.samples.length > 0
-                                        ? q.samples.map((s, i) => <p key={i} style={{ margin: '6px 0' }}>· {s}</p>)
-                                        : <p>주관식 응답이 없습니다.</p>}
-                                </div>
-                            ) : q.distribution.map((d) => (
-                                <div key={d.label} className="dist-row">
-                                    <span className="label">{d.label}</span>
-                                    <div className="dist-bar">
-                                        <div className="dist-bar-fill" style={{ width: `${d.pct}%` }} />
-                                    </div>
-                                    <span className="dist-pct">{d.pct}%</span>
-                                </div>
+                    ) : (
+                        <div className="question-results-grid">
+                            {questionResults.map((q) => (
+                                <section key={q.id} className="question-result-card">
+                                    <h3 className="question-result-title">{q.title}</h3>
+                                    <QuestionChart q={q} />
+                                </section>
                             ))}
-                        </section>
-                    ))}
+                        </div>
+                    )}
                 </div>
             )}
 

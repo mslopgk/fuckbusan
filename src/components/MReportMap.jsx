@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import MobileBottomNav from './MobileBottomNav';
+import { CAT_STYLES } from './catStyles';
 import './MProposalList.css';
 import './MProposalMap.css';
 import './MReportList.css';
@@ -27,6 +28,7 @@ export default function MReportMap({ onNavigate }) {
     const [search, setSearch] = useState('');
     const [expanded, setExpanded] = useState(false);
     const [items, setItems] = useState([]);
+    const [selectedPinId, setSelectedPinId] = useState(null);
 
     useEffect(() => {
         const params = new URLSearchParams();
@@ -41,7 +43,7 @@ export default function MReportMap({ onNavigate }) {
     }, [region, cat, stage]);
 
     const PINS = useMemo(() => items.filter((it) => it.lat && it.lng).map((it) => ({
-        id: it.id, lat: it.lat, lng: it.lng, count: 1,
+        id: it.id, lat: it.lat, lng: it.lng,
     })), [items]);
 
     const ITEMS = useMemo(() => items.map((it) => ({
@@ -49,17 +51,6 @@ export default function MReportMap({ onNavigate }) {
         author: it.author || '익명', likes: it.likes || 0, comments: it.comments || 0,
         hasImage: !!it.image, lat: it.lat, lng: it.lng,
     })), [items]);
-
-    const CAT_STYLES = {
-        '주거':       { bg: '#E0F4F1', color: '#2C9A8F' },
-        '환경':       { bg: '#E5F3DA', color: '#5B8E2E' },
-        '교통':       { bg: '#E0EAF7', color: '#2D5BA1' },
-        '교육':       { bg: '#FAE2E5', color: '#C24656' },
-        '안전':       { bg: '#FFE0DA', color: '#C2522E' },
-        '산업·일자리':  { bg: '#FAEEDA', color: '#A07321' },
-        '문화·여가':    { bg: '#EBE0F7', color: '#6E3FA1' },
-        '보건·복지':    { bg: '#F5DDEC', color: '#A33780' },
-    };
 
     const openRegion = () => { setRegionDraft(region); setRegionOpen(true); };
     const openSort = () => { setSortDraft(sort); setSortOpen(true); };
@@ -105,8 +96,9 @@ export default function MReportMap({ onNavigate }) {
 
             <div className="m-map-canvas">
                 <PCMapCanvas
-                    pins={PINS.map((p) => ({ ...p, color: '#E6235A', title: `${p.count}건` }))}
+                    pins={PINS.map((p) => ({ ...p, color: '#E6235A' }))}
                     accentColor="#E6235A"
+                    onPinClick={(pin) => { setSelectedPinId(pin.id); setExpanded(false); }}
                 />
             </div>
 
@@ -170,7 +162,10 @@ export default function MReportMap({ onNavigate }) {
                 )}
 
                 <ul className="m-sheet-cards">
-                    {ITEMS.map((it) => {
+                    {(!expanded && selectedPinId
+                        ? ITEMS.filter((it) => it.id === selectedPinId)
+                        : ITEMS
+                    ).map((it) => {
                         const style = CAT_STYLES[it.cat] || { bg: '#eee', color: '#555' };
                         return (
                             <li

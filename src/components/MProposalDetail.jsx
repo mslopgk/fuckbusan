@@ -1,16 +1,9 @@
 import { useState, useEffect } from 'react';
 import PCMapCanvas from './PCMapCanvas';
+import { CAT_STYLES } from './catStyles';
 import './MProposalDetail.css';
 
 const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
-
-const CAT_STYLES = {
-    '주거':       { bg: '#E0F4F1', color: '#2C9A8F' },
-    '환경':       { bg: '#E5F3DA', color: '#5B8E2E' },
-    '교통':       { bg: '#E0EAF7', color: '#2D5BA1' },
-    '교육':       { bg: '#FAE2E5', color: '#C24656' },
-    '안전':       { bg: '#FFE0DA', color: '#C2522E' },
-};
 
 export default function MProposalDetail({ onNavigate, proposal }) {
     const DEFAULT_BODY = '안녕하세요. 부산 해운대구에 거주하는 학생입니다.\n\n지역 시민들 수요를 반영해 데이터를 개선해 전기자전거 부족·과잉의 문제점을 해결하기 위한 시스템 자전 계발과 빠른 자전거 적사 가이드 모니터링 시스템 개선 동을 통해 운영 가능성을 마련하고, 관련 정책을 제안드립니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 자공 및 위 유도 가능 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.';
@@ -26,6 +19,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
         attachment: '자전거 재고 불균형 제안 [hwp, 28KB]',
         lat: proposal?.lat || 35.197,
         lng: proposal?.lng || 129.063,
+        imageUrl: proposal?.image || null,
     };
 
     const [comment, setComment] = useState('');
@@ -112,7 +106,10 @@ export default function MProposalDetail({ onNavigate, proposal }) {
                     )}
                 </div>
 
-                <div className="m-detail-image" />
+                <div
+                    className="m-detail-image"
+                    style={data.imageUrl ? { backgroundImage: `url(${data.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+                />
 
                 <div className="m-detail-map">
                     <PCMapCanvas
@@ -120,6 +117,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
                         accentColor="#E6235A"
                     />
                 </div>
+                <p className="m-detail-coord-text">📍 위도 {data.lat.toFixed(4)}, 경도 {data.lng.toFixed(4)}</p>
 
                 <div className="m-detail-attachment">
                     <span>📎</span>

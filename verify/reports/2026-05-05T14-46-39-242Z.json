@@ -1,0 +1,58 @@
+{
+  "startedAt": "2026-05-05T14:46:39.242Z",
+  "frontend": [
+    {
+      "id": "login",
+      "view": "login",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/login.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "signup",
+      "view": "signup",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/signup.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mProposalMap",
+      "view": "mProposalMap",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mProposalMap.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "mReportMap",
+      "view": "mReportMap",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/mReportMap.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    }
+  ],
+  "api": null,
+  "summary": {
+    "fePass": 4,
+    "feFail": 0,
+    "apiPass": 0,
+    "apiFail": 0,
+    "ok": true
+  },
+  "finishedAt": "2026-05-05T14:46:46.714Z"
+}

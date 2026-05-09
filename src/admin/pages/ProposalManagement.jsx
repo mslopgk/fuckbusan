@@ -13,6 +13,7 @@ const TYPE_CLASS = {
 export default function ProposalManagement({ onNavigate }) {
     const [proposals, setProposals] = useState([]);
     const [search, setSearch] = useState('');
+    const [authorSearch, setAuthorSearch] = useState('');
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -57,29 +58,46 @@ export default function ProposalManagement({ onNavigate }) {
         }
     };
 
-    const filtered = proposals.filter((p) => !search || (p.title || '').includes(search));
+    const filtered = proposals.filter((p) =>
+        (!search || (p.title || '').includes(search)) &&
+        (!authorSearch || (p.nickname || '').includes(authorSearch))
+    );
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
     return (
         <AdminLayout onNavigate={onNavigate} currentView="proposalManagement">
             <div className="content-header-new">
-                <h2 className="content-title-new">제안</h2>
+                <h2 className="content-title-new">제안현황</h2>
                 <div className="total-count-text">전체 제안 <span>{filtered.length}건</span></div>
             </div>
 
-            <div className="search-box-new">
-                <div className="search-label-new">제목</div>
-                <div className="search-input-wrapper-new">
-                    <input
-                        type="text"
-                        className="search-input-new"
-                        placeholder="제목을 입력해 주세요"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
+            <div className="search-box-new-col">
+                <div className="search-row">
+                    <div className="search-label-new">회원검색</div>
+                    <div className="search-input-wrapper-new">
+                        <input
+                            type="text"
+                            className="search-input-new"
+                            placeholder="회원 ID를 입력해 주세요"
+                            value={authorSearch}
+                            onChange={(e) => setAuthorSearch(e.target.value)}
+                        />
+                    </div>
+                    <button className="btn-search-new" onClick={() => setPage(1)}>검색</button>
                 </div>
-                <button className="btn-search-new" onClick={() => setPage(1)}>검색</button>
+                <div className="search-row">
+                    <div className="search-label-new">제목</div>
+                    <div className="search-input-wrapper-new">
+                        <input
+                            type="text"
+                            className="search-input-new"
+                            placeholder="제목을 입력해 주세요"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                </div>
             </div>
 
             <div className="table-container-new">
@@ -87,9 +105,9 @@ export default function ProposalManagement({ onNavigate }) {
                     <thead>
                         <tr>
                             <th style={{ width: '40%' }}>제안 제목</th>
+                            <th>작성자 ID</th>
                             <th>유형</th>
                             <th>위치</th>
-                            <th>작성자 ID</th>
                             <th>메뉴</th>
                         </tr>
                     </thead>
@@ -105,11 +123,11 @@ export default function ProposalManagement({ onNavigate }) {
                                 <td style={{ textAlign: 'left', cursor: 'pointer' }} onClick={() => onNavigate && onNavigate('adminProposalDetail', p)}>
                                     {p.title}
                                 </td>
+                                <td>{p.nickname || '-'}</td>
                                 <td>
                                     <span className={`type-tag ${TYPE_CLASS[p.category] || ''}`}>{p.category || '-'}</span>
                                 </td>
                                 <td>{p.region || '-'}</td>
-                                <td>{p.nickname || '-'}</td>
                                 <td>
                                     <div className="action-btns-new">
                                         <span className="btn-action-text" onClick={() => onNavigate && onNavigate('adminProposalDetail', p)}>상세</span> | <span className="btn-action-text" onClick={() => handleDelete(p.id)}>삭제</span>

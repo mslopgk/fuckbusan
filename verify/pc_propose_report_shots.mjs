@@ -40,6 +40,8 @@ await visit('pcProposeDetail', '03-propose-detail');
 await visit('pcReportMap',     '04-report-map');
 await visit('pcReportForm',    '05-report-form');
 await visit('pcReportDetail',  '06-report-detail');
+await visit('pcMyReportList',  '07-my-report-list');
+await visit('pcMyReportEdit',  '08-my-report-edit');
 
 await context.close();
 await browser.close();

@@ -1,4 +1,9 @@
 .m-report-detail-page {
+    padding-bottom: 120px;
+}
+
+/* "결과안내" 단계 미표시 시(기본 stage bar만)에는 70px로 복원 */
+.m-report-detail-page.stage-bar-compact {
     padding-bottom: 70px;
 }
 
@@ -16,6 +21,14 @@
     border-radius: 11px;
     font-size: 11px;
     font-weight: 700;
+}
+
+.m-rdetail-body {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.7;
+    margin: 8px 0 16px;
+    word-break: keep-all;
 }
 
 .m-rdetail-author-row {
@@ -83,11 +96,39 @@
     background: #fff;
     border-top: 1px solid #ececec;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px 12px;
+    z-index: 50;
+}
+
+.m-rstage-pills-row {
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
-    padding: 12px 8px;
-    z-index: 50;
+}
+
+.m-rstage-result-btn {
+    width: 100%;
+    max-width: 320px;
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.m-rstage-result-btn:hover,
+.m-rstage-result-btn:active {
+    background: #c91e4f;
 }
 
 .m-rstage-step {
@@ -159,27 +200,62 @@
     width: 100%;
     max-width: 300px;
     background: #fff;
-    border-radius: 18px;
-    padding: 24px 22px 22px;
+    border-radius: 16px;
+    padding: 20px 20px 22px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
     text-align: left;
+}
+
+.m-result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
 }
 
 .m-result-title {
     font-size: 16px;
     font-weight: 800;
     color: #1a1a1b;
-    margin: 0 0 16px;
-    text-align: center;
+    margin: 0;
     letter-spacing: -0.02em;
+}
+
+.m-result-close {
+    background: none;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .m-result-image {
     width: 100%;
     height: 130px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #c6e4f5 0%, #87c3e8 60%, #5fa8d3 100%);
     margin-bottom: 14px;
+    display: block;
+}
+
+.m-result-image--actual {
+    object-fit: cover;
+}
+
+.m-result-image--placeholder {
+    background: linear-gradient(135deg, #e8f4fb 0%, #c6e4f5 60%, #9ecde8 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.m-result-image--placeholder span {
+    font-size: 11px;
+    color: #7aaec8;
 }
 
 .m-result-body {
@@ -200,11 +276,24 @@
     font-size: 13px;
     font-weight: 700;
     color: #E6235A;
-    margin: 0 0 4px;
+    margin: 0 0 6px;
+}
+
+.m-result-comment-content {
+    font-size: 12px;
+    color: #444;
+    line-height: 1.6;
+    margin: 0 0 8px;
+    word-break: keep-all;
+}
+
+.m-result-comment-content--empty {
+    color: #aaa;
+    font-style: italic;
 }
 
 .m-result-date {
-    font-size: 12px;
-    color: #888;
+    font-size: 11px;
+    color: #aaa;
     margin: 0;
 }

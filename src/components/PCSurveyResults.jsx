@@ -12,39 +12,44 @@ const RADAR = [
 ];
 
 const PIE_DATA = [
-    { label: '조혼인족', value: 55, color: '#FF7A00' },
+    { label: '조금만족', value: 55, color: '#fb9b00' },
     { label: '매우만족', value: 37, color: '#5B2EAB' },
-    { label: '보통', value: 6, color: '#8B1F54' },
-    { label: '불만족', value: 2, color: '#16B5B0' },
+    { label: '보통', value: 6, color: '#680A25' },
+    { label: '불만족', value: 2, color: '#0b9583' },
 ];
 
 const BAR_DATA = [
-    { label: '대낮 모행 개선', value: 32, color: '#FF7A00' },
-    { label: '쓰레기 문제', value: 27, color: '#E6235A' },
-    { label: '길 안내 시스템', value: 18, color: '#5B2EAB' },
-    { label: '보행로 확장', value: 14, color: '#16B5B0' },
-    { label: '기타', value: 2, color: '#999' },
+    { label: '야간 조명 개선', value: 32, color: '#fb9b00' },
+    { label: '쓰레기 문제', value: 27, color: '#680A25' },
+    { label: '길 안내 시스템', value: 18, color: '#0b9583' },
+    { label: '보행로 확장', value: 14, color: '#542AA3' },
+    { label: '기타', value: 2, color: '#777' },
 ];
 
 const BUBBLE_DATA = [
-    { label: '편의도', size: 88, color: '#16B5B0', x: 24, y: 50 },
-    { label: '주거환경', size: 70, color: '#5B2EAB', x: 36, y: 30 },
-    { label: '주택가격', size: 60, color: '#FF7A00', x: 48, y: 50 },
-    { label: '대중교통', size: 56, color: '#8B1F54', x: 56, y: 30 },
-    { label: '문화시설', size: 64, color: '#FF6F2C', x: 64, y: 56 },
-    { label: '스트레스', size: 54, color: '#E6235A', x: 72, y: 36 },
-    { label: '치안', size: 50, color: '#0E8C88', x: 78, y: 60 },
-    { label: '생활', size: 36, color: '#A33', x: 80, y: 24 },
-    { label: '여가', size: 32, color: '#222', x: 84, y: 50 },
+    { label: '편의도', size: 77, color: '#16B5B0', x: 22, y: 45 },
+    { label: '주거환경', size: 77, color: '#5B2EAB', x: 36, y: 30 },
+    { label: '주택가격', size: 77, color: '#fb9b00', x: 50, y: 52 },
+    { label: '대중교통', size: 77, color: '#680A25', x: 62, y: 35 },
+    { label: '문화시설', size: 61, color: '#FF6F2C', x: 48, y: 22 },
+    { label: '이벤트', size: 53, color: '#E6235A', x: 28, y: 68 },
+    { label: '쿠폰', size: 67, color: '#0b9583', x: 72, y: 60 },
+    { label: '스타벅스', size: 53, color: '#8B4513', x: 78, y: 32 },
+    { label: '무료배송', size: 53, color: '#542AA3', x: 66, y: 72 },
+    { label: '혜택', size: 53, color: '#888', x: 84, y: 50 },
+    { label: '할인', size: 53, color: '#aaa', x: 14, y: 62 },
+    { label: '좋겠음', size: 53, color: '#ccc', x: 10, y: 30 },
 ];
 
 const COL_DATA = [
-    { label: '1', value: 480, percent: '4.80%' },
-    { label: '2', value: 1610, percent: '16.10%' },
-    { label: '3', value: 6483, percent: '64.83%' },
-    { label: '4', value: 7600, percent: '76.00%' },
-    { label: '5', value: 5610, percent: '56.10%' },
+    { label: '1', value: 4, caption: '4(0.5%)' },
+    { label: '2', value: 25, caption: '25(2.4%)' },
+    { label: '3', value: 56, caption: '56(20.4%)' },
+    { label: '4', value: 76, caption: '76(20.4%)' },
+    { label: '5', value: 56, caption: '56(20.4%)' },
 ];
+
+const COL_MAX = 80;
 
 function RadarChart() {
     const cx = 130, cy = 130, r = 88;
@@ -71,17 +76,17 @@ function RadarChart() {
             ))}
             {RADAR.map((_, i) => {
                 const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-                return <line key={i} x1={cx} y1={cy} x2={cx + Math.cos(angle) * r} y2={cy + Math.sin(angle) * r} stroke="#eee" strokeWidth="1"/>;
+                return <line key={i} x1={cx} y1={cy} x2={cx + Math.cos(angle) * r} y2={cy + Math.sin(angle) * r} stroke="#eee" strokeWidth="1" />;
             })}
-            <polygon points={polyPts} fill="rgba(91, 46, 171, 0.30)" stroke="#5B2EAB" strokeWidth="2" />
+            <polygon points={polyPts} fill="rgba(91, 46, 171, 0.25)" stroke="#5B2EAB" strokeWidth="2" />
             {RADAR.map((d, i) => {
                 const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-                const lx = cx + Math.cos(angle) * (r + 24);
-                const ly = cy + Math.sin(angle) * (r + 24);
+                const lx = cx + Math.cos(angle) * (r + 26);
+                const ly = cy + Math.sin(angle) * (r + 26);
                 return (
                     <g key={d.label}>
-                        <text x={lx} y={ly - 6} textAnchor="middle" fontSize="11" fill="#555" fontWeight="600">{d.label}</text>
-                        <text x={lx} y={ly + 8} textAnchor="middle" fontSize="11" fill="#1a1a1b" fontWeight="700">{d.value}</text>
+                        <text x={lx} y={ly - 5} textAnchor="middle" fontSize="12" fill="#808080" fontFamily="inherit">{d.label}</text>
+                        <text x={lx} y={ly + 12} textAnchor="middle" fontSize="14" fill="#111" fontWeight="700" fontFamily="inherit">{d.value}</text>
                     </g>
                 );
             })}
@@ -91,111 +96,144 @@ function RadarChart() {
 
 function DonutChart() {
     const total = PIE_DATA.reduce((s, d) => s + d.value, 0);
+    const cx = 110, cy = 110;
+    const outerR = 90, innerR = 55;
     let acc = 0;
-    const r = 50, c = 70;
+
     const segs = PIE_DATA.map((d) => {
-        const frac = d.value / total;
-        const start = (acc / total) * 2 * Math.PI - Math.PI / 2;
+        const startAngle = (acc / total) * 2 * Math.PI - Math.PI / 2;
         acc += d.value;
-        const end = (acc / total) * 2 * Math.PI - Math.PI / 2;
-        const large = end - start > Math.PI ? 1 : 0;
-        const x1 = c + Math.cos(start) * r;
-        const y1 = c + Math.sin(start) * r;
-        const x2 = c + Math.cos(end) * r;
-        const y2 = c + Math.sin(end) * r;
-        return { d: `M ${c} ${c} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`, color: d.color };
+        const endAngle = (acc / total) * 2 * Math.PI - Math.PI / 2;
+        const largeArc = endAngle - startAngle > Math.PI ? 1 : 0;
+
+        const ox1 = cx + Math.cos(startAngle) * outerR;
+        const oy1 = cy + Math.sin(startAngle) * outerR;
+        const ox2 = cx + Math.cos(endAngle) * outerR;
+        const oy2 = cy + Math.sin(endAngle) * outerR;
+        const ix1 = cx + Math.cos(endAngle) * innerR;
+        const iy1 = cy + Math.sin(endAngle) * innerR;
+        const ix2 = cx + Math.cos(startAngle) * innerR;
+        const iy2 = cy + Math.sin(startAngle) * innerR;
+
+        const path = `M ${ox1} ${oy1} A ${outerR} ${outerR} 0 ${largeArc} 1 ${ox2} ${oy2} L ${ix1} ${iy1} A ${innerR} ${innerR} 0 ${largeArc} 0 ${ix2} ${iy2} Z`;
+        return { path, color: d.color };
     });
+
     return (
-        <svg width="140" height="140" viewBox="0 0 140 140">
-            {segs.map((s, i) => <path key={i} d={s.d} fill={s.color} />)}
-            <circle cx={c} cy={c} r="22" fill="#fff" />
+        <svg width="220" height="220" viewBox="0 0 220 220">
+            {segs.map((s, i) => <path key={i} d={s.path} fill={s.color} />)}
         </svg>
     );
 }
 
 export default function PCSurveyResults({ onNavigate, survey }) {
-    const data = survey || { title: '사직구장 일대 보행환경 결과는?', period: '2026.03.16 ~ 2026.04.05', responses: 12453 };
+    const data = {
+        title: '사직구장 일대 보행환경 결과는?',
+        period: '2026.03.16 ~ 2026.04.05',
+        responses: 12453,
+        ...(survey || {}),
+    };
     const [open, setOpen] = useState(true);
 
     const handleCopy = () => {
         try { navigator.clipboard.writeText(window.location.href); } catch (_) {}
     };
 
+    const barMax = Math.max(...BAR_DATA.map((d) => d.value));
+
     return (
         <UserPCLayout currentView="pcSurveyResults" onNavigate={onNavigate}>
             <div className="pc-survey-results-page">
                 <div className="pc-purple-banner pc-banner-tall">
-                    <h1 className="pc-banner-title">2026년,<br/>사직구장 일대 보행환경 결과는?</h1>
+                    <h1 className="pc-banner-title">2026년,<br />사직구장 일대 보행환경 결과는?</h1>
                     <div className="pc-banner-meta">
-                        <span className="pc-banner-pill">{data.period}</span>
-                        <span className="pc-banner-pill">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                            {data.responses.toLocaleString()}
-                        </span>
+                        <div className="pc-banner-info-pill">
+                            <span className="pc-banner-date">{data.period}</span>
+                            <span className="pc-banner-divider" />
+                            <span className="pc-banner-count">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" /></svg>
+                                {data.responses.toLocaleString()}
+                            </span>
+                        </div>
                         <button className="pc-banner-copy" onClick={handleCopy}>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
                             복사하기
                         </button>
                     </div>
                 </div>
 
                 <div className="pc-results-card">
+                    {/* 종합결과 */}
                     <div className="pc-results-block">
-                        <h3>종합결과</h3>
+                        <h3 className="pc-results-heading">종합결과</h3>
                         <div className="pc-radar-wrap"><RadarChart /></div>
                         <button className="pc-toggle-detail" onClick={() => setOpen(!open)}>
-                            자세히보기 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ transform: open ? 'rotate(180deg)' : 'none' }}><polyline points="6 9 12 15 18 9"/></svg>
+                            자세히보기
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
                         </button>
                     </div>
 
+                    {/* Q1 도넛 */}
                     <div className="pc-results-block">
-                        <h4>Q1. 사직구장 주변 보행로 만족</h4>
+                        <h4 className="pc-results-q-title">Q1. 사직구장 주변 보행로 안전</h4>
                         <div className="pc-pie-row">
                             <DonutChart />
                             <ul className="pc-pie-legend">
                                 {PIE_DATA.map((d) => (
                                     <li key={d.label}>
-                                        <span className="pc-dot" style={{ background: d.color }}></span>
-                                        <strong>{d.value}%</strong> {d.label}
+                                        <span className="pc-dot" style={{ background: d.color }} />
+                                        <strong style={{ color: '#111' }}>{d.value}%</strong>
+                                        <span className="pc-legend-label">{d.label}</span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
                     </div>
 
+                    {/* Q2 도넛 */}
                     <div className="pc-results-block">
-                        <h4>Q1. 사직구장 주변 차량과 보행자도로의 분리</h4>
+                        <h4 className="pc-results-q-title">Q2. 사직구장 주변 차량과 보행자도로의 분리</h4>
                         <div className="pc-pie-row">
                             <DonutChart />
                             <ul className="pc-pie-legend">
                                 {PIE_DATA.map((d) => (
                                     <li key={d.label}>
-                                        <span className="pc-dot" style={{ background: d.color }}></span>
-                                        <strong>{d.value}%</strong> {d.label}
+                                        <span className="pc-dot" style={{ background: d.color }} />
+                                        <strong style={{ color: '#111' }}>{d.value}%</strong>
+                                        <span className="pc-legend-label">{d.label}</span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
                     </div>
 
+                    {/* Q3 가로 바 차트 */}
                     <div className="pc-results-block">
-                        <h4>Q1. 가장 개선이 필요한 항목</h4>
+                        <h4 className="pc-results-q-title">Q3. 가장 개선이 필요한 항목</h4>
                         <div className="pc-bar-list">
                             {BAR_DATA.map((d) => (
                                 <div key={d.label} className="pc-bar-row">
-                                    <span className="pc-bar-label">{d.label}</span>
-                                    <div className="pc-bar-track">
-                                        <div className="pc-bar-fill" style={{ width: `${d.value}%`, background: d.color }}>
-                                            <span>{d.value}%</span>
-                                        </div>
+                                    <div
+                                        className="pc-bar-fill"
+                                        style={{
+                                            width: `${(d.value / barMax) * 80}%`,
+                                            background: d.color,
+                                            minWidth: 70,
+                                        }}
+                                    >
+                                        <span className="pc-bar-inner-label">{d.label}</span>
                                     </div>
+                                    <span className="pc-bar-pct" style={{ color: d.color }}>{d.value}%</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
+                    {/* Q4 버블 차트 */}
                     <div className="pc-results-block">
-                        <h4>Q1. 가장 개선이 필요한 항목</h4>
+                        <h4 className="pc-results-q-title">Q4. 가장 개선이 필요한 항목</h4>
                         <div className="pc-bubble-wrap">
                             {BUBBLE_DATA.map((b, i) => (
                                 <div
@@ -209,20 +247,34 @@ export default function PCSurveyResults({ onNavigate, survey }) {
                         </div>
                     </div>
 
-                    <div className="pc-results-block">
-                        <h4>Q1. 가장 개선이 필요한 항목</h4>
-                        <div className="pc-col-chart">
-                            {COL_DATA.map((d) => {
-                                const max = 7700;
-                                const h = (d.value / max) * 160;
-                                return (
-                                    <div key={d.label} className="pc-col-row">
-                                        <span className="pc-col-percent">{d.percent}</span>
-                                        <div className="pc-col-bar" style={{ height: h }} />
-                                        <span className="pc-col-label">{d.label}</span>
-                                    </div>
-                                );
-                            })}
+                    {/* Q5 세로 바 차트 */}
+                    <div className="pc-results-block pc-results-block-last">
+                        <h4 className="pc-results-q-title">Q5. 가장 개선이 필요한 항목</h4>
+                        <div className="pc-col-chart-wrap">
+                            <div className="pc-col-y-axis">
+                                {[80, 60, 40, 20, 0].map((v) => (
+                                    <span key={v}>{v}</span>
+                                ))}
+                            </div>
+                            <div className="pc-col-chart-inner">
+                                <div className="pc-col-gridlines">
+                                    {[80, 60, 40, 20, 0].map((v) => (
+                                        <div key={v} className="pc-col-gridline" style={{ bottom: `${(v / COL_MAX) * 100}%` }} />
+                                    ))}
+                                </div>
+                                <div className="pc-col-bars">
+                                    {COL_DATA.map((d) => {
+                                        const h = (d.value / COL_MAX) * 160;
+                                        return (
+                                            <div key={d.label} className="pc-col-col">
+                                                <span className="pc-col-caption">{d.caption}</span>
+                                                <div className="pc-col-bar" style={{ height: h }} />
+                                                <span className="pc-col-xlabel">{d.label}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

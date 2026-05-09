@@ -1,0 +1,36 @@
+{
+  "startedAt": "2026-05-09T00:18:55.395Z",
+  "frontend": [
+    {
+      "id": "pcSurveyJoin",
+      "view": "pcSurveyJoin",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/pcSurveyJoin.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    },
+    {
+      "id": "pcSurveyDone",
+      "view": "pcSurveyDone",
+      "url": "http://localhost:8501/",
+      "ok": true,
+      "screenshot": "/Users/Kang/Desktop/fuckbusan/verify/screenshots/pcSurveyDone.png",
+      "assertions": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "networkFailures": []
+    }
+  ],
+  "api": null,
+  "summary": {
+    "fePass": 2,
+    "feFail": 0,
+    "apiPass": 0,
+    "apiFail": 0,
+    "ok": true
+  },
+  "finishedAt": "2026-05-09T00:18:59.366Z"
+}

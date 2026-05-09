@@ -21,7 +21,7 @@ export default function ExpertManagement({ onNavigate }) {
                         name: u.name,
                         nickname: u.nickname || '-',
                         phone: u.phone_num || '-',
-                        address: '-',
+                        address: u.address || u.location || '-',
                         email: u.ID,
                         approval: idx % 2 === 0 ? '승인' : '대기',
                     })));

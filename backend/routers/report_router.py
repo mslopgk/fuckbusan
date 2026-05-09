@@ -20,33 +20,47 @@ router = APIRouter(
 
 S3_BUCKET = os.getenv("MY_AWS_BUCKET_NAME", os.getenv("S3_BUCKET_NAME", "busan-promotion"))
 AWS_REGION = os.getenv("MY_AWS_REGION", "ap-northeast-2")
+_AWS_KEY = os.getenv("MY_AWS_ACCESS_KEY")
+IS_LAMBDA = bool(os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
 
 def get_s3_client():
     return boto3.client(
         "s3",
         region_name=AWS_REGION,
-        aws_access_key_id=os.getenv("MY_AWS_ACCESS_KEY"),
+        aws_access_key_id=_AWS_KEY,
         aws_secret_access_key=os.getenv("MY_AWS_SECRET_KEY"),
     )
 
+def _local_uploads_dir() -> str:
+    base = "/tmp/uploads" if IS_LAMBDA else os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "uploads")
+    os.makedirs(base, exist_ok=True)
+    return base
+
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    try:
-        file_extension = os.path.splitext(file.filename)[1]
-        unique_filename = f"{uuid.uuid4()}{file_extension}"
-        contents = await file.read()
+    file_extension = os.path.splitext(file.filename)[1]
+    unique_filename = f"{uuid.uuid4()}{file_extension}"
+    contents = await file.read()
 
-        get_s3_client().put_object(
-            Bucket=S3_BUCKET,
-            Key=unique_filename,
-            Body=contents,
-            ContentType=file.content_type
-        )
+    # AWS 키 있으면 S3, 없으면 로컬 저장 (개발 환경 폴백)
+    if _AWS_KEY:
+        try:
+            get_s3_client().put_object(
+                Bucket=S3_BUCKET,
+                Key=unique_filename,
+                Body=contents,
+                ContentType=file.content_type,
+            )
+            url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{unique_filename}"
+        except ClientError as e:
+            raise HTTPException(status_code=500, detail=f"S3 업로드 실패: {str(e)}")
+    else:
+        save_path = os.path.join(_local_uploads_dir(), unique_filename)
+        with open(save_path, "wb") as f:
+            f.write(contents)
+        url = f"/uploads/{unique_filename}"
 
-        url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{unique_filename}"
-        return {"filename": unique_filename, "url": url}
-    except ClientError as e:
-        raise HTTPException(status_code=500, detail=f"S3 업로드 실패: {str(e)}")
+    return {"filename": unique_filename, "url": url}
 
 @router.get("/list")
 def list_reports(db: Session = Depends(get_db)):

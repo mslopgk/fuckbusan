@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import api from '../../api';
-import { Bot, Send, Loader2 } from 'lucide-react';
+// lucide-react removed — using inline SVGs
 import { DISTRICTS } from '../../data/constants';
 import '../../styles/admin.css';
 
@@ -106,7 +106,7 @@ export default function AIChatPanel({ context }) {
                 {isLoading && (
                     <div className="chat-loading">
                         <div className="chat-loading-bubble">
-                            <span className="spinner-icon"><Loader2 className="w-4 h-4" /></span>
+                            <span className="spinner-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg></span>
                             <span className="text-xs text-slate-500" style={{ color: '#64748b', fontSize: '0.75rem' }}>분석 중...</span>
                         </div>
                     </div>
@@ -130,7 +130,7 @@ export default function AIChatPanel({ context }) {
                         className={`chat-send-btn ${input.trim() && !isLoading ? 'active' : ''}`}
                         disabled={!input.trim() || isLoading}
                     >
-                        <Send className="w-4 h-4" />
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
                     </button>
                 </form>
             </div>

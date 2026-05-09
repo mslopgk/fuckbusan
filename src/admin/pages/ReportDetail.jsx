@@ -3,35 +3,38 @@ import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 
-const TYPE_CLASS = {
-    교통: 'traffic',
-    안전: 'safety',
-    교육: 'education',
-    환경: 'environment',
-};
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const STAGES = [
-    { key: 'received', label: '접수' },
-    { key: 'reviewing', label: '검토중' },
-    { key: 'reviewed', label: '검토완료' },
-    { key: 'announced', label: '결과안내' },
+    { key: 'received', label: '접수', step: 1 },
+    { key: 'reviewing', label: '검토중', step: 2 },
+    { key: 'reviewed', label: '검토완료', step: 3 },
+    { key: 'announced', label: '결과안내', step: 4 },
 ];
+
+const STAGE_TO_STATUS = {
+    received: '개선예정',
+    reviewing: '개선중',
+    reviewed: '개선중',
+    announced: '개선완료',
+};
 
 export default function ReportDetail({ report, onNavigate }) {
     const [data, setData] = useState(report || null);
     const [reply, setReply] = useState('');
     const [stage, setStage] = useState('reviewing');
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (!report?.id) return;
         const fetchOne = async () => {
             try {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-                const res = await fetch(`${API_URL}/api/reports/list`);
+                const res = await fetch(`${API_URL}/api/reports/${report.id}`);
                 if (res.ok) {
-                    const list = await res.json();
-                    const found = list.find((r) => r.id === report.id);
-                    if (found) setData(found);
+                    const found = await res.json();
+                    setData(found);
+                    const stageMap = { 1: 'received', 2: 'reviewing', 3: 'reviewed', 4: 'announced' };
+                    setStage(stageMap[found.progress_step] || 'reviewing');
                 }
             } catch (e) {
                 console.error('Failed to fetch report detail:', e);
@@ -48,23 +51,94 @@ export default function ReportDetail({ report, onNavigate }) {
         );
     }
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (!window.confirm('정말 삭제하시겠습니까?')) return;
-        alert('삭제 API 연결은 준비 중입니다.');
+        const token = localStorage.getItem('access_token');
+        if (!token) { alert('관리자 로그인이 필요합니다.'); return; }
+        try {
+            const res = await fetch(`${API_URL}/api/reports/${data.id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+                alert('삭제되었습니다.');
+                onNavigate && onNavigate('reportManagement');
+            } else {
+                alert('삭제 실패: ' + res.status);
+            }
+        } catch (e) {
+            alert('삭제 중 오류: ' + e.message);
+        }
     };
 
-    const handleSaveReply = () => {
-        if (!reply.trim()) {
-            alert('답변을 입력해주세요.');
-            return;
+    const handleStageClick = async (newStageKey) => {
+        const token = localStorage.getItem('access_token');
+        if (!token) { alert('관리자 로그인이 필요합니다.'); return; }
+        const newStage = STAGES.find((s) => s.key === newStageKey);
+        if (!newStage) return;
+        try {
+            const res = await fetch(`${API_URL}/api/admin/reports/${data.id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                    status: STAGE_TO_STATUS[newStageKey],
+                    progress_step: newStage.step,
+                }),
+            });
+            if (res.ok) {
+                setStage(newStageKey);
+            } else {
+                alert('상태 변경 실패: ' + res.status);
+            }
+        } catch (e) {
+            alert('오류: ' + e.message);
         }
-        alert('답변 저장 API 연결은 준비 중입니다.');
     };
+
+    const handleSave = async () => {
+        if (!reply.trim()) { alert('답변을 입력해주세요.'); return; }
+        const token = localStorage.getItem('access_token');
+        if (!token) { alert('관리자 로그인이 필요합니다.'); return; }
+        setSaving(true);
+        try {
+            const res1 = await fetch(`${API_URL}/api/admin/reports/${data.id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                    status: STAGE_TO_STATUS[stage],
+                    progress_step: STAGES.find((s) => s.key === stage)?.step ?? 2,
+                    result_details: {
+                        body: reply.trim(),
+                        date: new Date().toISOString().slice(0, 10),
+                        manager: '관리자',
+                    },
+                }),
+            });
+            await fetch(`${API_URL}/api/reports/${data.id}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ content: `[관리자 답변] ${reply.trim()}` }),
+            });
+            if (res1.ok) {
+                setReply('');
+                alert('수정되었습니다.');
+            } else {
+                alert('저장 실패: ' + res1.status);
+            }
+        } catch (e) {
+            alert('오류: ' + e.message);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const createdAt = data.date || (data.created_at ? String(data.created_at).slice(0, 10) : '-');
+    const updatedAt = data.updated_at ? String(data.updated_at).slice(0, 10) : createdAt;
 
     return (
         <AdminLayout onNavigate={onNavigate} currentView="adminReportDetail">
             <div className="content-header-new">
-                <h2 className="content-title-new">제보 상세</h2>
+                <h2 className="content-title-new">제보현황</h2>
                 <button
                     className="btn-search-new"
                     style={{ height: 40, padding: '0 24px', background: '#f1f3f5', color: '#333' }}
@@ -74,77 +148,122 @@ export default function ReportDetail({ report, onNavigate }) {
                 </button>
             </div>
 
-            <div className="report-detail-grid">
-                <section className="report-detail-card">
-                    <div className="detail-row">
-                        <span className="detail-label">제보 제목</span>
-                        <span className="detail-value detail-title">{data.title}</span>
-                    </div>
-                    <div className="detail-row split">
-                        <div>
-                            <span className="detail-label">유형</span>
-                            <span className={`type-tag ${TYPE_CLASS[data.type] || ''}`} style={{ marginLeft: 8 }}>{data.type || '-'}</span>
-                        </div>
-                        <div>
-                            <span className="detail-label">위치정보</span>
-                            <span className="detail-value" style={{ marginLeft: 8 }}>{data.location || '-'}</span>
-                        </div>
-                    </div>
-                    <div className="detail-row">
-                        <span className="detail-label">자세한 설명</span>
-                        <div className="detail-content-block">{data.content || '-'}</div>
-                    </div>
-                    <div className="detail-row">
-                        <span className="detail-label">첨부 이미지</span>
-                        <div className="detail-attachments">
-                            <div className="attachment-placeholder">첨부 파일 없음</div>
-                        </div>
-                    </div>
-                </section>
+            <div className="rfd-body">
+                {/* 제안제목 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">제안제목</span>
+                    <div className="rfd-input">{data.title || '-'}</div>
+                </div>
 
-                <aside className="report-detail-side">
-                    <div className="side-card">
-                        <div className="side-row"><span>작성자 ID</span><strong>{data.author_id || '-'}</strong></div>
-                        <div className="side-row"><span>작성자 닉네임</span><strong>부산시민</strong></div>
-                        <div className="side-row"><span>작성일</span><strong>{data.created_at ? data.created_at.slice(0, 10) : '-'}</strong></div>
-                        <div className="side-row"><span>편집일</span><strong>-</strong></div>
-                    </div>
+                {/* 유형 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">유형</span>
+                    <div className="rfd-input">{data.category || data.type || '-'}</div>
+                </div>
 
-                    <div className="side-card">
-                        <div className="side-card-title">제보 현황</div>
-                        <div className="stage-track">
-                            {STAGES.map((s, i) => {
-                                const stageIdx = STAGES.findIndex((x) => x.key === stage);
-                                const reached = i <= stageIdx;
-                                return (
-                                    <div key={s.key} className={`stage-item ${reached ? 'reached' : ''}`} onClick={() => setStage(s.key)}>
-                                        <div className="stage-dot">{i + 1}</div>
-                                        <div className="stage-label">{s.label}</div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                {/* 자세한설명 */}
+                <div className="rfd-row rfd-row--top">
+                    <span className="rfd-label">자세한설명</span>
+                    <div className="rfd-textarea">{data.content || '-'}</div>
+                </div>
+
+                {/* 위치정보 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">위치정보</span>
+                    <div className="rfd-location">
+                        <div className="rfd-input">{data.region || data.location || '-'}</div>
+                        <div className="rfd-input">{data.detailed_address || '-'}</div>
                     </div>
-                </aside>
+                </div>
+
+                {/* 첨부이미지파일 */}
+                <div className="rfd-row rfd-row--top">
+                    <span className="rfd-label">첨부이미지파일</span>
+                    <div className="rfd-attachments">
+                        {data.image ? (
+                            <img src={data.image} alt="첨부" className="rfd-thumb" />
+                        ) : (
+                            <div className="rfd-thumb-empty" />
+                        )}
+                    </div>
+                </div>
+
+                {/* 작성자 ID */}
+                <div className="rfd-row">
+                    <span className="rfd-label">작성자 ID</span>
+                    <div className="rfd-input">{data.author_id ?? data.user_id ?? '-'}</div>
+                </div>
+
+                {/* 작성자 닉네임 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">작성자 닉네임</span>
+                    <div className="rfd-input">{data.nickname || data.author || '-'}</div>
+                </div>
+
+                {/* 작성일 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">작성일</span>
+                    <div className="rfd-input">{createdAt}</div>
+                </div>
+
+                {/* 편집일 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">편집일</span>
+                    <div className="rfd-input">{updatedAt}</div>
+                </div>
+
+                {/* 제보현황 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">제보현황</span>
+                    <div className="rfd-status-pills">
+                        {STAGES.map((s) => (
+                            <button
+                                key={s.key}
+                                className={`rfd-status-pill${stage === s.key ? ' active' : ''}`}
+                                onClick={() => handleStageClick(s.key)}
+                            >
+                                <span className="rfd-pill-check">{stage === s.key ? '✓' : ''}</span>
+                                {s.label}
+                                <span className="rfd-pill-arrow">▾</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </div>
 
-            <section className="report-reply-card">
-                <div className="reply-header">
-                    <strong>답변드립니다.</strong>
-                    <span className="reply-meta">관리자 답변</span>
+            <div className="rfd-divider" />
+
+            {/* 답글 작성 */}
+            <div className="rfd-body">
+                <div className="rfd-row rfd-row--top">
+                    <span className="rfd-label">답글 작성</span>
+                    <div className="rfd-reply-wrap">
+                        <textarea
+                            className="rfd-reply-textarea"
+                            value={reply}
+                            onChange={(e) => setReply(e.target.value)}
+                            rows={5}
+                        />
+                        <button
+                            className="rfd-write-btn"
+                            onClick={handleSave}
+                            disabled={saving}
+                        >
+                            {saving ? '…' : '작성'}
+                        </button>
+                    </div>
                 </div>
-                <textarea
-                    className="reply-textarea"
-                    placeholder="답글 작성..."
-                    value={reply}
-                    onChange={(e) => setReply(e.target.value)}
-                    rows={6}
-                />
-                <div className="reply-actions">
-                    <button className="pill-btn muted" onClick={handleDelete}>글 삭제</button>
-                    <button className="pill-btn" onClick={handleSaveReply}>작성</button>
-                </div>
-            </section>
+            </div>
+
+            <div className="rfd-divider" />
+
+            {/* 하단 버튼 */}
+            <div className="rfd-footer">
+                <button className="rfd-delete-btn" onClick={handleDelete}>글 삭제</button>
+                <button className="rfd-save-btn" onClick={handleSave} disabled={saving}>
+                    {saving ? '저장 중…' : '수정하기'}
+                </button>
+            </div>
         </AdminLayout>
     );
 }

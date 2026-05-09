@@ -21,6 +21,8 @@ page.on('console', (msg) => {
         const t = msg.text();
         // Filter out known irrelevant errors from home view
         if (t.includes('Failed to load diagnosis') || t.includes('Failed to fetch user pins')) return;
+        // Filter pre-login 401s on /admin (auth-check before user logs in)
+        if (t.includes('status of 401') && page.url().includes('/admin')) return;
         errors.push(`CONSOLE ${page.url()}: ${t}`);
     }
 });
@@ -69,13 +71,13 @@ await shot('04-expert');
 await clickSubmenu('관리자');
 await shot('05-admin-list');
 
-// 6. 제안/제보 관리 > 제보목록
+// 6. 제안/제보 관리 > 제보
 await expandMenu('제안/제보 관리');
-await clickSubmenu('제보목록');
+await clickSubmenu('제보');
 await shot('06-reports');
 
-// 7. 제안/제보 관리 > 제안목록
-await clickSubmenu('제안목록');
+// 7. 제안/제보 관리 > 제안
+await clickSubmenu('제안');
 await shot('07-proposals');
 
 // 8. 설문관리 > 설문목록
@@ -85,7 +87,7 @@ await shot('08-survey');
 
 // 9. Click into a report's "상세" → ReportDetail
 await expandMenu('제안/제보 관리');
-await clickSubmenu('제보목록');
+await clickSubmenu('제보');
 await page.locator('text=상세').first().click({ timeout: 5000 }).catch(() => {});
 await page.waitForTimeout(800);
 await shot('09-report-detail');
@@ -99,7 +101,7 @@ await shot('10-member-edit');
 
 // 11. Proposal detail
 await expandMenu('제안/제보 관리');
-await clickSubmenu('제안목록');
+await clickSubmenu('제안');
 // no rows in DB → directly navigate via card click would not work; use direct view set
 // (proposal table is empty in the seeded DB so we just snapshot the empty list)
 await shot('11-proposal-detail-empty');
@@ -119,9 +121,12 @@ await shot('13-survey-editor-settings');
 // 14. Survey created — fill title then click 저장 (we're already in survey editor 설정 tab; switch to 편집 first)
 await page.locator('.survey-tab:has-text("편집")').first().click({ timeout: 3000 }).catch(() => {});
 await page.waitForTimeout(300);
-await page.fill('.survey-title-input', '학생의 학교 외 생활활동 조사').catch(() => {});
+await page.fill('.se-field-input', '학생의 학교 외 생활활동 조사').catch(() => {});
 await page.waitForTimeout(200);
-await page.locator('button.btn-search-new:text("저장")').first().click({ timeout: 5000 }).catch(() => {});
+// Settings tab has the 저장 button (.se-save-btn)
+await page.locator('.survey-tab:has-text("설정")').first().click({ timeout: 3000 }).catch(() => {});
+await page.waitForTimeout(300);
+await page.locator('.se-save-btn').first().click({ timeout: 5000 }).catch(() => {});
 await page.waitForTimeout(900);
 await shot('14-survey-created');
 

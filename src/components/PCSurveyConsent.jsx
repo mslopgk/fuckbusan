@@ -5,23 +5,51 @@ import './PCSurveyConsent.css';
 export default function PCSurveyConsent({ onNavigate, survey }) {
     const data = survey || { title: '사직구장 일대 보행환경의 현황 조사' };
 
-    const [agree, setAgree] = useState('agree');
-    const [gender, setGender] = useState('male');
-    const [age, setAge] = useState('under20');
-    const [device, setDevice] = useState('pc');
-    const [job, setJob] = useState('student');
+    const [agree, setAgree] = useState(null);
+    const [gender, setGender] = useState(null);
+    const [age, setAge] = useState(null);
+    const [device, setDevice] = useState(null);
+    const [job, setJob] = useState(null);
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [jobOther, setJobOther] = useState('');
     const [deviceOther, setDeviceOther] = useState('');
+
+    const handleNameChange = (e) => {
+        setName(e.target.value);
+    };
+
+    const handlePhoneChange = (e) => {
+        const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+        let formatted = digits;
+        if (digits.length > 7) {
+            formatted = `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+        } else if (digits.length > 3) {
+            formatted = `${digits.slice(0, 3)}-${digits.slice(3)}`;
+        }
+        setPhone(formatted);
+    };
 
     const handleSubmit = () => {
         if (agree !== 'agree') {
             alert('개인정보 수집에 동의해 주세요.');
             return;
         }
-        if (!name.trim() || !phone.trim()) {
-            alert('성명과 휴대폰번호를 입력해 주세요.');
+        if (!gender || !age || !device || !job) {
+            alert('모든 필수 항목을 선택해 주세요.');
+            return;
+        }
+        if (!name.trim()) {
+            alert('성명을 입력해 주세요.');
+            return;
+        }
+        if (/[^가-힣a-zA-Z\s]/.test(name)) {
+            alert('성명은 한글 또는 영문만 입력해 주세요.');
+            return;
+        }
+        const phoneDigits = phone.replace(/\D/g, '');
+        if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+            alert('올바른 휴대폰번호를 입력해 주세요. (예: 010-1234-5678)');
             return;
         }
         if (onNavigate) onNavigate('pcSurveyJoin', data);
@@ -30,7 +58,7 @@ export default function PCSurveyConsent({ onNavigate, survey }) {
     return (
         <UserPCLayout currentView="pcSurveyConsent" onNavigate={onNavigate}>
             <div className="pc-survey-consent-page">
-                <div className="pc-purple-banner pc-banner-tall">
+                <div className="pc-purple-banner">
                     <h1 className="pc-banner-title">{data.title}</h1>
                 </div>
 
@@ -96,7 +124,7 @@ export default function PCSurveyConsent({ onNavigate, survey }) {
                     <h3 className="pc-consent-title pc-consent-title-second">작성자 기본정보</h3>
 
                     <div className="pc-form-row">
-                        <label>성별 *</label>
+                        <label>성별 <span className="pc-req-star">*</span></label>
                         <div className="pc-radio-group">
                             <label><input type="radio" checked={gender === 'male'} onChange={() => setGender('male')} /> 남자</label>
                             <label><input type="radio" checked={gender === 'female'} onChange={() => setGender('female')} /> 여자</label>
@@ -104,7 +132,7 @@ export default function PCSurveyConsent({ onNavigate, survey }) {
                     </div>
 
                     <div className="pc-form-row">
-                        <label>연령 *</label>
+                        <label>연령 <span className="pc-req-star">*</span></label>
                         <div className="pc-radio-group pc-radio-grid">
                             <label><input type="radio" checked={age === 'under20'} onChange={() => setAge('under20')} /> 20대 미만</label>
                             <label><input type="radio" checked={age === '20s'} onChange={() => setAge('20s')} /> 20대</label>
@@ -115,7 +143,7 @@ export default function PCSurveyConsent({ onNavigate, survey }) {
                     </div>
 
                     <div className="pc-form-row">
-                        <label>이용 기기 *</label>
+                        <label>이용 기기 <span className="pc-req-star">*</span></label>
                         <div className="pc-radio-group">
                             <label><input type="radio" checked={device === 'pc'} onChange={() => setDevice('pc')} /> PC</label>
                             <label><input type="radio" checked={device === 'mobile'} onChange={() => setDevice('mobile')} /> 모바일</label>
@@ -128,7 +156,7 @@ export default function PCSurveyConsent({ onNavigate, survey }) {
                     </div>
 
                     <div className="pc-form-row">
-                        <label>직업(소속) *</label>
+                        <label>직업(소속) <span className="pc-req-star">*</span></label>
                         <div className="pc-radio-group pc-radio-grid">
                             <label><input type="radio" checked={job === 'student'} onChange={() => setJob('student')} /> 학생(초중고생)</label>
                             <label><input type="radio" checked={job === 'college'} onChange={() => setJob('college')} /> 대학/대학원생</label>
@@ -143,12 +171,12 @@ export default function PCSurveyConsent({ onNavigate, survey }) {
                     </div>
 
                     <div className="pc-form-row pc-form-row-input">
-                        <label>성명 *</label>
-                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                        <label>성명 <span className="pc-req-star">*</span></label>
+                        <input type="text" value={name} onChange={handleNameChange} placeholder="이름을 입력해 주세요" />
                     </div>
                     <div className="pc-form-row pc-form-row-input">
-                        <label>휴대폰번호 *</label>
-                        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                        <label>휴대폰번호 <span className="pc-req-star">*</span></label>
+                        <input type="tel" inputMode="numeric" value={phone} onChange={handlePhoneChange} placeholder="010-0000-0000" maxLength={13} />
                     </div>
 
                     <div className="pc-consent-action">

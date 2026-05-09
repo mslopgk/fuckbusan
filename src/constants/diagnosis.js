@@ -68,9 +68,9 @@ export const DIAGNOSIS_QUESTIONS = [
 
 // 만족도 척도 (3단)
 export const SATISFACTION_SCALE = [
-    { value: 1, face: '😞', label: '아니에요' },
-    { value: 2, face: '😐', label: '보통이에요' },
-    { value: 3, face: '😄', label: '좋아요' },
+    { value: 1, face: '/figma-assets/diagnosis/face_sad.png', label: '아니에요' },
+    { value: 2, face: '/figma-assets/diagnosis/face_neutral.png', label: '보통이에요' },
+    { value: 3, face: '/figma-assets/diagnosis/face_happy.png', label: '좋아요' },
 ];
 
 // 진단 대상
@@ -85,7 +85,7 @@ export const LIVING_CATS = [
     { key: 'all',     label: '전체',        icon: 'grid' },
     { key: 'safety',  label: '안전',        icon: 'shield' },
     { key: 'housing', label: '주거',        icon: 'home' },
-    { key: 'work',    label: '산업·일자리', icon: 'briefcase' },
+    { key: 'work',    label: '산업\n일자리', icon: 'briefcase' },
     { key: 'edu',     label: '교육',        icon: 'book' },
     { key: 'env',     label: '환경',        icon: 'leaf' },
     { key: 'leisure', label: '문화·여가',   icon: 'heart' },

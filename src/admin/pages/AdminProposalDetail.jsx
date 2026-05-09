@@ -3,50 +3,36 @@ import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 
-const TYPE_CLASS = {
-    교통: 'traffic',
-    안전: 'safety',
-    교육: 'education',
-    환경: 'environment',
-};
-
-const STAGES = [
-    { key: 'received', label: '접수' },
-    { key: 'reviewing', label: '검토중' },
-    { key: 'reviewed', label: '검토완료' },
-    { key: 'announced', label: '결과안내' },
-];
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 export default function AdminProposalDetail({ proposal, onNavigate }) {
     const [data, setData] = useState(proposal || null);
-    const [reply, setReply] = useState('');
-    const [stage, setStage] = useState('reviewing');
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (!proposal?.id) return;
-        const fetchOne = async () => {
-            try {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-                const res = await fetch(`${API_URL}/api/reports/proposals/${proposal.id}`);
-                if (res.ok) {
-                    const found = await res.json();
-                    setData({
-                        id: found.id,
-                        title: found.title,
-                        type: found.category,
-                        location: found.region,
-                        detailedAddress: found.detailed_address,
-                        content: found.content,
-                        nickname: found.nickname,
-                        author_id: found.user_id,
-                        created_at: found.created_at,
-                    });
-                }
-            } catch (e) {
-                console.error('Failed to fetch proposal detail:', e);
-            }
-        };
-        fetchOne();
+        const token = localStorage.getItem('access_token');
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+        fetch(`${API_URL}/api/reports/proposals/${proposal.id}`, { headers })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((found) => {
+                if (!found) return;
+                setData({
+                    id: found.id,
+                    title: found.title,
+                    type: found.category,
+                    location: found.region,
+                    detailedAddress: found.detailed_address,
+                    content: found.content,
+                    nickname: found.nickname,
+                    author_id: found.user_id,
+                    created_at: found.created_at,
+                    updated_at: found.updated_at,
+                    image: found.image,
+                });
+            })
+            .catch((e) => console.error('Failed to fetch proposal detail:', e));
     }, [proposal?.id]);
 
     if (!data) {
@@ -57,23 +43,42 @@ export default function AdminProposalDetail({ proposal, onNavigate }) {
         );
     }
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (!window.confirm('정말 삭제하시겠습니까?')) return;
-        alert('삭제 API 연결은 준비 중입니다.');
+        const token = localStorage.getItem('access_token');
+        if (!token) { alert('관리자 로그인이 필요합니다.'); return; }
+        try {
+            const res = await fetch(`${API_URL}/api/admin/proposals/${data.id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+                alert('삭제되었습니다.');
+                onNavigate && onNavigate('proposalManagement');
+            } else {
+                alert('삭제 실패: ' + res.status);
+            }
+        } catch (e) {
+            alert('삭제 중 오류: ' + e.message);
+        }
     };
 
-    const handleSaveReply = () => {
-        if (!reply.trim()) {
-            alert('답변을 입력해주세요.');
-            return;
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            alert('수정 기능은 준비 중입니다.');
+        } finally {
+            setSaving(false);
         }
-        alert('답변 저장 API 연결은 준비 중입니다.');
     };
+
+    const createdAt = data.created_at ? String(data.created_at).slice(0, 10) : '-';
+    const updatedAt = data.updated_at ? String(data.updated_at).slice(0, 10) : createdAt;
 
     return (
         <AdminLayout onNavigate={onNavigate} currentView="adminProposalDetail">
             <div className="content-header-new">
-                <h2 className="content-title-new">제안 상세</h2>
+                <h2 className="content-title-new">제안현황</h2>
                 <button
                     className="btn-search-new"
                     style={{ height: 40, padding: '0 24px', background: '#f1f3f5', color: '#333' }}
@@ -83,79 +88,80 @@ export default function AdminProposalDetail({ proposal, onNavigate }) {
                 </button>
             </div>
 
-            <div className="report-detail-grid">
-                <section className="report-detail-card">
-                    <div className="detail-row">
-                        <span className="detail-label">제안 제목</span>
-                        <span className="detail-value detail-title">{data.title}</span>
-                    </div>
-                    <div className="detail-row split">
-                        <div>
-                            <span className="detail-label">유형</span>
-                            <span className={`type-tag ${TYPE_CLASS[data.type] || ''}`} style={{ marginLeft: 8 }}>{data.type || '-'}</span>
-                        </div>
-                        <div>
-                            <span className="detail-label">위치정보</span>
-                            <span className="detail-value" style={{ marginLeft: 8 }}>
-                                {data.location || '-'}{data.detailedAddress ? ` · ${data.detailedAddress}` : ''}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="detail-row">
-                        <span className="detail-label">자세한 설명</span>
-                        <div className="detail-content-block">{data.content || '-'}</div>
-                    </div>
-                    <div className="detail-row">
-                        <span className="detail-label">첨부 이미지</span>
-                        <div className="detail-attachments">
-                            <div className="attachment-placeholder">첨부 파일 없음</div>
-                        </div>
-                    </div>
-                </section>
+            <div className="rfd-body">
+                {/* 제안제목 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">제안제목</span>
+                    <div className="rfd-input">{data.title || '-'}</div>
+                </div>
 
-                <aside className="report-detail-side">
-                    <div className="side-card">
-                        <div className="side-row"><span>작성자 ID</span><strong>{data.author_id ?? '-'}</strong></div>
-                        <div className="side-row"><span>작성자 닉네임</span><strong>{data.nickname || '익명'}</strong></div>
-                        <div className="side-row"><span>작성일</span><strong>{data.created_at ? data.created_at.slice(0, 10) : '-'}</strong></div>
-                        <div className="side-row"><span>편집일</span><strong>-</strong></div>
-                    </div>
+                {/* 유형 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">유형</span>
+                    <div className="rfd-input">{data.type || '-'}</div>
+                </div>
 
-                    <div className="side-card">
-                        <div className="side-card-title">제안 현황</div>
-                        <div className="stage-track">
-                            {STAGES.map((s, i) => {
-                                const stageIdx = STAGES.findIndex((x) => x.key === stage);
-                                const reached = i <= stageIdx;
-                                return (
-                                    <div key={s.key} className={`stage-item ${reached ? 'reached' : ''}`} onClick={() => setStage(s.key)}>
-                                        <div className="stage-dot">{i + 1}</div>
-                                        <div className="stage-label">{s.label}</div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                {/* 자세한설명 */}
+                <div className="rfd-row rfd-row--top">
+                    <span className="rfd-label">자세한설명</span>
+                    <div className="rfd-textarea">{data.content || '-'}</div>
+                </div>
+
+                {/* 위치정보 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">위치정보</span>
+                    <div className="rfd-location">
+                        <div className="rfd-input">{data.location || '-'}</div>
+                        <div className="rfd-input">{data.detailedAddress || '-'}</div>
                     </div>
-                </aside>
+                </div>
+
+                {/* 첨부이미지파일 */}
+                <div className="rfd-row rfd-row--top">
+                    <span className="rfd-label">첨부이미지파일</span>
+                    <div className="rfd-attachments">
+                        {data.image ? (
+                            <img src={data.image} alt="첨부" className="rfd-thumb" />
+                        ) : (
+                            <div className="rfd-thumb-empty" />
+                        )}
+                    </div>
+                </div>
+
+                {/* 작성자 ID */}
+                <div className="rfd-row">
+                    <span className="rfd-label">작성자 ID</span>
+                    <div className="rfd-input">{data.author_id ?? '-'}</div>
+                </div>
+
+                {/* 작성자 닉네임 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">작성자 닉네임</span>
+                    <div className="rfd-input">{data.nickname || '-'}</div>
+                </div>
+
+                {/* 작성일 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">작성일</span>
+                    <div className="rfd-input">{createdAt}</div>
+                </div>
+
+                {/* 편집일 */}
+                <div className="rfd-row">
+                    <span className="rfd-label">편집일</span>
+                    <div className="rfd-input">{updatedAt}</div>
+                </div>
             </div>
 
-            <section className="report-reply-card">
-                <div className="reply-header">
-                    <strong>답변드립니다.</strong>
-                    <span className="reply-meta">관리자 답변</span>
-                </div>
-                <textarea
-                    className="reply-textarea"
-                    placeholder="답글 작성..."
-                    value={reply}
-                    onChange={(e) => setReply(e.target.value)}
-                    rows={6}
-                />
-                <div className="reply-actions">
-                    <button className="pill-btn muted" onClick={handleDelete}>글 삭제</button>
-                    <button className="pill-btn" onClick={handleSaveReply}>수정하기</button>
-                </div>
-            </section>
+            <div className="rfd-divider" />
+
+            {/* 하단 버튼 */}
+            <div className="rfd-footer">
+                <button className="rfd-delete-btn" onClick={handleDelete}>글 삭제</button>
+                <button className="rfd-save-btn" onClick={handleSave} disabled={saving}>
+                    {saving ? '저장 중…' : '수정하기'}
+                </button>
+            </div>
         </AdminLayout>
     );
 }

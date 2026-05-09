@@ -79,7 +79,9 @@ export default function Login({ onNavigate }) {
                     <div>
                         <label className="auth-label">Email</label>
                         <div className="auth-input-wrapper">
-                            <span className="auth-icon">✉️</span>
+                            <span className="auth-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg>
+                            </span>
                             <input
                                 type="email"
                                 placeholder="admin@busan.go.kr"
@@ -94,7 +96,9 @@ export default function Login({ onNavigate }) {
                     <div>
                         <label className="auth-label">Password</label>
                         <div className="auth-input-wrapper">
-                            <span className="auth-icon">🔒</span>
+                            <span className="auth-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </span>
                             <input
                                 type="password"
                                 placeholder="Busan2026!"

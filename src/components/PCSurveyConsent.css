@@ -4,18 +4,20 @@
     padding-bottom: 120px;
 }
 
+/* position: relative ensures card renders above the positioned .pc-purple-banner */
 .pc-consent-card {
-    width: 720px;
-    margin: -56px auto 0;
+    position: relative;
+    width: 744px;
+    margin: -100px auto 0;
     background: #fff;
     border-radius: 16px;
-    box-shadow: 0 12px 40px rgba(34, 12, 80, 0.10);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
     padding: 36px 44px 44px;
 }
 
 .pc-consent-title {
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 700;
     color: #1a1a1b;
     margin: 0 0 18px;
     letter-spacing: -0.01em;
@@ -32,7 +34,7 @@
 }
 
 .pc-consent-section h4 {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     color: #444;
     margin: 0 0 8px;
@@ -42,31 +44,24 @@
     background: #f7f6fa;
     border-radius: 8px;
     padding: 12px 16px;
-    font-size: 12px;
+    font-size: 14px;
     color: #444;
     line-height: 1.7;
 }
 
 .pc-consent-box ul {
-    list-style: none;
-    padding: 0;
+    list-style: disc;
+    padding-left: 18px;
     margin: 0;
 }
 
 .pc-consent-box li {
-    position: relative;
-    padding-left: 12px;
-}
-
-.pc-consent-box li::before {
-    content: '·';
-    position: absolute;
-    left: 2px;
+    margin-bottom: 4px;
 }
 
 .pc-consent-list {
     padding: 4px 12px;
-    font-size: 12px;
+    font-size: 14px;
     color: #444;
     line-height: 1.6;
 }
@@ -83,7 +78,7 @@
 
 .pc-consent-item p {
     margin: 2px 0 0 12px;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .pc-agree-row {
@@ -92,7 +87,7 @@
 }
 
 .pc-agree-row p {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 700;
     color: #1a1a1b;
     margin: 0 0 10px;
@@ -100,22 +95,22 @@
 
 .pc-agree-options {
     display: inline-flex;
-    gap: 16px;
+    gap: 24px;
 }
 
 .pc-checkbox-pill {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
+    gap: 8px;
+    font-size: 16px;
     color: #1a1a1b;
     cursor: pointer;
 }
 
 .pc-checkbox-pill input {
     accent-color: #16B5B0;
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
 }
 
 .pc-form-row {
@@ -124,52 +119,52 @@
     gap: 16px;
     padding: 12px 0;
     border-bottom: 1px solid #f1f1f1;
-    font-size: 13px;
+    font-size: 16px;
 }
 
 .pc-form-row > label {
-    width: 90px;
+    width: 100px;
     flex-shrink: 0;
     font-weight: 700;
     color: #1a1a1b;
-    padding-top: 4px;
+    padding-top: 2px;
 }
 
-.pc-form-row > label::after {
-    content: '';
+.pc-req-star {
+    color: #16B5B0;
 }
 
 .pc-radio-group {
     flex: 1;
     display: flex;
     flex-wrap: wrap;
-    gap: 12px 24px;
+    gap: 12px 28px;
     align-items: center;
 }
 
 .pc-radio-group label {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     color: #1a1a1b;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 16px;
 }
 
 .pc-radio-group input[type="radio"] {
     accent-color: #16B5B0;
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
 }
 
 .pc-radio-grid {
-    grid-row-gap: 6px;
+    grid-row-gap: 8px;
 }
 
 .pc-radio-other {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .pc-radio-other input[type="text"] {
@@ -177,7 +172,7 @@
     border: 1px solid #d6d6d8;
     border-radius: 4px;
     padding: 4px 8px;
-    font-size: 12px;
+    font-size: 14px;
     margin-left: 4px;
 }
 
@@ -186,8 +181,8 @@
     flex: 1;
     border: 1px solid #d6d6d8;
     border-radius: 4px;
-    padding: 6px 10px;
-    font-size: 13px;
+    padding: 8px 12px;
+    font-size: 16px;
     outline: none;
 }
 

@@ -1,4 +1,4 @@
-import { Home, Leaf, Car, Shield, GraduationCap, Factory, Palette, Heart, RotateCcw } from 'lucide-react';
+// Inline SVG icons — lucide-react removed per project policy
 import MultiSelectDropdown from './common/MultiSelectDropdown';
 
 import { DISTRICTS } from '../data/constants';
@@ -23,14 +23,14 @@ const DIAGNOSTICIAN_OPTIONS = [
 ];
 
 const menuItems = [
-    { id: 'housing', label: '주거', icon: <Home size={18} />, color: 'cat-housing' },
-    { id: 'environment', label: '환경', icon: <Leaf size={18} />, color: 'cat-env' },
-    { id: 'transport', label: '교통', icon: <Car size={18} />, color: 'cat-transport' },
-    { id: 'safety', label: '안전', icon: <Shield size={18} />, color: 'cat-safety' },
-    { id: 'education', label: '교육', icon: <GraduationCap size={18} />, color: 'cat-education' },
-    { id: 'industry', label: '산업/일자리', icon: <Factory size={18} />, color: 'cat-industry' },
-    { id: 'culture', label: '문화/여가', icon: <Palette size={18} />, color: 'cat-culture' },
-    { id: 'welfare', label: '보건/복지', icon: <Heart size={18} />, color: 'cat-wellness' },
+    { id: 'housing', label: '주거', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>, color: 'cat-housing' },
+    { id: 'environment', label: '환경', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8c.8.8 1.5 1.8 1.9 2.8C20.2 14 19 18 16 20s-7 2-10-1c-2-2-3-5-2-8 1.2.6 2.4 1 3.7 1C10.6 12 13 9.5 13 6.5c0-1-.3-2-.8-2.8C13.7 3.3 15.6 6.6 17 8z"/></svg>, color: 'cat-env' },
+    { id: 'transport', label: '교통', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>, color: 'cat-transport' },
+    { id: 'safety', label: '안전', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, color: 'cat-safety' },
+    { id: 'education', label: '교육', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>, color: 'cat-education' },
+    { id: 'industry', label: '산업/일자리', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>, color: 'cat-industry' },
+    { id: 'culture', label: '문화/여가', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>, color: 'cat-culture' },
+    { id: 'welfare', label: '보건/복지', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>, color: 'cat-wellness' },
 ];
 
 export default function Sidebar({
@@ -111,7 +111,7 @@ export default function Sidebar({
                             onClick={onResetFilters}
                             className="text-[10px] flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-500 px-2 py-1 rounded-md transition-colors"
                         >
-                            <RotateCcw size={10} /> 초기화
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-4.66"/></svg> 초기화
                         </button>
                     </div>
 

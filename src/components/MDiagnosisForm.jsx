@@ -73,7 +73,7 @@ export default function MDiagnosisForm({ onNavigate }) {
             </header>
 
             <main className="m-diagform-body">
-                <h1 className="m-diagform-title">우리동네 개선 아이디어를<br/>진단해보세요.</h1>
+                <h1 className="m-diagform-title">우리동네 개선 아이디어를<br/>진단해보세요</h1>
 
                 {/* 사진 등록 */}
                 <section className="m-diagform-section">
@@ -87,10 +87,7 @@ export default function MDiagnosisForm({ onNavigate }) {
                         {photoPreview ? (
                             <img src={photoPreview} alt="첨부 사진 미리보기" />
                         ) : (
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
+                            <img src="/figma-assets/diagnosis/photo_add.svg" width="28" height="28" alt="사진 추가" />
                         )}
                     </button>
                     <input
@@ -176,7 +173,7 @@ export default function MDiagnosisForm({ onNavigate }) {
                                                 className={`m-diagform-scale-dot ${active ? 'on' : ''}`}
                                                 onClick={() => setRatings((prev) => ({ ...prev, [idx]: s.value }))}
                                             >
-                                                <span className="m-diagform-scale-face">{s.face}</span>
+                                                                <img src={s.face} width="22" height="22" alt={s.label} className="m-diagform-scale-face" />
                                             </button>
                                         );
                                     })}

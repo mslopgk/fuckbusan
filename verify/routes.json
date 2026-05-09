@@ -37,21 +37,24 @@
       "view": "reportList",
       "path": "/",
       "auth": false,
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": { "width": 1280, "height": 800 }
     },
     {
       "id": "proposalList",
       "view": "proposalList",
       "path": "/",
       "auth": false,
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": { "width": 1280, "height": 800 }
     },
     {
       "id": "myPage",
       "view": "myPage",
       "path": "/",
       "auth": true,
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": { "width": 1280, "height": 800 }
     },
     {
       "id": "diagnosis",
@@ -89,11 +92,76 @@
       "waitFor": ".check-done-container"
     },
     {
+      "id": "pcSurveyList",
+      "view": "pcSurveyList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-list-page",
+      "viewport": { "width": 1280, "height": 800 }
+    },
+    {
+      "id": "pcSurveyDetail",
+      "view": "pcSurveyDetail",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-detail-page",
+      "viewport": { "width": 1280, "height": 900 }
+    },
+    {
+      "id": "pcSurveyConsent",
+      "view": "pcSurveyConsent",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-consent-page",
+      "viewport": { "width": 1280, "height": 1000 }
+    },
+    {
+      "id": "pcSurveyJoin",
+      "view": "pcSurveyJoin",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-join-page",
+      "viewport": { "width": 1280, "height": 1000 }
+    },
+    {
+      "id": "pcSurveyDone",
+      "view": "pcSurveyDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-done-page",
+      "viewport": { "width": 1280, "height": 800 }
+    },
+    {
+      "id": "pcSurveyResults",
+      "view": "pcSurveyResults",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-results-page",
+      "viewport": { "width": 1280, "height": 1000 }
+    },
+    {
       "id": "pcDiagnosisMap",
       "view": "pcDiagnosisMap",
       "path": "/",
       "auth": false,
-      "waitFor": ".pc-diag-page"
+      "waitFor": ".pc-diag-page",
+      "viewport": { "width": 1280, "height": 800 }
+    },
+    {
+      "id": "pcReportMap",
+      "view": "pcReportMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-map3-page",
+      "viewport": { "width": 1280, "height": 800 }
+    },
+    {
+      "id": "pcProposeMap",
+      "view": "pcProposeMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-map3-page",
+      "viewport": { "width": 1280, "height": 800 }
     },
     {
       "id": "pcDiagnosisForm",
@@ -180,6 +248,34 @@
       "waitFor": ".m-prop-done-page"
     },
     {
+      "id": "mMyReportDetail",
+      "view": "mMyReportDetail",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-myreport-detail-page"
+    },
+    {
+      "id": "mMyReportEdit",
+      "view": "mMyReportEdit",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-myrep-edit-page"
+    },
+    {
+      "id": "pcMyReportList",
+      "view": "pcMyReportList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-myrep-page"
+    },
+    {
+      "id": "pcMyReportEdit",
+      "view": "pcMyReportEdit",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-myrep-edit-page"
+    },
+    {
       "id": "mSurveyList",
       "view": "mSurveyList",
       "path": "/",
@@ -187,8 +283,29 @@
       "waitFor": ".m-survey-list-page"
     },
     {
+      "id": "mSurveyJoin",
+      "view": "mSurveyJoin",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-join-page"
+    },
+    {
+      "id": "mSurveyDone",
+      "view": "mSurveyDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-done-page"
+    },
+    {
       "id": "mSurveyDetail1",
       "view": "mSurveyDetail1",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-detail-page"
+    },
+    {
+      "id": "mSurveyDetail2",
+      "view": "mSurveyDetail2",
       "path": "/",
       "auth": false,
       "waitFor": ".m-survey-detail-page"
@@ -213,6 +330,77 @@
       "path": "/admin",
       "auth": "admin",
       "waitFor": "body"
+    },
+    {
+      "id": "adminUserList",
+      "view": "adminUserList",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body"
+    },
+    {
+      "id": "reportManagement",
+      "view": "reportManagement",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body"
+    },
+    {
+      "id": "proposalManagement",
+      "view": "proposalManagement",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body"
+    },
+    {
+      "id": "surveyManagement",
+      "view": "surveyManagement",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body"
+    },
+    {
+      "id": "surveyEditor",
+      "view": "surveyEditor",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body"
+    },
+    {
+      "id": "surveyResults",
+      "view": "surveyResults",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body"
+    },
+    {
+      "id": "adminDashboardNew",
+      "view": "adminDashboardNew",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body"
+    },
+    {
+      "id": "expertManagement",
+      "view": "expertManagement",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body"
+    },
+    {
+      "id": "pcAICitizen",
+      "view": "pcAICitizen",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-ai-citizen",
+      "viewport": { "width": 1280, "height": 800 }
+    },
+    {
+      "id": "mAICitizen",
+      "view": "mAICitizen",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-ai-citizen"
     }
   ],
   "apiChecks": [

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import MobileBottomNav from './MobileBottomNav';
 import './MyReports.css';
 
 const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
@@ -27,7 +28,7 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
     }, []);
 
     const handleCardClick = (report) => {
-        onNavigate('reportDetail', { ...report, showActions: activeTab === 'mine' });
+        onNavigate('mMyReportDetail', { ...report, showActions: activeTab === 'mine' });
     };
 
     const getFinalMyReports = () => {
@@ -52,7 +53,7 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
         if (activeTab === 'likes') return likedIds && likedIds.has(report.id);
         
         // 2. Status filter
-        return report.status === statusFilter || (statusFilter === '결과안내' && report.progress_step === 4);
+        return report.status === statusFilter || (statusFilter === '검토완료' && report.progress_step >= 3);
     });
 
     return (
@@ -91,7 +92,7 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
             {/* Status Filter (ReportList style) */}
             <div className="mr-status-container">
                 <div className="mr-status-tabs">
-                    {['접수', '검토중', '결과안내'].map(tab => (
+                    {['접수', '검토중', '검토완료'].map(tab => (
                         <button
                             key={tab}
                             className={`mr-status-tab ${statusFilter === tab ? 'active' : ''}`}
@@ -160,13 +161,15 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
             </div>
 
             {/* FAB (ReportList style) */}
-            <button className="mr-fab" onClick={() => onNavigate('reportPostForm')}>
+            <button className="mr-fab" onClick={() => onNavigate('mReportMap')}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
                 제보하기
             </button>
+
+            <MobileBottomNav currentView="myReportList" onNavigate={onNavigate} />
         </div>
     );
 };

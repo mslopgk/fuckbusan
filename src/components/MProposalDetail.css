@@ -59,8 +59,18 @@
 
 .m-detail-body p { margin: 0 0 6px; }
 .m-detail-body li {
-    list-style: disc;
-    margin: 4px 0 4px 22px;
+    list-style: none;
+    margin: 4px 0;
+    padding-left: 18px;
+    position: relative;
+}
+.m-detail-body li::before {
+    content: '▸';
+    color: #E6235A;
+    position: absolute;
+    left: 0;
+    font-size: 11px;
+    line-height: 1.7;
 }
 
 .m-detail-image {
@@ -77,6 +87,12 @@
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 14px;
+}
+
+.m-detail-coord-text {
+    font-size: 11px;
+    color: #888;
+    margin: 4px 0 10px;
 }
 
 .m-detail-attachment {

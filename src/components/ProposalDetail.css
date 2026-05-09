@@ -398,75 +398,69 @@
     color: #16B5B0;
 }
 
-/* Vote Success Modal */
+/* Vote Result Modal */
 .pd-vote-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2000;
+    animation: overlayFadeIn 0.2s ease-out forwards, overlayFadeOut 0.3s ease-in 1.7s forwards;
+}
+
+@keyframes overlayFadeIn {
+    from { background-color: rgba(0, 0, 0, 0); }
+    to { background-color: rgba(0, 0, 0, 0.5); }
+}
+
+@keyframes overlayFadeOut {
+    from { background-color: rgba(0, 0, 0, 0.5); }
+    to { background-color: rgba(0, 0, 0, 0); }
 }
 
 .pd-vote-modal-box {
     background-color: #fff;
-    width: 240px;
-    padding: 40px 20px;
-    border-radius: 30px;
+    width: 220px;
+    padding: 36px 24px 32px;
+    border-radius: 28px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 24px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+    gap: 20px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    animation: modalPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards,
+               modalFadeOut 0.25s ease-in 1.75s forwards;
 }
 
 @keyframes modalPop {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.8) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes modalFadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to   { opacity: 0; transform: scale(0.92) translateY(-6px); }
 }
 
 .pd-vote-success-icon-container {
-    position: relative;
-    width: 60px;
-    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.pd-union-icon {
-    width: 100%;
-    height: 100%;
-}
-
-.pd-vector-icon {
-    position: absolute;
-    width: 24px;
-    height: 18px;
-    /* Adjust positioning based on the SVG shapes */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
 .pd-vote-modal-text {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     font-weight: 800;
     color: #222;
     text-align: center;
-    line-height: 1.4;
+    line-height: 1.45;
     margin: 0;
+    letter-spacing: -0.02em;
 }
 
 /* [추가] 메뉴 모달 및 바텀 시트 스타일 (지역선택창 스타일 계승) */
@@ -655,6 +649,8 @@
 .pd-divider { display: none; }
 .pd-pc-vote-float { display: none; }
 .pd-pc-address { display: none; }
+.pd-pc-vote-col { display: none; }
+.pd-body-row { display: contents; }
 
 @media (min-width: 1024px) {
     .proposal-detail-container {
@@ -668,14 +664,7 @@
     .pd-author { display: none; }
     .pd-address-badge { display: none; }
 
-    .pd-stats-row {
-        display: flex;
-        margin-top: 10px;
-        color: #aaa;
-        font-size: 13px;
-    }
-
-    .pd-stats-right { display: none; }
+    .pd-stats-row { display: none; }
 
     .pd-pc-address {
         display: inline-flex;
@@ -697,8 +686,8 @@
     }
 
     .pd-content {
-        width: 960px;
-        max-width: calc(100% - 40px);
+        width: calc(100% - 120px);
+        max-width: 1360px;
         margin: 40px auto 0;
         padding: 0 0 32px;
         border-bottom: none;
@@ -767,13 +756,22 @@
     .pd-main-image-wrapper { width: 100%; display: block; }
 
     .pd-main-image {
-        width: 474px !important;
-        height: 434px;
+        width: 100%;
         max-width: 100%;
         border-radius: 15px;
         box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
         object-fit: cover;
         display: block;
+    }
+
+    .pd-photo { height: 434px; }
+    .pd-map-img { height: 208px; margin-top: 8px; }
+
+    .pd-body-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 57px;
+        width: 100%;
     }
 
     .pd-description {
@@ -782,15 +780,16 @@
         line-height: 1.5;
         letter-spacing: -0.64px;
         font-weight: 500;
+        flex: 1;
         max-width: 806px;
     }
 
-    .pd-pc-vote-float {
-        display: block;
-        position: absolute;
-        right: -60px;
-        top: 200px;
-        z-index: 10;
+    .pd-pc-vote-float { display: none; }
+
+    .pd-pc-vote-col {
+        display: flex;
+        flex-shrink: 0;
+        align-items: flex-start;
     }
 
     .pd-pc-vote-circle {
@@ -859,8 +858,8 @@
     .pd-pc-vote-circle.voted .pd-pc-vote-label { color: white; }
 
     .pd-comments-section {
-        width: 960px;
-        max-width: calc(100% - 40px);
+        width: calc(100% - 120px);
+        max-width: 1360px;
         margin: 0 auto;
         padding: 0 0 120px;
         background: none;
@@ -877,8 +876,8 @@
 
     .pd-comment-input-panel {
         position: relative;
-        width: 960px;
-        max-width: calc(100% - 40px);
+        width: calc(100% - 120px);
+        max-width: 1360px;
         left: auto;
         transform: none;
         margin: 0 auto;
@@ -888,6 +887,13 @@
         border-bottom: 1px solid #f0f0f0;
         box-sizing: border-box;
         z-index: 20;
+    }
+
+    .pd-comment-input-wrapper {
+        background-color: #f4f4f4;
+        border: 1px solid #dadada;
+        border-radius: 15px;
+        box-shadow: none;
     }
 
     .pd-bottom-sheet {

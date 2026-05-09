@@ -1,4 +1,4 @@
-import { ChevronRight, MessageCircle } from 'lucide-react';
+// lucide-react removed — using inline SVGs
 import '../../styles/admin.css';
 
 export default function AIPersonaPanel({ personas = [], onSelectPersona, onChatClick }) {
@@ -43,7 +43,7 @@ export default function AIPersonaPanel({ personas = [], onSelectPersona, onChatC
                             className="persona-btn-chat"
                             title="이 시민과 대화하기"
                         >
-                            <MessageCircle className="w-4 h-4" />
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         </button>
 
                         {/* Profile Header */}

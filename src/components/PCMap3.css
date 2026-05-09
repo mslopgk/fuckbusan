@@ -8,7 +8,7 @@
     overflow: hidden;
 }
 
-/* LEFT FILTER (floating) */
+/* LEFT FILTER (floating) — legacy single card 호환용 */
 .pc-map3-filter {
     position: absolute;
     top: 16px;
@@ -23,26 +23,73 @@
     z-index: 5;
 }
 
+/* LEFT FILTER STACK — 3 separate cards (구역별/생활정보/유형) */
+.pc-map3-filter-stack {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 305px;
+    max-height: calc(100% - 32px);
+    overflow-y: auto;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scrollbar-width: none;
+}
+.pc-map3-filter-stack::-webkit-scrollbar { display: none; }
+
+/* 카드 기본 */
+.pc-map3-filter-card {
+    background: #fff;
+    padding: 16px;
+}
+
+/* 1. 구역별 */
+.pc-map3-filter-card:nth-child(1) {
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* 2. 생활정보 */
+.pc-map3-filter-card:nth-child(2) {
+    border-radius: 19px;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.25);
+}
+
+/* 3. 유형 */
+.pc-map3-filter-card:nth-child(3) {
+    border-radius: 10px;
+}
+
 .pc-map3-section {
     margin-bottom: 24px;
 }
 
 .pc-map3-section-label {
-    font-size: 13px;
-    font-weight: 800;
-    color: #1a1a1b;
+    font-size: 14px;
+    font-weight: 400;
+    color: #737373;
     margin-bottom: 10px;
+}
+
+/* 생활정보 카드 제목은 bold/dark */
+.pc-map3-filter-card:nth-child(2) .pc-map3-section-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #242424;
+    letter-spacing: -0.04em;
 }
 
 .pc-map3-dropdown {
     position: relative;
     display: flex;
     align-items: center;
-    border: 1px solid #d6d6d8;
+    border: 1px solid #242424;
     border-radius: 8px;
     padding: 0 4px 0 12px;
     background: #fff;
-    height: 38px;
+    height: 46px;
 }
 
 .pc-map3-dropdown select {
@@ -84,13 +131,13 @@
 .pc-map3-cat-btn {
     border: 1px solid #ececec;
     background: #fff;
-    border-radius: 10px;
-    padding: 12px 4px;
+    border-radius: 12px;
+    padding: 8px 4px;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     transition: all 0.15s;
 }
 
@@ -113,20 +160,22 @@
 }
 
 .pc-map3-cat-label {
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 500;
     color: inherit;
+    text-align: center;
+    line-height: 1.35;
 }
 
 /* Type cards */
 .pc-map3-kind-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 14px;
 }
 
 .pc-map3-kind-card {
-    border: 1px solid #ececec;
+    border: 1.5px solid #E6235A;
     background: #fff;
     border-radius: 10px;
     padding: 14px 8px;
@@ -136,9 +185,9 @@
 }
 
 .pc-map3-kind-card div {
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 700;
-    color: #555;
+    color: #E6235A;
     margin-bottom: 6px;
 }
 
@@ -150,12 +199,20 @@
 }
 
 .pc-map3-kind-card:hover {
-    border-color: #E6235A;
+    background: #fff5f7;
 }
 
 .pc-map3-kind-card.active {
-    background: #fde7ee;
+    background: #E6235A;
     border-color: #E6235A;
+}
+
+.pc-map3-kind-card.active div {
+    color: #fff;
+}
+
+.pc-map3-kind-card.active strong {
+    color: #fff;
 }
 
 /* CENTER MAP — fills entire area */
@@ -170,43 +227,70 @@
     height: 100%;
 }
 
-/* Right toolbar — to the LEFT of the right list, near map center-right */
+/* Right toolbar — 3개 분리 카드 구조 (Figma 22:3522) */
 .pc-map3-toolbar {
     position: absolute;
     top: 16px;
-    right: 360px;
-    background: #fff;
-    border-radius: 12px;
-    padding: 6px;
+    right: 425px;
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    gap: 16px;
     z-index: 6;
+    transition: right 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pc-map3-sidebar-closed .pc-map3-toolbar {
+    right: 16px;
+}
+
+.pc-map3-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 48px;
 }
 
 .pc-map3-tool {
-    width: 36px;
-    height: 36px;
+    width: 48px;
+    height: 48px;
     border: none;
     background: #fff;
     color: #555;
-    border-radius: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.15s;
+    flex-shrink: 0;
+    padding: 0;
+    transition: background 0.15s, color 0.15s;
 }
 
 .pc-map3-tool:hover {
-    background: #f3f4f5;
-    color: #E6235A;
+    background: #f3f4f6;
 }
 
-.pc-map3-tool.active {
-    background: #E6235A;
+.pc-map3-tool--sep {
+    border-top: 1px solid #e6e6e6;
+}
+
+.pc-map3-tool--teal {
+    background: #23bdbb;
     color: #fff;
+}
+
+.pc-map3-tool--teal:hover {
+    background: #1faaaa;
+}
+
+.pc-map3-tool--teal-off {
+    background: #fff;
+    color: #23bdbb;
+}
+.pc-map3-tool--teal-off:hover {
+    background: #f0fafa;
 }
 
 /* Floating policy info card */
@@ -332,16 +416,25 @@
     position: absolute;
     top: 16px;
     right: 16px;
-    width: 320px;
+    width: 395px;
     max-height: calc(100% - 32px);
     background: #fff;
-    border-radius: 14px;
+    border-radius: 20px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+    box-shadow: 0 0 20px rgba(0,0,0,0.25);
     z-index: 5;
+    transition: translate 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: translate;
 }
+
+.pc-map3-sidebar-closed .pc-map3-list {
+    translate: calc(100% + 32px) 0;
+    pointer-events: none;
+    user-select: none;
+}
+
 
 .pc-map3-list-head {
     padding: 14px 18px;
@@ -353,7 +446,7 @@
     position: sticky;
     top: 0;
     z-index: 1;
-    border-radius: 14px 14px 0 0;
+    border-radius: 20px 20px 0 0;
 }
 
 .pc-map3-list-count {
@@ -362,14 +455,14 @@
     gap: 6px;
     color: #E6235A;
     font-weight: 800;
-    font-size: 13px;
+    font-size: 16px;
 }
 
 .pc-map3-sort {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 11px;
+    font-size: 13px;
 }
 
 .pc-map3-sort button {
@@ -378,8 +471,9 @@
     color: #888;
     cursor: pointer;
     padding: 0 2px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
+    font-family: inherit;
 }
 
 .pc-map3-sort button.active {
@@ -394,20 +488,26 @@
 .pc-map3-list-items {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .pc-map3-list-items li {
-    padding: 12px 16px;
-    border-bottom: 1px solid #f4f4f4;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 14px 16px;
     cursor: pointer;
     display: flex;
-    gap: 12px;
-    transition: background 0.15s;
+    gap: 14px;
+    transition: transform 0.12s, box-shadow 0.12s;
 }
 
 .pc-map3-list-items li:hover {
-    background: #fafafa;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.14);
 }
 
 .pc-map3-list-info {
@@ -418,28 +518,30 @@
 .pc-map3-list-tags {
     display: flex;
     gap: 4px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 .pc-map3-pill {
     display: inline-flex;
     align-items: center;
-    height: 17px;
-    padding: 0 7px;
-    border-radius: 8px;
-    font-size: 10px;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 15px;
+    font-size: 12px;
     font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
 .pc-map3-pill.pink { background: #fef0f5; color: #E6235A; }
 .pc-map3-pill.green { background: #e7f8ed; color: #2b8a3e; }
 
 .pc-map3-list-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: #1a1a1b;
+    font-size: 16px;
+    font-weight: 500;
+    color: #111;
     margin-bottom: 4px;
     line-height: 1.4;
+    letter-spacing: -0.04em;
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
@@ -448,16 +550,24 @@
 }
 
 .pc-map3-list-sub {
-    font-size: 11px;
-    color: #999;
-    margin-bottom: 6px;
+    font-size: 13px;
+    color: #737373;
+    margin-bottom: 0;
+}
+
+.pc-map3-list-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .pc-map3-list-stats {
     display: flex;
-    gap: 10px;
-    font-size: 10px;
-    color: #888;
+    gap: 8px;
+    font-size: 12px;
+    color: #bfbfbf;
 }
 
 .pc-map3-list-stats span {
@@ -467,8 +577,11 @@
 }
 
 .pc-map3-list-thumb {
-    width: 76px;
-    height: 76px;
+    width: 46px;
+    height: 46px;
     flex-shrink: 0;
-    border-radius: 6px;
+    border-radius: 15px;
+    background-color: #eee;
+    background-size: cover;
+    background-position: center;
 }

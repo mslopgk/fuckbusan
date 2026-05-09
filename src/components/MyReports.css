@@ -5,7 +5,7 @@
     font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
     background-color: #fff;
     position: relative;
-    padding-bottom: 100px;
+    padding-bottom: 140px;
 }
 
 /* Header (ProposalList Style) */
@@ -215,7 +215,7 @@
 /* Floating Action Button (Pink) */
 .mr-fab {
     position: fixed;
-    bottom: 30px;
+    bottom: 80px;
     right: 14px;
     background: #E6235A;
     color: #fff;

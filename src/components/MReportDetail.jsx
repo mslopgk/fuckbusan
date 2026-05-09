@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PCMapCanvas from './PCMapCanvas';
+import { CAT_STYLES } from './catStyles';
 import './MProposalDetail.css';
 import './MReportDetail.css';
 
@@ -12,13 +13,10 @@ const STAGES = [
     { key: 'notice',   label: '결과안내' },
 ];
 
-const CAT_STYLES = {
-    '주거': { bg: '#E0F4F1', color: '#2C9A8F' },
-};
-
 export default function MReportDetail({ onNavigate, report }) {
     const data = {
         title: report?.title || '',
+        body: report?.body || report?.description || report?.content || '',
         cat: report?.cat || report?.category || '',
         sub: report?.sub || report?.sub_category || '',
         region: report?.region || '',
@@ -33,6 +31,9 @@ export default function MReportDetail({ onNavigate, report }) {
         lat: report?.lat || 35.197,
         lng: report?.lng || 129.063,
         result: report?.result || report?.result_details || null,
+        imageUrl: report?.image || null,
+        resultImageUrl: report?.result_image || report?.result?.image || null,
+        resultComment: report?.result_comment || report?.result?.comment || report?.result?.result_comment || '',
     };
     const stageIdx = STAGES.findIndex((s) => s.key === data.currentStage);
     const style = CAT_STYLES[data.cat] || { bg: '#E0F4F1', color: '#2C9A8F' };
@@ -42,12 +43,6 @@ export default function MReportDetail({ onNavigate, report }) {
     const [likeCount, setLikeCount] = useState(data.likes);
     const [resultOpen, setResultOpen] = useState(false);
     const [comments, setComments] = useState([]);
-
-    useEffect(() => {
-        if (data.currentStage === 'notice') {
-            setResultOpen(true);
-        }
-    }, [data.currentStage]);
 
     useEffect(() => {
         if (!report?.id) return;
@@ -112,7 +107,7 @@ export default function MReportDetail({ onNavigate, report }) {
     };
 
     return (
-        <div className="m-prop-detail-page m-report-detail-page">
+        <div className={`m-prop-detail-page m-report-detail-page${data.currentStage !== 'notice' && report?.improvement_status !== '개선완료' ? ' stage-bar-compact' : ''}`}>
             <header className="m-detail-topbar">
                 <button className="m-detail-back" onClick={() => onNavigate && onNavigate('mReportList')}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -133,7 +128,12 @@ export default function MReportDetail({ onNavigate, report }) {
 
                 <h1 className="m-detail-title">{data.title}</h1>
 
-                <div className="m-detail-image" />
+                {data.body && <p className="m-rdetail-body">{data.body}</p>}
+
+                <div
+                    className="m-detail-image"
+                    style={data.imageUrl ? { backgroundImage: `url(${data.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+                />
 
                 <div className="m-detail-map">
                     <PCMapCanvas
@@ -192,33 +192,79 @@ export default function MReportDetail({ onNavigate, report }) {
             </div>
 
             <footer className="m-rdetail-stage-bar">
-                {STAGES.map((s, i) => (
-                    <div key={s.key} className="m-rstage-step">
-                        <button
-                            type="button"
-                            className={`m-rstage-pill ${i === stageIdx ? 'active' : ''} ${i < stageIdx ? 'done' : ''}`}
-                            onClick={() => handleStageClick(s.key)}
-                        >
-                            {s.label}
-                        </button>
-                        {i < STAGES.length - 1 && (
-                            <span className="m-rstage-sep" aria-hidden="true">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                            </span>
-                        )}
-                    </div>
-                ))}
+                <div className="m-rstage-pills-row">
+                    {STAGES.map((s, i) => (
+                        <div key={s.key} className="m-rstage-step">
+                            <button
+                                type="button"
+                                className={`m-rstage-pill ${i === stageIdx ? 'active' : ''} ${i < stageIdx ? 'done' : ''}`}
+                                onClick={() => handleStageClick(s.key)}
+                            >
+                                {s.label}
+                            </button>
+                            {i < STAGES.length - 1 && (
+                                <span className="m-rstage-sep" aria-hidden="true">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                </span>
+                            )}
+                        </div>
+                    ))}
+                </div>
+                {(data.currentStage === 'notice' || report?.improvement_status === '개선완료') && (
+                    <button
+                        type="button"
+                        className="m-rstage-result-btn"
+                        onClick={() => setResultOpen(true)}
+                    >
+                        개선 결과보기
+                    </button>
+                )}
             </footer>
 
             {resultOpen && (
                 <div className="m-result-backdrop" onClick={() => setResultOpen(false)}>
                     <div className="m-result-modal" onClick={(e) => e.stopPropagation()}>
-                        <h3 className="m-result-title">개선 결과보기</h3>
-                        <div className="m-result-image" />
-                        <p className="m-result-body">{data.result?.body || data.result?.content || '결과가 아직 등록되지 않았습니다.'}</p>
+                        <div className="m-result-header">
+                            <h3 className="m-result-title">개선 결과보기</h3>
+                            <button
+                                type="button"
+                                className="m-result-close"
+                                onClick={() => setResultOpen(false)}
+                                aria-label="닫기"
+                            >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                        {data.resultImageUrl ? (
+                            <img
+                                src={data.resultImageUrl}
+                                alt="개선 결과 사진"
+                                className="m-result-image m-result-image--actual"
+                            />
+                        ) : (
+                            <div className="m-result-image m-result-image--placeholder">
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#a0bdd0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="3"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                                <span>결과 사진이 없습니다</span>
+                            </div>
+                        )}
+                        <p className="m-result-body">{data.result?.body || data.result?.content || data.result?.detail || '결과가 아직 등록되지 않았습니다.'}</p>
                         <div className="m-result-divider" />
                         <p className="m-result-comment-label">담당자 코멘트</p>
-                        <p className="m-result-date">{data.result?.date || data.result?.result_date || ''}</p>
+                        {data.resultComment ? (
+                            <p className="m-result-comment-content">{data.resultComment}</p>
+                        ) : (
+                            <p className="m-result-comment-content m-result-comment-content--empty">등록된 코멘트가 없습니다.</p>
+                        )}
+                        {(data.result?.date || data.result?.result_date) && (
+                            <p className="m-result-date">{data.result?.date || data.result?.result_date}</p>
+                        )}
                     </div>
                 </div>
             )}

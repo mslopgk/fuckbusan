@@ -1,19 +1,19 @@
 /* Shared styles for PCProposeForm and PCReportForm */
 
 .pc-form-page {
-    background: #f7f7f8;
+    background: #ffffff;
     min-height: calc(100vh - 60px);
     padding: 60px 0 120px;
 }
 
 .pc-form-inner {
-    max-width: 720px;
+    max-width: 960px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 40px;
 }
 
 .pc-form-title {
-    font-size: 22px;
+    font-size: 30px;
     font-weight: 800;
     color: #1a1a1b;
     margin: 0 0 20px;
@@ -23,21 +23,28 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-radius: 14px;
+    border-radius: 30px;
     padding: 28px 36px;
     margin-bottom: 36px;
 }
 
 .pc-hero-yellow {
-    background: #FFF5C5;
+    background: #FEF4B7;
 }
 
 .pc-form-hero h3 {
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 800;
     color: #1a1a1b;
     margin: 0;
     line-height: 1.5;
+}
+
+.pc-form-hero-img {
+    height: 140px;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
 .pc-form-section {
@@ -76,7 +83,7 @@
 .pc-form-input {
     width: 100%;
     border: 1px solid #e0e0e0;
-    border-radius: 22px;
+    border-radius: 15px;
     padding: 12px 18px;
     font-size: 13px;
     color: #1a1a1b;
@@ -149,8 +156,8 @@
 .pc-attach-add {
     width: 80px;
     height: 80px;
-    border: 1px dashed #c8c8c8;
-    border-radius: 12px;
+    border: 1px solid #c8c8c8;
+    border-radius: 15px;
     background: #fff;
     color: #999;
     font-size: 22px;
@@ -159,6 +166,202 @@
 }
 
 .pc-attach-add:hover { border-color: #E6235A; color: #E6235A; }
+
+/* 첨부파일 썸네일 (실제 파일 업로드용) */
+.pc-attach-item-thumb {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f3f4f5;
+    flex-shrink: 0;
+}
+.pc-attach-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.pc-attach-thumb-fallback {
+    padding: 6px;
+    font-size: 10px;
+    color: #555;
+    text-align: center;
+    word-break: break-all;
+    line-height: 1.3;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pc-attach-remove {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 위치 선택 + 상세위치 한 줄 */
+.pc-form-loc-row {
+    display: flex;
+    gap: 8px;
+}
+.pc-form-loc-row .pc-form-clickable {
+    flex: 0 0 60%;
+}
+.pc-form-loc-row .pc-form-loc-detail {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 위치 선택 모달 — Figma: 393px × 852px card */
+.pc-loc-picker-modal {
+    background: #fff;
+    border-radius: 20px;
+    width: 420px;
+    max-width: 96vw;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.32);
+}
+.pc-loc-picker-head {
+    position: relative;
+    padding: 26px 20px 18px 44px;
+    flex-shrink: 0;
+}
+.pc-loc-picker-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #242424;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+}
+.pc-loc-picker-close {
+    position: absolute;
+    top: 24px;
+    left: 16px;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #333;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pc-loc-picker-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 16px 14px;
+    padding: 0 14px;
+    height: 52px;
+    border: 1px solid #dcdcdc;
+    border-radius: 14px;
+    flex-shrink: 0;
+}
+.pc-loc-search-icon { flex-shrink: 0; }
+.pc-loc-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    color: #333;
+    font-family: inherit;
+    background: transparent;
+}
+.pc-loc-search-input::placeholder { color: #bbb; }
+.pc-loc-search-clear {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #aaa;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pc-loc-picker-map {
+    position: relative;
+    height: 430px;
+    flex-shrink: 0;
+    background: #e8e8e8;
+}
+.pc-loc-map-loading {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 14px;
+}
+.pc-loc-picker-hint {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.88);
+    color: #242424;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 18px;
+    border-radius: 20px;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.12);
+    z-index: 10;
+}
+.pc-loc-current-btn {
+    position: absolute;
+    bottom: 52px;
+    right: 14px;
+    width: 46px;
+    height: 46px;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0,0,0,0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+.pc-loc-current-btn:hover { background: #f5f5f5; }
+.pc-loc-picker-confirm {
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    margin: 14px 16px 16px;
+    padding: 0;
+    height: 56px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+}
+.pc-loc-picker-confirm:disabled { background: #f09cb4; cursor: default; }
+.pc-loc-picker-confirm:not(:disabled):hover { background: #c61d4d; }
 
 .pc-form-hint {
     font-size: 11px;
@@ -180,7 +383,7 @@
     font-size: 13px;
     font-weight: 700;
     padding: 12px 32px;
-    border-radius: 24px;
+    border-radius: 15px;
     cursor: pointer;
     transition: background 0.15s;
 }
@@ -193,7 +396,7 @@
     font-size: 13px;
     font-weight: 700;
     padding: 12px 32px;
-    border-radius: 24px;
+    border-radius: 15px;
     cursor: pointer;
     transition: background 0.15s;
 }
@@ -210,7 +413,7 @@
     font-size: 13px;
     font-weight: 700;
     padding: 12px 32px;
-    border-radius: 24px;
+    border-radius: 15px;
     cursor: pointer;
 }
 
@@ -307,23 +510,22 @@
 }
 
 .pc-form-chip {
-    border: 1px solid #d6d6d8;
-    background: #fff;
+    border: none;
+    background: #E6E6E6;
     color: #555;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 600;
     padding: 6px 14px;
-    border-radius: 16px;
+    border-radius: 20px;
     cursor: pointer;
     transition: all 0.15s;
 }
 
-.pc-form-chip:hover { border-color: #E6235A; color: #E6235A; }
+.pc-form-chip:hover { background: #d0d0d0; color: #333; }
 
 .pc-form-chip.active {
     background: #E6235A;
     color: #fff;
-    border-color: #E6235A;
 }
 
 .pc-form-row-flex {

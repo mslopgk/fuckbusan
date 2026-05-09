@@ -257,29 +257,34 @@
 .pc-cat-work { background: #fff0e0; color: #d9480f; }
 .pc-cat-leisure { background: #fff7e0; color: #c08800; }
 
-/* Kakao map pin overlay */
+/* Kakao map pin overlay — SVG 테어드롭 (Figma 22:3462) */
 .pc-kakao-pin {
-    width: 26px;
-    height: 26px;
-    border-radius: 50% 50% 50% 0;
-    transform: rotate(-45deg);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.20);
-    cursor: pointer;
+    background: none;
     border: none;
     padding: 0;
+    cursor: pointer;
     position: relative;
+    display: block;
+    line-height: 0;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.30));
+    transition: filter 0.15s, transform 0.12s;
 }
 
-.pc-kakao-pin span {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #fff;
-    transform: translate(-50%, -50%);
+.pc-kakao-pin:hover {
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.40));
+    transform: translateY(-2px);
 }
+
+.pc-kakao-pin--focus svg {
+    transform: scale(1.25);
+    transform-origin: bottom center;
+}
+
+.pc-kakao-pin--focus {
+    filter: drop-shadow(0 0 6px rgba(35,189,187,0.5)) drop-shadow(0 3px 8px rgba(0,0,0,0.35));
+}
+
+.pc-kakao-pin span { display: none; }
 
 .pc-kakao-pin-count {
     width: auto;
@@ -310,6 +315,103 @@
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-top: 6px solid var(--pin-bg, #E6235A);
+}
+
+/* 줌아웃 시 클러스터 핀: Figma Union 말풍선 + 숫자 */
+.pc-kakao-cluster-balloon {
+    position: relative;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+    line-height: 0;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.30));
+    transition: filter 0.15s, transform 0.12s;
+}
+
+.pc-kakao-cluster-balloon:hover {
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.40));
+    transform: translateY(-2px);
+}
+
+/* 말풍선 내 카운트 텍스트: 타원 바디 중앙 (y=13.5/32 ≈ 42%) */
+.pc-kakao-balloon-count {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-weight: 800;
+    font-size: 13px;
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -0.3px;
+}
+
+/* 진단 지도 핀 (pinVariant='diagnosis') */
+.pc-diag-pin {
+    position: relative;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+    line-height: 0;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.25));
+    transition: filter 0.15s, transform 0.12s;
+}
+
+.pc-diag-pin:hover {
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,0.35));
+    transform: translateY(-2px);
+}
+
+.pc-diag-pin--focus {
+    filter: drop-shadow(0 0 6px rgba(35,210,188,0.5)) drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+}
+
+/* 클러스터 카운트 배지: 핀 좌상단에 흰색 원 */
+.pc-diag-pin-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #fff;
+    border: 2px solid #777777;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    font-weight: 800;
+    font-size: 11px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+/* 줌인 시 개별 핀 + 투표수 배지 (핀 옆에 작은 카드) */
+.pc-kakao-pin-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.pc-kakao-pin-vote {
+    position: absolute;
+    left: 100%;
+    bottom: 50%;
+    margin-left: 4px;
+    background: #fff;
+    border: 1.5px solid currentColor;
+    border-radius: 10px;
+    padding: 1px 6px 1px 5px;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.4;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    pointer-events: none;
 }
 
 /* List thumbnail with map-like color */

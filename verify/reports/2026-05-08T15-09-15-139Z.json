@@ -1,0 +1,13 @@
+{
+  "startedAt": "2026-05-08T15:09:15.139Z",
+  "frontend": [],
+  "api": null,
+  "summary": {
+    "fePass": 0,
+    "feFail": 0,
+    "apiPass": 0,
+    "apiFail": 0,
+    "ok": true
+  },
+  "finishedAt": "2026-05-08T15:09:17.149Z"
+}

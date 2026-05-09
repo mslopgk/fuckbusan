@@ -1,0 +1,99 @@
+.m-myreport-detail-page {
+    padding-bottom: 90px;
+}
+
+.m-myrdetail-topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.m-myrdetail-status-badge {
+    background: #FCDAE3;
+    color: #E6235A;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.m-myrdetail-body {
+    font-size: 13px;
+    color: #1a1a1b;
+    line-height: 1.6;
+    margin: 0 0 12px;
+    word-break: keep-all;
+}
+
+.m-myrdetail-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #ececec;
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    z-index: 50;
+    max-width: 393px;
+    margin: 0 auto;
+}
+
+.m-myrdetail-btn {
+    flex: 1;
+    height: 44px;
+    border-radius: 22px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s;
+}
+
+.m-myrdetail-btn.ghost {
+    background: #fff;
+    border: 1px solid #E6235A;
+    color: #E6235A;
+}
+
+.m-myrdetail-btn.primary {
+    background: #E6235A;
+    border: none;
+    color: #fff;
+}
+
+.m-myrdetail-btn:active { opacity: 0.85; }
+
+.m-myrdetail-modal {
+    width: 100%;
+    max-width: 300px;
+    background: #fff;
+    border-radius: 18px;
+    padding: 28px 22px 22px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    text-align: center;
+}
+
+.m-myrdetail-modal-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0 0 22px;
+    letter-spacing: -0.02em;
+    line-height: 1.45;
+}
+
+.m-myrdetail-modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.m-myrdetail-modal-error {
+    color: #d12247;
+    font-size: 12px;
+    margin: -10px 0 14px;
+    text-align: center;
+}

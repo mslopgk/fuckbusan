@@ -24,6 +24,7 @@ export async function runFrontend({ views, headless = true, token = null, adminT
       const networkFailures = [];
 
       const page = await context.newPage();
+      if (v.viewport) await page.setViewportSize(v.viewport);
       page.on('console', (msg) => {
         if (msg.type() === 'error') consoleErrors.push(msg.text());
       });

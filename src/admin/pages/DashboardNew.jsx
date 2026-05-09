@@ -21,7 +21,7 @@ export default function DashboardNew({ onNavigate }) {
                         name: u.name,
                         nickname: u.nickname || '-',
                         phone: u.phone_num || '-',
-                        address: '-',
+                        address: u.address || u.location || '-',
                         email: u.ID,
                         birth: u.birth_date || '-',
                         district_code: u.district_code,

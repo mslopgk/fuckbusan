@@ -4,93 +4,136 @@
     padding-bottom: 100px;
 }
 
+/* ── 배너 메타 (날짜·인원 pill + 복사 버튼) ── */
 .pc-banner-meta {
-    margin-top: 16px;
+    margin-top: 20px;
     display: inline-flex;
     align-items: center;
     gap: 12px;
 }
 
-.pc-banner-pill {
+.pc-banner-info-pill {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.15);
-    padding: 6px 14px;
-    border-radius: 16px;
-    font-size: 12px;
-    color: #fff;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 30px;
+    padding: 8px 18px;
+}
+
+.pc-banner-date {
+    font-size: 16px;
+    color: #111;
+    font-weight: 500;
+    letter-spacing: -0.64px;
+}
+
+.pc-banner-divider {
+    width: 1px;
+    height: 14px;
+    background: rgba(0, 0, 0, 0.15);
+    display: inline-block;
+}
+
+.pc-banner-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 16px;
+    color: #111;
+    font-weight: 500;
+    letter-spacing: -0.64px;
 }
 
 .pc-banner-copy {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    background: rgba(255,255,255,0.10);
-    padding: 6px 14px;
-    border-radius: 16px;
-    font-size: 12px;
-    color: #fff;
+    gap: 5px;
+    background: transparent;
     border: none;
+    font-size: 14px;
+    color: #fff;
     cursor: pointer;
+    letter-spacing: -0.56px;
+    font-weight: 500;
+    padding: 4px 0;
 }
-.pc-banner-copy:hover { background: rgba(255,255,255,0.20); }
+.pc-banner-copy:hover { opacity: 0.8; }
 
+/* ── 결과 카드 ── */
 .pc-results-card {
     width: 720px;
-    margin: -56px auto 0;
+    margin: -120px auto 0;
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 12px 40px rgba(34, 12, 80, 0.10);
     padding: 36px 44px;
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
 }
 
+/* 섹션 구분: 5px #f4f4f4 풀블리드 밴드 */
 .pc-results-block {
     padding: 28px 0;
-    border-bottom: 1px solid #f1f1f1;
+    position: relative;
 }
 
-.pc-results-block:first-child { padding-top: 0; }
-.pc-results-block:last-child { border-bottom: none; }
-
-.pc-results-block h3 {
-    font-size: 16px;
-    font-weight: 800;
-    color: #1a1a1b;
-    margin: 0 0 16px;
+.pc-results-block:not(.pc-results-block-last)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -44px;
+    right: -44px;
+    height: 5px;
+    background: #f4f4f4;
 }
 
-.pc-results-block h4 {
-    font-size: 14px;
+.pc-results-heading {
+    font-size: 18px;
     font-weight: 700;
-    color: #1a1a1b;
-    margin: 0 0 16px;
+    color: #111;
+    margin: 0 0 20px;
+    letter-spacing: -0.72px;
 }
 
+.pc-results-q-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 20px;
+    letter-spacing: -0.64px;
+}
+
+/* ── 레이더 차트 ── */
 .pc-radar-wrap {
     display: flex;
     justify-content: center;
+    margin-bottom: 4px;
 }
 
 .pc-toggle-detail {
-    display: block;
-    margin: 12px auto 0;
-    background: #f3f4f5;
-    border: none;
-    border-radius: 18px;
-    padding: 6px 16px;
-    font-size: 12px;
-    color: #555;
-    cursor: pointer;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    margin: 12px auto 0;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-size: 16px;
+    color: #777;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+    letter-spacing: -0.64px;
 }
+.pc-toggle-detail:hover { background: #fafafa; }
 
+/* ── 도넛 차트 행 ── */
 .pc-pie-row {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 36px;
 }
 
 .pc-pie-legend {
@@ -99,72 +142,79 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    font-size: 13px;
+    gap: 12px;
 }
 
 .pc-pie-legend li {
     display: flex;
     align-items: center;
     gap: 8px;
+    font-size: 14px;
 }
 
 .pc-pie-legend strong {
     font-weight: 700;
-    color: #1a1a1b;
+    font-size: 14px;
+    min-width: 34px;
+    letter-spacing: -0.56px;
+}
+
+.pc-legend-label {
+    color: #777;
+    letter-spacing: -0.56px;
 }
 
 .pc-dot {
     display: inline-block;
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
 }
 
+/* ── 가로 바 차트 (Q3) ── */
 .pc-bar-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .pc-bar-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 12px;
-}
-
-.pc-bar-label {
-    width: 100px;
-    flex-shrink: 0;
-    color: #444;
-    font-weight: 600;
-}
-
-.pc-bar-track {
-    flex: 1;
-    height: 18px;
-    background: #f3f4f5;
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
+    gap: 8px;
 }
 
 .pc-bar-fill {
-    height: 100%;
-    color: #fff;
-    font-weight: 700;
-    font-size: 11px;
+    height: 26px;
+    border-radius: 0 30px 30px 0;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    padding-right: 6px;
+    padding: 0 12px;
+    flex-shrink: 0;
+    transition: width 0.3s ease;
 }
 
+.pc-bar-inner-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    white-space: nowrap;
+    letter-spacing: -0.56px;
+}
+
+.pc-bar-pct {
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+    letter-spacing: -0.64px;
+    flex-shrink: 0;
+}
+
+/* ── 버블 차트 (Q4) ── */
 .pc-bubble-wrap {
     position: relative;
-    height: 240px;
+    height: 260px;
     background: #fafafa;
     border-radius: 12px;
 }
@@ -180,19 +230,67 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    line-height: 1.1;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    line-height: 1.2;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+    white-space: nowrap;
 }
 
-.pc-col-chart {
+/* ── 세로 바 차트 (Q5) ── */
+.pc-col-chart-wrap {
+    display: flex;
+    gap: 8px;
+    padding-top: 8px;
+}
+
+.pc-col-y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 28px;
+    width: 28px;
+    flex-shrink: 0;
+}
+
+.pc-col-y-axis span {
+    font-size: 12px;
+    color: #777;
+    font-weight: 300;
+    text-align: right;
+    line-height: 1.4;
+    letter-spacing: -0.48px;
+}
+
+.pc-col-chart-inner {
+    flex: 1;
+    position: relative;
+    height: 190px;
+}
+
+.pc-col-gridlines {
+    position: absolute;
+    inset: 0;
+    bottom: 28px;
+}
+
+.pc-col-gridline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #f0f0f0;
+}
+
+.pc-col-bars {
+    position: absolute;
+    inset: 0;
+    bottom: 0;
     display: flex;
     align-items: flex-end;
     justify-content: space-around;
-    height: 220px;
-    padding: 20px 0 0;
+    padding-bottom: 28px;
 }
 
-.pc-col-row {
+.pc-col-col {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -200,19 +298,36 @@
     flex: 1;
 }
 
-.pc-col-percent {
-    font-size: 10px;
-    color: #5B2EAB;
-    font-weight: 700;
+.pc-col-caption {
+    font-size: 11px;
+    color: #111;
+    font-weight: 300;
+    letter-spacing: -0.48px;
+    white-space: nowrap;
 }
 
 .pc-col-bar {
-    width: 32px;
-    background: #5B2EAB;
-    border-radius: 4px 4px 0 0;
+    width: 26px;
+    background: #542AA3;
+    border-radius: 100px 100px 0 0;
 }
 
-.pc-col-label {
-    font-size: 11px;
+.pc-col-xlabel {
+    font-size: 12px;
     color: #777;
+    font-weight: 300;
+    letter-spacing: -0.48px;
+    position: absolute;
+    bottom: 4px;
+}
+
+.pc-col-col {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    flex: 1;
+    padding-bottom: 24px;
 }

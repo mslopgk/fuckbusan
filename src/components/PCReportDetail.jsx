@@ -105,7 +105,7 @@ export default function PCReportDetail({ onNavigate, report }) {
                         <span>·</span>
                         <span>{data.author_id}</span>
                         <span>·</span>
-                        <span>❤️ {data.likes}</span>
+                        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="#E6235A" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: '-2px' }}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg> {data.likes}</span>
                     </div>
 
                     <div className="pc-detail-image" />
@@ -131,7 +131,9 @@ export default function PCReportDetail({ onNavigate, report }) {
                             className={`pc-vote-float ${liked ? 'on' : ''}`}
                             onClick={toggleLike}
                         >
-                            <span className="pc-vote-float-icon">❤</span>
+                            <span className="pc-vote-float-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            </span>
                             <span className="pc-vote-float-label">{liked ? '응원완료' : '응원해'}</span>
                         </button>
                     </div>
@@ -161,6 +163,7 @@ export default function PCReportDetail({ onNavigate, report }) {
                                         <span>{c.date || ''}</span>
                                     </div>
                                     <p>{c.content}</p>
+                                    <button className="pc-comment-reply-btn">답글쓰기</button>
                                 </li>
                             ))}
                         </ul>

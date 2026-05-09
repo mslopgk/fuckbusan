@@ -5,10 +5,10 @@ import './PCSurveyJoin.css';
 export default function PCSurveyJoin({ onNavigate, survey }) {
     const data = survey || { title: '사직구장 일대 보행환경의 현황 조사' };
 
-    const [q1, setQ1] = useState('yes');
-    const [q2, setQ2] = useState(2);
-    const [q3, setQ3] = useState(2);
-    const [q4, setQ4] = useState(['walkway', 'separation']);
+    const [q1, setQ1] = useState(null);
+    const [q2, setQ2] = useState(null);
+    const [q3, setQ3] = useState(null);
+    const [q4, setQ4] = useState([]);
     const [q5, setQ5] = useState('');
 
     const toggleCheckbox = (key) => {

@@ -1,4 +1,4 @@
-import { Bot, X } from 'lucide-react';
+// lucide-react removed — using inline SVGs
 import AIChatPanel from './AIChatPanel';
 import { DISTRICTS } from '../../data/constants';
 import '../../styles/admin.css';
@@ -55,7 +55,7 @@ export default function FloatingChatWidget({ context, isOpen, onToggle, targetPe
 
                         <div className="chat-header-info w-full flex justify-between items-start pl-36"> {/* Added padding-left to clear image */}
                             <div className="chat-title-wrapper flex flex-col gap-1">
-                                {!targetPersona && <Bot className="chat-avatar-icon mb-1" />}
+                                {!targetPersona && <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="chat-avatar-icon" style={{ marginBottom: 4 }}><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M12 3a3 3 0 0 0-3 3v5h6V6a3 3 0 0 0-3-3z"/><path d="M8 21v-2"/><path d="M16 21v-2"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>}
                                 <h3 className="chat-title text-lg font-bold flex items-center gap-2">
                                     {targetPersona ? (
                                         <>
@@ -81,7 +81,7 @@ export default function FloatingChatWidget({ context, isOpen, onToggle, targetPe
                                 onClick={onToggle}
                                 className="chat-close-btn p-2 hover:bg-white/20 rounded-full transition-colors"
                             >
-                                <X className="w-5 h-5" />
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                             </button>
                         </div>
                     </div>
@@ -99,14 +99,14 @@ export default function FloatingChatWidget({ context, isOpen, onToggle, targetPe
                 className={`fab-btn ${isOpen ? 'open' : 'closed'}`}
             >
                 {isOpen ? (
-                    <X className="w-6 h-6 text-white" />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 ) : (
                     <div className="fab-icon-wrapper">
                         {targetPersona && personaImage ? (
                             <img src={personaImage} alt="img" className="w-full h-full object-cover rounded-full" />
                         ) : (
                             <>
-                                <Bot className="fab-icon" />
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="fab-icon"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M12 3a3 3 0 0 0-3 3v5h6V6a3 3 0 0 0-3-3z"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>
                                 <span className="fab-status-dot"></span>
                             </>
                         )}

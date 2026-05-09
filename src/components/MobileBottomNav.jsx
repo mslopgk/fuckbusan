@@ -1,102 +1,126 @@
+import { useState } from 'react';
 import './MobileBottomNav.css';
 
 const ITEMS = [
-    { key: 'home',     label: '홈',        activeColor: '#5B2EAB' },
-    { key: 'survey',   label: '설문',      activeColor: '#5B2EAB' },
-    { key: 'report',   label: '제보',      activeColor: '#5B2EAB' },
-    { key: 'propose',  label: '제안',      activeColor: '#5B2EAB' },
-    { key: 'activity', label: '나의 활동', activeColor: '#5B2EAB' },
+    { key: 'diagnosis',      label: '진단',         activeColor: '#06AB69' },
+    { key: 'reportPropose',  label: '제보·제안',    activeColor: '#5B2EAB' },
+    { key: 'home',           label: '홈',           activeColor: '#5B2EAB' },
+    { key: 'aiCitizen',      label: '가상시민',     activeColor: '#23bdbb' },
+    { key: 'activity',       label: '나의 활동',    activeColor: '#5B2EAB' },
 ];
 
 const SURVEY_VIEWS    = ['mSurveyList', 'mSurveyDetail1', 'mSurveyDetail2', 'mSurveyJoin', 'mSurveyDone', 'mSurveyResults', 'survey', 'surveyDone'];
-const REPORT_VIEWS    = ['mReportList', 'mReportMap', 'mReportForm', 'mReportDetail', 'mReportDone', 'reportList', 'reportForm', 'reportDetail', 'reportDone', 'report'];
+const REPORT_VIEWS    = ['mReportList', 'mReportMap', 'mReportForm', 'mReportDetail', 'mReportDone', 'mMyReportDetail', 'mMyReportEdit', 'myReportList', 'myReports', 'reportList', 'reportForm', 'reportDetail', 'reportDone', 'report'];
 const PROPOSE_VIEWS   = ['mProposalList', 'mProposalMap', 'mProposalForm', 'mProposalDetail', 'mProposalDone', 'proposalList', 'proposalForm', 'proposalDetail', 'proposalDone'];
-const ACTIVITY_VIEWS  = ['myPage', 'myActivity', 'myActivityHub', 'myReports', 'myProposals'];
+const DIAG_VIEWS      = ['mDiagnosisList', 'mDiagnosisForm', 'mDiagnosisResult', 'mDiagnosisDone', 'mDiagnosisDetail', 'diagnosis', 'diagnosisStep1', 'bigCategory', 'checkList', 'satisfaction', 'review', 'checkDone', 'diagnosisResult', 'diagnosisList', 'diagnosisEdit', 'expertDiagnosisResult'];
+const ACTIVITY_VIEWS  = ['myPage', 'myActivity', 'myActivityHub', 'myProposals'];
 
-function NavIcon({ name }) {
-    const props = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
-    switch (name) {
-        case 'home':
-            return (
-                <svg {...props}>
-                    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V9.5z"/>
-                </svg>
-            );
-        case 'survey':
-            return (
-                <svg {...props}>
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <path d="M14 2v6h6"/>
-                    <path d="M9 13h6M9 17h6M9 9h2"/>
-                </svg>
-            );
-        case 'report':
-            // 메가폰(campaign) — 제보 슬롯
-            return (
-                <svg {...props}>
-                    <path d="M3 11l15-7v16l-15-7z"/>
-                    <path d="M3 11v3a3 3 0 0 0 3 3l1 4h2l-1-4"/>
-                </svg>
-            );
-        case 'propose':
-            // 막대그래프(bar_chart) — 제안 슬롯
-            return (
-                <svg {...props}>
-                    <line x1="6" y1="20" x2="6" y2="13"/>
-                    <line x1="12" y1="20" x2="12" y2="6"/>
-                    <line x1="18" y1="20" x2="18" y2="10"/>
-                </svg>
-            );
-        case 'activity':
-            return (
-                <svg {...props}>
-                    <circle cx="12" cy="8" r="4"/>
-                    <path d="M4 21a8 8 0 0 1 16 0"/>
-                </svg>
-            );
-        default:
-            return null;
-    }
+const NAV_ICONS = {
+    home:          { src: '/figma-assets/icons/nav_home.svg',              activeSrc: '/figma-assets/icons/nav_home_active.svg' },
+    reportPropose: { src: '/figma-assets/icons/nav_campaign_inactive.svg', activeSrc: '/figma-assets/icons/nav_campaign_active.svg' },
+    diagnosis:     { src: '/figma-assets/icons/nav_assignment.svg',        activeSrc: '/figma-assets/icons/nav_assignment_active.svg' },
+    aiCitizen:     { src: '/figma-assets/icons/nav_ai_citizen.svg',        activeSrc: '/figma-assets/icons/nav_ai_citizen_active.svg' },
+    activity:      { src: '/figma-assets/icons/nav_activity.svg',          activeSrc: '/figma-assets/icons/nav_activity_active.svg' },
+};
+
+function NavIcon({ name, active }) {
+    const cfg = NAV_ICONS[name];
+    if (!cfg) return null;
+    const src = (active && cfg.activeSrc) ? cfg.activeSrc : cfg.src;
+    return <img src={src} alt="" width={22} height={22} style={{ display: 'block', objectFit: 'contain' }} />;
 }
 
 export default function MobileBottomNav({ currentView, onNavigate }) {
+    const [chooserOpen, setChooserOpen] = useState(false);
+
     const isActive = (key) => {
-        if (key === 'home')     return currentView === 'home';
-        if (key === 'survey')   return SURVEY_VIEWS.includes(currentView);
-        if (key === 'report')   return REPORT_VIEWS.includes(currentView);
-        if (key === 'propose')  return PROPOSE_VIEWS.includes(currentView);
-        if (key === 'activity') return ACTIVITY_VIEWS.includes(currentView);
+        if (key === 'home')          return currentView === 'home';
+        if (key === 'reportPropose') return REPORT_VIEWS.includes(currentView) || PROPOSE_VIEWS.includes(currentView);
+        if (key === 'diagnosis')     return DIAG_VIEWS.includes(currentView);
+        if (key === 'aiCitizen')     return currentView === 'mAICitizen';
+        if (key === 'activity')      return ACTIVITY_VIEWS.includes(currentView);
         return false;
     };
 
     const handleClick = (key) => {
-        if (key === 'home')          onNavigate?.('home');
-        else if (key === 'survey')   onNavigate?.('mSurveyList');
-        else if (key === 'report')   onNavigate?.('mReportMap');
-        else if (key === 'propose')  onNavigate?.('mProposalMap');
-        else if (key === 'activity') onNavigate?.('myPage');
+        if (key === 'home')               onNavigate?.('home');
+        else if (key === 'reportPropose') setChooserOpen(true);
+        else if (key === 'diagnosis')     onNavigate?.('mDiagnosisList');
+        else if (key === 'aiCitizen')     onNavigate?.('mAICitizen');
+        else if (key === 'activity')      onNavigate?.('myPage');
+    };
+
+    const handleChoose = (target) => {
+        setChooserOpen(false);
+        onNavigate?.(target);
     };
 
     return (
-        <nav className="m-bottom-nav">
-            {ITEMS.map((it) => {
-                const active = isActive(it.key);
-                const style = active ? { color: it.activeColor } : undefined;
-                return (
-                    <button
-                        key={it.key}
-                        className={`m-bnav-item ${active ? 'active' : ''}`}
-                        onClick={() => handleClick(it.key)}
-                        type="button"
-                        style={style}
+        <>
+            <nav className="m-bottom-nav">
+                {ITEMS.map((it) => {
+                    const active = isActive(it.key);
+                    const style = active ? { color: it.activeColor } : undefined;
+                    return (
+                        <button
+                            key={it.key}
+                            className={`m-bnav-item ${active ? 'active' : ''}`}
+                            onClick={() => handleClick(it.key)}
+                            type="button"
+                            style={style}
+                        >
+                            <span className="m-bnav-icon" aria-hidden="true">
+                                <NavIcon name={it.key} active={active} />
+                            </span>
+                            <span className="m-bnav-label">{it.label}</span>
+                        </button>
+                    );
+                })}
+            </nav>
+
+            {chooserOpen && (
+                <div
+                    className="m-bnav-chooser-backdrop"
+                    onClick={() => setChooserOpen(false)}
+                >
+                    <div
+                        className="m-bnav-chooser-sheet"
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <span className="m-bnav-icon" aria-hidden="true">
-                            <NavIcon name={it.key} />
-                        </span>
-                        <span className="m-bnav-label">{it.label}</span>
-                    </button>
-                );
-            })}
-        </nav>
+                        <div className="m-bnav-chooser-grip" />
+                        <h3 className="m-bnav-chooser-title">어디로 이동할까요?</h3>
+                        <div className="m-bnav-chooser-row">
+                            <button
+                                type="button"
+                                className="m-bnav-chooser-card"
+                                onClick={() => handleChoose('mReportMap')}
+                            >
+                                <span className="m-bnav-chooser-icon" aria-hidden="true">
+                                    <img src="/figma-assets/icons/nav_campaign_inactive.svg" alt="" width={24} height={24} style={{ display: 'block' }} />
+                                </span>
+                                <strong>제보하기</strong>
+                                <span className="m-bnav-chooser-desc">우리 동네 불편사항을<br/>알려주세요</span>
+                            </button>
+                            <button
+                                type="button"
+                                className="m-bnav-chooser-card"
+                                onClick={() => handleChoose('mProposalMap')}
+                            >
+                                <span className="m-bnav-chooser-icon" aria-hidden="true">
+                                    <img src="/figma-assets/icons/nav_barchart_inactive.svg" alt="" width={24} height={24} style={{ display: 'block' }} />
+                                </span>
+                                <strong>제안하기</strong>
+                                <span className="m-bnav-chooser-desc">새로운 정책 아이디어를<br/>제안해주세요</span>
+                            </button>
+                        </div>
+                        <button
+                            type="button"
+                            className="m-bnav-chooser-cancel"
+                            onClick={() => setChooserOpen(false)}
+                        >취소</button>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }

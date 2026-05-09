@@ -1,5 +1,4 @@
 import { useState, useEffect, Suspense, lazy } from 'react';
-import { LogOut, User, Loader2, Home } from 'lucide-react';
 
 import Sidebar from '../components/Sidebar';
 // Lazy load MapCanvas
@@ -130,7 +129,7 @@ export default function Dashboard({ onNavigate }) {
                         </h1>
                         <div className="header-user">
                             <div className="user-badge">
-                                <User className="w-4 h-4 text-slate-500" />
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#64748b' }}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                 <span className="text-sm font-medium text-slate-700">{username}</span>
                             </div>
                             <button
@@ -138,14 +137,14 @@ export default function Dashboard({ onNavigate }) {
                                 className="bg-white p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200"
                                 title="홈으로 이동"
                             >
-                                <Home className="w-4 h-4" />
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                             </button>
                             <div className="w-px h-4 bg-slate-200 mx-1"></div>
                             <button
                                 onClick={handleLogout}
                                 className="btn-logout"
                             >
-                                <LogOut className="w-4 h-4" /> 로그아웃
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4, verticalAlign: '-2px' }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> 로그아웃
                             </button>
                         </div>
                     </header>

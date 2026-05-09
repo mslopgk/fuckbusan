@@ -252,3 +252,185 @@
     color: var(--diag-text-sub);
     line-height: 1.5;
 }
+
+/* ───────── 시민/전문가 split 레이아웃 (Figma 941:5782 detail panel 재구성) ───────── */
+.pc-detail-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* 좌측 진단대상 탭에서 시민 또는 전문가만 노출하는 단일 column 레이아웃 */
+.pc-detail-single {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.pc-detail-col {
+    background: #2a2a2a;
+    border-radius: 12px;
+    padding: 14px;
+    color: #fff;
+    min-width: 0;
+}
+
+.pc-detail-col-title {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+}
+
+/* 표 형태 메타/스코어 */
+.pc-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    color: var(--diag-text);
+    border-radius: 6px;
+    overflow: hidden;
+    table-layout: fixed;
+}
+
+.pc-detail-table th,
+.pc-detail-table td {
+    border: 1px solid #e5e7eb;
+    padding: 6px 8px;
+    font-size: 11px;
+    vertical-align: middle;
+    text-align: center;
+    word-break: keep-all;
+}
+
+.pc-detail-table th {
+    width: 56px;
+    background: #f7f7f9;
+    font-weight: 600;
+    color: var(--diag-text-sub);
+}
+
+/* 사진 셀 */
+.pc-detail-table .pc-detail-photo-thumb {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+    border-radius: 4px;
+    background:
+        linear-gradient(135deg, rgba(0,0,0,0.4), transparent),
+        url('/figma-assets/detail-hero-haeundae.png') center / cover no-repeat;
+}
+
+/* 차트/카드 셀 내부 — 표 셀 안에서 컴팩트하게 */
+.pc-detail-table .pc-detail-chart-card {
+    padding: 4px;
+}
+
+.pc-detail-table .pc-detail-chart-title {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--diag-text);
+}
+
+.pc-detail-table .pc-detail-chart-canvas {
+    width: 100%;
+    height: 130px;
+}
+
+.pc-detail-table .pc-detail-tick-label { font-size: 8px; }
+.pc-detail-table .pc-detail-tick-value { font-size: 9px; font-weight: 700; }
+
+/* 전문가 score 카드 (적합/부적합/만족도 평가) */
+.pc-detail-expert-card { padding: 4px; }
+
+.pc-detail-expert-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.pc-detail-score-card {
+    background: #FFE5E5;
+    border-radius: 4px;
+    padding: 6px 2px;
+    text-align: center;
+}
+
+.pc-detail-score-card:nth-child(2) { background: #FFE0E0; }
+.pc-detail-score-card:nth-child(3) { background: #DFF5DC; }
+
+.pc-detail-score-key {
+    font-size: 9px;
+    color: var(--diag-text-sub);
+    font-weight: 600;
+}
+
+.pc-detail-score-val {
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--diag-text);
+}
+
+/* 좋아요/댓글 stat bar (split 패널 내부) */
+.pc-detail-col .pc-detail-stats {
+    display: flex;
+    gap: 12px;
+    padding: 10px 4px 8px;
+    color: #fff;
+}
+
+.pc-detail-col .pc-detail-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #fff;
+}
+
+/* 댓글 리스트 (split 안에서) */
+.pc-detail-col .pc-detail-comment-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pc-detail-col .pc-detail-comment-list li {
+    padding: 8px 4px;
+    border-bottom: 1px solid #404040;
+}
+
+.pc-detail-col .pc-detail-comment-list li:last-child { border-bottom: none; }
+
+.pc-detail-col .pc-detail-comment-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #ccc;
+    margin-bottom: 4px;
+}
+
+.pc-detail-col .pc-detail-comment-head strong {
+    font-weight: 700;
+    color: #fff;
+}
+
+.pc-detail-col .pc-detail-comment-list p {
+    margin: 0;
+    font-size: 11px;
+    color: #ddd;
+    line-height: 1.5;
+}
+
+/* CTA wrap (split 아래 + 진단하기) */
+.pc-detail-cta-wrap {
+    grid-column: 1 / -1;
+    margin-top: 12px;
+}
+
+.pc-detail-cta-wrap .pc-diag-panel-cta {
+    margin: 0;
+}

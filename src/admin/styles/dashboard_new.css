@@ -125,6 +125,7 @@
     flex: 1;
     padding: 40px;
     overflow-y: auto;
+    background: #f6f6f6;
 }
 
 .content-header-new {
@@ -160,6 +161,23 @@
     gap: 30px;
     margin-bottom: 40px;
     border: none;
+}
+
+.search-box-new-col {
+    background-color: #f9f9f9;
+    padding: 24px 30px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 40px;
+    border: none;
+}
+
+.search-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .search-label-new {
