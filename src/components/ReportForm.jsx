@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import './ReportForm.css';
 import LocationSelector from './common/LocationSelector';
 
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
 const ReportForm = ({ onBack, onSubmit }) => {
     // Intentionally empty string to show placeholder
     const [type, setType] = useState('');
@@ -104,7 +106,7 @@ const ReportForm = ({ onBack, onSubmit }) => {
                 files: files.map(f => f.file.name) // Sending filenames for now
             };
 
-            const response = await fetch('/api/reports/report', {
+            const response = await fetch(`${API_URL}/api/reports/report`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

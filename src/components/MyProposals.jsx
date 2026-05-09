@@ -1,5 +1,6 @@
 /* MyProposals.jsx */
 import React, { useState, useEffect } from 'react';
+import { formatDate } from '../utils/format';
 import './MyProposals.css';
 
 const DISTRICTS = ['부산전체','중구','서구','동구','영도구','부산진구','동래구','남구','북구','해운대구','사하구','금정구','강서구','연제구','수영구','사상구','기장군'];
@@ -63,12 +64,6 @@ const MyProposals = ({ onBack, onNavigate }) => {
     };
 
 
-    // Format date string
-    const formatDate = (dateStr) => {
-        if (!dateStr) return '';
-        const d = new Date(dateStr);
-        return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
-    };
 
     // 데스크톱 클라이언트 필터링
     const filteredProposals = React.useMemo(() => {

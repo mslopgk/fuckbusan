@@ -10,6 +10,18 @@ const featureToPaths = (feature) => {
 };
 
 const BUSAN_CENTER = { lat: 35.158, lng: 129.06 };
+
+let _geoCache = null;
+let _geoPromise = null;
+function loadGeo() {
+    if (_geoCache) return Promise.resolve(_geoCache);
+    if (_geoPromise) return _geoPromise;
+    _geoPromise = fetch('/assets/busan_districts_high.json')
+        .then((r) => r.json())
+        .then((d) => { _geoCache = d; return d; })
+        .catch(() => null);
+    return _geoPromise;
+}
 const BUSAN_DEFAULT_LEVEL = 8;
 
 // 줌 레벨 >= 임계치 일 때 인근 핀들을 합쳐서 클러스터로 표시.
@@ -59,7 +71,7 @@ const DIAG_GRAY_PATH = 'M54 26.6667C54 41.3943 37.8 54.2222 27 64C15.3 54.2222 0
 // Teal hollow (imgGroup669/677): fill white + stroke #25D2BC — 선택/포커스 핀
 const DIAG_TEAL_PATH = 'M27 1.5C41.1009 1.5 52.5 12.7853 52.5 26.667C52.4999 33.4838 48.74 40.0256 43.4131 46.2109C38.4046 52.0265 32.23 57.2915 26.9658 62.0146C21.352 57.3161 15.1559 52.0298 10.2588 46.2227C5.05984 40.0575 1.50011 33.5078 1.5 26.667C1.5 12.7853 12.8991 1.5 27 1.5Z';
 
-const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, accentColor = '#E6235A', showRegions = true, mapType = 'roadmap', initialCenter = null, initialLevel = null, pinVariant = 'solid' }, ref) {
+const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, accentColor = '#E6235A', showRegions = true, mapType = 'roadmap', initialCenter = null, initialLevel = null, pinVariant = 'solid', showLocateBtn = false }, ref) {
     useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services'] });
     const [geo, setGeo] = useState(null);
     const [internalShowRegions, setInternalShowRegions] = useState(showRegions);
@@ -70,7 +82,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, acc
     const mapInstance = useRef(null);
 
     useEffect(() => {
-        fetch('/assets/busan_districts_high.json').then((r) => r.json()).then(setGeo).catch(() => {});
+        loadGeo().then((d) => { if (d) setGeo(d); });
     }, []);
 
     useEffect(() => {
@@ -82,6 +94,23 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, acc
         );
     }, []);
 
+    const handleLocateMe = () => {
+        if (!('geolocation' in navigator)) {
+            alert('이 브라우저에서는 현위치를 가져올 수 없습니다.');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                setMyLocation(loc);
+                setCenter(loc);
+                setLevel(5);
+            },
+            () => alert('현위치를 가져올 수 없습니다. 위치 권한을 확인해주세요.'),
+            { timeout: 8000 }
+        );
+    };
+
     useImperativeHandle(ref, () => ({
         zoomIn: () => setLevel((l) => Math.max(1, l - 1)),
         zoomOut: () => setLevel((l) => Math.min(14, l + 1)),
@@ -89,22 +118,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, acc
             setCenter(BUSAN_CENTER);
             setLevel(BUSAN_DEFAULT_LEVEL);
         },
-        locateMe: () => {
-            if (!('geolocation' in navigator)) {
-                alert('이 브라우저에서는 현위치를 가져올 수 없습니다.');
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                    setMyLocation(loc);
-                    setCenter(loc);
-                    setLevel(5);
-                },
-                () => alert('현위치를 가져올 수 없습니다. 위치 권한을 확인해주세요.'),
-                { timeout: 8000 }
-            );
-        },
+        locateMe: handleLocateMe,
         toggleRegions: () => setInternalShowRegions((v) => !v),
         toggleMapType: () => setInternalMapType((t) => t === 'roadmap' ? 'hybrid' : 'roadmap'),
         getMap: () => mapInstance.current,
@@ -127,6 +141,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, acc
     };
 
     return (
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
         <Map
             center={center}
             level={level}
@@ -136,6 +151,10 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, acc
             mapTypeId={internalMapType === 'hybrid' ? 'HYBRID' : 'ROADMAP'}
             onCreate={(m) => { mapInstance.current = m; }}
             onZoomChanged={(m) => setLevel(m.getLevel())}
+            onDragEnd={(m) => {
+                const latlng = m.getCenter();
+                setCenter({ lat: latlng.getLat(), lng: latlng.getLng() });
+            }}
         >
             {internalShowRegions && polygons.map((p) => p.paths.map((path, i) => (
                 <Polygon
@@ -273,6 +292,31 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, acc
                 );
             })}
         </Map>
+        {showLocateBtn && (
+            <button
+                onClick={handleLocateMe}
+                style={{
+                    position: 'absolute', right: 12, bottom: 12,
+                    width: 42, height: 42, borderRadius: '50%',
+                    background: '#fff', border: 'none',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.22)',
+                    cursor: 'pointer', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                    zIndex: 10,
+                }}
+                title="내 위치"
+                aria-label="내 위치"
+            >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                    <line x1="12" y1="2" x2="12" y2="5"/>
+                    <line x1="12" y1="19" x2="12" y2="22"/>
+                    <line x1="2" y1="12" x2="5" y2="12"/>
+                    <line x1="19" y1="12" x2="22" y2="12"/>
+                </svg>
+            </button>
+        )}
+        </div>
     );
 });
 

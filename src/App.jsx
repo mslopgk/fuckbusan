@@ -518,7 +518,7 @@ function App() {
                 return;
             }
             setView('myActivityHub');
-        } else if (target === 'myReportList') {
+        } else if (target === 'myReportList' || target === 'myReports') {
             if (!localStorage.getItem('access_token')) {
                 alert('로그인이 필요한 서비스입니다.');
                 setView('login');

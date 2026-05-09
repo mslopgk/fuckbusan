@@ -60,7 +60,7 @@
 /* 드래그 가능한 sheet */
 .m-map-sheet {
     position: absolute;
-    bottom: 64px;
+    bottom: 76px;
     left: 0;
     right: 0;
     background: #fff;
@@ -74,7 +74,7 @@
 }
 
 .m-map-sheet.expanded {
-    height: calc(100vh - 64px);
+    height: calc(100vh - 76px);
     border-radius: 0;
 }
 

@@ -1,5 +1,6 @@
 /* ProposalForm.jsx */
 import React, { useState, useEffect } from 'react';
+import { formatDraftDate } from '../utils/format';
 import './ProposalForm.css';
 import LocationSelector from './common/LocationSelector';
 
@@ -398,12 +399,7 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
                         </div>
                         <h2 className="pf-load-text">임시저장된 내용을<br/>불러올까요?</h2>
                         <p className="pf-load-subtext">
-                            {savedDraftData && savedDraftData.savedAt ? (
-                                (() => {
-                                    const d = new Date(savedDraftData.savedAt);
-                                    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 작성됨`;
-                                })()
-                            ) : ""}
+                            {savedDraftData?.savedAt ? formatDraftDate(savedDraftData.savedAt) : ""}
                         </p>
                         <div className="pf-load-btns">
                             <button className="pf-btn-load" onClick={handleLoadDraft}>불러오기</button>

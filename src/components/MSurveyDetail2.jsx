@@ -18,6 +18,22 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
     const [job, setJob] = useState('학생(초중고생)');
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
+    const [errors, setErrors] = useState({});
+
+    const handlePhoneChange = (e) => {
+        const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+        if (digits.length <= 3) setPhone(digits);
+        else if (digits.length <= 7) setPhone(`${digits.slice(0, 3)}-${digits.slice(3)}`);
+        else setPhone(`${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`);
+    };
+
+    const handleSubmit = () => {
+        const next = {};
+        if (!/^[가-힣]{2,10}$/.test(name.trim())) next.name = '이름은 한글 2~10자로 입력해주세요.';
+        if (!/^01[016789]-\d{3,4}-\d{4}$/.test(phone)) next.phone = '올바른 휴대폰번호를 입력해주세요. (예: 010-1234-5678)';
+        setErrors(next);
+        if (Object.keys(next).length === 0) onNavigate && onNavigate('mSurveyJoin', survey);
+    };
 
     return (
         <div className="m-survey-detail-page">
@@ -100,18 +116,33 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
 
                 <div className="m-form-row">
                     <label className="m-form-label">성명 <span className="req">*</span></label>
-                    <input type="text" className="m-form-input" value={name} onChange={(e) => setName(e.target.value)} />
+                    <input
+                        type="text"
+                        className={`m-form-input${errors.name ? ' m-form-input-error' : ''}`}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="홍길동"
+                    />
+                    {errors.name && <p className="m-form-error">{errors.name}</p>}
                 </div>
 
                 <div className="m-form-row">
                     <label className="m-form-label">휴대폰번호 <span className="req">*</span></label>
-                    <input type="tel" className="m-form-input" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                    <input
+                        type="tel"
+                        className={`m-form-input${errors.phone ? ' m-form-input-error' : ''}`}
+                        value={phone}
+                        onChange={handlePhoneChange}
+                        placeholder="010-0000-0000"
+                        maxLength={13}
+                    />
+                    {errors.phone && <p className="m-form-error">{errors.phone}</p>}
                 </div>
 
                 <button
                     className="m-survey-cta"
                     disabled={!agree}
-                    onClick={() => onNavigate && onNavigate('mSurveyJoin', survey)}
+                    onClick={handleSubmit}
                 >참여하기</button>
             </div>
 

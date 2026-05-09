@@ -3,9 +3,9 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 64px;
+    height: 76px;
     background: #fff;
-    border-top: 1px solid #ececec;
+    border-top: 1px solid #e5e5e5;
     display: flex;
     z-index: 100;
     padding-bottom: env(safe-area-inset-bottom);
@@ -20,14 +20,14 @@
     flex: 1;
     background: none;
     border: none;
-    padding: 8px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 4px;
     cursor: pointer;
-    color: #b0b0b0;
+    color: #bfbfbf;
     font-family: inherit;
 }
 
@@ -42,8 +42,12 @@
 }
 
 .m-bnav-label {
-    font-size: 10px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.m-bnav-item.active .m-bnav-label {
+    font-weight: 700;
 }
 
 /* 제보·제안 분기 chooser 시트 */
@@ -69,7 +73,7 @@
     background: #fff;
     border-radius: 20px 20px 0 0;
     padding: 12px 20px 28px;
-    margin-bottom: 64px;
+    margin-bottom: 76px;
     animation: m-bnav-slide 0.22s ease-out;
 }
 

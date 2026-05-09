@@ -1,7 +1,9 @@
 from typing import List, Optional, Any, Dict
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, ConfigDict
 from datetime import datetime
 import json
+
+_orm = ConfigDict(from_attributes=True)
 
 class DistrictAnalysisBase(BaseModel):
     district_code: str
@@ -17,8 +19,7 @@ class DistrictAnalysisBase(BaseModel):
 
 class DistrictAnalysis(DistrictAnalysisBase):
     id: int
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
 class InsightBase(BaseModel):
     district_code: str
@@ -37,8 +38,7 @@ class InsightBase(BaseModel):
 
 class Insight(InsightBase):
     id: int
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
 class PersonaBase(BaseModel):
     district_code: str
@@ -58,8 +58,7 @@ class PersonaBase(BaseModel):
 
 class Persona(PersonaBase):
     id: int
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
 # Dashboard Response Models
 class DashboardSummary(BaseModel):
@@ -94,8 +93,7 @@ class UserOut(BaseModel):
     district_code: Optional[str] = None
     birth_date: Optional[str] = None
 
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
 class UserLogin(BaseModel):
     ID: str
@@ -133,8 +131,7 @@ class ChecklistResponse(ChecklistCreate):
     ID: Optional[str] = None
     created_at: Optional[datetime] = None
     
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
 class ReportCreate(BaseModel):
     type: Optional[str] = None  # legacy
@@ -174,8 +171,7 @@ class ReportRead(BaseModel):
     result_details: Optional[Dict[str, Any]] = None
     comments_list: List[Dict[str, Any]] = []
 
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
 class SuggestionCreate(BaseModel):
     location: str
@@ -204,8 +200,7 @@ class NewProposalRead(NewProposalCreate):
     has_voted: Optional[bool] = False
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
     @validator("files", pre=True)
     def parse_files(cls, v):
@@ -233,8 +228,7 @@ class ProposalCommentRead(ProposalCommentBase):
     created_at: datetime
     replies: List['ProposalCommentRead'] = []
 
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
 ProposalCommentRead.update_forward_refs()
 
@@ -250,8 +244,7 @@ class ReportCommentRead(BaseModel):
     content: str
     date: Optional[str] = None
 
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
 
 # ===== Surveys =====
@@ -263,8 +256,7 @@ class SurveyQuestionRead(BaseModel):
     text: str
     options: Optional[List[str]] = None
 
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
 class SurveyListItem(BaseModel):
     id: int
@@ -354,8 +346,7 @@ class NotificationRead(BaseModel):
     is_read: bool
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
 
 # ===== Activity logs =====
@@ -369,8 +360,7 @@ class ActivityLogRead(BaseModel):
     meta: Optional[Dict[str, Any]] = None
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = _orm
 
 
 # ===== Search =====

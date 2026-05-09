@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import './SuggestForm.css';
 import LocationSelector from './common/LocationSelector';
 
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
 const SuggestForm = ({ onBack, onSubmit }) => {
     const [location, setLocation] = useState('');
     const [title, setTitle] = useState('');
@@ -122,7 +124,7 @@ const SuggestForm = ({ onBack, onSubmit }) => {
                 files: files.map(f => f.file.name)
             };
 
-            const response = await fetch('/api/reports/suggest', {
+            const response = await fetch(`${API_URL}/api/reports/suggest`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

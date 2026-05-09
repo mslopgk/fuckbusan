@@ -43,37 +43,29 @@ const DISTRICTS_POS = [
 
 const TEAL_FILTER = 'brightness(0) invert(67%) sepia(37%) saturate(586%) hue-rotate(136deg) brightness(0.9)';
 
-function PersonAvatar({ size = 80, avatarUrl }) {
+// shape: 'circle' | 'rect'
+function PersonAvatar({ w = 80, h = 80, avatarUrl, shape = 'rect' }) {
+    const radius = shape === 'circle' ? '50%' : '8px';
+    const base = { width: w, height: h, borderRadius: radius, display: 'block', flexShrink: 0 };
     if (avatarUrl === 'loading') {
         return (
-            <div style={{
-                width: size, height: size, borderRadius: '50%',
-                background: '#e8f8f8', display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-            }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#23bdbb" strokeWidth="2" strokeLinecap="round" style={{ marginBottom: 4 }}>
+            <div style={{ ...base, background: '#e8f8f8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#23bdbb" strokeWidth="2" strokeLinecap="round" style={{ marginBottom: 3 }}>
                     <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
                 </svg>
-                <span style={{ fontSize: Math.max(8, size * 0.1), color: '#23bdbb', textAlign: 'center', lineHeight: 1.3 }}>
-                    생성중
-                </span>
+                <span style={{ fontSize: 9, color: '#23bdbb' }}>생성중</span>
             </div>
         );
     }
     if (avatarUrl) {
-        return (
-            <img
-                src={`${API_URL}${avatarUrl}`}
-                alt="페르소나 아바타"
-                style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', display: 'block', flexShrink: 0 }}
-            />
-        );
+        return <img src={`${API_URL}${avatarUrl}`} alt="페르소나 아바타" style={{ ...base, objectFit: 'cover' }} />;
     }
+    // Placeholder person silhouette
     return (
-        <svg viewBox="0 0 100 100" width={size} height={size} style={{ display: 'block', flexShrink: 0 }}>
-            <circle cx="50" cy="50" r="50" fill="#f2dfc8"/>
-            <circle cx="50" cy="36" r="17" fill="#d4aa82"/>
-            <path d="M18 100 C18 70 50 65 50 65 C50 65 82 70 82 100 Z" fill="#d4aa82"/>
+        <svg viewBox="0 0 75 94" width={w} height={h} style={{ borderRadius: radius, display: 'block', flexShrink: 0, background: '#f0ece6' }}>
+            <rect width="75" height="94" fill="#f0ece6" rx={shape === 'circle' ? '37' : '8'}/>
+            <ellipse cx="37" cy="32" rx="16" ry="18" fill="#d4aa82"/>
+            <path d="M5 94 C5 60 37 52 37 52 C37 52 70 60 70 94 Z" fill="#d4aa82"/>
         </svg>
     );
 }
@@ -94,14 +86,12 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, hoveredDistrict, 
         return () => window.removeEventListener('resize', update);
     }, []);
 
-    // Compute hover bubble position and direction
     const hoverBubble = (() => {
         if (!hoveredDistrict || !hoverCitizen) return null;
         const d = DISTRICTS_POS.find(dp => dp.name === hoveredDistrict);
         if (!d) return null;
         const cx = d.left + d.w / 2;
         const cy = d.top + d.h / 2;
-        // Show bubble above for lower districts, below for upper districts
         const showAbove = cy > 420;
         return { cx, cy, showAbove };
     })();
@@ -112,25 +102,15 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, hoveredDistrict, 
             style={{ position: 'relative', width: '100%', height: '100%', background: '#d4e8ee', overflow: 'hidden' }}
         >
             <div style={{
-                position: 'absolute',
-                top: 0, left: 0,
-                width: 1920,
-                height: 1080,
+                position: 'absolute', top: 0, left: 0,
+                width: 1920, height: 1080,
                 transformOrigin: 'top left',
                 transform: `scale(${scale})`,
             }}>
-                <img
-                    src="/assets/지도 배경 데스크탑.png"
-                    alt=""
-                    draggable={false}
-                    style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 904, pointerEvents: 'none', userSelect: 'none' }}
-                />
-                <img
-                    src="/assets/districts/shadow.svg"
-                    alt=""
-                    draggable={false}
-                    style={{ position: 'absolute', left: 382, top: 116, width: 1150, height: 880, pointerEvents: 'none', userSelect: 'none' }}
-                />
+                <img src="/assets/지도 배경 데스크탑.png" alt="" draggable={false}
+                    style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 904, pointerEvents: 'none', userSelect: 'none' }} />
+                <img src="/assets/districts/shadow.svg" alt="" draggable={false}
+                    style={{ position: 'absolute', left: 382, top: 116, width: 1150, height: 880, pointerEvents: 'none', userSelect: 'none' }} />
 
                 {DISTRICTS_POS.map(d => (
                     <button
@@ -145,30 +125,22 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, hoveredDistrict, 
                             background: 'none', border: 'none', padding: 0, cursor: 'pointer',
                         }}
                     >
-                        <img
-                            src={`/assets/districts/${d.name}.svg`}
-                            alt={d.name}
-                            draggable={false}
-                            style={{ width: '100%', height: '100%', display: 'block', userSelect: 'none' }}
-                        />
+                        <img src={`/assets/districts/${d.name}.svg`} alt={d.name} draggable={false}
+                            style={{ width: '100%', height: '100%', display: 'block', userSelect: 'none' }} />
                         {selectedDistrict === d.name && (
-                            <img
-                                src={`/assets/districts/${d.name}.svg`}
-                                alt=""
-                                aria-hidden="true"
-                                draggable={false}
+                            <img src={`/assets/districts/${d.name}.svg`} alt="" aria-hidden="true" draggable={false}
                                 style={{
                                     position: 'absolute', inset: 0, width: '100%', height: '100%',
                                     filter: TEAL_FILTER, pointerEvents: 'none', display: 'block',
-                                }}
-                            />
+                                }} />
                         )}
+                        {/* Label: show X icon when selected (no overlay — prevents duplicate) */}
                         <span style={{
                             position: 'absolute',
                             left: `calc(50% + ${d.lx}px)`,
                             top: `calc(50% + ${d.ly}px)`,
                             transform: 'translate(-50%, -50%)',
-                            fontSize: '20px', fontWeight: '500',
+                            fontSize: '20px', fontWeight: selectedDistrict === d.name ? '700' : '500',
                             color: selectedDistrict === d.name ? '#fff' : '#242424',
                             textAlign: 'center', whiteSpace: 'nowrap',
                             letterSpacing: '-0.8px', lineHeight: '1.4',
@@ -176,108 +148,59 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, hoveredDistrict, 
                             textShadow: selectedDistrict === d.name ? 'none' : '0 1px 3px rgba(255,255,255,0.7)',
                         }}>
                             {d.name}
+                            {selectedDistrict === d.name && (
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"
+                                    style={{ display: 'block', margin: '2px auto 0' }}>
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+                                </svg>
+                            )}
                         </span>
                     </button>
                 ))}
 
-                {/* Selected district: name label + X button overlaid on the district */}
-                {selectedDistrict && (() => {
-                    const d = DISTRICTS_POS.find(dp => dp.name === selectedDistrict);
-                    if (!d) return null;
-                    const cx = d.left + d.w / 2 + d.lx;
-                    const cy = d.top + d.h / 2 + d.ly;
-                    return (
-                        <div
-                            key="selected-label"
-                            style={{
-                                position: 'absolute',
-                                left: cx, top: cy,
-                                transform: 'translate(-50%, -50%)',
-                                display: 'flex', flexDirection: 'column',
-                                alignItems: 'center', gap: 2,
-                                pointerEvents: 'none', zIndex: 5,
-                            }}
-                        >
-                            <span style={{ fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.8px', lineHeight: 1.4 }}>
-                                {selectedDistrict}
-                            </span>
-                            <button
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); /* parent handles via onDistrictClick */ }}
-                                style={{ pointerEvents: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                                aria-label="선택 해제"
-                            >
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    );
-                })()}
-
                 {/* Hover bubble: persona circle + speech bubble */}
                 {hoverBubble && hoverCitizen && (
-                    <div
-                        key="hover-bubble"
-                        style={{
-                            position: 'absolute',
-                            left: hoverBubble.cx,
-                            top: hoverBubble.cy,
-                            transform: 'translate(-50%, -50%)',
-                            pointerEvents: 'none',
-                            zIndex: 15,
-                        }}
-                    >
-                        {/* Speech bubble (above or below) */}
+                    <div key="hover-bubble" style={{
+                        position: 'absolute', left: hoverBubble.cx, top: hoverBubble.cy,
+                        transform: 'translate(-50%, -50%)',
+                        pointerEvents: 'none', zIndex: 15,
+                    }}>
+                        {/* Speech bubble */}
                         <div style={{
                             position: 'absolute',
                             [hoverBubble.showAbove ? 'bottom' : 'top']: 82,
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            width: 320,
-                            background: '#fff',
-                            borderRadius: 14,
-                            padding: '14px 18px',
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.18)',
+                            left: '50%', transform: 'translateX(-50%)',
+                            width: 320, background: '#fff', borderRadius: 14,
+                            padding: '14px 18px', boxShadow: '0 4px 20px rgba(0,0,0,0.18)',
                             textAlign: 'center',
                         }}>
                             <p style={{
-                                margin: 0, fontSize: 15, fontWeight: 700,
-                                color: '#111', lineHeight: 1.5,
+                                margin: 0, fontSize: 15, fontWeight: 700, color: '#111', lineHeight: 1.5,
                                 display: '-webkit-box', WebkitLineClamp: 3,
                                 WebkitBoxOrient: 'vertical', overflow: 'hidden',
                             }}>
                                 {hoverCitizen.quote}
                             </p>
-                            {/* Triangle tail */}
                             <div style={{
                                 position: 'absolute',
                                 [hoverBubble.showAbove ? 'bottom' : 'top']: -10,
-                                left: '50%',
-                                transform: 'translateX(-50%)',
+                                left: '50%', transform: 'translateX(-50%)',
                                 width: 0, height: 0,
-                                borderLeft: '10px solid transparent',
-                                borderRight: '10px solid transparent',
+                                borderLeft: '10px solid transparent', borderRight: '10px solid transparent',
                                 [hoverBubble.showAbove ? 'borderTop' : 'borderBottom']: '10px solid #fff',
                             }} />
                         </div>
-
                         {/* Teal circle with avatar */}
                         <div style={{
-                            width: 140, height: 140,
-                            borderRadius: '50%',
-                            background: '#23bdbb',
-                            border: '6px solid rgba(35,189,187,0.35)',
-                            boxShadow: '0 6px 24px rgba(35,189,187,0.45)',
-                            overflow: 'hidden',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            boxSizing: 'border-box',
+                            position: 'absolute', left: '50%', top: '50%',
                             transform: 'translate(-50%, -50%)',
-                            position: 'absolute',
-                            left: '50%',
-                            top: '50%',
+                            width: 140, height: 140, borderRadius: '50%',
+                            background: '#23bdbb', border: '6px solid rgba(35,189,187,0.35)',
+                            boxShadow: '0 6px 24px rgba(35,189,187,0.45)',
+                            overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            boxSizing: 'border-box',
                         }}>
-                            <PersonAvatar size={128} avatarUrl={hoverAvatarUrl} />
+                            <PersonAvatar w={128} h={128} avatarUrl={hoverAvatarUrl} shape="circle" />
                         </div>
                     </div>
                 )}
@@ -286,7 +209,245 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, hoveredDistrict, 
     );
 }
 
-function DistrictCitizenList({ district, citizens, avatarUrls, loading, onClose }) {
+const EMOTION_COLORS = {
+    '개쾌함': '#4ade80',
+    '집중됨': '#a3e635',
+    '보통': '#facc15',
+    '불안함': '#fb923c',
+    '매우불안함': '#ef4444',
+};
+
+function ParticipationChart({ data }) {
+    if (!data) return null;
+    const items = Object.entries(data);
+    const max = Math.max(...items.map(([, v]) => v));
+    return (
+        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 100, marginTop: 8 }}>
+            {items.map(([label, value]) => (
+                <div key={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                    <span style={{ fontSize: 10, color: '#555' }}>{value}%</span>
+                    <div style={{ width: '100%', background: '#f0f0f0', borderRadius: 4, height: 64, display: 'flex', alignItems: 'flex-end' }}>
+                        <div style={{
+                            width: '100%', borderRadius: 4,
+                            height: `${Math.max(8, (value / max) * 64)}px`,
+                            background: '#23bdbb',
+                        }} />
+                    </div>
+                    <span style={{ fontSize: 10, color: '#737373', textAlign: 'center' }}>{label}</span>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function CategoryRadar({ scores }) {
+    if (!scores) return null;
+    const CATS = ['안전', '주거', '교통', '산업\n일자리', '교육', '환경', '문화\n여가', '보건'];
+    const SCORE_KEYS = ['안전', '주거', '교통', '산업일자리', '교육', '환경', '문화여가', '보건'];
+    const SIZE = 160;
+    const cx = SIZE / 2, cy = SIZE / 2;
+    const maxR = 54;
+    const n = CATS.length;
+    const step = (2 * Math.PI) / n;
+
+    const pt = (i, r) => {
+        const a = i * step - Math.PI / 2;
+        return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+    };
+
+    const gridLevels = [0.25, 0.5, 0.75, 1.0];
+    const dataPts = SCORE_KEYS.map((k, i) => pt(i, ((scores[k] || 0) / 5) * maxR));
+    const dPath = dataPts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ') + 'Z';
+
+    return (
+        <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ display: 'block', margin: '4px auto 0' }}>
+            {gridLevels.map((lv, li) => {
+                const gPts = CATS.map((_, i) => pt(i, lv * maxR));
+                const gPath = gPts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ') + 'Z';
+                return <path key={li} d={gPath} fill="none" stroke="#e0e0e0" strokeWidth="1" />;
+            })}
+            {CATS.map((_, i) => {
+                const p = pt(i, maxR);
+                return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="#e0e0e0" strokeWidth="1" />;
+            })}
+            <path d={dPath} fill="rgba(35,189,187,0.2)" stroke="#23bdbb" strokeWidth="2" />
+            {CATS.map((cat, i) => {
+                const p = pt(i, maxR + 20);
+                return cat.includes('\n') ? (
+                    <text key={i} x={p.x} y={p.y} textAnchor="middle" fontSize="9" fill="#555">
+                        {cat.split('\n').map((ln, li) => (
+                            <tspan key={li} x={p.x} dy={li === 0 ? '-0.5em' : '1.2em'}>{ln}</tspan>
+                        ))}
+                    </text>
+                ) : (
+                    <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" fontSize="9" fill="#555">{cat}</text>
+                );
+            })}
+        </svg>
+    );
+}
+
+function CitizenDetailPanel({ citizen, avatarUrl, district, onClose }) {
+    const d = citizen.detail || {};
+    const journey = d.journey || [];
+    const ps = d.policy_signals || {};
+
+    return (
+        <div className="pc-ai-detail-panel">
+            <button className="pc-ai-detail-close" onClick={onClose} type="button" aria-label="닫기">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2.2" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+
+            {/* ── Header ── */}
+            <div className="pc-ai-detail-header">
+                <div className="pc-ai-detail-avatar">
+                    <PersonAvatar w={88} h={110} avatarUrl={avatarUrl} />
+                </div>
+                <div className="pc-ai-detail-identity">
+                    <div className="pc-ai-detail-name-row">
+                        <span className="pc-ai-detail-name">{citizen.name}</span>
+                        <span className="pc-ai-detail-age-gender">{citizen.age}세 · {citizen.gender || ''}</span>
+                    </div>
+                    <div className="pc-ai-detail-tags">
+                        {citizen.tags.map(t => <span key={t} className="pc-ai-detail-tag">{t}</span>)}
+                    </div>
+                    <div className="pc-ai-detail-info-boxes">
+                        <div className="pc-ai-detail-info-box">
+                            {[['직업', d.job], ['가족', d.family], ['좌우명', d.motto], ['꿈꾸는생활', d.dream_life]]
+                                .filter(([, v]) => v).map(([label, value]) => (
+                                <div key={label} className="info-row">
+                                    <span className="info-label">{label}</span>
+                                    <span className="info-value">{value}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="pc-ai-detail-info-box">
+                            {[['관심사', d.interests], ['고민', d.concerns], ['취미', d.hobbies], ['활동', d.activities]]
+                                .filter(([, v]) => v).map(([label, value]) => (
+                                <div key={label} className="info-row">
+                                    <span className="info-label">{label}</span>
+                                    <span className="info-value">{value}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                <div className="pc-ai-detail-ratio-box">
+                    <div className="ratio-title">유사 시민 비율</div>
+                    <div className="ratio-desc">{d.similar_desc || `${district} 유사 생활 유형`}</div>
+                    <div className="ratio-pct">{d.similar_ratio || '-'}</div>
+                </div>
+            </div>
+
+            {/* ── Voices row ── */}
+            <div className="pc-ai-detail-voices-row">
+                <div className="voice-card">
+                    <div className="voice-section-title">시민 체감 언어</div>
+                    <p className="voice-body-text">"{d.body_language || citizen.quote}"</p>
+                </div>
+                <div className="voice-card">
+                    <div className="voice-section-title">시민 목소리</div>
+                    {(d.voices || []).map((v, i) => (
+                        <div key={i} className="voice-item">
+                            <span className="voice-num">0{i + 1}</span>
+                            <span>{v}</span>
+                        </div>
+                    ))}
+                </div>
+                <div className="voice-card">
+                    <div className="voice-section-title">핵심 이슈 TOP 3</div>
+                    {(d.top_issues || []).map((issue, i) => (
+                        <div key={i} className="voice-item">
+                            <span className="voice-num">0{i + 1}</span>
+                            <span>{issue}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* ── Journey map ── */}
+            {journey.length > 0 && (
+                <div className="pc-ai-detail-journey">
+                    <div className="journey-title">여정지도</div>
+                    <div className="journey-table">
+                        {/* Step number circles */}
+                        <div className="journey-row-label"></div>
+                        <div className="journey-cells journey-step-circles-row">
+                            {journey.map((step, i) => (
+                                <div key={i} className="journey-step-header-cell">
+                                    <div className="journey-step-num" style={{ background: EMOTION_COLORS[step.emotion] || '#aaa' }}>{i + 1}</div>
+                                </div>
+                            ))}
+                        </div>
+                        {/* Action row */}
+                        <div className="journey-row-label">행동</div>
+                        <div className="journey-cells">
+                            {journey.map((step, i) => (
+                                <div key={i} className="journey-cell">
+                                    <div className="journey-time">{step.time}</div>
+                                    <div className="journey-action">{step.action}</div>
+                                </div>
+                            ))}
+                        </div>
+                        {/* Feeling row */}
+                        <div className="journey-row-label">감정</div>
+                        <div className="journey-cells">
+                            {journey.map((step, i) => (
+                                <div key={i} className="journey-cell journey-cell--feeling">
+                                    <div className="journey-feeling">{step.feeling}</div>
+                                </div>
+                            ))}
+                        </div>
+                        {/* Emotion dots */}
+                        <div className="journey-row-label"></div>
+                        <div className="journey-cells journey-dots-row">
+                            {journey.map((step, i) => (
+                                <div key={i} className="journey-dot-cell">
+                                    <div className="journey-dot" style={{ background: EMOTION_COLORS[step.emotion] || '#ccc' }} />
+                                    <span className="journey-emotion-label">{step.emotion}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Bottom row ── */}
+            <div className="pc-ai-detail-bottom-row">
+                <div className="detail-bottom-card">
+                    <div className="detail-bottom-title">정책 신호등</div>
+                    <div className="policy-tabs-row">
+                        <span className="policy-tab-badge" style={{ background: '#ef4444' }}>높음</span>
+                        <span className="policy-tab-badge" style={{ background: '#fb923c' }}>보통</span>
+                        <span className="policy-tab-badge" style={{ background: '#4ade80' }}>낮음</span>
+                    </div>
+                    {[['high', '#ef4444'], ['medium', '#fb923c'], ['low', '#4ade80']].map(([lvKey, color]) => (
+                        (ps[lvKey] || []).map((s, i) => (
+                            <p key={`${lvKey}-${i}`} className="policy-level-text" style={{ color }}>{s}</p>
+                        ))
+                    ))}
+                </div>
+                <div className="detail-bottom-card">
+                    <div className="detail-bottom-title">공공데이터 참여 현황 (참여 비율)</div>
+                    <ParticipationChart data={d.participation} />
+                </div>
+                <div className="detail-bottom-card">
+                    <div className="detail-bottom-title">카테고리별 관심도 (8대 영역)</div>
+                    <CategoryRadar scores={d.category_scores} />
+                </div>
+            </div>
+
+            <div className="pc-ai-detail-footer">
+                <p>이 리포트는 {district} 시민 의견과 공공데이터를 기반으로 AI 분석을 통해 생성된 가상 시민입니다.</p>
+                <button className="pc-ai-detail-more-btn" onClick={onClose} type="button">다른 시민 유형 보기 &gt;</button>
+            </div>
+        </div>
+    );
+}
+
+function DistrictCitizenList({ district, citizens, avatarUrls, loading, onClose, onCitizenClick }) {
     const [sort, setSort] = useState('importance');
 
     const sorted = sort === 'age'
@@ -306,27 +467,21 @@ function DistrictCitizenList({ district, citizens, avatarUrls, loading, onClose 
                     </svg>
                 </button>
             </div>
-
             <p className="pc-ai-district-sidebar__desc">
                 {district} 시민 의견과 데이터를 바탕으로 만든 AI 가상시민입니다<br />
                 우리 동네에는 어떤 사람들이 살고 있는지,<br />
                 어떤 생각과 불편을 느끼는지 확인해보세요
             </p>
-
             <div className="pc-ai-district-sidebar__meta">
                 <span className="pc-ai-district-sidebar__count">총 {citizens.length}명</span>
-                <button
-                    className="pc-ai-district-sidebar__sort-btn"
-                    onClick={() => setSort(s => s === 'importance' ? 'age' : 'importance')}
-                    type="button"
-                >
+                <button className="pc-ai-district-sidebar__sort-btn"
+                    onClick={() => setSort(s => s === 'importance' ? 'age' : 'importance')} type="button">
                     {sort === 'importance' ? '중요도순' : '나이순'}
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <polyline points="6 9 12 15 18 9"/>
                     </svg>
                 </button>
             </div>
-
             <div className="pc-ai-district-sidebar__list">
                 {loading && <div className="pc-ai-right__loading">불러오는 중...</div>}
                 {!loading && sorted.length === 0 && (
@@ -335,9 +490,9 @@ function DistrictCitizenList({ district, citizens, avatarUrls, loading, onClose 
                     </div>
                 )}
                 {!loading && sorted.map(c => (
-                    <div key={c.id} className="pc-ai-list-card">
+                    <div key={c.id} className="pc-ai-list-card" onClick={() => onCitizenClick(c.id)}>
                         <div className="pc-ai-list-card__avatar">
-                            <PersonAvatar size={80} avatarUrl={avatarUrls[c.id]} />
+                            <PersonAvatar w={80} h={80} avatarUrl={avatarUrls[c.id]} shape="circle" />
                         </div>
                         <div className="pc-ai-list-card__body">
                             <div className="pc-ai-list-card__name-row">
@@ -352,7 +507,8 @@ function DistrictCitizenList({ district, citizens, avatarUrls, loading, onClose 
                             </div>
                             <p className="pc-ai-list-card__quote">{c.quote}</p>
                         </div>
-                        <button className="pc-ai-list-card__arrow" type="button" aria-label="자세히 보기">
+                        <button className="pc-ai-list-card__arrow" type="button" aria-label="자세히 보기"
+                            onClick={e => { e.stopPropagation(); onCitizenClick(c.id); }}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#23bdbb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="12" cy="12" r="10"/>
                                 <polyline points="12 8 16 12 12 16"/>
@@ -369,16 +525,21 @@ function DistrictCitizenList({ district, citizens, avatarUrls, loading, onClose 
 export default function PCAICitizen({ onNavigate }) {
     const [category, setCategory] = useState('all');
     const [allCitizens, setAllCitizens] = useState([]);
+    const [selectedIdx, setSelectedIdx] = useState(0);
     const [loading, setLoading] = useState(false);
     const [mapDistrict, setMapDistrict] = useState('');
     const [hoveredDistrict, setHoveredDistrict] = useState(null);
     const [showCTA, setShowCTA] = useState(true);
     const [avatarUrls, setAvatarUrls] = useState({});
+    const [detailCitizen, setDetailCitizen] = useState(null);
     const pendingAvatars = useRef(new Set());
 
-    const citizens = mapDistrict
+    // Citizens shown in the default card carousel = all citizens sorted by importance
+    const citizens = allCitizens;
+    // Citizens shown in the district sidebar = filtered by clicked district
+    const districtCitizens = mapDistrict
         ? allCitizens.filter(c => c.district === mapDistrict)
-        : allCitizens;
+        : [];
 
     const hoverCitizen = hoveredDistrict
         ? (allCitizens.find(c => c.district === hoveredDistrict) || null)
@@ -415,34 +576,57 @@ export default function PCAICitizen({ onNavigate }) {
         if (category !== 'all') params.set('category', category);
         fetch(`${API_URL}/api/ai-citizens?${params}`)
             .then(r => r.json())
-            .then(data => { setAllCitizens(data); })
+            .then(data => { setAllCitizens(data); setSelectedIdx(0); })
             .catch(() => setAllCitizens([]))
             .finally(() => setLoading(false));
     }, [category]);
 
-    // Prefetch avatars for citizens in the sidebar list
+    // Prefetch carousel: current + next citizen
     useEffect(() => {
-        citizens.forEach(c => fetchAvatar(c.id));
-    }, [citizens, fetchAvatar]);
+        const cur = citizens[selectedIdx];
+        const next = citizens[selectedIdx + 1];
+        if (cur) fetchAvatar(cur.id);
+        if (next) fetchAvatar(next.id);
+    }, [citizens, selectedIdx, fetchAvatar]);
 
     // Prefetch hover citizen avatar
     useEffect(() => {
         if (hoverCitizen) fetchAvatar(hoverCitizen.id);
     }, [hoverCitizen, fetchAvatar]);
 
-    // Shift+R: regenerate hover citizen's avatar (hidden shortcut)
+    // Prefetch district sidebar avatars
     useEffect(() => {
+        districtCitizens.forEach(c => fetchAvatar(c.id));
+    }, [districtCitizens, fetchAvatar]);
+
+    // Shift+R: regenerate current carousel citizen (hidden shortcut)
+    useEffect(() => {
+        const cur = citizens[selectedIdx];
         const handleKey = (e) => {
-            if (e.shiftKey && e.key === 'R' && hoverCitizen) {
-                regenerateAvatar(hoverCitizen.id);
+            if (e.shiftKey && e.key === 'R' && cur) {
+                regenerateAvatar(cur.id);
             }
         };
         window.addEventListener('keydown', handleKey);
         return () => window.removeEventListener('keydown', handleKey);
-    }, [hoverCitizen, regenerateAvatar]);
+    }, [citizens, selectedIdx, regenerateAvatar]);
+
+    const citizen = citizens[selectedIdx] || null;
 
     const handleDistrictClick = (name) => {
+        setDetailCitizen(null);
         setMapDistrict(prev => prev === name ? '' : name);
+    };
+
+    const handleCitizenClick = async (citizenId) => {
+        try {
+            const res = await fetch(`${API_URL}/api/ai-citizens/${citizenId}`);
+            const data = await res.json();
+            setDetailCitizen(data);
+            fetchAvatar(citizenId);
+        } catch {
+            // ignore
+        }
     };
 
     return (
@@ -454,21 +638,14 @@ export default function PCAICitizen({ onNavigate }) {
                     <div className="pc-ai-left-card">
                         <div className="pc-ai-left__label">구역별</div>
                         <div className="pc-ai-select-wrap">
-                            <select
-                                className="pc-ai-select"
-                                value={mapDistrict}
-                                onChange={e => setMapDistrict(e.target.value)}
-                            >
+                            <select className="pc-ai-select" value={mapDistrict}
+                                onChange={e => setMapDistrict(e.target.value)}>
                                 <option value="">설정해주세요</option>
                                 {ALL_DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
                             </select>
                             {mapDistrict && (
-                                <button
-                                    className="pc-ai-select-clear"
-                                    onClick={() => setMapDistrict('')}
-                                    type="button"
-                                    aria-label="선택 해제"
-                                >
+                                <button className="pc-ai-select-clear" onClick={() => setMapDistrict('')}
+                                    type="button" aria-label="선택 해제">
                                     <svg width="16" height="16" viewBox="0 0 20 20" fill="#888">
                                         <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm5 13.59L13.59 15 10 11.41 6.41 15 5 13.59 8.59 10 5 6.41 6.41 5 10 8.59 13.59 5 15 6.41 11.41 10 15 13.59z"/>
                                     </svg>
@@ -481,12 +658,9 @@ export default function PCAICitizen({ onNavigate }) {
                         <div className="pc-ai-left__label">생활정보</div>
                         <div className="pc-ai-cat-grid">
                             {CATEGORIES.map(cat => (
-                                <button
-                                    key={cat.key}
+                                <button key={cat.key}
                                     className={`pc-ai-cat-btn${category === cat.key ? ' active' : ''}`}
-                                    onClick={() => setCategory(cat.key)}
-                                    type="button"
-                                >
+                                    onClick={() => setCategory(cat.key)} type="button">
                                     <img src={cat.icon} alt="" className="pc-ai-cat-icon" />
                                     <span className="pc-ai-cat-label">{cat.label}</span>
                                 </button>
@@ -526,14 +700,93 @@ export default function PCAICitizen({ onNavigate }) {
                     )}
                 </div>
 
-                {/* Right sidebar: shown only when district is selected */}
+                {/* Default state: 부산전체 대표 AI 가상시민 card carousel */}
+                {!mapDistrict && (
+                    <div className="pc-ai-right-wrap">
+                        <div className="pc-ai-right">
+                            <div className="pc-ai-right__header">
+                                <span className="pc-ai-right__title-teal">부산대표</span>
+                                <span className="pc-ai-right__title-black"> AI 가상시민</span>
+                            </div>
+
+                            {loading && <div className="pc-ai-right__loading">불러오는 중...</div>}
+
+                            {!loading && citizens.length === 0 && (
+                                <div className="pc-ai-right__empty">가상시민이 없습니다.</div>
+                            )}
+
+                            {!loading && citizen && (
+                                <>
+                                    <p className="pc-ai-right__sub">
+                                        부산 시민 의견과 데이터를 바탕으로 만든 AI 가상시민입니다<br />
+                                        우리 동네에는 어떤 사람들이 살고 있는지,<br />
+                                        어떤 생각과 불편을 느끼는지 확인해보세요
+                                    </p>
+
+                                    <div className="pc-ai-cards-wrap">
+                                        <div className="pc-ai-cards-row">
+                                            <div className="pc-ai-card">
+                                                <PersonAvatar w={90} h={112} avatarUrl={avatarUrls[citizen.id]} />
+                                                <div className="pc-ai-card__name-row" style={{ marginTop: 12 }}>
+                                                    <span className="pc-ai-card__name">{citizen.name}</span>
+                                                    <span className="pc-ai-card__age">{citizen.age}세</span>
+                                                </div>
+                                                <div className="pc-ai-card__tags">
+                                                    {citizen.tags.map(t => (
+                                                        <span key={t} className="pc-ai-card__tag">{t}</span>
+                                                    ))}
+                                                </div>
+                                                <div className="pc-ai-card__divider" />
+                                                <p className="pc-ai-card__quote">{citizen.quote}</p>
+                                            </div>
+
+                                            {citizens[selectedIdx + 1] && (
+                                                <div className="pc-ai-card pc-ai-card--peek">
+                                                    <PersonAvatar w={64} h={80} avatarUrl={avatarUrls[citizens[selectedIdx + 1].id]} />
+                                                    <div className="pc-ai-card__name-row" style={{ marginTop: 10 }}>
+                                                        <span className="pc-ai-card__name">{citizens[selectedIdx + 1].name}</span>
+                                                        <span className="pc-ai-card__age">{citizens[selectedIdx + 1].age}세</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        {!loading && citizen && selectedIdx < citizens.length - 1 && (
+                            <button className="pc-ai-nav-circle"
+                                onClick={() => setSelectedIdx(i => Math.min(citizens.length - 1, i + 1))}
+                                type="button" aria-label="다음 시민">
+                                <svg viewBox="0 0 34 34" width="34" height="34">
+                                    <circle cx="17" cy="17" r="17" fill="#23bdbb"/>
+                                    <polyline points="14 10 20 17 14 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* Citizen detail overlay (shown when a citizen card is clicked) */}
+                {detailCitizen && mapDistrict && (
+                    <CitizenDetailPanel
+                        citizen={detailCitizen}
+                        avatarUrl={avatarUrls[detailCitizen.id]}
+                        district={mapDistrict}
+                        onClose={() => setDetailCitizen(null)}
+                    />
+                )}
+
+                {/* District selected state: filtered citizen list sidebar */}
                 {mapDistrict && (
                     <DistrictCitizenList
                         district={mapDistrict}
-                        citizens={citizens}
+                        citizens={districtCitizens}
                         avatarUrls={avatarUrls}
                         loading={loading}
-                        onClose={() => setMapDistrict('')}
+                        onClose={() => { setMapDistrict(''); setDetailCitizen(null); }}
+                        onCitizenClick={handleCitizenClick}
                     />
                 )}
 

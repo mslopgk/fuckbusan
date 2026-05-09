@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = `${(import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '')}/api`;
 
 export const fetchDashboardData = async (year, district) => {
     try {

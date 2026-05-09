@@ -1,18 +1,15 @@
 import { useState, useEffect, useMemo } from 'react';
 import MobileBottomNav from './MobileBottomNav';
+import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
+import { REGIONS, SORTS, REPORT_STAGES as STAGES } from '../constants/mapConstants';
+import { RegionSheet, SortSheet } from './MFilterSheets';
 import './MProposalList.css';
 import './MReportList.css';
 
 const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
-const REGIONS = ['부산전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'];
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
-const STAGES = [
-    { key: 'inProgress', label: '개선중',   apiValue: '개선중' },
-    { key: 'planned',    label: '개선예정', apiValue: '개선예정' },
-    { key: 'done',       label: '개선완료', apiValue: '개선완료' },
-];
 
 export default function MReportList({ onNavigate }) {
     const [region, setRegion] = useState('부산전체');
@@ -23,13 +20,14 @@ export default function MReportList({ onNavigate }) {
     const [sort, setSort] = useState('최신순');
     const [sortDraft, setSortDraft] = useState('최신순');
     const [sortOpen, setSortOpen] = useState(false);
+    const [listOpen, setListOpen] = useState(true);
     const [items, setItems] = useState([]);
     const [likedIds, setLikedIds] = useState(() => {
         try { return new Set(JSON.parse(localStorage.getItem('likedReportIds') || '[]')); } catch { return new Set(); }
     });
     const [loading, setLoading] = useState(true);
 
-    const SORTS = ['조회수', '투표순', '최신순'];
+
 
     useEffect(() => {
         const params = new URLSearchParams();
@@ -57,6 +55,13 @@ export default function MReportList({ onNavigate }) {
     const confirmRegion = () => { setRegion(regionDraft); setRegionOpen(false); };
     const confirmSort = () => { setSort(sortDraft); setSortOpen(false); };
 
+    const mapPins = useMemo(() =>
+        items
+            .filter((it) => it.lat && it.lng)
+            .map((it) => ({ id: String(it.id), lat: it.lat, lng: it.lng, color: '#E6235A', title: it.title })),
+        [items]
+    );
+
     const toggleLike = async (e, id) => {
         e.stopPropagation();
         const token = localStorage.getItem('access_token');
@@ -77,7 +82,7 @@ export default function MReportList({ onNavigate }) {
         <div className="m-prop-list-page m-report-list-page">
             <header className="m-prop-topbar">
                 <button className="m-prop-back" onClick={() => onNavigate && onNavigate('home')}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                     <span>홈으로</span>
                 </button>
                 <button className="m-map-btn" onClick={() => onNavigate && onNavigate('mReportMap')}>
@@ -95,130 +100,111 @@ export default function MReportList({ onNavigate }) {
                 </button>
             </div>
 
-            <div className="m-cat-chips">
-                {CATEGORIES.map((c) => (
-                    <button
-                        key={c}
-                        className={`m-cat-chip ${cat === c ? 'on' : ''}`}
-                        onClick={() => setCat(c)}
-                    >{c}</button>
-                ))}
+            <div className="m-prop-page-body">
+            {/* Map layer — always rendered, visible when list is collapsed */}
+            <div className="m-prop-map-layer">
+                <PCMapCanvas
+                    pins={mapPins}
+                    accentColor="#E6235A"
+                    initialCenter={{ lat: 35.1631, lng: 129.1638 }}
+                    initialLevel={8}
+                    showLocateBtn
+                />
             </div>
 
-            <div className="m-sort-row">
-                <button className="m-sort-btn" onClick={openSort}>
-                    <span>{sort}</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-            </div>
+            {/* Sliding list panel */}
+            <div className={`m-prop-list-panel${listOpen ? '' : ' collapsed'}`}>
+                <div className="m-prop-panel-handle" onClick={() => setListOpen(!listOpen)}>
+                    <div className="m-prop-handle-bar" />
+                    <span className="m-prop-panel-handle-label">
+                        {listOpen ? '지도만 보기' : '목록 보기'}
+                    </span>
+                </div>
 
-            <div className="m-stage-chips">
-                {STAGES.map((s) => (
-                    <button
-                        key={s.key}
-                        className={`m-stage-chip ${stage === s.key ? 'on' : ''}`}
-                        onClick={() => setStage(s.key)}
-                    >{s.label}</button>
-                ))}
-            </div>
+                <div className="m-prop-list-content">
+                    <div className="m-cat-chips">
+                        {CATEGORIES.map((c) => (
+                            <button
+                                key={c}
+                                className={`m-cat-chip ${cat === c ? 'on' : ''}`}
+                                onClick={() => setCat(c)}
+                            >{c}</button>
+                        ))}
+                    </div>
 
-            <ul className="m-prop-cards">
-                {loading && <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>불러오는 중...</li>}
-                {!loading && sortedItems.length === 0 && (
-                    <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>조건에 맞는 제보가 없습니다.</li>
-                )}
-                {sortedItems.map((it) => {
-                    const style = CAT_STYLES[it.category] || { bg: '#eee', color: '#555' };
-                    return (
-                        <li
-                            key={it.id}
-                            className="m-prop-card"
-                            onClick={() => onNavigate && onNavigate('mReportDetail', { ...it, cat: it.category, sub: it.sub_category })}
-                        >
-                            <div className="m-prop-card-text">
-                                <div className="m-report-tags">
-                                    <span className="m-prop-cat-tag" style={{ background: style.bg, color: style.color }}>{it.category}</span>
-                                    {it.sub_category && <span className="m-report-sub-tag">{it.sub_category}</span>}
-                                </div>
-                                <h3 className="m-prop-title">{it.title}</h3>
-                                <div className="m-report-author-stat-row">
-                                    <p className="m-prop-author">{it.author || '익명'}</p>
-                                    <div className="m-prop-stats">
-                                        <span
-                                            onClick={(e) => toggleLike(e, it.id)}
-                                            style={{ cursor: 'pointer' }}
-                                        >
-                                            <img
-                                                src={likedIds.has(it.id) ? '/figma-assets/icons/icon_heart.svg' : '/figma-assets/icons/icon_heart_inactive.svg'}
-                                                alt=""
-                                                width={14}
-                                                height={14}
-                                                style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}
-                                            />
-                                            {it.likes ?? 0}
-                                        </span>
-                                        <span><img src="/figma-assets/icons/icon_comment.svg" alt="" width={14} height={14} style={{display:'inline-block',verticalAlign:'middle',marginRight:2}} />{it.comments ?? 0}</span>
+                    <div className="m-sort-row">
+                        <button className="m-sort-btn" onClick={openSort}>
+                            <span>{sort}</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                    </div>
+
+                    <div className="m-stage-chips">
+                        {STAGES.map((s) => (
+                            <button
+                                key={s.key}
+                                className={`m-stage-chip ${stage === s.key ? 'on' : ''}`}
+                                onClick={() => setStage(s.key)}
+                            >{s.label}</button>
+                        ))}
+                    </div>
+
+                    <ul className="m-prop-cards">
+                        {loading && <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>불러오는 중...</li>}
+                        {!loading && sortedItems.length === 0 && (
+                            <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>조건에 맞는 제보가 없습니다.</li>
+                        )}
+                        {sortedItems.map((it) => {
+                            const style = CAT_STYLES[it.category] || { bg: '#eee', color: '#555' };
+                            return (
+                                <li
+                                    key={it.id}
+                                    className="m-prop-card"
+                                    onClick={() => onNavigate && onNavigate('mReportDetail', { ...it, cat: it.category, sub: it.sub_category })}
+                                >
+                                    <div className="m-prop-card-text">
+                                        <div className="m-report-tags">
+                                            <span className="m-prop-cat-tag" style={{ background: style.bg, color: style.color }}>{it.category}</span>
+                                            {it.sub_category && <span className="m-report-sub-tag">{it.sub_category}</span>}
+                                        </div>
+                                        <h3 className="m-prop-title">{it.title}</h3>
+                                        <div className="m-report-author-stat-row">
+                                            <p className="m-prop-author">{it.author || '익명'}</p>
+                                            <div className="m-prop-stats">
+                                                <span
+                                                    onClick={(e) => toggleLike(e, it.id)}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill={likedIds.has(it.id) ? '#E6235A' : 'none'} stroke={likedIds.has(it.id) ? '#E6235A' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
+                                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                                    </svg>
+                                                    {it.likes ?? 0}
+                                                </span>
+                                                <span>
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
+                                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                                    </svg>
+                                                    {it.comments ?? 0}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            {it.image && <div className="m-prop-card-img" style={{ backgroundImage: `url(${it.image})` }} />}
-                        </li>
-                    );
-                })}
-            </ul>
+                                    {it.image && <div className="m-prop-card-img" style={{ backgroundImage: `url(${it.image})` }} />}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+            </div>
+            </div>{/* end m-prop-page-body */}
 
             <button className="m-prop-fab" onClick={() => onNavigate && onNavigate('mReportForm')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 <span>제보하기</span>
             </button>
 
-            {regionOpen && (
-                <div className="m-modal-backdrop" onClick={() => setRegionOpen(false)}>
-                    <div className="m-modal-sheet" onClick={(e) => e.stopPropagation()}>
-                        <div className="m-modal-head">
-                            <h3 className="m-modal-title">위치 설정</h3>
-                            <button className="m-modal-close" type="button" aria-label="닫기" onClick={() => setRegionOpen(false)}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            </button>
-                        </div>
-                        <ul className="m-region-list">
-                            {REGIONS.map((r) => (
-                                <li key={r} className={`m-region-item ${regionDraft === r ? 'on' : ''}`} onClick={() => setRegionDraft(r)}>
-                                    <span className="m-modal-chevron">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </span>
-                                    <span>{r}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <button type="button" className="m-modal-confirm" onClick={confirmRegion}>선택</button>
-                    </div>
-                </div>
-            )}
-
-            {sortOpen && (
-                <div className="m-modal-backdrop" onClick={() => setSortOpen(false)}>
-                    <div className="m-modal-sheet" onClick={(e) => e.stopPropagation()}>
-                        <div className="m-modal-head">
-                            <h3 className="m-modal-title">정렬</h3>
-                            <button className="m-modal-close" type="button" aria-label="닫기" onClick={() => setSortOpen(false)}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            </button>
-                        </div>
-                        <ul className="m-sort-list">
-                            {SORTS.map((s) => (
-                                <li key={s} className={`m-sort-item ${sortDraft === s ? 'on' : ''}`} onClick={() => setSortDraft(s)}>
-                                    <span className="m-modal-chevron">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </span>
-                                    <span>{s}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <button type="button" className="m-modal-confirm" onClick={confirmSort}>선택</button>
-                    </div>
-                </div>
-            )}
+            {regionOpen && <RegionSheet regions={REGIONS} draft={regionDraft} onSelect={setRegionDraft} onConfirm={confirmRegion} onClose={() => setRegionOpen(false)} />}
+            {sortOpen && <SortSheet sorts={SORTS} draft={sortDraft} onSelect={setSortDraft} onConfirm={confirmSort} onClose={() => setSortOpen(false)} />}
 
             <MobileBottomNav currentView="mReportList" onNavigate={onNavigate} />
         </div>

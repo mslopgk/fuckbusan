@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import UserPCLayout from './UserPCLayout';
 import './PCSurveyResults.css';
+
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const RADAR = [
     { label: '접근성', value: 2.3 },
@@ -94,13 +96,14 @@ function RadarChart() {
     );
 }
 
-function DonutChart() {
-    const total = PIE_DATA.reduce((s, d) => s + d.value, 0);
+function DonutChart({ data: chartData }) {
+    const pieItems = chartData || PIE_DATA;
+    const total = pieItems.reduce((s, d) => s + d.value, 0);
     const cx = 110, cy = 110;
     const outerR = 90, innerR = 55;
     let acc = 0;
 
-    const segs = PIE_DATA.map((d) => {
+    const segs = pieItems.map((d) => {
         const startAngle = (acc / total) * 2 * Math.PI - Math.PI / 2;
         acc += d.value;
         const endAngle = (acc / total) * 2 * Math.PI - Math.PI / 2;
@@ -134,12 +137,49 @@ export default function PCSurveyResults({ onNavigate, survey }) {
         ...(survey || {}),
     };
     const [open, setOpen] = useState(true);
+    const [resultsData, setResultsData] = useState(null);
+
+    useEffect(() => {
+        const id = survey?.id;
+        if (!id) return;
+        fetch(`${API_URL}/api/surveys/${id}/results`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => { if (d) setResultsData(d); })
+            .catch(() => {});
+    }, [survey?.id]);
+
+    const responseCount = resultsData?.response_count ?? data.responses;
+
+    const derivedBarData = (() => {
+        if (!resultsData?.questions) return BAR_DATA;
+        const multiQ = resultsData.questions.find(q => q.qtype === 'multi');
+        if (!multiQ?.distribution?.length) return BAR_DATA;
+        const total = multiQ.total || 1;
+        return multiQ.distribution.map((d, i) => ({
+            label: d.label,
+            value: Math.round((d.count / total) * 100),
+            color: BAR_DATA[i]?.color || '#5B2EAB',
+        })).filter(d => d.value > 0).sort((a, b) => b.value - a.value);
+    })();
+
+    const derivedPieData = (() => {
+        if (!resultsData?.questions) return PIE_DATA;
+        const singleQ = resultsData.questions.find(q => q.qtype === 'single' || q.qtype === 'agree');
+        if (!singleQ?.distribution?.length) return PIE_DATA;
+        const total = singleQ.total || 1;
+        const COLORS = ['#fb9b00', '#5B2EAB', '#680A25', '#0b9583', '#E6235A'];
+        return singleQ.distribution.map((d, i) => ({
+            label: d.label,
+            value: Math.round((d.count / total) * 100),
+            color: COLORS[i % COLORS.length],
+        })).filter(d => d.value > 0);
+    })();
 
     const handleCopy = () => {
         try { navigator.clipboard.writeText(window.location.href); } catch (_) {}
     };
 
-    const barMax = Math.max(...BAR_DATA.map((d) => d.value));
+    const barMax = Math.max(...derivedBarData.map((d) => d.value), 1);
 
     return (
         <UserPCLayout currentView="pcSurveyResults" onNavigate={onNavigate}>
@@ -152,7 +192,7 @@ export default function PCSurveyResults({ onNavigate, survey }) {
                             <span className="pc-banner-divider" />
                             <span className="pc-banner-count">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" /></svg>
-                                {data.responses.toLocaleString()}
+                                {responseCount.toLocaleString()}
                             </span>
                         </div>
                         <button className="pc-banner-copy" onClick={handleCopy}>
@@ -179,9 +219,9 @@ export default function PCSurveyResults({ onNavigate, survey }) {
                     <div className="pc-results-block">
                         <h4 className="pc-results-q-title">Q1. 사직구장 주변 보행로 안전</h4>
                         <div className="pc-pie-row">
-                            <DonutChart />
+                            <DonutChart data={derivedPieData} />
                             <ul className="pc-pie-legend">
-                                {PIE_DATA.map((d) => (
+                                {derivedPieData.map((d) => (
                                     <li key={d.label}>
                                         <span className="pc-dot" style={{ background: d.color }} />
                                         <strong style={{ color: '#111' }}>{d.value}%</strong>
@@ -196,9 +236,9 @@ export default function PCSurveyResults({ onNavigate, survey }) {
                     <div className="pc-results-block">
                         <h4 className="pc-results-q-title">Q2. 사직구장 주변 차량과 보행자도로의 분리</h4>
                         <div className="pc-pie-row">
-                            <DonutChart />
+                            <DonutChart data={derivedPieData} />
                             <ul className="pc-pie-legend">
-                                {PIE_DATA.map((d) => (
+                                {derivedPieData.map((d) => (
                                     <li key={d.label}>
                                         <span className="pc-dot" style={{ background: d.color }} />
                                         <strong style={{ color: '#111' }}>{d.value}%</strong>
@@ -213,7 +253,7 @@ export default function PCSurveyResults({ onNavigate, survey }) {
                     <div className="pc-results-block">
                         <h4 className="pc-results-q-title">Q3. 가장 개선이 필요한 항목</h4>
                         <div className="pc-bar-list">
-                            {BAR_DATA.map((d) => (
+                            {derivedBarData.map((d) => (
                                 <div key={d.label} className="pc-bar-row">
                                     <div
                                         className="pc-bar-fill"

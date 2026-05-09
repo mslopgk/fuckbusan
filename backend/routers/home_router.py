@@ -50,12 +50,18 @@ def home_archives(db: Session = Depends(get_db)):
         .limit(6)
         .all()
     )
-    return [
-        {
+    result = []
+    for p in rows:
+        files = []
+        if p.files:
+            try:
+                files = json.loads(p.files) if isinstance(p.files, str) else p.files
+            except Exception:
+                files = []
+        result.append({
             "id": p.id,
             "title": p.title,
             "desc": (p.content or "")[:80],
-            "img": None,
-        }
-        for p in rows
-    ]
+            "img": files[0] if files else None,
+        })
+    return result

@@ -47,6 +47,7 @@ def admin_recent_activity(
     current_user: models.User = Depends(get_current_user),
 ):
     """최근 활동 — 제보/제안/진단 mix."""
+    from sqlalchemy.orm import joinedload
     _require_admin(current_user)
     out = []
     for r in db.query(models.Report).order_by(desc(models.Report.created_at)).limit(limit).all():
@@ -58,12 +59,19 @@ def admin_recent_activity(
             "region": r.region,
             "created_at": r.created_at.isoformat() if r.created_at else None,
         })
-    for p in db.query(models.NewProposal).order_by(desc(models.NewProposal.created_at)).limit(limit).all():
+    proposals = (
+        db.query(models.NewProposal)
+        .options(joinedload(models.NewProposal.creator))
+        .order_by(desc(models.NewProposal.created_at))
+        .limit(limit)
+        .all()
+    )
+    for p in proposals:
         out.append({
             "kind": "proposal",
             "id": p.id,
             "title": p.title,
-            "author": p.creator.nickname if p.creator else "익명",
+            "author": (p.creator.nickname or p.creator.name) if p.creator else "익명",
             "region": p.region,
             "created_at": p.created_at.isoformat() if p.created_at else None,
         })
@@ -85,14 +93,30 @@ def admin_list_reports(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
     status: Optional[str] = None,
+    region: Optional[str] = None,
+    category: Optional[str] = None,
+    page: Optional[int] = None,
+    size: int = 50,
 ):
-    """관리자 — 모든 제보 + 필터."""
+    """관리자 — 모든 제보 + 필터 + 페이지네이션."""
     _require_admin(current_user)
     q = db.query(models.Report)
-    if status:
+    if status and status != "전체":
         q = q.filter(models.Report.status == status)
-    rows = q.order_by(desc(models.Report.created_at)).all()
-    return [
+    if region and region != "전체":
+        q = q.filter(models.Report.region == region)
+    if category and category != "전체":
+        q = q.filter(models.Report.category == category)
+    q = q.order_by(desc(models.Report.created_at))
+
+    total = q.count()
+    if page is not None:
+        size = max(1, min(size, 200))
+        rows = q.offset((page - 1) * size).limit(size).all()
+    else:
+        rows = q.all()
+
+    items = [
         {
             "id": r.id,
             "title": r.title,
@@ -108,6 +132,10 @@ def admin_list_reports(
         }
         for r in rows
     ]
+
+    if page is not None:
+        return {"items": items, "total": total, "page": page, "size": size}
+    return items
 
 
 @router.put("/reports/{report_id}/status")
@@ -278,6 +306,44 @@ def admin_list_users(
     ]
 
 
+@router.delete("/reports/{report_id}")
+def admin_delete_report(
+    report_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    db.query(models.ReportComment).filter(models.ReportComment.report_id == report_id).delete()
+    db.query(models.ReportLike).filter(models.ReportLike.report_id == report_id).delete()
+    db.query(models.ReportImage).filter(models.ReportImage.report_id == report_id).delete()
+    title = r.title
+    db.delete(r)
+    log_activity(db, user_id=None, action="admin_delete", target_type="report", target_id=report_id, meta={"title": title})
+    db.commit()
+    return {"message": "삭제되었습니다."}
+
+
+@router.delete("/users/{user_id}")
+def admin_delete_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    u = db.query(models.User).filter(models.User.user_id == user_id).first()
+    if not u:
+        raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+    if u.ID == "admin":
+        raise HTTPException(status_code=400, detail="관리자 계정은 삭제할 수 없습니다.")
+    log_activity(db, user_id=None, action="admin_delete_user", target_type="user", target_id=user_id, meta={"ID": u.ID})
+    db.delete(u)
+    db.commit()
+    return {"message": "사용자가 삭제되었습니다."}
+
+
 @router.patch("/users/{user_id}")
 def admin_patch_user(
     user_id: int,
@@ -307,30 +373,53 @@ def admin_patch_user(
 def admin_list_proposals(
     category: Optional[str] = None,
     region: Optional[str] = None,
+    page: Optional[int] = None,
+    size: int = 50,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
+    from sqlalchemy.orm import joinedload
     _require_admin(current_user)
-    q = db.query(models.NewProposal)
+    base_q = db.query(models.NewProposal)
     if category and category != "전체":
-        q = q.filter(models.NewProposal.category == category)
+        base_q = base_q.filter(models.NewProposal.category == category)
     if region:
-        q = q.filter(models.NewProposal.region == region)
-    rows = q.order_by(desc(models.NewProposal.created_at)).all()
-    return [
+        base_q = base_q.filter(models.NewProposal.region == region)
+
+    total = base_q.count()
+    q = base_q.options(joinedload(models.NewProposal.creator)).order_by(desc(models.NewProposal.created_at))
+
+    if page is not None:
+        size = max(1, min(size, 200))
+        rows = q.offset((page - 1) * size).limit(size).all()
+    else:
+        rows = q.all()
+
+    # comment count batch
+    ids = [p.id for p in rows]
+    comment_counts = {}
+    if ids:
+        for pid, cnt in db.query(models.ProposalComment.proposal_id, func.count(models.ProposalComment.id)).filter(models.ProposalComment.proposal_id.in_(ids)).group_by(models.ProposalComment.proposal_id).all():
+            comment_counts[pid] = cnt
+
+    items = [
         {
             "id": p.id,
             "title": p.title,
             "category": p.category,
             "region": p.region,
-            "author": p.creator.nickname if p.creator else "익명",
+            "author": (p.creator.nickname or p.creator.name) if p.creator else "익명",
             "views": p.views_count or 0,
             "likes": p.likes_count or 0,
-            "comments_count": db.query(func.count(models.ProposalComment.id)).filter(models.ProposalComment.proposal_id == p.id).scalar() or 0,
+            "comments_count": comment_counts.get(p.id, 0),
             "created_at": p.created_at.isoformat() if p.created_at else None,
         }
         for p in rows
     ]
+
+    if page is not None:
+        return {"items": items, "total": total, "page": page, "size": size}
+    return items
 
 
 @router.delete("/proposals/{proposal_id}")

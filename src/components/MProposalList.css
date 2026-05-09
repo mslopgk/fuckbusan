@@ -1,8 +1,9 @@
 .m-prop-list-page {
-    min-height: 100vh;
-    background: #f7f7f8;
-    padding-bottom: 100px;
-    position: relative;
+    height: 100vh;
+    background: #ebe5d4;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .m-prop-topbar {
@@ -12,6 +13,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 16px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
 }
 
 .m-prop-back {
@@ -20,8 +24,8 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 14px;
-    color: #1a1a1b;
+    font-size: 16px;
+    color: #555;
     cursor: pointer;
     font-family: inherit;
     padding: 4px 0;
@@ -45,6 +49,83 @@
 .m-region-row {
     padding: 12px 16px 4px;
     background: #fff;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+}
+
+/* Body area between region-row and bottom nav */
+.m-prop-page-body {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+    margin-bottom: 60px; /* account for fixed bottom nav */
+}
+
+/* Map layer — fills body, behind the list panel */
+.m-prop-map-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.m-prop-map-layer > * {
+    width: 100%;
+    height: 100%;
+}
+
+/* Sliding list panel — fills body, slides down to reveal map */
+.m-prop-list-panel {
+    position: absolute;
+    inset: 0;
+    background: #f7f7f8;
+    border-radius: 16px 16px 0 0;
+    z-index: 5;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+}
+
+.m-prop-list-panel.collapsed {
+    transform: translateY(calc(100% - 52px));
+}
+
+/* Handle bar at top of panel */
+.m-prop-panel-handle {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #fff;
+    border-radius: 16px 16px 0 0;
+    border-bottom: 1px solid #ececec;
+    cursor: pointer;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.m-prop-handle-bar {
+    width: 36px;
+    height: 4px;
+    background: #d0d0d0;
+    border-radius: 2px;
+}
+
+.m-prop-panel-handle-label {
+    font-size: 13px;
+    color: #888;
+    font-weight: 600;
+}
+
+/* Scrollable list content inside panel */
+.m-prop-list-content {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding-bottom: 12px;
 }
 
 .m-region-btn {
@@ -81,20 +162,21 @@
 }
 
 .m-cat-chip {
-    background: #f1f3f5;
+    background: #e6e6e6;
     border: none;
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 7px 14px;
-    font-size: 12px;
-    color: #555;
+    font-size: 16px;
+    color: #242424;
     cursor: pointer;
     font-family: inherit;
-    font-weight: 600;
+    font-weight: 400;
 }
 
 .m-cat-chip.on {
     background: #E6235A;
     color: #fff;
+    font-weight: 600;
 }
 
 .m-sort-row {
@@ -106,8 +188,9 @@
 .m-sort-btn {
     background: none;
     border: none;
-    font-size: 12px;
-    color: #1a1a1b;
+    font-size: 16px;
+    font-weight: 500;
+    color: #242424;
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -126,8 +209,8 @@
 
 .m-prop-card {
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 14px 16px;
     display: flex;
     align-items: center;
@@ -140,35 +223,35 @@
 .m-prop-cat-tag {
     display: inline-block;
     padding: 3px 10px;
-    border-radius: 11px;
-    font-size: 11px;
+    border-radius: 15px;
+    font-size: 14px;
     font-weight: 700;
     margin-bottom: 6px;
 }
 
 .m-prop-title {
-    font-size: 14px;
-    font-weight: 800;
-    color: #1a1a1b;
+    font-size: 16px;
+    font-weight: 500;
+    color: #111;
     margin: 0 0 4px;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.04em;
 }
 
 .m-prop-author {
-    font-size: 12px;
-    color: #888;
-    margin: 0 0 6px;
+    font-size: 14px;
+    color: #737373;
+    margin: 0;
 }
 
 .m-prop-stats {
     display: flex;
-    gap: 12px;
-    font-size: 11px;
-    color: #888;
+    gap: 10px;
+    font-size: 14px;
+    color: #bfbfbf;
 }
 
 .m-prop-stats span {
@@ -178,11 +261,14 @@
 }
 
 .m-prop-card-img {
-    width: 70px;
-    height: 60px;
-    border-radius: 8px;
+    width: 55px;
+    height: 55px;
+    border-radius: 15px;
     background: linear-gradient(135deg, #1f2540 0%, #4a3070 60%, #d97a55 100%);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
 }
 
 .m-prop-fab {

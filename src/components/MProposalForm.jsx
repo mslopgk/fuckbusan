@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import PCMapCanvas from './PCMapCanvas';
+import { formatDraftDate } from '../utils/format';
 import './MProposalForm.css';
 
 const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
@@ -7,14 +8,6 @@ const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').r
 const TYPES = ['주거', '환경', '교육', '안전', '산업·일자리', '교통', '문화·여가', '보건·복지'];
 const DRAFT_KEY = 'mProposalForm:draft';
 
-const formatDraftDate = (iso) => {
-    try {
-        const d = new Date(iso);
-        return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 작성됨`;
-    } catch {
-        return '';
-    }
-};
 
 export default function MProposalForm({ onNavigate }) {
     const [type, setType] = useState('');

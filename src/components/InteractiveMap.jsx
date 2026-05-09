@@ -126,7 +126,7 @@ const InteractiveMap = () => {
                         color: #1a1a1a !important; /* Default Black */
                         font-family: 'GmarketSans', sans-serif !important;
                         font-weight: 500 !important;
-                        font-size: ${isMobile ? '10px' : '12px'} !important;
+                        font-size: ${isMobile ? '4px' : '8px'} !important;
                         text-shadow: 0px 0px 4px #fff, 0px 0px 4px #fff !important;
                         white-space: nowrap !important;
                         pointer-events: auto !important;

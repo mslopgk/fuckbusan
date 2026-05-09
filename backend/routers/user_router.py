@@ -77,14 +77,27 @@ def get_current_user_optional(token: Optional[str] = Depends(oauth2_scheme_optio
 # =============================================================================
 
 @router.get("/api/users", response_model=List[UserOut])
-def list_users(user_type: Optional[str] = None, db: Session = Depends(get_db)):
+def list_users(
+    user_type: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
     query = db.query(User)
     if user_type:
         query = query.filter(User.district_code == user_type)
     return query.all()
 
 @router.put("/api/users/{user_id}")
-def update_user(user_id: int, user_data: UserOut, db: Session = Depends(get_db)):
+def update_user(
+    user_id: int,
+    user_data: UserOut,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
     user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -96,7 +109,13 @@ def update_user(user_id: int, user_data: UserOut, db: Session = Depends(get_db))
     return {"message": "User updated successfully"}
 
 @router.delete("/api/users/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+def delete_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
     user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -110,6 +129,12 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 @router.post("/users/signup", status_code=status.HTTP_201_CREATED)
 def signup(user: UserCreate, db: Session = Depends(get_db)):
+    if len(user.ID) < 4:
+        raise HTTPException(status_code=400, detail="아이디는 4자 이상이어야 합니다.")
+    if len(user.PW) < 6:
+        raise HTTPException(status_code=400, detail="비밀번호는 6자 이상이어야 합니다.")
+    if user.ID == "admin":
+        raise HTTPException(status_code=400, detail="사용할 수 없는 아이디입니다.")
     existing_user = db.query(User).filter(User.ID == user.ID).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="이미 존재하는 아이디입니다.")

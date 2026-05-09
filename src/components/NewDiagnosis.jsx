@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { formatDate } from '../utils/format';
 import './NewDiagnosis.css';
 
 const NewDiagnosis = ({ onBack, onNavigate }) => {
@@ -54,12 +55,6 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
         fetchProposals();
     }, [VITE_API_URL]);
 
-    // Format date for list card
-    const formatDate = (dateStr) => {
-        if (!dateStr) return '';
-        const d = new Date(dateStr);
-        return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
-    };
 
     // 카테고리별 배지 색상 정의
     const getCategoryStyle = (category) => {

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyJoin.css';
 
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
 const QUESTIONS = [
     {
         id: 'Q1',
@@ -170,8 +172,22 @@ export default function MSurveyJoin({ onNavigate, survey }) {
                 >이전</button>
                 <button
                     className="m-join-next"
-                    onClick={() => onNavigate && onNavigate('mSurveyDone', survey)}
                     type="button"
+                    onClick={async () => {
+                        const surveyId = survey?.id;
+                        if (surveyId && survey?.questions?.length > 0) {
+                            const mappedAnswers = survey.questions.map((q, i) => {
+                                const qKey = `Q${i + 1}`;
+                                return { question_id: q.id, value: answers[qKey] ?? '' };
+                            }).filter(a => a.value !== '' && (Array.isArray(a.value) ? a.value.length > 0 : true));
+                            const token = localStorage.getItem('access_token');
+                            const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+                            await fetch(`${API_URL}/api/surveys/${surveyId}/responses`, {
+                                method: 'POST', headers, body: JSON.stringify({ answers: mappedAnswers }),
+                            }).catch(() => {});
+                        }
+                        onNavigate && onNavigate('mSurveyDone', survey);
+                    }}
                 >다음</button>
             </footer>
 

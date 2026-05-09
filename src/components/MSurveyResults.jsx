@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyResults.css';
+
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const COMPOSITE = [
     { key: 'info',     label: '정보제공성', value: 1.7 },
@@ -133,8 +136,38 @@ export default function MSurveyResults({ onNavigate, survey }) {
     const data = {
         title: survey?.title || '2026년, 사직구장 일대 보행환경 결과는?',
         period: survey?.period || '2026.03.16 ~ 2026.04.05',
-        respondents: survey?.respondents ?? 12453,
+        respondents: survey?.respondents ?? survey?.response_count ?? 12453,
     };
+    const [resultsData, setResultsData] = useState(null);
+
+    useEffect(() => {
+        const id = survey?.id;
+        if (!id) return;
+        fetch(`${API_URL}/api/surveys/${id}/results`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => { if (d) setResultsData(d); })
+            .catch(() => {});
+    }, [survey?.id]);
+
+    const respondentCount = resultsData?.response_count ?? data.respondents;
+
+    const derivedBars = (() => {
+        if (!resultsData?.questions) return BARS;
+        const multiQ = resultsData.questions.find(q => q.qtype === 'multi');
+        if (!multiQ?.distribution?.length) return BARS;
+        const total = multiQ.total || 1;
+        return multiQ.distribution
+            .map(d => ({ label: d.label, pct: Math.round((d.count / total) * 100) }))
+            .filter(d => d.pct > 0)
+            .sort((a, b) => b.pct - a.pct);
+    })();
+
+    const derivedBubbles = derivedBars.slice(0, 5).map((b, i) => ({
+        label: b.label,
+        pct: b.pct,
+        size: Math.max(32, Math.round(b.pct * 3.5)),
+        color: BUBBLES[i]?.color || '#5B2EAB',
+    }));
 
     return (
         <div className="m-survey-results-page">
@@ -147,7 +180,7 @@ export default function MSurveyResults({ onNavigate, survey }) {
                     <span className="m-results-period">{data.period}</span>
                     <span className="m-results-count">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                        {data.respondents.toLocaleString()}
+                        {respondentCount.toLocaleString()}
                     </span>
                 </div>
             </div>
@@ -179,8 +212,8 @@ export default function MSurveyResults({ onNavigate, survey }) {
             ))}
 
             <section className="m-results-section">
-                <h3 className="m-q-result-title">Q1. 가장 개선이 필요한 항목</h3>
-                {BARS.map((b) => (
+                <h3 className="m-q-result-title">Q3. 가장 개선이 필요한 항목</h3>
+                {derivedBars.map((b) => (
                     <div key={b.label} className="m-bar-row">
                         <span className="m-bar-label">{b.label}</span>
                         <div className="m-bar-track">
@@ -192,9 +225,9 @@ export default function MSurveyResults({ onNavigate, survey }) {
             </section>
 
             <section className="m-results-section">
-                <h3 className="m-q-result-title">Q1. 가장 개선이 필요한 항목</h3>
+                <h3 className="m-q-result-title">Q3. 키워드 분포</h3>
                 <div className="m-bubbles">
-                    {BUBBLES.map((b) => (
+                    {derivedBubbles.map((b) => (
                         <div
                             key={b.label}
                             className="m-bubble"

@@ -1,5 +1,6 @@
 /* ProposalList.jsx - 제안현황 페이지 (반응형: 모바일 + 데스크톱) */
 import React, { useState, useEffect, useCallback } from 'react';
+import { formatDate } from '../utils/format';
 import './ProposalList.css';
 
 const DISTRICTS = [
@@ -72,11 +73,6 @@ const ProposalList = ({ onNavigate, onBack }) => {
         fetchProposals();
     }, [fetchProposals]);
 
-    const formatDate = (dateStr) => {
-        if (!dateStr) return '';
-        const d = new Date(dateStr);
-        return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
-    };
 
     const getImageUrl = (item) => {
         if (!item.files || item.files.length === 0) return null;

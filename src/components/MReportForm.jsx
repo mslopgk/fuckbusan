@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PCMapCanvas from './PCMapCanvas';
+import { formatDraftDate } from '../utils/format';
 import './MProposalForm.css';
 import './MProposalList.css';
 import './MReportForm.css';
@@ -11,14 +12,6 @@ const POSITIONS = ['위치', '도로', '인도', '공원', '주차장'];
 const ISSUES = ['문제사항', '훼손', '오염', '불편', '위험'];
 const DRAFT_KEY = 'mReportForm:draft';
 
-const formatDraftDate = (iso) => {
-    try {
-        const d = new Date(iso);
-        return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 작성됨`;
-    } catch {
-        return '';
-    }
-};
 
 export default function MReportForm({ onNavigate }) {
     const [cat, setCat] = useState('');

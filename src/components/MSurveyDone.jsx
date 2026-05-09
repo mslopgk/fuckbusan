@@ -5,7 +5,7 @@ export default function MSurveyDone({ onNavigate }) {
         <div className="m-survey-done-page">
             <div className="m-done-content">
                 <div className="m-done-icon">
-                    <img src="/figma-assets/survey_done_check.png" alt="" width="40" height="40" />
+                    <img src="/figma-assets/survey_done_check.svg" alt="" width="40" height="40" />
                 </div>
                 <h1 className="m-done-title">설문 제출 완료</h1>
                 <p className="m-done-subtitle">참여해 주셔서 감사합니다</p>

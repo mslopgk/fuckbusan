@@ -308,3 +308,9 @@
 }
 
 .m-form-input:focus { border-color: #5B2EAB; }
+.m-form-input-error { border-color: #E6235A !important; }
+.m-form-error {
+    margin: 4px 0 0;
+    font-size: 11px;
+    color: #E6235A;
+}

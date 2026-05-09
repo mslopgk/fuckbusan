@@ -41,6 +41,7 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setComments(Array.isArray(rows) ? rows : []))
             .catch(() => setComments([]));
+        fetch(`${API_URL}/api/reports/proposals/${numId}/view`, { method: 'POST' }).catch(() => {});
     }, [proposal?.id]);
 
     const district = detail?.region

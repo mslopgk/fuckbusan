@@ -10,7 +10,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 # [★ 중요 변경] dependencies가 아니라 user_router에서 가져옵니다!
-from routers.user_router import get_current_user
+from routers.user_router import get_current_user, get_current_user_optional
 
 router = APIRouter(
     prefix="/checklist",
@@ -63,25 +63,24 @@ async def upload_file(file: UploadFile = File(...)):
 import traceback
 
 @router.post("/submit", status_code=status.HTTP_201_CREATED)
-def submit_checklist(result: ChecklistCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def submit_checklist(
+    result: ChecklistCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user_optional),
+):
     try:
-        # 딕셔너리로 변환
         result_data = result.dict()
-        
-        # ID 중복 방지 (입력값에 ID 있으면 삭제)
         if "ID" in result_data:
             del result_data["ID"]
 
-        # DB 저장 (로그인한 유저 ID 자동 입력)
         new_result = ChecklistResult(
-            ID=current_user.ID,
-            user_id=current_user.user_id,
+            ID=current_user.ID if current_user else None,
+            user_id=current_user.user_id if current_user else None,
             **result_data
         )
-        
         db.add(new_result)
         db.commit()
-        return {"message": "진단 결과 저장 성공"}
+        return {"message": "진단 결과 저장 성공", "result_id": new_result.result_id}
     except Exception as e:
         traceback.print_exc()
         db.rollback()
@@ -91,13 +90,16 @@ def submit_checklist(result: ChecklistCreate, db: Session = Depends(get_db), cur
 def get_checklist(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user_optional),
 ):
-    # For now, return all or filter by user?
-    # Usually users see their own or public ones?
-    # Let's return all for inspection, or filter by user if we had a 'my' param.
-    # Currently just dumping all for the list page.
-    results = db.query(ChecklistResult).offset(skip).limit(limit).all()
+    """로그인 사용자는 전체 목록, 비로그인은 본인 결과 없음(빈 배열)."""
+    if current_user is None:
+        return []
+    if current_user.ID == "admin":
+        results = db.query(ChecklistResult).offset(skip).limit(min(limit, 500)).all()
+    else:
+        results = db.query(ChecklistResult).filter(ChecklistResult.user_id == current_user.user_id).offset(skip).limit(limit).all()
     return results
 
 
@@ -156,44 +158,29 @@ def get_checklist_summary(
     db: Session = Depends(get_db),
 ):
     """대분류별 평균 + 최저/최고/표준편차 요약. district 옵션."""
-    from sqlalchemy import func
+    from sqlalchemy import func, text
     q = db.query(
         ChecklistResult.대분류.label("category"),
         func.avg(ChecklistResult.점수).label("avg_score"),
         func.min(ChecklistResult.점수).label("min_score"),
         func.max(ChecklistResult.점수).label("max_score"),
         func.count(ChecklistResult.result_id).label("count"),
+        func.std(ChecklistResult.점수).label("std_dev"),
     )
     if district:
         q = q.filter(ChecklistResult.district_code == district)
     rows = q.group_by(ChecklistResult.대분류).all()
-    out = []
-    for r in rows:
-        if not r.category:
-            continue
-        # 분산은 별도 쿼리로 — 단순화 위해 row 단위로
-        scores = [
-            x[0] for x in db.query(ChecklistResult.점수).filter(
-                ChecklistResult.대분류 == r.category,
-                ChecklistResult.점수.isnot(None),
-                *([ChecklistResult.district_code == district] if district else []),
-            ).all()
-        ]
-        if scores:
-            mean = sum(scores) / len(scores)
-            var = sum((s - mean) ** 2 for s in scores) / len(scores)
-            std = var ** 0.5
-        else:
-            std = 0
-        out.append({
+    return [
+        {
             "category": r.category,
             "avg_score": float(r.avg_score) if r.avg_score else 0,
             "min_score": int(r.min_score) if r.min_score is not None else 0,
             "max_score": int(r.max_score) if r.max_score is not None else 0,
-            "std_dev": round(std, 2),
+            "std_dev": round(float(r.std_dev), 2) if r.std_dev else 0,
             "count": r.count,
-        })
-    return out
+        }
+        for r in rows if r.category
+    ]
 
 
 @router.get("/templates")

@@ -1,21 +1,16 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import MobileBottomNav from './MobileBottomNav';
 import { CAT_STYLES } from './catStyles';
+import { REGIONS, SORTS, REPORT_STAGES as STAGES } from '../constants/mapConstants';
+import { useSwipeSheet } from '../hooks/useSwipeSheet';
+import { RegionSheet, SortSheet, MMapSearchBar } from './MFilterSheets';
 import './MProposalList.css';
 import './MProposalMap.css';
 import './MReportList.css';
 
 const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
-
-const REGIONS = ['부산전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'];
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '산업·일자리', '문화·여가', '보건·복지'];
-const SORTS = ['조회수', '투표순', '최신순'];
-const STAGES = [
-    { key: 'inProgress', label: '개선중',   apiValue: '개선중' },
-    { key: 'planned',    label: '개선예정', apiValue: '개선예정' },
-    { key: 'done',       label: '개선완료', apiValue: '개선완료' },
-];
 export default function MReportMap({ onNavigate }) {
     const [region, setRegion] = useState('부산전체');
     const [regionOpen, setRegionOpen] = useState(false);
@@ -26,9 +21,9 @@ export default function MReportMap({ onNavigate }) {
     const [sortDraft, setSortDraft] = useState('최신순');
     const [sortOpen, setSortOpen] = useState(false);
     const [search, setSearch] = useState('');
-    const [expanded, setExpanded] = useState(false);
     const [items, setItems] = useState([]);
     const [selectedPinId, setSelectedPinId] = useState(null);
+    const { expanded, setExpanded, onTouchStart, onTouchEnd } = useSwipeSheet();
 
     useEffect(() => {
         const params = new URLSearchParams();
@@ -57,48 +52,17 @@ export default function MReportMap({ onNavigate }) {
     const confirmRegion = () => { setRegion(regionDraft); setRegionOpen(false); };
     const confirmSort = () => { setSort(sortDraft); setSortOpen(false); };
 
-    const startYRef = useRef(0);
-    const startTRef = useRef(0);
-    const onTouchStart = (e) => {
-        const y = e.touches ? e.touches[0].clientY : e.clientY;
-        startYRef.current = y;
-        startTRef.current = Date.now();
-    };
-    const onTouchEnd = (e) => {
-        const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
-        const dy = y - startYRef.current;
-        const dt = Date.now() - startTRef.current;
-        if (Math.abs(dy) < 24 && dt < 250) {
-            setExpanded((v) => !v);
-            return;
-        }
-        if (dy < -40) setExpanded(true);
-        else if (dy > 40) setExpanded(false);
-    };
 
     return (
         <div className={`m-prop-map-page ${expanded ? 'expanded' : ''}`}>
-            <div className="m-map-search-bar">
-                <button className="m-map-back" onClick={() => onNavigate && onNavigate('home')}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <span className="m-map-search-icon" aria-hidden="true">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                </span>
-                <input
-                    type="text"
-                    className="m-map-search"
-                    placeholder="검색"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-            </div>
+            <MMapSearchBar value={search} onChange={setSearch} onBack={() => onNavigate?.('home')} />
 
             <div className="m-map-canvas">
                 <PCMapCanvas
                     pins={PINS.map((p) => ({ ...p, color: '#E6235A' }))}
                     accentColor="#E6235A"
                     onPinClick={(pin) => { setSelectedPinId(pin.id); setExpanded(false); }}
+                    showLocateBtn
                 />
             </div>
 
@@ -202,53 +166,8 @@ export default function MReportMap({ onNavigate }) {
                 )}
             </div>
 
-            {regionOpen && (
-                <div className="m-modal-backdrop" onClick={() => setRegionOpen(false)}>
-                    <div className="m-modal-sheet" onClick={(e) => e.stopPropagation()}>
-                        <div className="m-modal-head">
-                            <h3 className="m-modal-title">위치 설정</h3>
-                            <button className="m-modal-close" type="button" aria-label="닫기" onClick={() => setRegionOpen(false)}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            </button>
-                        </div>
-                        <ul className="m-region-list">
-                            {REGIONS.map((r) => (
-                                <li key={r} className={`m-region-item ${regionDraft === r ? 'on' : ''}`} onClick={() => setRegionDraft(r)}>
-                                    <span className="m-modal-chevron">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </span>
-                                    <span>{r}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <button type="button" className="m-modal-confirm" onClick={confirmRegion}>선택</button>
-                    </div>
-                </div>
-            )}
-
-            {sortOpen && (
-                <div className="m-modal-backdrop" onClick={() => setSortOpen(false)}>
-                    <div className="m-modal-sheet" onClick={(e) => e.stopPropagation()}>
-                        <div className="m-modal-head">
-                            <h3 className="m-modal-title">정렬</h3>
-                            <button className="m-modal-close" type="button" aria-label="닫기" onClick={() => setSortOpen(false)}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            </button>
-                        </div>
-                        <ul className="m-sort-list">
-                            {SORTS.map((s) => (
-                                <li key={s} className={`m-sort-item ${sortDraft === s ? 'on' : ''}`} onClick={() => setSortDraft(s)}>
-                                    <span className="m-modal-chevron">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </span>
-                                    <span>{s}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <button type="button" className="m-modal-confirm" onClick={confirmSort}>선택</button>
-                    </div>
-                </div>
-            )}
+            {regionOpen && <RegionSheet regions={REGIONS} draft={regionDraft} onSelect={setRegionDraft} onConfirm={confirmRegion} onClose={() => setRegionOpen(false)} />}
+            {sortOpen && <SortSheet sorts={SORTS} draft={sortDraft} onSelect={setSortDraft} onConfirm={confirmSort} onClose={() => setSortOpen(false)} />}
 
             <MobileBottomNav currentView="mReportMap" onNavigate={onNavigate} />
         </div>

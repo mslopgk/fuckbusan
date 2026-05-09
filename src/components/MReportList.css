@@ -1,19 +1,21 @@
 .m-stage-chips {
     display: flex;
     gap: 8px;
-    padding: 0 16px 12px;
+    padding: 0 20px 12px;
     background: #f7f7f8;
 }
 
 .m-stage-chip {
     background: #fff;
-    border: 1px solid #d8d8d8;
-    border-radius: 16px;
-    padding: 7px 16px;
-    font-size: 12px;
-    color: #555;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    height: 43px;
+    min-width: 78px;
+    padding: 0 16px;
+    font-size: 16px;
+    color: #777;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 500;
     font-family: inherit;
 }
 
@@ -21,6 +23,7 @@
     background: #E6235A;
     border-color: #E6235A;
     color: #fff;
+    font-weight: 700;
 }
 
 .m-report-tags {

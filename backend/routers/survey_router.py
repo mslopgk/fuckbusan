@@ -115,12 +115,23 @@ def get_survey_results(survey_id: int, db: Session = Depends(get_db)):
     questions = db.query(models.SurveyQuestion).filter(
         models.SurveyQuestion.survey_id == survey_id
     ).order_by(models.SurveyQuestion.order_no.asc()).all()
+
+    # 전체 답변을 한 번에 조회 후 question_id별로 분류
+    qids = [q.id for q in questions]
+    answers_by_q: dict = {}
+    if qids:
+        all_answers = db.query(models.SurveyAnswer).filter(
+            models.SurveyAnswer.question_id.in_(qids)
+        ).all()
+        for a in all_answers:
+            answers_by_q.setdefault(a.question_id, []).append(a)
+
     out = []
     for q in questions:
-        answers = db.query(models.SurveyAnswer).filter(models.SurveyAnswer.question_id == q.id).all()
+        answers = answers_by_q.get(q.id, [])
+        opts = q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else [])
         if q.qtype in ("single", "agree"):
             counter = Counter([a.value for a in answers if a.value])
-            opts = q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else [])
             distribution = [{"label": opt, "count": counter.get(opt, 0)} for opt in opts]
             out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
         elif q.qtype == "multi":
@@ -132,7 +143,6 @@ def get_survey_results(survey_id: int, db: Session = Depends(get_db)):
                         counter.update(vals)
                 except Exception:
                     pass
-            opts = q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else [])
             distribution = [{"label": opt, "count": counter.get(opt, 0)} for opt in opts]
             out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
         else:  # text

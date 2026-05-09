@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
 from typing import List, Optional
 import json
 import os
@@ -251,9 +252,9 @@ def create_suggestion(suggestion: schemas.SuggestionCreate, db: Session = Depend
 
 @router.post("/new-proposal", status_code=status.HTTP_201_CREATED)
 def create_new_proposal(
-    proposal: schemas.NewProposalCreate, 
+    proposal: schemas.NewProposalCreate,
     db: Session = Depends(get_db),
-    current_user: Optional[models.User] = Depends(get_current_user) # 로그인 정보 가져오기
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
 ):
     try:
         new_proposal = models.NewProposal(
@@ -278,57 +279,82 @@ def create_new_proposal(
 @router.get("/proposals", response_model=List[schemas.NewProposalRead])
 def get_all_proposals(
     db: Session = Depends(get_db),
-    current_user: Optional[models.User] = Depends(get_current_user_optional)
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
 ):
-    proposals = db.query(models.NewProposal).order_by(models.NewProposal.created_at.desc()).all()
-    for p in proposals:
-        p.nickname = p.creator.nickname if p.creator else "익명"
-        p.comments_count = db.query(models.ProposalComment).filter(models.ProposalComment.proposal_id == p.id).count()
+    proposals = (
+        db.query(models.NewProposal)
+        .options(joinedload(models.NewProposal.creator))
+        .order_by(models.NewProposal.created_at.desc())
+        .all()
+    )
+    ids = [p.id for p in proposals]
+    comment_counts = {}
+    liked_ids: set = set()
+    if ids:
+        for pid, cnt in db.query(models.ProposalComment.proposal_id, func.count(models.ProposalComment.id)).filter(models.ProposalComment.proposal_id.in_(ids)).group_by(models.ProposalComment.proposal_id).all():
+            comment_counts[pid] = cnt
         if current_user:
-            if p.user_id == current_user.user_id:
-                p.is_mine = True
-            has_liked = db.query(models.ProposalLike).filter(
-                models.ProposalLike.proposal_id == p.id,
-                models.ProposalLike.user_id == current_user.user_id
-            ).first()
-            p.has_voted = True if has_liked else False
+            for (pid,) in db.query(models.ProposalLike.proposal_id).filter(models.ProposalLike.user_id == current_user.user_id, models.ProposalLike.proposal_id.in_(ids)).all():
+                liked_ids.add(pid)
+    for p in proposals:
+        p.nickname = (p.creator.nickname if p.creator and p.creator.nickname else (p.creator.name if p.creator else "익명"))
+        p.comments_count = comment_counts.get(p.id, 0)
+        p.is_mine = current_user is not None and p.user_id == current_user.user_id
+        p.has_voted = p.id in liked_ids
     return proposals
 
 # --- [추가] 나의 제안 목록 조회 API ---
 @router.get("/my-proposals", response_model=List[schemas.NewProposalRead])
 def get_my_proposals(
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
+    current_user: models.User = Depends(get_current_user),
 ):
-    proposals = db.query(models.NewProposal).filter(models.NewProposal.user_id == current_user.user_id).order_by(models.NewProposal.created_at.desc()).all()
+    proposals = (
+        db.query(models.NewProposal)
+        .filter(models.NewProposal.user_id == current_user.user_id)
+        .options(joinedload(models.NewProposal.creator))
+        .order_by(models.NewProposal.created_at.desc())
+        .all()
+    )
+    ids = [p.id for p in proposals]
+    comment_counts = {}
+    liked_ids: set = set()
+    if ids:
+        for pid, cnt in db.query(models.ProposalComment.proposal_id, func.count(models.ProposalComment.id)).filter(models.ProposalComment.proposal_id.in_(ids)).group_by(models.ProposalComment.proposal_id).all():
+            comment_counts[pid] = cnt
+        for (pid,) in db.query(models.ProposalLike.proposal_id).filter(models.ProposalLike.user_id == current_user.user_id, models.ProposalLike.proposal_id.in_(ids)).all():
+            liked_ids.add(pid)
     for p in proposals:
-        p.nickname = current_user.nickname
+        p.nickname = current_user.nickname or current_user.name
         p.is_mine = True
-        p.comments_count = db.query(models.ProposalComment).filter(models.ProposalComment.proposal_id == p.id).count()
-        has_liked = db.query(models.ProposalLike).filter(
-            models.ProposalLike.proposal_id == p.id,
-            models.ProposalLike.user_id == current_user.user_id
-        ).first()
-        p.has_voted = True if has_liked else False
+        p.comments_count = comment_counts.get(p.id, 0)
+        p.has_voted = p.id in liked_ids
     return proposals
 
 # --- [추가] 내가 투표한 제안 목록 조회 API ---
 @router.get("/voted-proposals", response_model=List[schemas.NewProposalRead])
 def get_voted_proposals(
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
+    current_user: models.User = Depends(get_current_user),
 ):
-    # ProposalLike 테이블을 조인하여 내가 투표한 글들만 가져옴
-    voted_proposals = db.query(models.NewProposal)\
-        .join(models.ProposalLike, models.NewProposal.id == models.ProposalLike.proposal_id)\
-        .filter(models.ProposalLike.user_id == current_user.user_id)\
-        .order_by(models.ProposalLike.created_at.desc()).all()
-    
+    voted_proposals = (
+        db.query(models.NewProposal)
+        .join(models.ProposalLike, models.NewProposal.id == models.ProposalLike.proposal_id)
+        .options(joinedload(models.NewProposal.creator))
+        .filter(models.ProposalLike.user_id == current_user.user_id)
+        .order_by(models.ProposalLike.created_at.desc())
+        .all()
+    )
+    ids = [p.id for p in voted_proposals]
+    comment_counts = {}
+    if ids:
+        for pid, cnt in db.query(models.ProposalComment.proposal_id, func.count(models.ProposalComment.id)).filter(models.ProposalComment.proposal_id.in_(ids)).group_by(models.ProposalComment.proposal_id).all():
+            comment_counts[pid] = cnt
     for p in voted_proposals:
-        p.nickname = p.creator.nickname if p.creator else "익명"
-        p.is_mine = (p.user_id == current_user.user_id)
+        p.nickname = (p.creator.nickname if p.creator and p.creator.nickname else (p.creator.name if p.creator else "익명"))
+        p.is_mine = p.user_id == current_user.user_id
         p.has_voted = True
-        
+        p.comments_count = comment_counts.get(p.id, 0)
     return voted_proposals
 
 # --- [추가] 제안 조회수 증가 API (본인 글 제외, 중복 방지) ---
@@ -379,23 +405,26 @@ def increment_proposal_view(
 def get_proposal_detail(
     proposal_id: int,
     db: Session = Depends(get_db),
-    current_user: Optional[models.User] = Depends(get_current_user_optional)
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
 ):
-    proposal = db.query(models.NewProposal).filter(models.NewProposal.id == proposal_id).first()
+    proposal = (
+        db.query(models.NewProposal)
+        .options(joinedload(models.NewProposal.creator))
+        .filter(models.NewProposal.id == proposal_id)
+        .first()
+    )
     if not proposal:
         raise HTTPException(status_code=404, detail="제안을 찾을 수 없습니다.")
-    
-    proposal.nickname = proposal.creator.nickname if proposal.creator else "익명"
+
+    proposal.nickname = (proposal.creator.nickname if proposal.creator and proposal.creator.nickname else (proposal.creator.name if proposal.creator else "익명"))
+    proposal.comments_count = db.query(func.count(models.ProposalComment.id)).filter(models.ProposalComment.proposal_id == proposal_id).scalar() or 0
+    proposal.is_mine = current_user is not None and proposal.user_id == current_user.user_id
+    proposal.has_voted = False
     if current_user:
-        if proposal.user_id == current_user.user_id:
-            proposal.is_mine = True
-        # 투표 여부 확인
-        has_liked = db.query(models.ProposalLike).filter(
-            models.ProposalLike.proposal_id == proposal.id,
-            models.ProposalLike.user_id == current_user.user_id
-        ).first()
-        proposal.has_voted = True if has_liked else False
-        
+        proposal.has_voted = db.query(models.ProposalLike).filter(
+            models.ProposalLike.proposal_id == proposal_id,
+            models.ProposalLike.user_id == current_user.user_id,
+        ).first() is not None
     return proposal
 
 # --- [추가] 제안 투표(좋아요) 토글 API ---

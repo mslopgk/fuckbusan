@@ -1,25 +1,15 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import MobileBottomNav from './MobileBottomNav';
 import { CAT_STYLES } from './catStyles';
+import { DISTRICT_CENTERS, REGIONS, SORTS } from '../constants/mapConstants';
+import { useProposalsData } from '../hooks/useReportsData';
+import { useSwipeSheet } from '../hooks/useSwipeSheet';
+import { RegionSheet, SortSheet, MMapSearchBar } from './MFilterSheets';
 import './MProposalList.css';
 import './MProposalMap.css';
 
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
-
-const REGIONS = ['부산전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'];
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '산업·일자리', '문화·여가', '보건·복지'];
-const SORTS = ['조회수', '투표순', '최신순'];
-
-// 부산 16개 구·군 중심 좌표 (DB region 문자열 → 핀 좌표 변환용)
-const DISTRICT_CENTERS = {
-    '중구': [35.1064, 129.0322], '서구': [35.0976, 129.0245], '동구': [35.1295, 129.0454],
-    '영도구': [35.0915, 129.0680], '부산진구': [35.1626, 129.0531], '동래구': [35.1972, 129.0786],
-    '남구': [35.1366, 129.0844], '북구': [35.1972, 129.0124], '해운대구': [35.1631, 129.1635],
-    '사하구': [35.1042, 128.9745], '금정구': [35.2429, 129.0926], '강서구': [35.2123, 128.9805],
-    '연제구': [35.1762, 129.0796], '수영구': [35.1452, 129.1133], '사상구': [35.1525, 128.9912],
-    '기장군': [35.2444, 129.2222],
-};
 
 export default function MProposalMap({ onNavigate }) {
     const [region, setRegion] = useState('부산전체');
@@ -30,18 +20,10 @@ export default function MProposalMap({ onNavigate }) {
     const [sortDraft, setSortDraft] = useState('최신순');
     const [sortOpen, setSortOpen] = useState(false);
     const [search, setSearch] = useState('');
-    const [expanded, setExpanded] = useState(false);
-    const [proposals, setProposals] = useState([]);
     const [selectedPinId, setSelectedPinId] = useState(null);
+    const { expanded, setExpanded, onTouchStart, onTouchEnd } = useSwipeSheet();
 
-    useEffect(() => {
-        const token = localStorage.getItem('access_token');
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        fetch(`${VITE_API_URL}/api/reports/proposals`, { headers })
-            .then((r) => (r.ok ? r.json() : []))
-            .then((rows) => setProposals(Array.isArray(rows) ? rows : []))
-            .catch(() => setProposals([]));
-    }, []);
+    const { proposals } = useProposalsData();
 
     const filtered = useMemo(() => {
         let arr = proposals;
@@ -54,7 +36,10 @@ export default function MProposalMap({ onNavigate }) {
         .map((p) => {
             const c = DISTRICT_CENTERS[p.region];
             if (!c) return null;
-            return { id: p.id, lat: c[0] + (Math.random() - 0.5) * 0.005, lng: c[1] + (Math.random() - 0.5) * 0.005 };
+            const seed = typeof p.id === 'number' ? p.id : String(p.id).split('').reduce((a, ch) => a + ch.charCodeAt(0), 0);
+            const dlat = ((seed * 7919) % 1000 / 1000 - 0.5) * 0.005;
+            const dlng = ((seed * 6271) % 1000 / 1000 - 0.5) * 0.005;
+            return { id: p.id, lat: c[0] + dlat, lng: c[1] + dlng };
         })
         .filter(Boolean), [filtered]);
 
@@ -71,48 +56,17 @@ export default function MProposalMap({ onNavigate }) {
     const confirmRegion = () => { setRegion(regionDraft); setRegionOpen(false); };
     const confirmSort = () => { setSort(sortDraft); setSortOpen(false); };
 
-    const startYRef = useRef(0);
-    const startTRef = useRef(0);
-    const onTouchStart = (e) => {
-        const y = e.touches ? e.touches[0].clientY : e.clientY;
-        startYRef.current = y;
-        startTRef.current = Date.now();
-    };
-    const onTouchEnd = (e) => {
-        const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
-        const dy = y - startYRef.current;
-        const dt = Date.now() - startTRef.current;
-        if (Math.abs(dy) < 24 && dt < 250) {
-            setExpanded((v) => !v);
-            return;
-        }
-        if (dy < -40) setExpanded(true);
-        else if (dy > 40) setExpanded(false);
-    };
 
     return (
         <div className={`m-prop-map-page ${expanded ? 'expanded' : ''}`}>
-            <div className="m-map-search-bar">
-                <button className="m-map-back" onClick={() => onNavigate && onNavigate('home')}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <span className="m-map-search-icon" aria-hidden="true">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                </span>
-                <input
-                    type="text"
-                    className="m-map-search"
-                    placeholder="검색"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-            </div>
+            <MMapSearchBar value={search} onChange={setSearch} onBack={() => onNavigate?.('home')} />
 
             <div className="m-map-canvas">
                 <PCMapCanvas
                     pins={PINS.map((p) => ({ ...p, color: '#E6235A' }))}
                     accentColor="#E6235A"
                     onPinClick={(pin) => { setSelectedPinId(pin.id); setExpanded(false); }}
+                    showLocateBtn
                 />
             </div>
 
@@ -215,53 +169,8 @@ export default function MProposalMap({ onNavigate }) {
                 )}
             </div>
 
-            {regionOpen && (
-                <div className="m-modal-backdrop" onClick={() => setRegionOpen(false)}>
-                    <div className="m-modal-sheet" onClick={(e) => e.stopPropagation()}>
-                        <div className="m-modal-head">
-                            <h3 className="m-modal-title">위치 설정</h3>
-                            <button className="m-modal-close" type="button" aria-label="닫기" onClick={() => setRegionOpen(false)}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            </button>
-                        </div>
-                        <ul className="m-region-list">
-                            {REGIONS.map((r) => (
-                                <li key={r} className={`m-region-item ${regionDraft === r ? 'on' : ''}`} onClick={() => setRegionDraft(r)}>
-                                    <span className="m-modal-chevron">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </span>
-                                    <span>{r}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <button type="button" className="m-modal-confirm" onClick={confirmRegion}>선택</button>
-                    </div>
-                </div>
-            )}
-
-            {sortOpen && (
-                <div className="m-modal-backdrop" onClick={() => setSortOpen(false)}>
-                    <div className="m-modal-sheet" onClick={(e) => e.stopPropagation()}>
-                        <div className="m-modal-head">
-                            <h3 className="m-modal-title">정렬</h3>
-                            <button className="m-modal-close" type="button" aria-label="닫기" onClick={() => setSortOpen(false)}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            </button>
-                        </div>
-                        <ul className="m-sort-list">
-                            {SORTS.map((s) => (
-                                <li key={s} className={`m-sort-item ${sortDraft === s ? 'on' : ''}`} onClick={() => setSortDraft(s)}>
-                                    <span className="m-modal-chevron">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </span>
-                                    <span>{s}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <button type="button" className="m-modal-confirm" onClick={confirmSort}>선택</button>
-                    </div>
-                </div>
-            )}
+            {regionOpen && <RegionSheet regions={REGIONS} draft={regionDraft} onSelect={setRegionDraft} onConfirm={confirmRegion} onClose={() => setRegionOpen(false)} />}
+            {sortOpen && <SortSheet sorts={SORTS} draft={sortDraft} onSelect={setSortDraft} onConfirm={confirmSort} onClose={() => setSortOpen(false)} />}
 
             <MobileBottomNav currentView="mProposalMap" onNavigate={onNavigate} />
         </div>

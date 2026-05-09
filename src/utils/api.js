@@ -1,3 +1,10 @@
+export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
+export const authHeaders = (extra = {}) => {
+    const token = localStorage.getItem('access_token');
+    return token ? { Authorization: `Bearer ${token}`, ...extra } : { ...extra };
+};
+
 export const fetchWithLogout = async (url, options = {}) => {
     try {
         const res = await fetch(url, options);

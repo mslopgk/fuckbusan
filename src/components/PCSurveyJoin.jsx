@@ -2,6 +2,8 @@ import { useState } from 'react';
 import UserPCLayout from './UserPCLayout';
 import './PCSurveyJoin.css';
 
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
 export default function PCSurveyJoin({ onNavigate, survey }) {
     const data = survey || { title: '사직구장 일대 보행환경의 현황 조사' };
 
@@ -109,7 +111,25 @@ export default function PCSurveyJoin({ onNavigate, survey }) {
 
                 <div className="pc-join-actions">
                     <button className="pc-btn-secondary" onClick={() => onNavigate && onNavigate('pcSurveyDetail', data)}>이전</button>
-                    <button className="pc-btn-primary" onClick={() => onNavigate && onNavigate('pcSurveyDone', data)}>다음</button>
+                    <button className="pc-btn-primary" onClick={async () => {
+                        const surveyId = survey?.id;
+                        if (surveyId && survey?.questions?.length >= 5) {
+                            const q4Labels = q4.map(k => Q4_OPTIONS.find(o => o.key === k)?.label).filter(Boolean);
+                            const answers = [
+                                { question_id: survey.questions[0].id, value: q1 === 'yes' ? '있다' : q1 === 'no' ? '없다' : '' },
+                                { question_id: survey.questions[1].id, value: q2 !== null ? q2 + 1 : '' },
+                                { question_id: survey.questions[2].id, value: q3 !== null ? q3 + 1 : '' },
+                                { question_id: survey.questions[3].id, value: q4Labels },
+                                { question_id: survey.questions[4].id, value: q5 },
+                            ].filter(a => a.value !== '' && (Array.isArray(a.value) ? a.value.length > 0 : true));
+                            const token = localStorage.getItem('access_token');
+                            const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+                            await fetch(`${API_URL}/api/surveys/${surveyId}/responses`, {
+                                method: 'POST', headers, body: JSON.stringify({ answers }),
+                            }).catch(() => {});
+                        }
+                        onNavigate && onNavigate('pcSurveyDone', data);
+                    }}>다음</button>
                 </div>
             </div>
         </UserPCLayout>
