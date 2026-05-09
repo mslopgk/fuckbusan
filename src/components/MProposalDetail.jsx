@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
 import './MProposalDetail.css';
-
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_URL } from '../utils/api';
 
 export default function MProposalDetail({ onNavigate, proposal }) {
     const DEFAULT_BODY = '안녕하세요. 부산 해운대구에 거주하는 학생입니다.\n\n지역 시민들 수요를 반영해 데이터를 개선해 전기자전거 부족·과잉의 문제점을 해결하기 위한 시스템 자전 계발과 빠른 자전거 적사 가이드 모니터링 시스템 개선 동을 통해 운영 가능성을 마련하고, 관련 정책을 제안드립니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 자공 및 위 유도 가능 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.';
@@ -28,7 +27,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
 
     useEffect(() => {
         if (!proposal?.id) return;
-        fetch(`${VITE_API_URL}/api/reports/proposals/${proposal.id}/comments`)
+        fetch(`${API_URL}/api/reports/proposals/${proposal.id}/comments`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setComments(Array.isArray(rows) ? rows : []))
             .catch(() => setComments([]));
@@ -42,7 +41,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
             return;
         }
         try {
-            const res = await fetch(`${VITE_API_URL}/api/reports/proposals/${proposal.id}/comments`, {
+            const res = await fetch(`${API_URL}/api/reports/proposals/${proposal.id}/comments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ content: comment }),
@@ -68,7 +67,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
             return;
         }
         try {
-            const res = await fetch(`${VITE_API_URL}/api/reports/proposals/${proposal.id}/vote`, {
+            const res = await fetch(`${API_URL}/api/reports/proposals/${proposal.id}/vote`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${token}` },
             });

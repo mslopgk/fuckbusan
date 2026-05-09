@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { formatDate } from '../utils/format';
 import './ProposalList.css';
+import { API_URL } from '../utils/api';
 
 const DISTRICTS = [
     '부산전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구',
@@ -46,13 +47,12 @@ const ProposalList = ({ onNavigate, onBack }) => {
     const [search, setSearch] = useState('');
     const [appliedSearch, setAppliedSearch] = useState('');
 
-    const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
     const fetchProposals = useCallback(async () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('access_token');
-            const response = await fetch(`${VITE_API_URL}/api/reports/proposals`, {
+            const response = await fetch(`${API_URL}/api/reports/proposals`, {
                 headers: token ? { 'Authorization': `Bearer ${token}` } : {}
             });
             if (response.ok) {
@@ -67,7 +67,7 @@ const ProposalList = ({ onNavigate, onBack }) => {
         } finally {
             setLoading(false);
         }
-    }, [VITE_API_URL]);
+    }, []);
 
     useEffect(() => {
         fetchProposals();
@@ -79,8 +79,8 @@ const ProposalList = ({ onNavigate, onBack }) => {
         const f = item.files[0];
         if (f.startsWith('http')) return f;
         if (f.startsWith('/assets/')) return f;
-        if (f.startsWith('/uploads/')) return `${VITE_API_URL}${f}`;
-        return `${VITE_API_URL}/uploads/${f}`;
+        if (f.startsWith('/uploads/')) return `${API_URL}${f}`;
+        return `${API_URL}/uploads/${f}`;
     };
 
     const handleCardClick = (item) => {

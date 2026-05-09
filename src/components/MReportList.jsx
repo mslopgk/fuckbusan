@@ -4,10 +4,9 @@ import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
 import { REGIONS, SORTS, REPORT_STAGES as STAGES } from '../constants/mapConstants';
 import { RegionSheet, SortSheet } from './MFilterSheets';
+import { API_URL } from '../utils/api';
 import './MProposalList.css';
 import './MReportList.css';
-
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 
@@ -36,7 +35,7 @@ export default function MReportList({ onNavigate }) {
         const stageDef = STAGES.find((s) => s.key === stage);
         if (stageDef) params.set('status', stageDef.apiValue);
         setLoading(true);
-        fetch(`${VITE_API_URL}/api/reports/full?${params.toString()}`)
+        fetch(`${API_URL}/api/reports/full?${params.toString()}`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setItems(Array.isArray(rows) ? rows : []))
             .catch(() => setItems([]))
@@ -73,7 +72,7 @@ export default function MReportList({ onNavigate }) {
         setItems((prev) => prev.map((it) => it.id === id ? { ...it, likes: (it.likes ?? 0) + (isLiked ? -1 : 1) } : it));
         if (token) {
             try {
-                await fetch(`${VITE_API_URL}/api/reports/${id}/like`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+                await fetch(`${API_URL}/api/reports/${id}/like`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
             } catch (_) {}
         }
     };

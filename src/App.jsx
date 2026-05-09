@@ -97,6 +97,7 @@ const PCDiagnosisMap = lazy(() => import('./components/PCDiagnosisMap'));
 // USER: AI 가상시민 (Figma file TCuOzEqNhoLKjhF0reBDks — Phase 1)
 const PCAICitizen = lazy(() => import('./components/PCAICitizen'));
 const MAICitizen = lazy(() => import('./components/MAICitizen'));
+const MAICitizenDetail = lazy(() => import('./components/MAICitizenDetail'));
 
 // USER 04/01 업데이트 — 마이페이지 제보 (Figma node 830:4381)
 const MMyReportDetail = lazy(() => import('./components/MMyReportDetail'));
@@ -105,7 +106,7 @@ const PCMyReportList = lazy(() => import('./components/PCMyReportList'));
 const PCMyReportEdit = lazy(() => import('./components/PCMyReportEdit'));
 const PCMyProposalDetail = lazy(() => import('./components/PCMyProposalDetail'));
 
-import { fetchWithLogout } from './utils/api'
+import { fetchWithLogout, API_URL } from './utils/api'
 import PCHeader from './components/PCHeader'
 
 function App() {
@@ -195,9 +196,6 @@ function App() {
     };
 
 
-    const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-    const VITE_API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
-
     // Fetch diagnosis catalog (general/expert) from backend; fallback to static JSON for offline dev.
     useEffect(() => {
         const ctrl = new AbortController();
@@ -205,7 +203,7 @@ function App() {
             setLoading(true);
             const mode = diagnosisMode === 'expert' ? 'expert' : 'general';
             try {
-                let response = await fetch(`${VITE_API_URL}/checklist/templates?mode=${mode}`, { signal: ctrl.signal });
+                let response = await fetch(`${API_URL}/checklist/templates?mode=${mode}`, { signal: ctrl.signal });
                 if (!response.ok) {
                     response = await fetch(`/assets/data/${mode}_diagnosis.json`, { signal: ctrl.signal });
                 }
@@ -232,7 +230,7 @@ function App() {
             if (!token) return; // Not logged in, keep default pins or clear? Maybe keep default mock for non-users?
 
             try {
-                const res = await fetchWithLogout(`${VITE_API_URL}/checklist/my`, {
+                const res = await fetchWithLogout(`${API_URL}/checklist/my`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (res.ok) {
@@ -540,6 +538,7 @@ function App() {
             setSelectedSurvey(data);
             setView('pcSurveyResults');
         } else if (target === 'pcSurveyDone') {
+            if (data) setSelectedSurvey(data);
             setView('pcSurveyDone');
         } else if (target === 'pcProposeMap') {
             setView('pcProposeMap');
@@ -569,6 +568,7 @@ function App() {
             setSelectedSurvey(data);
             setView('mSurveyJoin');
         } else if (target === 'mSurveyDone') {
+            if (data) setSelectedSurvey(data);
             setView('mSurveyDone');
         } else if (target === 'mSurveyResults') {
             setSelectedSurvey(data);
@@ -611,6 +611,9 @@ function App() {
             setView('pcAICitizen');
         } else if (target === 'mAICitizen') {
             setView('mAICitizen');
+        } else if (target === 'mAICitizenDetail') {
+            if (data) setSelectedReport(data);
+            setView('mAICitizenDetail');
         } else if (target === 'pcDiagnosisMap') {
             setView('pcDiagnosisMap');
         } else if (target === 'pcDiagnosisForm') {
@@ -924,8 +927,6 @@ function App() {
                         onComplete={async (formData) => {
                             try {
                                 const token = localStorage.getItem('access_token');
-                                const VITE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-    
                                 // [1] 신규 파일 업로드 처리
                                 const uploadNewFiles = async (files) => {
                                     const uploadedNames = [];
@@ -935,7 +936,7 @@ function App() {
                                         // 인코딩 파싱 에러(500)를 방지하기 위해 파일명을 URL 인코딩하여 전송합니다.
                                         uploadData.append('file', file, encodeURIComponent(file.name));
                                         
-                                        const uploadRes = await fetch(`${VITE_API_URL}/api/reports/upload`, {
+                                        const uploadRes = await fetch(`${API_URL}/api/reports/upload`, {
                                             method: 'POST',
                                             body: uploadData,
                                             // FormData 전송 시 Content-Type 헤더를 명시하지 않아야 브라우저가 boundary를 자동으로 설정함
@@ -956,7 +957,7 @@ function App() {
     
                                 if (isProposalEdit) {
                                     // [수정 모드] PUT 요청
-                                    const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${formData.id}`, {
+                                    const response = await fetch(`${API_URL}/api/reports/proposals/${formData.id}`, {
                                         method: 'PUT',
                                         headers: { 
                                             'Content-Type': 'application/json',
@@ -1005,7 +1006,7 @@ function App() {
                                         files: finalFilenames
                                     };
                                     
-                                    const response = await fetch(`${VITE_API_URL}/api/reports/new-proposal`, {
+                                    const response = await fetch(`${API_URL}/api/reports/new-proposal`, {
                                         method: 'POST',
                                         headers: { 
                                             'Content-Type': 'application/json',
@@ -1270,7 +1271,7 @@ function App() {
                     <PCSurveyResults onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
                 )}
                 {view === 'pcSurveyDone' && (
-                    <PCSurveyDone onNavigate={(target, data) => onNavigate(target, data)} />
+                    <PCSurveyDone onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
                 )}
                 {view === 'pcProposeMap' && (
                     <PCProposeMap onNavigate={(target, data) => onNavigate(target, data)} />
@@ -1303,7 +1304,7 @@ function App() {
                     <MSurveyJoin onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
                 )}
                 {view === 'mSurveyDone' && (
-                    <MSurveyDone onNavigate={(target, data) => onNavigate(target, data)} />
+                    <MSurveyDone onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
                 )}
                 {view === 'mSurveyResults' && (
                     <MSurveyResults onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
@@ -1363,6 +1364,9 @@ function App() {
                 )}
                 {view === 'mAICitizen' && (
                     <MAICitizen onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mAICitizenDetail' && (
+                    <MAICitizenDetail citizen={selectedReport} onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'pcDiagnosisMap' && (
                     <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} initialPanel="list" />

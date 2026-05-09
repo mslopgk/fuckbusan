@@ -3,8 +3,7 @@ import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import '../styles/survey_editor.css';
-
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_BASE } from '../api';
 
 const QTYPE_MAP = {
     short: 'text',
@@ -93,7 +92,7 @@ export default function SurveyEditor({ onNavigate, surveyData }) {
         if (!surveyData?.id) return;
         const load = async () => {
             try {
-                const res = await fetch(`${API_URL}/api/surveys/${surveyData.id}`);
+                const res = await fetch(`${API_BASE}/surveys/${surveyData.id}`);
                 if (!res.ok) return;
                 const data = await res.json();
                 setSurveyId(data.id);
@@ -169,8 +168,8 @@ export default function SurveyEditor({ onNavigate, surveyData }) {
         setSaving(true);
         try {
             const url = surveyId
-                ? `${API_URL}/api/surveys/admin/${surveyId}`
-                : `${API_URL}/api/surveys/admin`;
+                ? `${API_BASE}/surveys/admin/${surveyId}`
+                : `${API_BASE}/surveys/admin`;
             const res = await fetch(url, {
                 method: surveyId ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -530,7 +529,7 @@ function ImportModal({ onClose, onImport }) {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetch(`${API_URL}/api/surveys/list`)
+        fetch(`${API_BASE}/surveys/list`)
             .then((r) => r.ok ? r.json() : [])
             .then((data) => setSurveys(Array.isArray(data) ? data : []))
             .catch(() => {});
@@ -541,7 +540,7 @@ function ImportModal({ onClose, onImport }) {
         setSelectedQIds(new Set());
         setLoading(true);
         try {
-            const res = await fetch(`${API_URL}/api/surveys/${surveyId}`);
+            const res = await fetch(`${API_BASE}/surveys/${surveyId}`);
             if (res.ok) {
                 const data = await res.json();
                 setSurveyQuestions(data.questions || []);

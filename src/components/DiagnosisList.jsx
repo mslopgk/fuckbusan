@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './DiagnosisList.css';
 import DiagnosisCard from './DiagnosisCard';
 
-import { fetchWithLogout } from '../utils/api';
+import { fetchWithLogout, API_URL } from '../utils/api';
 
 const DiagnosisList = ({ onBack, onNavigate }) => {
     // 'all' | 'general' | 'expert'
@@ -11,7 +11,6 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
     const [isSortOpen, setIsSortOpen] = useState(false);
 
     const [listData, setListData] = useState([]);
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
     React.useEffect(() => {
         const fetchList = async () => {

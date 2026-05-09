@@ -437,12 +437,9 @@ def toggle_proposal_vote(
     proposal = db.query(models.NewProposal).filter(models.NewProposal.id == proposal_id).first()
     if not proposal:
         raise HTTPException(status_code=404, detail="제안을 찾을 수 없습니다.")
-    
-    # 본인 글 투표 방지 (선택 사항)
-    # if proposal.user_id == current_user.user_id:
-    #     raise HTTPException(status_code=400, detail="본인의 제안에는 투표할 수 없습니다.")
-    
-    # 이미 투표했는지 확인
+    if current_user.user_id >= 999990:
+        raise HTTPException(status_code=403, detail="관리자는 투표할 수 없습니다.")
+
     existing_like = db.query(models.ProposalLike).filter(
         models.ProposalLike.proposal_id == proposal_id,
         models.ProposalLike.user_id == current_user.user_id
@@ -553,9 +550,10 @@ def create_comment(
     if not proposal:
         raise HTTPException(status_code=404, detail="Proposal not found")
 
+    safe_uid = current_user.user_id if current_user.user_id < 999990 else None
     new_comment = models.ProposalComment(
         proposal_id=proposal_id,
-        user_id=current_user.user_id,
+        user_id=safe_uid,
         content=comment.content,
         parent_comment_id=comment.parent_comment_id
     )
@@ -741,6 +739,8 @@ def toggle_report_like(
     r = db.query(models.Report).filter(models.Report.id == report_id).first()
     if not r:
         raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    if current_user.user_id >= 999990:
+        raise HTTPException(status_code=403, detail="관리자는 공감할 수 없습니다.")
     existing = db.query(models.ReportLike).filter(
         models.ReportLike.report_id == report_id,
         models.ReportLike.user_id == current_user.user_id,
@@ -797,9 +797,10 @@ def create_report_comment(
     r = db.query(models.Report).filter(models.Report.id == report_id).first()
     if not r:
         raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    safe_uid = current_user.user_id if current_user.user_id < 999990 else None
     c = models.ReportComment(
         report_id=report_id,
-        user_id=current_user.user_id,
+        user_id=safe_uid,
         author_name=current_user.nickname or current_user.name,
         content=payload.content,
     )

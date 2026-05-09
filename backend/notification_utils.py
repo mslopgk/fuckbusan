@@ -56,6 +56,8 @@ def log_activity(
 ):
     """활동 로그 기록. user_id None 가능 (익명/시스템)."""
     try:
+        if user_id is not None and user_id >= 999990:
+            return None
         a = models.ActivityLog(
             user_id=user_id,
             action=action,

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import './Home.css';
 import InteractiveMap from './InteractiveMap';
 import MobileBottomNav from './MobileBottomNav';
+import { API_URL } from '../utils/api';
 
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 // citizens, archives 데이터는 /api/home/citizens, /api/home/archives에서 받음.
 
@@ -347,7 +347,7 @@ const CitizenCards = () => {
     const [citizens, setCitizens] = useState([]);
 
     useEffect(() => {
-        fetch(`${VITE_API_URL}/api/home/citizens`)
+        fetch(`${API_URL}/api/home/citizens`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setCitizens(Array.isArray(rows) ? rows : []))
             .catch(() => setCitizens([]));
@@ -433,7 +433,7 @@ const StatsContent = () => {
     // 백엔드에서 실제 카운트 가져오기
     const [targets, setTargets] = useState({ personal: 210, report: 330, diagnose: 72 });
     useEffect(() => {
-        fetch(`${VITE_API_URL}/api/home/stats`)
+        fetch(`${API_URL}/api/home/stats`)
             .then((r) => (r.ok ? r.json() : null))
             .then((j) => {
                 if (j) setTargets({
@@ -571,7 +571,7 @@ const ArchiveCards = () => {
     const [archives, setArchives] = useState([]);
 
     useEffect(() => {
-        fetch(`${VITE_API_URL}/api/home/archives`)
+        fetch(`${API_URL}/api/home/archives`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => {
                 if (Array.isArray(rows)) {

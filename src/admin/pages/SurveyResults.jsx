@@ -7,6 +7,7 @@ import {
     RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer,
     PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from 'recharts';
+import { API_BASE } from '../api';
 
 const PIE_COLORS = ['#16B5B0', '#5B2EAB', '#E6235A', '#F59E0B', '#10B981', '#6366F1'];
 
@@ -83,8 +84,6 @@ function QuestionChart({ q }) {
     );
 }
 
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
-
 export default function SurveyResults({ onNavigate, survey }) {
     const [tab, setTab] = useState('results');
     const [viewMode, setViewMode] = useState('summary');
@@ -93,9 +92,9 @@ export default function SurveyResults({ onNavigate, survey }) {
     useEffect(() => {
         // survey prop으로 id 받았으면 그걸 쓰고, 없으면 첫 번째 result 설문 자동 로드
         const loadFirstResultSurvey = async () => {
-            const list = await fetch(`${API_URL}/api/surveys/list?tab=result`).then((r) => r.ok ? r.json() : []).catch(() => []);
+            const list = await fetch(`${API_BASE}/surveys/list?tab=result`).then((r) => r.ok ? r.json() : []).catch(() => []);
             if (Array.isArray(list) && list.length) return list[0].id;
-            const all = await fetch(`${API_URL}/api/surveys/list`).then((r) => r.ok ? r.json() : []).catch(() => []);
+            const all = await fetch(`${API_BASE}/surveys/list`).then((r) => r.ok ? r.json() : []).catch(() => []);
             return Array.isArray(all) && all.length ? all[0].id : null;
         };
         const load = async () => {
@@ -104,7 +103,7 @@ export default function SurveyResults({ onNavigate, survey }) {
                 setResults({ title: '(설문 없음)', questions: [] });
                 return;
             }
-            const res = await fetch(`${API_URL}/api/surveys/${id}/results`);
+            const res = await fetch(`${API_BASE}/surveys/${id}/results`);
             if (res.ok) setResults(await res.json());
             else setResults({ title: '(불러오기 실패)', questions: [] });
         };

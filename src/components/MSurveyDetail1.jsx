@@ -1,12 +1,26 @@
+import { useState, useEffect } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyDetail.css';
+import { API_URL } from '../utils/api';
 
 export default function MSurveyDetail1({ onNavigate, survey }) {
+    const [fullSurvey, setFullSurvey] = useState(null);
+
+    useEffect(() => {
+        const id = survey?.id;
+        if (!id) return;
+        fetch(`${API_URL}/api/surveys/${id}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => { if (d) setFullSurvey(d); })
+            .catch(() => {});
+    }, [survey?.id]);
+
+    const enriched = { ...(survey || {}), ...(fullSurvey || {}) };
     const data = {
-        title: survey?.title || '사직구장 일대 보행환경의 현황 조사',
-        period: survey?.period || '~2026-05-30',
-        minutes: survey?.minutes || 10,
-        intro: survey?.intro || '사직구장 갈 때, 걷기 불편했던 적 있으신가요? 여러분의 경험이 더 안전한 보행환경을 만듭니다. 지금 참여해주세요.',
+        title: enriched.title || '사직구장 일대 보행환경의 현황 조사',
+        period: enriched.period || enriched.end_date || '~2026-05-30',
+        minutes: enriched.minutes || 10,
+        intro: enriched.description || enriched.intro || '사직구장 갈 때, 걷기 불편했던 적 있으신가요? 여러분의 경험이 더 안전한 보행환경을 만듭니다. 지금 참여해주세요.',
     };
 
     return (
@@ -48,7 +62,7 @@ export default function MSurveyDetail1({ onNavigate, survey }) {
                     <span className="link">이용약관</span> 및 <span className="link">개인정보처리방침</span>
                 </p>
 
-                <button className="m-survey-cta" onClick={() => onNavigate && onNavigate('mSurveyDetail2', survey)}>참여하기</button>
+                <button className="m-survey-cta" onClick={() => onNavigate && onNavigate('mSurveyDetail2', fullSurvey || survey)}>참여하기</button>
             </div>
 
             <MobileBottomNav currentView="mSurveyDetail1" onNavigate={onNavigate} />

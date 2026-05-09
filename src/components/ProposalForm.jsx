@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { formatDraftDate } from '../utils/format';
 import './ProposalForm.css';
 import LocationSelector from './common/LocationSelector';
+import { API_URL } from '../utils/api';
 
 const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialData = null }) => {
     const categories = ['주거', '환경', '교육', '안전', '산업 및 고용', '모빌리티', '문화 및 레저', '보건 및 복지'];
@@ -27,9 +28,8 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
     // 수정 모드 시 기존 이미지 로드
     useEffect(() => {
         if (isEdit && initialData && initialData.files) {
-            const VITE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
             const existingFiles = initialData.files.map(filename => {
-                const url = filename.startsWith('http') ? filename : `${VITE_API_URL}/uploads/${filename}`;
+                const url = filename.startsWith('http') ? filename : `${API_URL}/uploads/${filename}`;
                 return {
                     file: null, // 기존 파일은 File 객체 없음
                     preview: url,

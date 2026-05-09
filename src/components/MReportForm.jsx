@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import { formatDraftDate } from '../utils/format';
+import { API_URL } from '../utils/api';
 import './MProposalForm.css';
 import './MProposalList.css';
 import './MReportForm.css';
-
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const CATS = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 const POSITIONS = ['위치', '도로', '인도', '공원', '주차장'];
@@ -84,7 +83,7 @@ export default function MReportForm({ onNavigate }) {
             lng: location ? pickedLng : undefined,
         };
         try {
-            const res = await fetch(`${VITE_API_URL}/api/reports/report`, {
+            const res = await fetch(`${API_URL}/api/reports/report`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

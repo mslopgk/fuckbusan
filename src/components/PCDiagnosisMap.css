@@ -318,11 +318,9 @@
 }
 
 
-/* detail 패널은 시민/전문가 split 표시를 위해 더 넓음 */
+/* detail 패널 — Figma 진단상세02: 395px white, 기본 pc-diag-right 상속 */
 .pc-diag-right-detail {
-    width: 620px;
-    background: #1a1a1a;
-    padding: 16px;
+    padding: 20px 20px 0;
 }
 
 .pc-diag-right-list { padding: 16px 16px 0; }

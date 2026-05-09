@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './UserPCLayout.css';
+import { API_URL } from '../utils/api';
 
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const NAV_ITEMS = [
     { key: 'survey', label: '설문', view: 'pcSurveyList' },
@@ -33,7 +33,17 @@ export default function UserPCLayout({ children, currentView, onNavigate }) {
             fetch(`${API_URL}/api/notifications/unread-count`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
-                .then((r) => (r.ok ? r.json() : { count: 0 }))
+                .then((r) => {
+                    if (r.status === 401) {
+                        localStorage.removeItem('access_token');
+                        localStorage.removeItem('user_name');
+                        localStorage.removeItem('username');
+                        setIsLoggedIn(false);
+                        setUserName('');
+                        return { count: 0 };
+                    }
+                    return r.ok ? r.json() : { count: 0 };
+                })
                 .then((j) => setUnreadCount(j.count ?? 0))
                 .catch(() => setUnreadCount(0));
         } else {

@@ -1123,13 +1123,21 @@ async def _generate_avatar(citizen_id: int) -> dict:
         f"imagen-4.0-fast-generate-001:predict?key={api_key}"
     )
 
-    async with httpx.AsyncClient(timeout=90.0) as client:
-        resp = await client.post(imagen_url, json={
-            "instances": [{"prompt": prompt}],
-            "parameters": {"sampleCount": 1, "aspectRatio": "3:4"},
-        })
-        resp.raise_for_status()
-        data = resp.json()
+    try:
+        async with httpx.AsyncClient(timeout=90.0) as client:
+            resp = await client.post(imagen_url, json={
+                "instances": [{"prompt": prompt}],
+                "parameters": {"sampleCount": 1, "aspectRatio": "3:4"},
+            })
+            resp.raise_for_status()
+            data = resp.json()
+    except httpx.HTTPStatusError as e:
+        status = e.response.status_code
+        if status == 429:
+            raise HTTPException(status_code=429, detail="Imagen API 쿼터 초과. 잠시 후 다시 시도해주세요.")
+        raise HTTPException(status_code=502, detail=f"Imagen API 오류: {status}")
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=503, detail=f"Imagen API 연결 실패: {str(e)}")
 
     b64 = data["predictions"][0]["bytesBase64Encoded"]
     img_bytes = base64.b64decode(b64)
@@ -1148,6 +1156,8 @@ async def get_citizen_avatar(citizen_id: int):
     path = _avatar_path(citizen_id)
     if os.path.exists(path):
         return {"url": _avatar_url(citizen_id), "cached": True}
+    if not os.getenv("GEMINI_API_KEY"):
+        raise HTTPException(status_code=404, detail="아바타 없음 (GEMINI_API_KEY 미설정)")
     return await _generate_avatar(citizen_id)
 
 

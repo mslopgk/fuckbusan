@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
-
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_BASE } from '../api';
 
 const STATUS_LABEL = {
     draft: '작성중',
@@ -21,7 +20,7 @@ export default function SurveyManagement({ onNavigate }) {
 
     const fetchSurveys = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/surveys/list`);
+            const res = await fetch(`${API_BASE}/surveys/list`);
             if (res.ok) {
                 const data = await res.json();
                 setSurveys(Array.isArray(data) ? data : []);
@@ -57,7 +56,7 @@ export default function SurveyManagement({ onNavigate }) {
             return;
         }
         try {
-            const res = await fetch(`${API_URL}/api/surveys/admin/${s.id}`, {
+            const res = await fetch(`${API_BASE}/surveys/admin/${s.id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -72,7 +71,7 @@ export default function SurveyManagement({ onNavigate }) {
         const token = localStorage.getItem('access_token');
         if (!token) { alert('관리자 로그인이 필요합니다.'); return; }
         try {
-            const res = await fetch(`${API_URL}/api/surveys/admin/${s.id}/duplicate`, {
+            const res = await fetch(`${API_BASE}/surveys/admin/${s.id}/duplicate`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -89,7 +88,7 @@ export default function SurveyManagement({ onNavigate }) {
         const token = localStorage.getItem('access_token');
         if (!token) { alert('관리자 로그인이 필요합니다.'); return; }
         try {
-            const res = await fetch(`${API_URL}/api/surveys/admin/${s.id}`, {
+            const res = await fetch(`${API_BASE}/surveys/admin/${s.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ title: newTitle.trim() }),
@@ -108,7 +107,7 @@ export default function SurveyManagement({ onNavigate }) {
             return;
         }
         try {
-            const res = await fetch(`${API_URL}/api/surveys/admin/${s.id}/close`, {
+            const res = await fetch(`${API_BASE}/surveys/admin/${s.id}/close`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${token}` },
             });

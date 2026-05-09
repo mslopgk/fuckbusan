@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
 import MapToolbar from './PCMapToolbar';
@@ -14,7 +14,6 @@ export default function PCReportMap({ onNavigate }) {
     const [kind, setKind] = useState(null);
     const [sort, setSort] = useState('latest');
     const [policyItem, setPolicyItem] = useState(null);
-    const [policyDismissed, setPolicyDismissed] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const mapRef = useRef(null);
 
@@ -36,13 +35,6 @@ export default function PCReportMap({ onNavigate }) {
         lat: r.lat,
         lng: r.lng,
     })), [reports]);
-
-    // 정책정보 카드: 데이터 들어오면 첫 항목으로 시드. X로 닫은 뒤(policyDismissed=true)는 다시 안 열림.
-    useEffect(() => {
-        if (!policyDismissed && !policyItem && ITEMS.length > 0) {
-            setPolicyItem(ITEMS[0]);
-        }
-    }, [ITEMS, policyItem, policyDismissed]);
 
     const toggleLivingCat = (key) => {
         setLivingCats((prev) => {
@@ -148,7 +140,7 @@ export default function PCReportMap({ onNavigate }) {
                                 <button
                                     className="pc-map3-policy-close"
                                     aria-label="닫기"
-                                    onClick={(e) => { e.stopPropagation(); setPolicyItem(null); setPolicyDismissed(true); }}
+                                    onClick={(e) => { e.stopPropagation(); setPolicyItem(null); }}
                                 >
                                     ×
                                 </button>

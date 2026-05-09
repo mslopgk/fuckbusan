@@ -49,115 +49,10 @@ def list_surveys(tab: Optional[str] = None, db: Session = Depends(get_db)):
     ]
 
 
-@router.get("/{survey_id}")
-def get_survey_detail(survey_id: int, db: Session = Depends(get_db)):
-    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
-    if not s:
-        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
-    questions = db.query(models.SurveyQuestion).filter(
-        models.SurveyQuestion.survey_id == survey_id
-    ).order_by(models.SurveyQuestion.order_no.asc()).all()
-    return {
-        "id": s.id,
-        "title": s.title,
-        "description": s.description,
-        "minutes": s.minutes or 10,
-        "period": _format_period(s),
-        "status": s.status,
-        "response_count": s.response_count or 0,
-        "questions": [
-            {
-                "id": q.id,
-                "order_no": q.order_no,
-                "qtype": q.qtype,
-                "text": q.text,
-                "options": q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else []),
-            }
-            for q in questions
-        ],
-    }
-
-
-@router.post("/{survey_id}/responses", status_code=201)
-def submit_survey_response(
-    survey_id: int,
-    payload: schemas.SurveyResponseSubmit,
-    db: Session = Depends(get_db),
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
-):
-    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
-    if not s:
-        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
-    resp = models.SurveyResponse(
-        survey_id=survey_id,
-        user_id=current_user.user_id if current_user else None,
-    )
-    db.add(resp)
-    db.flush()
-    for ans in payload.answers:
-        v = ans.value
-        if isinstance(v, (list, dict)):
-            v = json.dumps(v, ensure_ascii=False)
-        else:
-            v = str(v) if v is not None else ""
-        db.add(models.SurveyAnswer(response_id=resp.id, question_id=ans.question_id, value=v))
-    s.response_count = (s.response_count or 0) + 1
-    db.commit()
-    return {"message": "응답이 제출되었습니다.", "response_id": resp.id}
-
-
-@router.get("/{survey_id}/results")
-def get_survey_results(survey_id: int, db: Session = Depends(get_db)):
-    """질문별 응답 분포 집계."""
-    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
-    if not s:
-        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
-    questions = db.query(models.SurveyQuestion).filter(
-        models.SurveyQuestion.survey_id == survey_id
-    ).order_by(models.SurveyQuestion.order_no.asc()).all()
-
-    # 전체 답변을 한 번에 조회 후 question_id별로 분류
-    qids = [q.id for q in questions]
-    answers_by_q: dict = {}
-    if qids:
-        all_answers = db.query(models.SurveyAnswer).filter(
-            models.SurveyAnswer.question_id.in_(qids)
-        ).all()
-        for a in all_answers:
-            answers_by_q.setdefault(a.question_id, []).append(a)
-
-    out = []
-    for q in questions:
-        answers = answers_by_q.get(q.id, [])
-        opts = q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else [])
-        if q.qtype in ("single", "agree"):
-            counter = Counter([a.value for a in answers if a.value])
-            distribution = [{"label": opt, "count": counter.get(opt, 0)} for opt in opts]
-            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
-        elif q.qtype == "multi":
-            counter = Counter()
-            for a in answers:
-                try:
-                    vals = json.loads(a.value)
-                    if isinstance(vals, list):
-                        counter.update(vals)
-                except Exception:
-                    pass
-            distribution = [{"label": opt, "count": counter.get(opt, 0)} for opt in opts]
-            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
-        else:  # text
-            samples = [a.value for a in answers[:5] if a.value]
-            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "samples": samples, "total": len(answers)})
-    return {
-        "id": s.id,
-        "title": s.title,
-        "response_count": s.response_count or 0,
-        "questions": out,
-    }
-
-
 # =============================================================================
 # Admin CRUD — 관리자만 호출. /admin 하위 prefix로 정적 경로 우선 매칭 보장.
+# 참고: /{survey_id} 와일드카드 라우트는 파일 맨 아래에 등록해야
+#       /admin 정적 경로와 충돌하지 않음.
 # =============================================================================
 
 @router.post("/admin", status_code=201)
@@ -366,3 +261,113 @@ def admin_delete_question(
     db.delete(q)
     db.commit()
     return {"message": "질문이 삭제되었습니다."}
+
+
+# =============================================================================
+# 공개 설문 상세 / 응답 제출 / 결과 — 반드시 admin 정적 경로 다음에 등록
+# =============================================================================
+
+@router.get("/{survey_id}")
+def get_survey_detail(survey_id: int, db: Session = Depends(get_db)):
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    questions = db.query(models.SurveyQuestion).filter(
+        models.SurveyQuestion.survey_id == survey_id
+    ).order_by(models.SurveyQuestion.order_no.asc()).all()
+    return {
+        "id": s.id,
+        "title": s.title,
+        "description": s.description,
+        "minutes": s.minutes or 10,
+        "period": _format_period(s),
+        "status": s.status,
+        "response_count": s.response_count or 0,
+        "questions": [
+            {
+                "id": q.id,
+                "order_no": q.order_no,
+                "qtype": q.qtype,
+                "text": q.text,
+                "options": q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else []),
+            }
+            for q in questions
+        ],
+    }
+
+
+@router.post("/{survey_id}/responses", status_code=201)
+def submit_survey_response(
+    survey_id: int,
+    payload: schemas.SurveyResponseSubmit,
+    db: Session = Depends(get_db),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
+):
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    resp = models.SurveyResponse(
+        survey_id=survey_id,
+        user_id=current_user.user_id if current_user else None,
+    )
+    db.add(resp)
+    db.flush()
+    for ans in payload.answers:
+        v = ans.value
+        if isinstance(v, (list, dict)):
+            v = json.dumps(v, ensure_ascii=False)
+        else:
+            v = str(v) if v is not None else ""
+        db.add(models.SurveyAnswer(response_id=resp.id, question_id=ans.question_id, value=v))
+    s.response_count = (s.response_count or 0) + 1
+    db.commit()
+    return {"message": "응답이 제출되었습니다.", "response_id": resp.id}
+
+
+@router.get("/{survey_id}/results")
+def get_survey_results(survey_id: int, db: Session = Depends(get_db)):
+    """질문별 응답 분포 집계."""
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    questions = db.query(models.SurveyQuestion).filter(
+        models.SurveyQuestion.survey_id == survey_id
+    ).order_by(models.SurveyQuestion.order_no.asc()).all()
+
+    qids = [q.id for q in questions]
+    answers_by_q: dict = {}
+    if qids:
+        all_answers = db.query(models.SurveyAnswer).filter(
+            models.SurveyAnswer.question_id.in_(qids)
+        ).all()
+        for a in all_answers:
+            answers_by_q.setdefault(a.question_id, []).append(a)
+
+    out = []
+    for q in questions:
+        answers = answers_by_q.get(q.id, [])
+        opts = q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else [])
+        if q.qtype in ("single", "agree"):
+            counter = Counter([a.value for a in answers if a.value])
+            distribution = [{"label": opt, "count": counter.get(opt, 0)} for opt in opts]
+            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
+        elif q.qtype == "multi":
+            counter = Counter()
+            for a in answers:
+                try:
+                    vals = json.loads(a.value)
+                    if isinstance(vals, list):
+                        counter.update(vals)
+                except Exception:
+                    pass
+            distribution = [{"label": opt, "count": counter.get(opt, 0)} for opt in opts]
+            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
+        else:
+            samples = [a.value for a in answers[:5] if a.value]
+            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "samples": samples, "total": len(answers)})
+    return {
+        "id": s.id,
+        "title": s.title,
+        "response_count": s.response_count or 0,
+        "questions": out,
+    }

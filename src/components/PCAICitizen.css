@@ -102,18 +102,20 @@
 }
 
 .pc-ai-cat-btn.active {
-    background: #e6faf9;
-}
-
-.pc-ai-cat-btn.active .pc-ai-cat-icon {
-    filter: invert(67%) sepia(37%) saturate(586%) hue-rotate(136deg) brightness(90%) contrast(100%);
+    background: #23bdbb;
 }
 
 .pc-ai-cat-icon {
     width: 24px;
     height: 24px;
-    object-fit: contain;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #737373;
+}
+
+.pc-ai-cat-btn.active .pc-ai-cat-icon {
+    color: #fff;
 }
 
 .pc-ai-cat-label {
@@ -127,54 +129,105 @@
 }
 
 .pc-ai-cat-btn.active .pc-ai-cat-label {
-    color: #23bdbb;
+    color: #fff;
 }
 
-/* CTA overlay (centered over map) */
-.pc-ai-cta {
+/* ── Mascot + speech bubble tutorial ── */
+@keyframes mascotSlideIn {
+    from { transform: translateY(110%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes mascotSlideOut {
+    from { transform: translateY(0);    opacity: 1; }
+    to   { transform: translateY(110%); opacity: 0; }
+}
+
+.pc-ai-mascot-wrap {
     position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(720px, calc(100% - 620px));
-    background: #fff;
-    border-radius: 16px;
-    padding: 28px 36px 24px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    bottom: 0;
+    left: 140px;
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
     z-index: 20;
+    pointer-events: none;
+    animation: mascotSlideIn 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both;
 }
 
-.pc-ai-cta__close {
+.pc-ai-mascot-wrap--hiding {
+    animation: mascotSlideOut 0.38s ease-in forwards;
+}
+
+.pc-ai-mascot-img {
+    width: 260px;
+    height: auto;
+    display: block;
+    flex-shrink: 0;
+    pointer-events: none;
+    user-select: none;
+}
+
+.pc-ai-mascot-bubble {
+    position: relative;
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px 36px 28px 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    width: min(660px, calc(100vw - 140px - 260px - 420px));
+    min-width: 440px;
+    margin-bottom: 56px;
+    pointer-events: auto;
+}
+
+/* Left-pointing speech bubble tail */
+.pc-ai-mascot-bubble__tail {
     position: absolute;
-    top: 16px;
-    right: 16px;
+    left: -18px;
+    bottom: 60px;
+    width: 0;
+    height: 0;
+    border-top: 18px solid transparent;
+    border-bottom: 18px solid transparent;
+    border-right: 20px solid #fff;
+    filter: drop-shadow(-3px 0 3px rgba(0,0,0,0.08));
+}
+
+.pc-ai-mascot-bubble__close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px;
+    padding: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    opacity: 0.7;
-    transition: opacity 0.15s;
+    opacity: 0.6;
+    transition: opacity 0.15s, background 0.15s;
 }
 
-.pc-ai-cta__close:hover { opacity: 1; }
+.pc-ai-mascot-bubble__close:hover {
+    opacity: 1;
+    background: #f0f0f0;
+}
 
-.pc-ai-cta__title {
-    font-size: 20px;
+.pc-ai-mascot-bubble__title {
+    font-size: 22px;
     font-weight: 700;
     color: #23bdbb;
     letter-spacing: -0.04em;
-    margin: 0 0 12px;
+    margin: 0 0 14px;
+    line-height: 1.4;
 }
 
-.pc-ai-cta__sub {
-    font-size: 15px;
+.pc-ai-mascot-bubble__sub {
+    font-size: 16px;
     color: #333;
-    line-height: 1.6;
-    margin: 0 0 20px;
+    line-height: 1.7;
+    margin: 0 0 22px;
 }
 
 .pc-ai-cta__btn {
@@ -182,9 +235,9 @@
     background: #23bdbb;
     color: #fff;
     border: none;
-    border-radius: 20px;
-    padding: 9px 28px;
-    font-size: 15px;
+    border-radius: 24px;
+    padding: 11px 32px;
+    font-size: 16px;
     font-weight: 700;
     letter-spacing: -0.03em;
     cursor: pointer;
@@ -198,7 +251,7 @@
 /* Outer wrapper: capped at Figma height → nav circle top:50% is stable */
 .pc-ai-right-wrap {
     position: absolute;
-    right: 56px;
+    right: 68px;
     top: 12px;
     width: 360px;
     height: min(560px, calc(100% - 24px));
@@ -432,7 +485,7 @@
 /* ── District citizen sidebar (right panel, shown on district click) ── */
 .pc-ai-district-sidebar {
     position: absolute;
-    right: 64px;
+    right: 68px;
     top: 12px;
     width: 420px;
     height: calc(100% - 24px);
@@ -671,8 +724,8 @@
 
 .pc-ai-detail-avatar {
     flex-shrink: 0;
-    width: 88px;
-    height: 110px;
+    width: 120px;
+    height: 150px;
     border-radius: 8px;
     overflow: hidden;
 }
@@ -727,13 +780,14 @@
 
 .pc-ai-detail-info-box {
     flex: 1;
-    background: #f4f4f4;
+    background: #fff;
+    border: 1px solid #e6e6e6;
     border-radius: 8px;
-    padding: 8px 10px;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 3px;
     min-width: 0;
+    overflow: hidden;
 }
 
 .pc-ai-detail-info-box .info-row {
@@ -743,6 +797,12 @@
     line-height: 1.4;
     letter-spacing: -0.02em;
     min-width: 0;
+    padding: 6px 10px;
+    border-bottom: 1px solid #efefef;
+}
+
+.pc-ai-detail-info-box .info-row:last-child {
+    border-bottom: none;
 }
 
 .pc-ai-detail-info-box .info-label {
@@ -803,12 +863,13 @@
 }
 
 .voice-card {
-    background: #f8f8f8;
+    background: #fff;
+    border: 1px solid #ebebeb;
     border-radius: 10px;
-    padding: 10px 12px;
+    padding: 12px 14px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .voice-section-title {
@@ -816,25 +877,38 @@
     font-weight: 700;
     color: #111;
     letter-spacing: -0.03em;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .voice-body-text {
     font-size: 13px;
     color: #333;
-    line-height: 1.6;
-    font-style: italic;
+    line-height: 1.65;
     margin: 0;
 }
 
-.voice-item {
+.voice-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.voice-item-card {
     display: flex;
     gap: 8px;
     align-items: flex-start;
+    background: #f4f4f4;
+    border-radius: 6px;
+    padding: 7px 10px;
     font-size: 12px;
     color: #333;
     line-height: 1.5;
     letter-spacing: -0.02em;
+}
+
+.voice-item-text {
+    flex: 1;
+    min-width: 0;
 }
 
 .voice-num {
@@ -843,6 +917,7 @@
     color: #23bdbb;
     flex-shrink: 0;
     line-height: 1.4;
+    min-width: 22px;
 }
 
 /* Journey map */
@@ -938,48 +1013,8 @@
     color: #555;
 }
 
-.journey-dots-row {
-    align-items: center;
-    gap: 0;
-}
-
-.journey-dot-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    padding: 3px;
-    position: relative;
-}
-
-.journey-dot-cell::before {
-    content: '';
-    position: absolute;
-    top: 9px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: #e0e0e0;
-    z-index: 0;
-}
-
-.journey-dot-cell:first-child::before { left: 50%; }
-.journey-dot-cell:last-child::before { right: 50%; }
-
-.journey-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    position: relative;
-    z-index: 1;
-    flex-shrink: 0;
-}
-
-.journey-emotion-label {
-    font-size: 9px;
-    color: #555;
-    text-align: center;
-    letter-spacing: -0.02em;
+.journey-graph-cell {
+    padding: 4px 0 2px;
 }
 
 /* Bottom row */
@@ -991,9 +1026,10 @@
 }
 
 .detail-bottom-card {
-    background: #f8f8f8;
+    background: #fff;
+    border: 1px solid #ebebeb;
     border-radius: 10px;
-    padding: 10px 12px;
+    padding: 12px 14px;
     display: flex;
     flex-direction: column;
     gap: 4px;

@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
-
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_BASE } from '../api';
 
 const CARDS = [
     { key: 'member',        label: '회원관리',   imgSrc: '/figma-assets/admin/member_icon.svg',       view: 'adminDashboardNew' },
@@ -30,7 +29,7 @@ export default function AdminMain({ onNavigate }) {
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         if (!token) return;
-        fetch(`${API_URL}/api/admin/stats`, {
+        fetch(`${API_BASE}/admin/stats`, {
             headers: { Authorization: `Bearer ${token}` },
         })
             .then((r) => (r.ok ? r.json() : null))

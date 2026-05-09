@@ -1,13 +1,27 @@
+import { useState, useEffect } from 'react';
 import UserPCLayout from './UserPCLayout';
 import './PCSurveyDetail.css';
+import { API_URL } from '../utils/api';
 
 export default function PCSurveyDetail({ onNavigate, survey }) {
+    const [fullSurvey, setFullSurvey] = useState(null);
+
+    useEffect(() => {
+        const id = survey?.id;
+        if (!id) return;
+        fetch(`${API_URL}/api/surveys/${id}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => { if (d) setFullSurvey(d); })
+            .catch(() => {});
+    }, [survey?.id]);
+
+    const enriched = { ...(survey || {}), ...(fullSurvey || {}) };
     const data = {
         title: '사직구장 일대 보행환경의 현황 조사',
         period: '~2026-05-30',
         duration: '10분',
         description: '사직구장 갈 때, 걷기 불편했던 적 있으신가요?\n여러분의 경험이 더 안전한 보행환경을 만듭니다.\n지금 참여해주세요.',
-        ...(survey || {}),
+        ...enriched,
     };
 
     const handleCopy = () => {
@@ -29,8 +43,8 @@ export default function PCSurveyDetail({ onNavigate, survey }) {
 
                 <div className="pc-floating-card">
                     <div className="pc-info-row"><span className="pc-info-label">조사명</span><span className="pc-info-value">{data.title}</span></div>
-                    <div className="pc-info-row"><span className="pc-info-label">조사기간</span><span className="pc-info-value">{data.period}</span></div>
-                    <div className="pc-info-row"><span className="pc-info-label">응답시간</span><span className="pc-info-value">{data.duration}</span></div>
+                    <div className="pc-info-row"><span className="pc-info-label">조사기간</span><span className="pc-info-value">{data.period || data.end_date || '—'}</span></div>
+                    <div className="pc-info-row"><span className="pc-info-label">응답시간</span><span className="pc-info-value">{data.duration || (data.minutes ? `${data.minutes}분` : '—')}</span></div>
                     <div className="pc-info-row pc-info-row-multiline"><span className="pc-info-label">내용</span><span className="pc-info-value pc-info-multiline">{data.description}</span></div>
                 </div>
 
@@ -54,7 +68,7 @@ export default function PCSurveyDetail({ onNavigate, survey }) {
                     <div className="pc-detail-action">
                         <button
                             className="pc-btn-primary"
-                            onClick={() => onNavigate && onNavigate('pcSurveyConsent', data)}
+                            onClick={() => onNavigate && onNavigate('pcSurveyConsent', fullSurvey || survey || data)}
                         >
                             참여하기
                         </button>

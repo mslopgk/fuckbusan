@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
-
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_BASE } from '../api';
 
 export default function AdminProposalDetail({ proposal, onNavigate }) {
-    const [data, setData] = useState(proposal || null);
+    const [data, setData] = useState(null);
+    const [form, setForm] = useState(null);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
@@ -14,28 +14,51 @@ export default function AdminProposalDetail({ proposal, onNavigate }) {
         const token = localStorage.getItem('access_token');
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-        fetch(`${API_URL}/api/reports/proposals/${proposal.id}`, { headers })
+        fetch(`${API_BASE}/reports/proposals/${proposal.id}`, { headers })
             .then((r) => (r.ok ? r.json() : null))
             .then((found) => {
                 if (!found) return;
-                setData({
+                const mapped = {
                     id: found.id,
                     title: found.title,
-                    type: found.category,
-                    location: found.region,
-                    detailedAddress: found.detailed_address,
+                    category: found.category,
+                    region: found.region,
+                    detailed_address: found.detailed_address,
                     content: found.content,
                     nickname: found.nickname,
                     author_id: found.user_id,
                     created_at: found.created_at,
                     updated_at: found.updated_at,
-                    image: found.image,
-                });
+                    image: found.files?.[0] || found.image || null,
+                };
+                setData(mapped);
+                setForm({ ...mapped });
             })
             .catch((e) => console.error('Failed to fetch proposal detail:', e));
     }, [proposal?.id]);
 
-    if (!data) {
+    // Seed form from prop if fetch is slow
+    useEffect(() => {
+        if (!data && proposal) {
+            const mapped = {
+                id: proposal.id,
+                title: proposal.title,
+                category: proposal.category,
+                region: proposal.region,
+                detailed_address: proposal.detailed_address,
+                content: proposal.content,
+                nickname: proposal.author || proposal.nickname,
+                author_id: proposal.user_id,
+                created_at: proposal.created_at,
+                updated_at: proposal.updated_at,
+                image: null,
+            };
+            setData(mapped);
+            setForm({ ...mapped });
+        }
+    }, [proposal]);
+
+    if (!form) {
         return (
             <AdminLayout onNavigate={onNavigate} currentView="adminProposalDetail">
                 <div style={{ padding: 40, color: '#999' }}>제안 정보를 찾을 수 없습니다.</div>
@@ -48,7 +71,7 @@ export default function AdminProposalDetail({ proposal, onNavigate }) {
         const token = localStorage.getItem('access_token');
         if (!token) { alert('관리자 로그인이 필요합니다.'); return; }
         try {
-            const res = await fetch(`${API_URL}/api/admin/proposals/${data.id}`, {
+            const res = await fetch(`${API_BASE}/admin/proposals/${form.id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -64,16 +87,42 @@ export default function AdminProposalDetail({ proposal, onNavigate }) {
     };
 
     const handleSave = async () => {
+        const token = localStorage.getItem('access_token');
+        if (!token) { alert('관리자 로그인이 필요합니다.'); return; }
         setSaving(true);
         try {
-            alert('수정 기능은 준비 중입니다.');
+            const res = await fetch(`${API_BASE}/admin/proposals/${form.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    title: form.title,
+                    category: form.category,
+                    content: form.content,
+                    region: form.region,
+                    detailed_address: form.detailed_address,
+                }),
+            });
+            if (res.ok) {
+                setData({ ...form });
+                alert('수정되었습니다.');
+            } else {
+                const err = await res.json().catch(() => ({}));
+                alert('수정 실패: ' + (err.detail || res.status));
+            }
+        } catch (e) {
+            alert('오류: ' + e.message);
         } finally {
             setSaving(false);
         }
     };
 
-    const createdAt = data.created_at ? String(data.created_at).slice(0, 10) : '-';
-    const updatedAt = data.updated_at ? String(data.updated_at).slice(0, 10) : createdAt;
+    const set = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
+
+    const createdAt = form.created_at ? String(form.created_at).slice(0, 10) : '-';
+    const updatedAt = form.updated_at ? String(form.updated_at).slice(0, 10) : createdAt;
 
     return (
         <AdminLayout onNavigate={onNavigate} currentView="adminProposalDetail">
@@ -89,64 +138,83 @@ export default function AdminProposalDetail({ proposal, onNavigate }) {
             </div>
 
             <div className="rfd-body">
-                {/* 제안제목 */}
                 <div className="rfd-row">
                     <span className="rfd-label">제안제목</span>
-                    <div className="rfd-input">{data.title || '-'}</div>
+                    <input
+                        className="rfd-input"
+                        style={{ background: '#fff', border: '1px solid #d0d0d0', borderRadius: 6, padding: '0 10px', width: '100%' }}
+                        value={form.title || ''}
+                        onChange={set('title')}
+                    />
                 </div>
 
-                {/* 유형 */}
                 <div className="rfd-row">
                     <span className="rfd-label">유형</span>
-                    <div className="rfd-input">{data.type || '-'}</div>
+                    <input
+                        className="rfd-input"
+                        style={{ background: '#fff', border: '1px solid #d0d0d0', borderRadius: 6, padding: '0 10px' }}
+                        value={form.category || ''}
+                        onChange={set('category')}
+                    />
                 </div>
 
-                {/* 자세한설명 */}
                 <div className="rfd-row rfd-row--top">
                     <span className="rfd-label">자세한설명</span>
-                    <div className="rfd-textarea">{data.content || '-'}</div>
+                    <textarea
+                        className="rfd-textarea"
+                        style={{ background: '#fff', border: '1px solid #d0d0d0', borderRadius: 6, padding: '10px', resize: 'vertical' }}
+                        value={form.content || ''}
+                        onChange={set('content')}
+                        rows={6}
+                    />
                 </div>
 
-                {/* 위치정보 */}
                 <div className="rfd-row">
                     <span className="rfd-label">위치정보</span>
                     <div className="rfd-location">
-                        <div className="rfd-input">{data.location || '-'}</div>
-                        <div className="rfd-input">{data.detailedAddress || '-'}</div>
+                        <input
+                            className="rfd-input"
+                            style={{ background: '#fff', border: '1px solid #d0d0d0', borderRadius: 6, padding: '0 10px' }}
+                            value={form.region || ''}
+                            onChange={set('region')}
+                            placeholder="구/군"
+                        />
+                        <input
+                            className="rfd-input"
+                            style={{ background: '#fff', border: '1px solid #d0d0d0', borderRadius: 6, padding: '0 10px' }}
+                            value={form.detailed_address || ''}
+                            onChange={set('detailed_address')}
+                            placeholder="상세 주소"
+                        />
                     </div>
                 </div>
 
-                {/* 첨부이미지파일 */}
                 <div className="rfd-row rfd-row--top">
                     <span className="rfd-label">첨부이미지파일</span>
                     <div className="rfd-attachments">
-                        {data.image ? (
-                            <img src={data.image} alt="첨부" className="rfd-thumb" />
+                        {form.image ? (
+                            <img src={form.image} alt="첨부" className="rfd-thumb" />
                         ) : (
                             <div className="rfd-thumb-empty" />
                         )}
                     </div>
                 </div>
 
-                {/* 작성자 ID */}
                 <div className="rfd-row">
                     <span className="rfd-label">작성자 ID</span>
-                    <div className="rfd-input">{data.author_id ?? '-'}</div>
+                    <div className="rfd-input">{form.author_id ?? '-'}</div>
                 </div>
 
-                {/* 작성자 닉네임 */}
                 <div className="rfd-row">
                     <span className="rfd-label">작성자 닉네임</span>
-                    <div className="rfd-input">{data.nickname || '-'}</div>
+                    <div className="rfd-input">{form.nickname || '-'}</div>
                 </div>
 
-                {/* 작성일 */}
                 <div className="rfd-row">
                     <span className="rfd-label">작성일</span>
                     <div className="rfd-input">{createdAt}</div>
                 </div>
 
-                {/* 편집일 */}
                 <div className="rfd-row">
                     <span className="rfd-label">편집일</span>
                     <div className="rfd-input">{updatedAt}</div>
@@ -155,7 +223,6 @@ export default function AdminProposalDetail({ proposal, onNavigate }) {
 
             <div className="rfd-divider" />
 
-            {/* 하단 버튼 */}
             <div className="rfd-footer">
                 <button className="rfd-delete-btn" onClick={handleDelete}>글 삭제</button>
                 <button className="rfd-save-btn" onClick={handleSave} disabled={saving}>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import UserPCLayout from './UserPCLayout';
 import './PCSurveyList.css';
+import { API_URL } from '../utils/api';
 
 const formatEndDate = (period) => {
     if (!period) return '';
@@ -15,7 +16,6 @@ export default function PCSurveyList({ onNavigate }) {
     useEffect(() => {
         const load = async () => {
             try {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
                 // tab이 null이면 active(진행중)을 기본 fetch — 단, UI는 비활성으로 표시
                 const tabQuery = tab === 'results' ? 'result' : 'active';
                 const res = await fetch(`${API_URL}/api/surveys/list?tab=${tabQuery}`);

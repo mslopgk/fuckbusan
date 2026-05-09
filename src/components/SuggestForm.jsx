@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import './SuggestForm.css';
 import LocationSelector from './common/LocationSelector';
+import { API_URL } from '../utils/api';
 
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const SuggestForm = ({ onBack, onSubmit }) => {
     const [location, setLocation] = useState('');

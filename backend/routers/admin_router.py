@@ -422,6 +422,26 @@ def admin_list_proposals(
     return items
 
 
+@router.put("/proposals/{proposal_id}")
+def admin_update_proposal(
+    proposal_id: int,
+    payload: dict,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    p = db.query(models.NewProposal).filter(models.NewProposal.id == proposal_id).first()
+    if not p:
+        raise HTTPException(status_code=404, detail="제안을 찾을 수 없습니다.")
+    for k in ("title", "category", "content", "region", "detailed_address"):
+        if k in payload:
+            setattr(p, k, payload[k])
+    log_activity(db, user_id=None, action="admin_update", target_type="proposal", target_id=proposal_id,
+                 meta={k: payload[k] for k in ("title", "category") if k in payload})
+    db.commit()
+    return {"message": "수정되었습니다."}
+
+
 @router.delete("/proposals/{proposal_id}")
 def admin_delete_proposal(
     proposal_id: int,

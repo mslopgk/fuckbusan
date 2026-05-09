@@ -13,29 +13,19 @@ export default function LoginNew({ onNavigate }) {
         setError('');
         setIsLoading(true);
         try {
-            // Simple credentials for dev convenience
-            if ((email === 'admin' && password === 'admin1234')) {
-                localStorage.setItem('access_token', 'dummy_token');
-                localStorage.setItem('user_info', JSON.stringify({ username: '관리자' }));
-                if (onNavigate) onNavigate('adminMain');
-            } else {
-                const response = await api.post('/auth/login', {
-                    email,
-                    password,
-                });
-                if (response.data) {
-                    localStorage.setItem('access_token', response.data.access_token);
-                    if (response.data.username) {
-                        localStorage.setItem('user_info', JSON.stringify({ username: response.data.username }));
-                    }
-                    if (onNavigate) onNavigate('adminMain');
-                } else {
-                    throw new Error('Invalid credentials');
-                }
-            }
+            const res = await fetch('/users/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ID: email, PW: password }),
+            });
+            if (!res.ok) throw new Error(`${res.status}`);
+            const data = await res.json();
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('user_info', JSON.stringify({ username: data.user_name || '관리자' }));
+            if (onNavigate) onNavigate('adminMain');
         } catch (err) {
             console.error("Login Error:", err);
-            setError('Login failed. (Use admin@busan.go.kr / Busan2026!)');
+            setError('로그인 실패. 아이디/비밀번호를 확인하세요. (admin / admin1234)');
         } finally {
             setIsLoading(false);
         }

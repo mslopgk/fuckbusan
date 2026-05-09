@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/dashboard_new.css'; // Borrowing sidebar/header styles
 import '../styles/proposal_edit.css';
+import { API_BASE } from '../api';
 
 export default function ProposalEdit({ proposal, onNavigate }) {
     const [isMemberMenuOpen, setIsMemberMenuOpen] = useState(false);
@@ -35,11 +36,12 @@ export default function ProposalEdit({ proposal, onNavigate }) {
 
     const handleConfirm = async () => {
         try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-            const response = await fetch(`${API_URL}/api/reports/proposals/${formData.id}`, {
+            const token = localStorage.getItem('access_token');
+            const response = await fetch(`${API_BASE}/reports/proposals/${formData.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
                 body: JSON.stringify({
                     category: formData.category,
@@ -66,9 +68,10 @@ export default function ProposalEdit({ proposal, onNavigate }) {
     const handleDelete = async () => {
         if (!window.confirm('정말 삭제하시겠습니까?')) return;
         try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-            const response = await fetch(`${API_URL}/api/reports/proposals/${formData.id}`, {
+            const token = localStorage.getItem('access_token');
+            const response = await fetch(`${API_BASE}/reports/proposals/${formData.id}`, {
                 method: 'DELETE',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
 
             if (response.ok) {

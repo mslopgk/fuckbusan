@@ -5,11 +5,10 @@ import { CAT_STYLES } from './catStyles';
 import { REGIONS, SORTS, REPORT_STAGES as STAGES } from '../constants/mapConstants';
 import { useSwipeSheet } from '../hooks/useSwipeSheet';
 import { RegionSheet, SortSheet, MMapSearchBar } from './MFilterSheets';
+import { API_URL } from '../utils/api';
 import './MProposalList.css';
 import './MProposalMap.css';
 import './MReportList.css';
-
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '산업·일자리', '문화·여가', '보건·복지'];
 export default function MReportMap({ onNavigate }) {
     const [region, setRegion] = useState('부산전체');
@@ -31,7 +30,7 @@ export default function MReportMap({ onNavigate }) {
         if (cat && cat !== '전체') params.set('category', cat);
         const stageDef = STAGES.find((s) => s.key === stage);
         if (stageDef) params.set('status', stageDef.apiValue);
-        fetch(`${VITE_API_URL}/api/reports/full?${params.toString()}`)
+        fetch(`${API_URL}/api/reports/full?${params.toString()}`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setItems(Array.isArray(rows) ? rows : []))
             .catch(() => setItems([]));

@@ -3,8 +3,8 @@ import UserPCLayout from './UserPCLayout';
 import { MY_CAT_STYLES as CAT_STYLES } from './catStyles';
 import './PCFormShared.css';
 import './PCMyReportList.css';
+import { API_URL } from '../utils/api';
 
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const REGIONS = ['부산전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'];
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
@@ -28,14 +28,14 @@ export default function PCMyReportList({ onNavigate, deletedIds, likedIds, userC
     const [authError, setAuthError] = useState(false);
 
     useEffect(() => {
-        fetch(`${VITE_API_URL}/api/reports/full`)
+        fetch(`${API_URL}/api/reports/full`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setServerReports(Array.isArray(rows) ? rows : []))
             .catch(() => setServerReports([]));
 
         const token = localStorage.getItem('access_token');
         if (token) {
-            fetch(`${VITE_API_URL}/api/reports/mine`, { headers: { Authorization: `Bearer ${token}` } })
+            fetch(`${API_URL}/api/reports/mine`, { headers: { Authorization: `Bearer ${token}` } })
                 .then((r) => {
                     if (r.status === 401 || r.status === 403) { setAuthError(true); return []; }
                     return r.ok ? r.json() : [];

@@ -1,6 +1,7 @@
 /* MyPage.jsx */
 import React, { useState, useEffect } from 'react';
 import './MyPage.css';
+import { API_URL } from '../utils/api';
 
 const MyPage = ({ onBack }) => {
     const [userInfo, setUserInfo] = useState({
@@ -15,8 +16,6 @@ const MyPage = ({ onBack }) => {
     });
     const [loading, setLoading] = useState(true);
 
-    const VITE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem('access_token');
@@ -27,7 +26,7 @@ const MyPage = ({ onBack }) => {
             }
 
             try {
-                const response = await fetch(`${VITE_API_URL}/users/me`, {
+                const response = await fetch(`${API_URL}/users/me`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (response.ok) {
@@ -49,7 +48,7 @@ const MyPage = ({ onBack }) => {
         };
 
         fetchUserData();
-    }, [VITE_API_URL, onBack]);
+    }, [API_URL, onBack]);
 
     const handleConfirm = async () => {
         const token = localStorage.getItem('access_token');
@@ -57,7 +56,7 @@ const MyPage = ({ onBack }) => {
 
         // 1. 프로필 정보 업데이트
         try {
-            const response = await fetch(`${VITE_API_URL}/users/me`, {
+            const response = await fetch(`${API_URL}/users/me`, {
                 method: 'PUT',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -88,7 +87,7 @@ const MyPage = ({ onBack }) => {
             }
 
             try {
-                const response = await fetch(`${VITE_API_URL}/users/reset-password`, {
+                const response = await fetch(`${API_URL}/users/reset-password`, {
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json',

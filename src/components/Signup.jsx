@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Signup.css';
 import './Login.css'; // Reuse common button/input styles
+import { API_URL } from '../utils/api';
 
 const Signup = ({ onBack, onNavigate }) => {
     const [userType, setUserType] = useState('general'); // 'general' | 'expert'
@@ -24,7 +25,6 @@ const Signup = ({ onBack, onNavigate }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const API_URL = import.meta.env.VITE_API_URL;
 
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,20}$/;
     const passwordValid = passwordRegex.test(formData.password);
@@ -45,8 +45,6 @@ const Signup = ({ onBack, onNavigate }) => {
         console.log("Signup FormData:", formData);
 
         if (!API_URL) {
-            alert("Error: VITE_API_URL is not defined");
-            return;
         }
 
         if (!isFormValid || loading) return;

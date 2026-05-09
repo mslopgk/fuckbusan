@@ -93,14 +93,10 @@ def get_checklist(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user_optional),
 ):
-    """로그인 사용자는 전체 목록, 비로그인은 본인 결과 없음(빈 배열)."""
+    """로그인 사용자는 전체 목록, 비로그인은 빈 배열."""
     if current_user is None:
         return []
-    if current_user.ID == "admin":
-        results = db.query(ChecklistResult).offset(skip).limit(min(limit, 500)).all()
-    else:
-        results = db.query(ChecklistResult).filter(ChecklistResult.user_id == current_user.user_id).offset(skip).limit(limit).all()
-    return results
+    return db.query(ChecklistResult).offset(skip).limit(min(limit, 500)).all()
 
 
 @router.get("/clusters")

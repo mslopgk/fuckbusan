@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Map, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
 import './ReportList.css';
+import { API_URL } from '../utils/api';
 
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 // Category Styles from ProposalList.jsx
 const CATEGORY_STYLES = {
@@ -55,12 +55,12 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
     const [clusters, setClusters] = useState([]);
 
     useEffect(() => {
-        fetch(`${VITE_API_URL}/api/reports/full`)
+        fetch(`${API_URL}/api/reports/full`)
             .then(res => res.ok ? res.json() : [])
             .then(data => Array.isArray(data) ? setServerReports(data) : setServerReports([]))
             .catch(err => { console.error('Failed to load reports:', err); setServerReports([]); });
 
-        fetch(`${VITE_API_URL}/api/reports/clusters`)
+        fetch(`${API_URL}/api/reports/clusters`)
             .then(res => res.ok ? res.json() : [])
             .then(data => Array.isArray(data) ? setClusters(data.filter(c => c.lat && c.lng)) : setClusters([]))
             .catch(() => setClusters([]));

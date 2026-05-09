@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { formatDate } from '../utils/format';
 import './NewDiagnosis.css';
+import { API_URL } from '../utils/api';
 
 const NewDiagnosis = ({ onBack, onNavigate }) => {
     // Force full width layout matching existing diagnosis pages
@@ -31,13 +32,12 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
     const [proposals, setProposals] = useState([]); // Real data from backend
     const [loading, setLoading] = useState(true);
 
-    const VITE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
     useEffect(() => {
         const fetchProposals = async () => {
             try {
                 const token = localStorage.getItem('access_token');
-                const response = await fetch(`${VITE_API_URL}/api/reports/proposals`, {
+                const response = await fetch(`${API_URL}/api/reports/proposals`, {
                     headers: {
                         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
                     }
@@ -53,7 +53,7 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
             }
         };
         fetchProposals();
-    }, [VITE_API_URL]);
+    }, []);
 
 
     // 카테고리별 배지 색상 정의
@@ -197,7 +197,7 @@ const NewDiagnosis = ({ onBack, onNavigate }) => {
                             } else if (firstFile.startsWith('/assets/')) {
                                 imageUrl = firstFile;
                             } else {
-                                imageUrl = `${VITE_API_URL}/uploads/${firstFile}`;
+                                imageUrl = `${API_URL}/uploads/${firstFile}`;
                             }
                         }
 

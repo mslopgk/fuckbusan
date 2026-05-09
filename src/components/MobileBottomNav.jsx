@@ -9,7 +9,7 @@ const ITEMS = [
     { key: 'activity',      label: '나의 활동',  activeColor: '#5B2EAB' },
 ];
 
-const SURVEY_VIEWS    = ['mSurveyList', 'mSurveyDetail1', 'mSurveyDetail2', 'mSurveyJoin', 'mSurveyDone', 'mSurveyResults', 'survey', 'surveyDone'];
+const SURVEY_VIEWS    = ['mAICitizen', 'mAICitizenDetail', 'mSurveyList', 'mSurveyDetail1', 'mSurveyDetail2', 'mSurveyJoin', 'mSurveyDone', 'mSurveyResults', 'survey', 'surveyDone'];
 const REPORT_VIEWS    = ['mReportList', 'mReportMap', 'mReportForm', 'mReportDetail', 'mReportDone', 'mMyReportDetail', 'mMyReportEdit', 'myReportList', 'myReports', 'reportList', 'reportForm', 'reportDetail', 'reportDone', 'report'];
 const PROPOSE_VIEWS   = ['mProposalList', 'mProposalMap', 'mProposalForm', 'mProposalDetail', 'mProposalDone', 'proposalList', 'proposalForm', 'proposalDetail', 'proposalDone'];
 const DIAG_VIEWS      = ['mDiagnosisList', 'mDiagnosisForm', 'mDiagnosisResult', 'mDiagnosisDone', 'mDiagnosisDetail', 'diagnosis', 'diagnosisStep1', 'bigCategory', 'checkList', 'satisfaction', 'review', 'checkDone', 'diagnosisResult', 'diagnosisList', 'diagnosisEdit', 'expertDiagnosisResult'];
@@ -44,7 +44,7 @@ export default function MobileBottomNav({ currentView, onNavigate }) {
 
     const handleClick = (key) => {
         if (key === 'home')               onNavigate?.('home');
-        else if (key === 'survey')        onNavigate?.('mSurveyList');
+        else if (key === 'survey')        onNavigate?.('mAICitizen');
         else if (key === 'reportPropose') setChooserOpen(true);
         else if (key === 'diagnosis')     onNavigate?.('mDiagnosisList');
         else if (key === 'activity')      onNavigate?.('myPage');

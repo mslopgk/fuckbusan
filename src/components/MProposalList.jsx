@@ -4,9 +4,8 @@ import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
 import { REGIONS, SORTS } from '../constants/mapConstants';
 import { RegionSheet, SortSheet } from './MFilterSheets';
+import { API_URL } from '../utils/api';
 import './MProposalList.css';
-
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const CATEGORIES = ['전체', '주거', '환경', '교통', '산업·일자리', '교육', '안전', '문화·여가', '보건·복지'];
 
@@ -28,7 +27,7 @@ export default function MProposalList({ onNavigate }) {
         setLoading(true);
         const token = localStorage.getItem('access_token');
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        fetch(`${VITE_API_URL}/api/reports/proposals`, { headers })
+        fetch(`${API_URL}/api/reports/proposals`, { headers })
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setItems(Array.isArray(rows) ? rows : []))
             .catch(() => setItems([]))

@@ -14,35 +14,19 @@ export default function Login({ onNavigate }) {
         setError('');
         setIsLoading(true);
         try {
-            // Mock login check or use dummy API
-            // For now, allow any login or check specific
-            // Simple credentials for dev convenience
-            if ((email === 'admin@busan.go.kr' && password === 'Busan2026!') ||
-                (email === 'admin' && password === 'password')) {
-                // Success
-                localStorage.setItem('access_token', 'dummy_token');
-                localStorage.setItem('user_info', JSON.stringify({ username: 'Admin User' }));
-                if (onNavigate) onNavigate('adminDashboard');
-            } else {
-                // Try mock API
-                const response = await api.post('/auth/login', {
-                    email,
-                    password,
-                });
-                if (response.data) {
-                    localStorage.setItem('access_token', response.data.access_token);
-                    if (response.data.username) {
-                        localStorage.setItem('user_info', JSON.stringify({ username: response.data.username }));
-                    }
-                    if (onNavigate) onNavigate('adminDashboard');
-                } else {
-                    throw new Error('Invalid credentials');
-                }
-            }
-
+            const res = await fetch('/users/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ID: email, PW: password }),
+            });
+            if (!res.ok) throw new Error(`${res.status}`);
+            const data = await res.json();
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('user_info', JSON.stringify({ username: data.user_name || 'Admin User' }));
+            if (onNavigate) onNavigate('adminDashboard');
         } catch (err) {
             console.error("Login Error:", err);
-            setError('Login failed. (Use admin@busan.go.kr / Busan2026!)');
+            setError('로그인 실패. (admin / admin1234)');
         } finally {
             setIsLoading(false);
         }

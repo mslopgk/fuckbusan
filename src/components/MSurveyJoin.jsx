@@ -1,71 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyJoin.css';
-
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
-
-const QUESTIONS = [
-    {
-        id: 'Q1',
-        title: '사직구장을 방문한 경험이 있습니까?',
-        type: 'single',
-        options: ['없다', '있다'],
-    },
-    {
-        id: 'Q2',
-        title: '사직구장 주변 보행로는 안전하다고 느낍니다.',
-        type: 'scale',
-        labels: ['전혀\n아니다', '보통', '매우\n그렇다'],
-    },
-    {
-        id: 'Q3',
-        title: '차량과 보행자의 동선이 잘 분리되어 있습니다.',
-        type: 'scale',
-        labels: ['전혀\n아니다', '보통', '매우\n그렇다'],
-    },
-    {
-        id: 'Q4',
-        title: '가장 개선이 필요하다고 생각하는 항목을 선택해주세요. (중복가능)',
-        type: 'multi',
-        options: ['보행로 확장', '차량 통제 및 동선 분리', '야간 조명 개선', '길 안내 시스템', '기타'],
-    },
-    {
-        id: 'Q5',
-        title: '사직구장 보행환경 개선을 위해 필요한 사항을 자유롭게 작성해주세요.',
-        type: 'text',
-        placeholder: '예: 야간 조명이 어두워 불안했어요 / 인도가 좁아 보행이 불편해요 등',
-        maxLength: 1300,
-    },
-];
+import { API_URL } from '../utils/api';
 
 export default function MSurveyJoin({ onNavigate, survey }) {
+    const [questions, setQuestions] = useState(survey?.questions || null);
     const [answers, setAnswers] = useState({});
+
+    useEffect(() => {
+        if (survey?.questions?.length) {
+            setQuestions(survey.questions.map(normalizeQ));
+            return;
+        }
+        const id = survey?.id;
+        if (!id) return;
+        fetch(`${API_URL}/api/surveys/${id}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => { if (d?.questions?.length) setQuestions(d.questions.map(normalizeQ)); })
+            .catch(() => {});
+    }, [survey?.id]);
+
+    const qs = questions || [];
 
     const isAnswered = (q) => {
         const a = answers[q.id];
-        if (q.type === 'multi') return Array.isArray(a) && a.length > 0;
-        if (q.type === 'text')  return typeof a === 'string' && a.trim().length > 0;
+        if (q.qtype === 'multi') return Array.isArray(a) && a.length > 0;
+        if (q.qtype === 'text') return typeof a === 'string' && a.trim().length > 0;
         return a !== undefined && a !== null && a !== '';
     };
-    const answeredCount = QUESTIONS.filter(isAnswered).length;
-    const progress = (answeredCount / QUESTIONS.length) * 100;
+    const answeredCount = qs.filter(isAnswered).length;
+    const progress = qs.length ? (answeredCount / qs.length) * 100 : 0;
 
-    const setSingle = (qid, value) =>
-        setAnswers((prev) => ({ ...prev, [qid]: value }));
-
+    const setSingle = (qid, value) => setAnswers((prev) => ({ ...prev, [qid]: value }));
     const toggleMulti = (qid, value) =>
         setAnswers((prev) => {
-            const current = prev[qid] || [];
-            return {
-                ...prev,
-                [qid]: current.includes(value)
-                    ? current.filter((v) => v !== value)
-                    : [...current, value],
-            };
+            const cur = prev[qid] || [];
+            return { ...prev, [qid]: cur.includes(value) ? cur.filter((v) => v !== value) : [...cur, value] };
         });
 
-    const setScale = (qid, value) => setSingle(qid, value);
-    const setText = (qid, value) => setSingle(qid, value);
+    const handleSubmit = async () => {
+        const surveyId = survey?.id;
+        if (surveyId && qs.length > 0) {
+            const mappedAnswers = qs
+                .map((q) => ({ question_id: q.id, value: answers[q.id] ?? '' }))
+                .filter((a) => a.value !== '' && (Array.isArray(a.value) ? a.value.length > 0 : true));
+            const token = localStorage.getItem('access_token');
+            await fetch(`${API_URL}/api/surveys/${surveyId}/responses`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                body: JSON.stringify({ answers: mappedAnswers }),
+            }).catch(() => {});
+        }
+        onNavigate && onNavigate('mSurveyDone', survey);
+    };
 
     return (
         <div className="m-survey-join-page">
@@ -77,87 +64,57 @@ export default function MSurveyJoin({ onNavigate, survey }) {
             </header>
 
             <main className="m-join-content">
-                {QUESTIONS.map((q) => (
+                {!questions && (
+                    <div style={{ textAlign: 'center', padding: '60px 0', color: '#aaa' }}>불러오는 중...</div>
+                )}
+                {qs.map((q, idx) => (
                     <section key={q.id} className="m-q-block">
-                        <h3 className="m-q-title">{q.id}. {q.title}</h3>
+                        <h3 className="m-q-title">Q{idx + 1}. {q.text}</h3>
 
-                        {q.type === 'single' && (
+                        {(q.qtype === 'single' || q.qtype === 'agree') && (
                             <div className="m-q-options">
                                 {q.options.map((opt) => {
-                                    const on = answers[q.id] === opt;
+                                    const label = opt.label ?? opt;
+                                    const on = answers[q.id] === label;
                                     return (
-                                        <button
-                                            key={opt}
-                                            className={`m-q-option ${on ? 'on' : ''}`}
-                                            onClick={() => setSingle(q.id, opt)}
-                                            type="button"
-                                        >
+                                        <button key={label} className={`m-q-option ${on ? 'on' : ''}`} onClick={() => setSingle(q.id, label)} type="button">
                                             <span className={`m-q-check ${on ? 'on' : ''}`}>
-                                                {on && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                                                {on && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>}
                                             </span>
-                                            <span className="m-q-option-label">{opt}</span>
+                                            <span className="m-q-option-label">{label}</span>
                                         </button>
                                     );
                                 })}
                             </div>
                         )}
 
-                        {q.type === 'multi' && (
+                        {q.qtype === 'multi' && (
                             <div className="m-q-options">
                                 {q.options.map((opt) => {
-                                    const on = (answers[q.id] || []).includes(opt);
+                                    const label = opt.label ?? opt;
+                                    const on = (answers[q.id] || []).includes(label);
                                     return (
-                                        <button
-                                            key={opt}
-                                            className={`m-q-option ${on ? 'on' : ''}`}
-                                            onClick={() => toggleMulti(q.id, opt)}
-                                            type="button"
-                                        >
+                                        <button key={label} className={`m-q-option ${on ? 'on' : ''}`} onClick={() => toggleMulti(q.id, label)} type="button">
                                             <span className={`m-q-check ${on ? 'on' : ''}`}>
-                                                {on && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                                                {on && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>}
                                             </span>
-                                            <span className="m-q-option-label">{opt}</span>
+                                            <span className="m-q-option-label">{label}</span>
                                         </button>
                                     );
                                 })}
                             </div>
                         )}
 
-                        {q.type === 'scale' && (
-                            <div className="m-scale">
-                                <div className="m-scale-track" />
-                                {[1, 2, 3, 4, 5].map((v) => {
-                                    const sel = answers[q.id] === v;
-                                    return (
-                                        <button
-                                            key={v}
-                                            className="m-scale-item"
-                                            onClick={() => setScale(q.id, v)}
-                                            type="button"
-                                            aria-label={`${v}점`}
-                                        >
-                                            <span className={`m-scale-dot ${sel ? 'on' : ''}`} />
-                                        </button>
-                                    );
-                                })}
-                                <div className="m-scale-labels">
-                                    <span>{q.labels[0]}</span>
-                                    <span>{q.labels[1]}</span>
-                                    <span>{q.labels[2]}</span>
-                                </div>
-                            </div>
-                        )}
-
-                        {q.type === 'text' && (
+                        {q.qtype === 'text' && (
                             <div className="m-q-textwrap">
                                 <textarea
                                     className="m-q-textarea"
-                                    placeholder={q.placeholder}
-                                    maxLength={q.maxLength}
+                                    placeholder={q.placeholder || '답변을 입력해주세요.'}
+                                    maxLength={q.maxLength || 1300}
                                     value={answers[q.id] || ''}
-                                    onChange={(e) => setText(q.id, e.target.value)}
+                                    onChange={(e) => setSingle(q.id, e.target.value)}
                                 />
-                                <div className="m-q-textcount">{(answers[q.id] || '').length} /{q.maxLength}</div>
+                                <div className="m-q-textcount">{(answers[q.id] || '').length} /{q.maxLength || 1300}</div>
                             </div>
                         )}
                     </section>
@@ -165,33 +122,18 @@ export default function MSurveyJoin({ onNavigate, survey }) {
             </main>
 
             <footer className="m-join-footer">
-                <button
-                    className="m-join-prev"
-                    onClick={() => onNavigate && onNavigate('mSurveyDetail2', survey)}
-                    type="button"
-                >이전</button>
-                <button
-                    className="m-join-next"
-                    type="button"
-                    onClick={async () => {
-                        const surveyId = survey?.id;
-                        if (surveyId && survey?.questions?.length > 0) {
-                            const mappedAnswers = survey.questions.map((q, i) => {
-                                const qKey = `Q${i + 1}`;
-                                return { question_id: q.id, value: answers[qKey] ?? '' };
-                            }).filter(a => a.value !== '' && (Array.isArray(a.value) ? a.value.length > 0 : true));
-                            const token = localStorage.getItem('access_token');
-                            const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
-                            await fetch(`${API_URL}/api/surveys/${surveyId}/responses`, {
-                                method: 'POST', headers, body: JSON.stringify({ answers: mappedAnswers }),
-                            }).catch(() => {});
-                        }
-                        onNavigate && onNavigate('mSurveyDone', survey);
-                    }}
-                >다음</button>
+                <button className="m-join-prev" onClick={() => onNavigate && onNavigate('mSurveyDetail2', survey)} type="button">이전</button>
+                <button className="m-join-next" type="button" onClick={handleSubmit}>다음</button>
             </footer>
 
             <MobileBottomNav currentView="mSurveyJoin" onNavigate={onNavigate} />
         </div>
     );
+}
+
+function normalizeQ(q) {
+    return {
+        ...q,
+        options: q.options?.map((o) => (typeof o === 'string' ? { label: o } : o)) ?? [],
+    };
 }

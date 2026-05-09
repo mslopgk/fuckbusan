@@ -4,8 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import MobileBottomNav from './MobileBottomNav';
 import './MAICitizen.css';
-
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_URL } from '../utils/api';
 
 const LABEL_OFFSETS = {
     '강서구': [0.14, 0.15], '사하구': [0.11, -0.011], '서구': [0.07, 0],
@@ -128,12 +127,23 @@ export default function MAICitizen({ onNavigate }) {
     }, [selectedDistrict, sort, fetchAvatar]);
 
     const handleDistrictClick = (name) => {
-        setSelectedDistrict(prev => prev === name ? null : name);
+        setSelectedDistrict(prev => {
+            const next = prev === name ? null : name;
+            setSearch(next || '');
+            return next;
+        });
+    };
+
+    const handleClearSearch = () => {
+        setSearch('');
+        setSelectedDistrict(null);
     };
 
     const filtered = search
         ? citizens.filter(c => c.name.includes(search) || c.district.includes(search) || c.tags.some(t => t.includes(search)))
         : citizens;
+
+    const titleDistrict = selectedDistrict || null;
 
     return (
         <div className="m-ai-citizen">
@@ -156,8 +166,21 @@ export default function MAICitizen({ onNavigate }) {
                     type="text"
                     placeholder="지역 검색"
                     value={search}
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => {
+                        setSearch(e.target.value);
+                        if (!e.target.value) setSelectedDistrict(null);
+                    }}
                 />
+                {search && (
+                    <button
+                        className="m-ai-search-clear"
+                        type="button"
+                        onClick={handleClearSearch}
+                        aria-label="검색 초기화"
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                )}
             </div>
 
             {/* Map section */}
@@ -180,8 +203,17 @@ export default function MAICitizen({ onNavigate }) {
 
                 <div className="m-ai-sheet__header">
                     <div className="m-ai-sheet__title">
-                        <span className="m-ai-title-teal">부산대표</span>
-                        <span className="m-ai-title-black"> AI 가상시민</span>
+                        {titleDistrict ? (
+                            <>
+                                <span className="m-ai-title-teal">{titleDistrict}</span>
+                                <span className="m-ai-title-black"> AI 가상시민</span>
+                            </>
+                        ) : (
+                            <>
+                                <span className="m-ai-title-teal">부산대표</span>
+                                <span className="m-ai-title-black"> AI 가상시민</span>
+                            </>
+                        )}
                     </div>
                 </div>
 
@@ -202,7 +234,7 @@ export default function MAICitizen({ onNavigate }) {
                         <div
                             key={c.id}
                             className="m-ai-card"
-                            onClick={() => setQuoteCitizen(c)}
+                            onClick={() => onNavigate?.('mAICitizenDetail', c)}
                         >
                             <div className="m-ai-card__avatar">
                                 {avatarUrls[c.id] === 'loading' ? (
@@ -229,7 +261,7 @@ export default function MAICitizen({ onNavigate }) {
                                     <button
                                         className="m-ai-card__arrow"
                                         type="button"
-                                        onClick={e => { e.stopPropagation(); setQuoteCitizen(c); }}
+                                        onClick={e => { e.stopPropagation(); onNavigate?.('mAICitizenDetail', c); }}
                                         aria-label="자세히 보기"
                                     >
                                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#23bdbb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -5,8 +5,8 @@ import { MY_CAT_STYLES as CAT_STYLES } from './catStyles';
 import './PCDetailShared.css';
 import './PCFormShared.css';
 import './PCMyProposalDetail.css';
+import { API_URL } from '../utils/api';
 
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const STATUS_LABELS = {
     received: '접수',

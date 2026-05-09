@@ -1,7 +1,7 @@
 import UserPCLayout from './UserPCLayout';
 import './PCSurveyDone.css';
 
-export default function PCSurveyDone({ onNavigate }) {
+export default function PCSurveyDone({ onNavigate, survey }) {
     return (
         <UserPCLayout currentView="pcSurveyDone" onNavigate={onNavigate}>
             <div className="pc-survey-done-page">
@@ -17,9 +17,16 @@ export default function PCSurveyDone({ onNavigate }) {
                     귀하의 의견은 지역 개선을 위한 자료로 활용됩니다.<br/>
                     더 나은 동네를 만들기 위해 지속적으로 노력하겠습니다.
                 </p>
-                <button className="pc-btn-primary pc-done-cta" onClick={() => onNavigate && onNavigate('home')}>
-                    홈으로 이동
-                </button>
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 8 }}>
+                    {survey?.id && (
+                        <button className="pc-btn-primary pc-done-cta" onClick={() => onNavigate && onNavigate('pcSurveyResults', survey)}>
+                            결과 보기
+                        </button>
+                    )}
+                    <button className="pc-btn-secondary pc-done-cta" onClick={() => onNavigate && onNavigate('home')}>
+                        홈으로 이동
+                    </button>
+                </div>
             </div>
         </UserPCLayout>
     );

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import UserPCLayout from './UserPCLayout';
 import './PCFormShared.css';
 import './PCMyReportEdit.css';
+import { API_URL } from '../utils/api';
 
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const TYPES = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 const FACILITIES = ['공공/시설물', '도로/보도', '하수/배수', '가로등/조명', '벤치/쉼터', '쓰레기/청소', '안내판/표지판', '거리'];
@@ -65,7 +65,7 @@ export default function PCMyReportEdit({ onNavigate, report, onComplete }) {
 
         setSubmitting(true);
         try {
-            const res = await fetch(`${VITE_API_URL}/api/reports/${report.id}`, {
+            const res = await fetch(`${API_URL}/api/reports/${report.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify(payload),

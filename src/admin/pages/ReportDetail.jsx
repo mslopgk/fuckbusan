@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
-
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_BASE } from '../api';
 
 const STAGES = [
     { key: 'received', label: '접수', step: 1 },
@@ -29,7 +28,7 @@ export default function ReportDetail({ report, onNavigate }) {
         if (!report?.id) return;
         const fetchOne = async () => {
             try {
-                const res = await fetch(`${API_URL}/api/reports/${report.id}`);
+                const res = await fetch(`${API_BASE}/reports/${report.id}`);
                 if (res.ok) {
                     const found = await res.json();
                     setData(found);
@@ -56,7 +55,7 @@ export default function ReportDetail({ report, onNavigate }) {
         const token = localStorage.getItem('access_token');
         if (!token) { alert('관리자 로그인이 필요합니다.'); return; }
         try {
-            const res = await fetch(`${API_URL}/api/reports/${data.id}`, {
+            const res = await fetch(`${API_BASE}/reports/${data.id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -77,7 +76,7 @@ export default function ReportDetail({ report, onNavigate }) {
         const newStage = STAGES.find((s) => s.key === newStageKey);
         if (!newStage) return;
         try {
-            const res = await fetch(`${API_URL}/api/admin/reports/${data.id}/status`, {
+            const res = await fetch(`${API_BASE}/admin/reports/${data.id}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
@@ -101,7 +100,7 @@ export default function ReportDetail({ report, onNavigate }) {
         if (!token) { alert('관리자 로그인이 필요합니다.'); return; }
         setSaving(true);
         try {
-            const res1 = await fetch(`${API_URL}/api/admin/reports/${data.id}/status`, {
+            const res1 = await fetch(`${API_BASE}/admin/reports/${data.id}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
@@ -114,7 +113,7 @@ export default function ReportDetail({ report, onNavigate }) {
                     },
                 }),
             });
-            await fetch(`${API_URL}/api/reports/${data.id}/comments`, {
+            await fetch(`${API_BASE}/reports/${data.id}/comments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ content: `[관리자 답변] ${reply.trim()}` }),

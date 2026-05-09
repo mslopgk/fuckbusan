@@ -172,6 +172,7 @@ class ReportComment(Base):
     author_name = Column(String(100), nullable=True)  # for seeded comments without real user
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.now)
+    user = relationship("User", foreign_keys=[user_id], lazy="select")
 
 class Suggestion(Base):
     __tablename__ = "suggestions"

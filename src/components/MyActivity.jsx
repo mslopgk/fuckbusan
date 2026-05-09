@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './MyActivity.css';
 import DiagnosisCard from './DiagnosisCard';
-import { fetchWithLogout } from '../utils/api';
+import { fetchWithLogout, API_URL } from '../utils/api';
 
 const MyActivity = ({ onBack, onNavigate, onEdit }) => {
     const [activeTab, setActiveTab] = useState('my_diagnosis'); // Default to my_diagnosis
@@ -27,10 +27,6 @@ const MyActivity = ({ onBack, onNavigate, onEdit }) => {
                         console.warn("MyActivity: No token found");
                         return;
                     }
-
-                    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-                    console.log("Fetching: " + `${API_URL}/checklist/my`);
-                    // alert("Fetching: " + `${API_URL}/checklist/my`); // Debug
 
                     const res = await fetchWithLogout(`${API_URL}/checklist/my`, {
                         headers: {

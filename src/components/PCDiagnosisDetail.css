@@ -1,5 +1,5 @@
+/* ───── 진단 상세 페이지 외부 레이아웃 ───── */
 .pc-detail-page {
-    /* 토큰: src/styles/diagnosis-tokens.css */
     position: relative;
     height: calc(100vh - 60px);
     width: 100%;
@@ -7,7 +7,6 @@
     overflow: hidden;
 }
 
-/* 중앙 지도 */
 .pc-detail-canvas {
     position: absolute;
     top: 0;
@@ -94,343 +93,154 @@
     font-family: inherit;
 }
 
-/* 우측 분석 패널 */
-.pc-detail-right {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 395px;
-    bottom: 16px;
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: var(--diag-panel-shadow);
-    z-index: 5;
-    padding: 20px 20px 0;
-    overflow-y: auto;
-    font-family: inherit;
-}
+/* ───────────────────────────────────────────
+   우측 진단 상세 패널 내부 (Figma 진단상세02)
+─────────────────────────────────────────── */
 
-.pc-detail-title {
-    margin: 0 0 12px;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--diag-teal);
-}
-
-/* 메타 정보 (위치/사진/진단일/...) */
-.pc-detail-meta {
-    margin: 0 0 16px;
-    padding: 0;
-    border-top: 1px solid #f1f2f4;
-}
-
-.pc-detail-meta-row {
+/* 패널 전체 컨테이너 */
+.pc-diagpanel-detail {
     display: flex;
-    align-items: center;
-    border-bottom: 1px solid #f1f2f4;
-    padding: 8px 0;
-    margin: 0;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
 }
 
-.pc-detail-meta-row dt {
-    flex: none;
+/* "시민 진단정보" 헤더 */
+.pc-diagpanel-title {
+    margin: 0 0 14px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #23bdbb;
+    letter-spacing: -0.72px;
+    line-height: 1.4;
+}
+
+/* ─── 정보 테이블 ─── */
+.pc-diagpanel-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+    overflow: hidden;
+    font-size: 12px;
+}
+
+.pc-diagpanel-table th,
+.pc-diagpanel-table td {
+    border-bottom: 1px solid #e6e6e6;
+    vertical-align: middle;
+}
+
+/* 왼쪽 레이블 셀 — #e6e6e6 회색 bg */
+.pc-diagpanel-table th {
     width: 76px;
-    padding: 0 12px;
-    font-size: 13px;
-    color: var(--diag-text-muted);
+    min-width: 76px;
+    background: #e6e6e6;
+    color: #242424;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    padding: 8px 12px;
+    border-right: 1px solid #f2f2f2;
+    white-space: nowrap;
 }
 
-.pc-detail-meta-row dd {
-    margin: 0;
-    flex: 1;
-    padding: 0 16px;
-    font-size: 13px;
-    color: var(--diag-text);
+/* 오른쪽 값 셀 */
+.pc-diagpanel-table td {
+    background: #fff;
+    color: #737373;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 8px 16px;
+    line-height: 1.35;
 }
 
-.pc-detail-meta-photo dt { align-self: center; }
-
-.pc-detail-photo-thumb {
+/* 사진 썸네일 */
+.pc-diagpanel-photo {
     width: 83px;
     height: 90px;
     border-radius: 8px;
-    background: linear-gradient(135deg, #d4e9ff, #b8d4ed);
+    background: linear-gradient(135deg, #cde8f7, #b0cde0) center / cover no-repeat;
 }
 
-/* 차트 행 */
-.pc-detail-chart-row {
-    display: flex;
-    border-bottom: 1px solid #f1f2f4;
-    padding: 16px 0;
+/* ─── 레이더 차트 카드 ─── */
+.pc-diagpanel-chart-card {
+    border: 0.728px solid #e6e6e6;
+    border-radius: 5.826px;
+    padding: 8.739px 11.652px 14.565px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.pc-detail-chart-label {
-    flex: none;
-    width: 76px;
-    padding: 0 12px;
-    font-size: 13px;
-    color: var(--diag-text-muted);
-    align-self: center;
-}
-
-.pc-detail-chart-card {
-    flex: 1;
-    padding: 0 16px;
-}
-
-.pc-detail-chart-title {
+.pc-diagpanel-chart-title {
     margin: 0 0 8px;
-    font-size: 13px;
+    font-size: 11.652px;
     font-weight: 700;
-    color: var(--diag-text);
+    color: #242424;
     text-align: center;
+    letter-spacing: -0.4661px;
+    line-height: 1.4;
 }
 
-.pc-detail-chart-canvas {
+.pc-diagpanel-chart-canvas {
     width: 100%;
-    height: 220px;
+    height: 210px;
 }
 
-.pc-detail-tick-label {
-    fill: var(--diag-text);
-    font-size: 10px;
-    font-family: inherit;
-}
-
-.pc-detail-tick-value {
-    fill: var(--diag-text);
-    font-size: 11px;
-    font-weight: 700;
-    font-family: inherit;
-}
-
-/* 댓글 영역 */
-.pc-detail-comments {
-    padding: 16px 0 24px;
-}
-
-.pc-detail-comments-head {
-    display: flex;
-    gap: 16px;
-    padding: 0 8px 12px;
-}
-
-.pc-detail-stat {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-    color: var(--diag-text);
-}
-
-.pc-detail-comment-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.pc-detail-comment-list li {
-    padding: 12px;
-    border-bottom: 1px solid #f1f2f4;
-}
-
-.pc-detail-comment-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: var(--diag-text);
-    margin-bottom: 8px;
-}
-
-.pc-detail-comment-head strong { font-weight: 700; }
-.pc-detail-comment-head span { color: var(--diag-text-muted); font-size: 12px; }
-
-.pc-detail-comment-list p {
-    margin: 0;
-    font-size: 13px;
-    color: var(--diag-text-sub);
-    line-height: 1.5;
-}
-
-/* ───────── 시민/전문가 split 레이아웃 (Figma 941:5782 detail panel 재구성) ───────── */
-.pc-detail-split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-/* 좌측 진단대상 탭에서 시민 또는 전문가만 노출하는 단일 column 레이아웃 */
-.pc-detail-single {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.pc-detail-col {
-    background: #2a2a2a;
-    border-radius: 12px;
-    padding: 14px;
-    color: #fff;
-    min-width: 0;
-}
-
-.pc-detail-col-title {
-    margin: 0 0 12px;
-    font-size: 14px;
-    font-weight: 700;
-    color: #fff;
-    text-align: center;
-}
-
-/* 표 형태 메타/스코어 */
-.pc-detail-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    color: var(--diag-text);
-    border-radius: 6px;
-    overflow: hidden;
-    table-layout: fixed;
-}
-
-.pc-detail-table th,
-.pc-detail-table td {
-    border: 1px solid #e5e7eb;
-    padding: 6px 8px;
-    font-size: 11px;
-    vertical-align: middle;
-    text-align: center;
-    word-break: keep-all;
-}
-
-.pc-detail-table th {
-    width: 56px;
-    background: #f7f7f9;
-    font-weight: 600;
-    color: var(--diag-text-sub);
-}
-
-/* 사진 셀 */
-.pc-detail-table .pc-detail-photo-thumb {
-    width: 60px;
-    height: 60px;
-    margin: 0 auto;
-    border-radius: 4px;
-    background:
-        linear-gradient(135deg, rgba(0,0,0,0.4), transparent),
-        url('/figma-assets/detail-hero-haeundae.png') center / cover no-repeat;
-}
-
-/* 차트/카드 셀 내부 — 표 셀 안에서 컴팩트하게 */
-.pc-detail-table .pc-detail-chart-card {
-    padding: 4px;
-}
-
-.pc-detail-table .pc-detail-chart-title {
-    margin: 0 0 4px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--diag-text);
-}
-
-.pc-detail-table .pc-detail-chart-canvas {
-    width: 100%;
-    height: 130px;
-}
-
-.pc-detail-table .pc-detail-tick-label { font-size: 8px; }
-.pc-detail-table .pc-detail-tick-value { font-size: 9px; font-weight: 700; }
-
-/* 전문가 score 카드 (적합/부적합/만족도 평가) */
-.pc-detail-expert-card { padding: 4px; }
-
-.pc-detail-expert-cards {
+/* ─── 전문가 score 카드 ─── */
+.pc-diagpanel-expert-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 4px;
     margin-top: 4px;
 }
 
-.pc-detail-score-card {
-    background: #FFE5E5;
+.pc-diagpanel-score-card {
+    background: #ffe5e5;
     border-radius: 4px;
-    padding: 6px 2px;
+    padding: 6px 4px;
     text-align: center;
 }
 
-.pc-detail-score-card:nth-child(2) { background: #FFE0E0; }
-.pc-detail-score-card:nth-child(3) { background: #DFF5DC; }
+.pc-diagpanel-score-card:nth-child(2) { background: #ffe0e0; }
+.pc-diagpanel-score-card:nth-child(3) { background: #dff5dc; }
 
-.pc-detail-score-key {
+.pc-diagpanel-score-key {
     font-size: 9px;
-    color: var(--diag-text-sub);
+    color: #737373;
     font-weight: 600;
 }
 
-.pc-detail-score-val {
+.pc-diagpanel-score-val {
     margin-top: 2px;
     font-size: 13px;
     font-weight: 800;
-    color: var(--diag-text);
+    color: #242424;
 }
 
-/* 좋아요/댓글 stat bar (split 패널 내부) */
-.pc-detail-col .pc-detail-stats {
+/* ─── 진단하기 CTA ─── */
+.pc-diagpanel-cta-wrap {
     display: flex;
-    gap: 12px;
-    padding: 10px 4px 8px;
+    justify-content: center;
+    padding: 20px 0 24px;
+    flex-shrink: 0;
+}
+
+.pc-diagpanel-cta-btn {
+    width: 239px;
+    height: 67px;
+    background: #06ab69;
+    border: none;
+    border-radius: 100px;
     color: #fff;
-}
-
-.pc-detail-col .pc-detail-stat {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    color: #fff;
-}
-
-/* 댓글 리스트 (split 안에서) */
-.pc-detail-col .pc-detail-comment-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.pc-detail-col .pc-detail-comment-list li {
-    padding: 8px 4px;
-    border-bottom: 1px solid #404040;
-}
-
-.pc-detail-col .pc-detail-comment-list li:last-child { border-bottom: none; }
-
-.pc-detail-col .pc-detail-comment-head {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #ccc;
-    margin-bottom: 4px;
-}
-
-.pc-detail-col .pc-detail-comment-head strong {
+    font-size: 20px;
     font-weight: 700;
-    color: #fff;
+    letter-spacing: -0.8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.18s;
 }
 
-.pc-detail-col .pc-detail-comment-list p {
-    margin: 0;
-    font-size: 11px;
-    color: #ddd;
-    line-height: 1.5;
-}
-
-/* CTA wrap (split 아래 + 진단하기) */
-.pc-detail-cta-wrap {
-    grid-column: 1 / -1;
-    margin-top: 12px;
-}
-
-.pc-detail-cta-wrap .pc-diag-panel-cta {
-    margin: 0;
+.pc-diagpanel-cta-btn:hover {
+    background: #059a5f;
 }

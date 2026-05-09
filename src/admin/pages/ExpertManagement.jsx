@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
+import { API_BASE } from '../api';
 
 export default function ExpertManagement({ onNavigate }) {
     const [experts, setExperts] = useState([]);
@@ -12,8 +13,10 @@ export default function ExpertManagement({ onNavigate }) {
     useEffect(() => {
         const fetchExperts = async () => {
             try {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-                const response = await fetch(`${API_URL}/api/users?user_type=expert`);
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`${API_BASE}/users?user_type=expert`, {
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                });
                 if (response.ok) {
                     const data = await response.json();
                     setExperts(data.map((u, idx) => ({

@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import { formatDraftDate } from '../utils/format';
+import { API_URL } from '../utils/api';
 import './MProposalForm.css';
-
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 const TYPES = ['주거', '환경', '교육', '안전', '산업·일자리', '교통', '문화·여가', '보건·복지'];
 const DRAFT_KEY = 'mProposalForm:draft';
@@ -96,7 +95,7 @@ export default function MProposalForm({ onNavigate }) {
             files: [],
         };
         try {
-            const res = await fetch(`${VITE_API_URL}/api/reports/new-proposal`, {
+            const res = await fetch(`${API_URL}/api/reports/new-proposal`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

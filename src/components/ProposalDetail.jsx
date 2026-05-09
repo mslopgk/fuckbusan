@@ -1,6 +1,7 @@
 /* ProposalDetail.jsx */
 import React, { useState, useEffect } from 'react';
 import './ProposalDetail.css';
+import { API_URL } from '../utils/api';
 
 const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
     const safeProposal = proposal || {};
@@ -23,10 +24,6 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
     const [currentUserId, setCurrentUserId] = useState(null);
 
     const isMine = safeProposal.is_mine === true || safeProposal.isMine === true;
-
-    // [중요] 127.0.0.1을 우선 사용하여 주소 충돌 방지
-    const rawApiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-    const VITE_API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
     const parseAddress = (region) => {
         if (!region) return { district: '', formatted: '' };
@@ -56,7 +53,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
         // 최신 데이터 fetch (새로고침 후 상태 동기화)
-        fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}`, { headers })
+        fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}`, { headers })
             .then(r => r.ok ? r.json() : null)
             .then(data => {
                 if (!data) return;
@@ -70,7 +67,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
 
         // 조회수 증가
         if (token) {
-            fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/view`, {
+            fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/view`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -84,7 +81,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
     const fetchComments = async () => {
         if (!safeProposal.id) return;
         try {
-            const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments`);
+            const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/comments`);
             if (response.ok) {
                 const data = await response.json();
                 if (Array.isArray(data)) {
@@ -113,7 +110,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         if (!window.confirm("정말로 이 댓글을 삭제하시겠습니까?")) return;
         const token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments/${commentId}`, {
+            const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/comments/${commentId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -147,7 +144,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         try {
             if (editingCommentId) {
                 // Edit existing
-                const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments/${editingCommentId}`, {
+                const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/comments/${editingCommentId}`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -162,7 +159,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                 }
             } else {
                 // Create new
-                const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments`, {
+                const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/comments`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -246,7 +243,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         }
 
         try {
-            const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/vote`, {
+            const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/vote`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -281,9 +278,9 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         } else if (firstFile.startsWith('/assets/')) {
             imageUrl = firstFile;
         } else if (firstFile.startsWith('/uploads/')) {
-            imageUrl = `${VITE_API_URL}${firstFile}`;
+            imageUrl = `${API_URL}${firstFile}`;
         } else {
-            imageUrl = `${VITE_API_URL}/uploads/${firstFile}`;
+            imageUrl = `${API_URL}/uploads/${firstFile}`;
         }
     }
 
@@ -383,7 +380,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                         safeProposal.files.map((file, idx) => {
                             let src = file;
                             if (!file.startsWith('http') && !file.startsWith('/assets/')) {
-                                src = file.startsWith('/uploads/') ? `${VITE_API_URL}${file}` : `${VITE_API_URL}/uploads/${file}`;
+                                src = file.startsWith('/uploads/') ? `${API_URL}${file}` : `${API_URL}/uploads/${file}`;
                             }
                             return (
                                 <img
@@ -562,7 +559,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                                 if (!safeProposal.id) return;
                                 try {
                                     const token = localStorage.getItem('access_token');
-                                    const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}`, {
+                                    const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}`, {
                                         method: 'DELETE',
                                         headers: {
                                             ...(token ? { 'Authorization': `Bearer ${token}` } : {})

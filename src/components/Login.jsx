@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Login.css';
+import { API_URL } from '../utils/api';
 
 
 const Login = ({ onBack, onSignup }) => {
@@ -15,8 +16,6 @@ const Login = ({ onBack, onSignup }) => {
     const [findLoading, setFindLoading] = useState(false);
 
     const isFormValid = inputs.id.length > 0 && inputs.password.length > 0;
-    const API_URL = import.meta.env.VITE_API_URL;
-    console.log("Login Component API_URL:", API_URL);
 
     // Force full width layout to match other desktop pages
     React.useEffect(() => {
@@ -26,30 +25,7 @@ const Login = ({ onBack, onSignup }) => {
         };
     }, []);
 
-    // Health Check on Mount
-    React.useEffect(() => {
-        const checkHealth = async () => {
-            try {
-                const res = await fetch(`${API_URL}/`);
-                const text = await res.json();
-                console.log("Backend Health Check:", text);
-            } catch (e) {
-                console.error("Backend Health Check FAILED:", e);
-                setError(`백엔드 연결 실패: ${e.message} (${API_URL})`);
-            }
-        };
-        checkHealth();
-    }, [API_URL]);
     const handleLogin = async () => {
-        // [DEBUG] Check API URL
-        console.log("Login Attempt. API_URL:", API_URL);
-        console.log("Login Inputs:", inputs);
-
-        if (!API_URL) {
-            alert("Error: VITE_API_URL is not defined in .env");
-            return;
-        }
-
         if (!isFormValid || loading) return;
         setLoading(true);
         setError(null);

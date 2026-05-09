@@ -1,62 +1,10 @@
 import { useEffect, useState } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyResults.css';
+import { API_URL } from '../utils/api';
 
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
-
-const COMPOSITE = [
-    { key: 'info',     label: '정보제공성', value: 1.7 },
-    { key: 'safety',   label: '안전성',   value: 3.8 },
-    { key: 'inclusion',label: '포용성',   value: 3.8 },
-    { key: 'mobility', label: '이동성',   value: 4.2 },
-    { key: 'aesthetic',label: '심미성',   value: 3.5 },
-    { key: 'access',   label: '접근성',   value: 2.3 },
-];
-
-const DONUTS = [
-    {
-        title: 'Q1. 사직구장 주변 보행로 안전',
-        slices: [
-            { label: '매우만족', pct: 55, color: '#F4B400' },
-            { label: '조금만족', pct: 37, color: '#5B2EAB' },
-            { label: '보통',    pct: 6,  color: '#9D7EE4' },
-            { label: '불만족',   pct: 2,  color: '#3D1B7A' },
-        ],
-    },
-    {
-        title: 'Q1. 사직구장 주변 차량과 보행자도로의 분리',
-        slices: [
-            { label: '매우만족', pct: 55, color: '#F4B400' },
-            { label: '조금만족', pct: 37, color: '#5B2EAB' },
-            { label: '보통',    pct: 6,  color: '#9D7EE4' },
-            { label: '불만족',   pct: 2,  color: '#3D1B7A' },
-        ],
-    },
-];
-
-const BARS = [
-    { label: '야간 조명 개선',     pct: 32 },
-    { label: '브레이크 문제',     pct: 27 },
-    { label: '길 안내 시스템',     pct: 18 },
-    { label: '보행로 확장',       pct: 14 },
-    { label: '기타',           pct: 2 },
-];
-
-const BUBBLES = [
-    { label: '야간 조명', pct: 32, size: 110, color: '#1A8870' },
-    { label: '브레이크 문제', pct: 27, size: 96, color: '#0E5B82' },
-    { label: '안내', pct: 18, size: 70, color: '#A1559E' },
-    { label: '확장', pct: 14, size: 60, color: '#9D7EE4' },
-    { label: '기타', pct: 2, size: 32, color: '#5B2EAB' },
-];
-
-const COLUMNS = [
-    { label: '1', value: 4854 },
-    { label: '2', value: 76235 },
-    { label: '3', value: 7621 },
-    { label: '4', value: 78235 },
-    { label: '5', value: 78235 },
-];
+const BUBBLE_COLORS = ['#1A8870', '#0E5B82', '#A1559E', '#9D7EE4', '#5B2EAB'];
+const DONUT_COLORS = ['#F4B400', '#5B2EAB', '#9D7EE4', '#3D1B7A', '#E6235A', '#16B5B0'];
 
 function RadarHexagon({ data }) {
     const cx = 140;
@@ -151,11 +99,39 @@ export default function MSurveyResults({ onNavigate, survey }) {
 
     const respondentCount = resultsData?.response_count ?? data.respondents;
 
+    const compositeData = (() => {
+        const qs = (resultsData?.questions || []).filter(q => q.distribution?.length > 0).slice(0, 6);
+        if (!qs.length) return [];
+        const LABELS = ['접근성', '이동성', '안전성', '정보제공성', '포용성', '심미성'];
+        return qs.map((q, idx) => {
+            const total = q.distribution.reduce((s, d) => s + (d.count || 0), 0) || 1;
+            const weighted = q.distribution.reduce((s, d, i) => s + (d.count || 0) * (q.distribution.length - i), 0);
+            return { key: `q${idx}`, label: LABELS[idx] || `Q${idx + 1}`, value: parseFloat((weighted / total / q.distribution.length * 5).toFixed(1)) };
+        });
+    })();
+
+    const donutSections = (() => {
+        const singleQs = (resultsData?.questions || []).filter(q => q.qtype === 'single' || q.qtype === 'agree');
+        return singleQs.map((q) => {
+            const qIdx = resultsData.questions.indexOf(q);
+            return {
+                title: `Q${qIdx + 1}. ${q.text}`,
+                slices: q.distribution.map((d, i) => ({
+                    label: d.label,
+                    pct: d.pct ?? Math.round((d.count / (q.total || 1)) * 100),
+                    color: DONUT_COLORS[i % DONUT_COLORS.length],
+                })).filter(s => s.pct > 0),
+            };
+        });
+    })();
+
+    const multiQ = (resultsData?.questions || []).find(q => q.qtype === 'multi');
+    const multiQIdx = multiQ ? resultsData.questions.indexOf(multiQ) : -1;
+    const multiQTitle = multiQ ? `Q${multiQIdx + 1}. ${multiQ.text}` : null;
+
     const derivedBars = (() => {
-        if (!resultsData?.questions) return BARS;
-        const multiQ = resultsData.questions.find(q => q.qtype === 'multi');
-        if (!multiQ?.distribution?.length) return BARS;
-        const total = multiQ.total || 1;
+        if (!multiQ?.distribution?.length) return [];
+        const total = multiQ.total || multiQ.distribution.reduce((s, d) => s + (d.count || 0), 0) || 1;
         return multiQ.distribution
             .map(d => ({ label: d.label, pct: Math.round((d.count / total) * 100) }))
             .filter(d => d.pct > 0)
@@ -166,8 +142,20 @@ export default function MSurveyResults({ onNavigate, survey }) {
         label: b.label,
         pct: b.pct,
         size: Math.max(32, Math.round(b.pct * 3.5)),
-        color: BUBBLES[i]?.color || '#5B2EAB',
+        color: BUBBLE_COLORS[i] || '#5B2EAB',
     }));
+
+    const columnData = (() => {
+        const singleQ = (resultsData?.questions || []).find(q => q.qtype === 'single');
+        if (!singleQ?.distribution?.length) return [];
+        return singleQ.distribution.map(d => ({ label: d.label, value: d.count || 0 }));
+    })();
+    const columnTitle = (() => {
+        const singleQ = (resultsData?.questions || []).find(q => q.qtype === 'single');
+        if (!singleQ) return null;
+        const idx = resultsData.questions.indexOf(singleQ);
+        return `Q${idx + 1}. ${singleQ.text}`;
+    })();
 
     return (
         <div className="m-survey-results-page">
@@ -185,15 +173,17 @@ export default function MSurveyResults({ onNavigate, survey }) {
                 </div>
             </div>
 
-            <section className="m-results-section">
-                <h3 className="m-results-section-title">종합결과</h3>
-                <div className="m-radar-wrap">
-                    <RadarHexagon data={COMPOSITE} />
-                </div>
-                <button className="m-results-detail-link" type="button">자세히보기 ▸</button>
-            </section>
+            {compositeData.length > 0 && (
+                <section className="m-results-section">
+                    <h3 className="m-results-section-title">종합결과</h3>
+                    <div className="m-radar-wrap">
+                        <RadarHexagon data={compositeData} />
+                    </div>
+                    <button className="m-results-detail-link" type="button">자세히보기 ▸</button>
+                </section>
+            )}
 
-            {DONUTS.map((d, i) => (
+            {donutSections.map((d, i) => (
                 <section key={i} className="m-results-section">
                     <h3 className="m-q-result-title">{d.title}</h3>
                     <div className="m-donut-row">
@@ -211,51 +201,62 @@ export default function MSurveyResults({ onNavigate, survey }) {
                 </section>
             ))}
 
-            <section className="m-results-section">
-                <h3 className="m-q-result-title">Q3. 가장 개선이 필요한 항목</h3>
-                {derivedBars.map((b) => (
-                    <div key={b.label} className="m-bar-row">
-                        <span className="m-bar-label">{b.label}</span>
-                        <div className="m-bar-track">
-                            <div className="m-bar-fill" style={{ width: `${b.pct}%` }} />
-                        </div>
-                        <span className="m-bar-pct">{b.pct}%</span>
-                    </div>
-                ))}
-            </section>
-
-            <section className="m-results-section">
-                <h3 className="m-q-result-title">Q3. 키워드 분포</h3>
-                <div className="m-bubbles">
-                    {derivedBubbles.map((b) => (
-                        <div
-                            key={b.label}
-                            className="m-bubble"
-                            style={{ width: b.size, height: b.size, background: b.color }}
-                        >
-                            <div className="m-bubble-label">{b.label}</div>
-                            <div className="m-bubble-pct">{b.pct}%</div>
+            {derivedBars.length > 0 && (
+                <section className="m-results-section">
+                    <h3 className="m-q-result-title">{multiQTitle}</h3>
+                    {derivedBars.map((b) => (
+                        <div key={b.label} className="m-bar-row">
+                            <span className="m-bar-label">{b.label}</span>
+                            <div className="m-bar-track">
+                                <div className="m-bar-fill" style={{ width: `${b.pct}%` }} />
+                            </div>
+                            <span className="m-bar-pct">{b.pct}%</span>
                         </div>
                     ))}
-                </div>
-            </section>
+                </section>
+            )}
 
-            <section className="m-results-section">
-                <h3 className="m-q-result-title">Q1. 가장 개선이 필요한 항목</h3>
-                <div className="m-cols">
-                    {COLUMNS.map((c, i) => {
-                        const max = Math.max(...COLUMNS.map((x) => x.value));
-                        const h = (c.value / max) * 100;
-                        return (
-                            <div key={i} className="m-col">
-                                <span className="m-col-val">{c.value.toLocaleString()}</span>
-                                <div className="m-col-bar" style={{ height: `${h}%` }} />
-                                <span className="m-col-label">{c.label}</span>
+            {derivedBubbles.length > 0 && (
+                <section className="m-results-section">
+                    <h3 className="m-q-result-title">키워드 분포</h3>
+                    <div className="m-bubbles">
+                        {derivedBubbles.map((b) => (
+                            <div
+                                key={b.label}
+                                className="m-bubble"
+                                style={{ width: b.size, height: b.size, background: b.color }}
+                            >
+                                <div className="m-bubble-label">{b.label}</div>
+                                <div className="m-bubble-pct">{b.pct}%</div>
                             </div>
-                        );
-                    })}
-                </div>
-            </section>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {columnData.length > 0 && (
+                <section className="m-results-section">
+                    <h3 className="m-q-result-title">{columnTitle}</h3>
+                    <div className="m-cols">
+                        {(() => {
+                            const max = Math.max(...columnData.map((x) => x.value), 1);
+                            return columnData.map((c, i) => (
+                                <div key={i} className="m-col">
+                                    <span className="m-col-val">{c.value.toLocaleString()}</span>
+                                    <div className="m-col-bar" style={{ height: `${(c.value / max) * 100}%` }} />
+                                    <span className="m-col-label">{c.label}</span>
+                                </div>
+                            ));
+                        })()}
+                    </div>
+                </section>
+            )}
+
+            {!resultsData && (
+                <section className="m-results-section" style={{ textAlign: 'center', color: '#aaa', padding: '40px 0' }}>
+                    결과를 불러오는 중...
+                </section>
+            )}
 
             <MobileBottomNav currentView="mSurveyResults" onNavigate={onNavigate} />
         </div>

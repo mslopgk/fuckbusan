@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './DiagnosisEdit.css';
-import { fetchWithLogout } from '../utils/api';
+import { fetchWithLogout, API_URL } from '../utils/api';
 
 const DiagnosisEdit = ({ data, onBack, onComplete }) => {
     // Determine type from data (passed from MyActivity)
@@ -30,8 +30,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
             try {
                 // 1. Load Questions Structure (DB 우선, 정적 JSON fallback)
                 const mode = type === 'expert' ? 'expert' : 'general';
-                const API_URL_LOCAL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-                let response = await fetch(`${API_URL_LOCAL}/checklist/templates?mode=${mode}`);
+                let response = await fetch(`${API_URL}/checklist/templates?mode=${mode}`);
                 if (!response.ok) response = await fetch(`/assets/data/${mode}_diagnosis.json`);
                 const json = await response.json();
                 setFullData(json);
@@ -39,7 +38,6 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                 // 2. Load Checklist Detail if ID exists
                 if (data && data.id) {
                     const token = localStorage.getItem('access_token');
-                    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
                     const res = await fetchWithLogout(`${API_URL}/checklist/${data.id}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
@@ -127,7 +125,6 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
 
         try {
             const token = localStorage.getItem('access_token');
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
             const payload = {
                 "대분류": selectedBig,

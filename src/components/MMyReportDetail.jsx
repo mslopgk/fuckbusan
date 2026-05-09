@@ -4,8 +4,7 @@ import { MY_CAT_STYLES as CAT_STYLES } from './catStyles';
 import './MProposalDetail.css';
 import './MReportDetail.css';
 import './MMyReportDetail.css';
-
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_URL } from '../utils/api';
 
 const STATUS_LABELS = {
     received: '접수',
@@ -43,7 +42,7 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
 
     useEffect(() => {
         if (!report?.id) return;
-        fetch(`${VITE_API_URL}/api/reports/${report.id}/comments`)
+        fetch(`${API_URL}/api/reports/${report.id}/comments`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setComments(Array.isArray(rows) ? rows : []))
             .catch(() => setComments([]));
@@ -62,7 +61,7 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
         }
         setDeleting(true);
         try {
-            const res = await fetch(`${VITE_API_URL}/api/reports/${data.id}`, {
+            const res = await fetch(`${API_URL}/api/reports/${data.id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });

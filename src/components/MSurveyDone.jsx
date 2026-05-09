@@ -1,6 +1,6 @@
 import './MSurveyDone.css';
 
-export default function MSurveyDone({ onNavigate }) {
+export default function MSurveyDone({ onNavigate, survey }) {
     return (
         <div className="m-survey-done-page">
             <div className="m-done-content">
@@ -14,9 +14,26 @@ export default function MSurveyDone({ onNavigate }) {
                     더 나은 동네를 만들기 위해 지속적으로 노력하겠습니다.
                 </p>
             </div>
-            <button className="m-done-cta" onClick={() => onNavigate && onNavigate('home')} type="button">
-                홈으로 이동
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '0 24px 32px' }}>
+                {survey?.id && (
+                    <button
+                        className="m-done-cta"
+                        style={{ background: '#5B2EAB' }}
+                        onClick={() => onNavigate && onNavigate('mSurveyResults', survey)}
+                        type="button"
+                    >
+                        결과 보기
+                    </button>
+                )}
+                <button
+                    className="m-done-cta"
+                    style={{ background: '#888' }}
+                    onClick={() => onNavigate && onNavigate('home')}
+                    type="button"
+                >
+                    홈으로 이동
+                </button>
+            </div>
         </div>
     );
 }

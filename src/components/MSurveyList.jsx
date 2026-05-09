@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyList.css';
-
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_URL } from '../utils/api';
 
 export default function MSurveyList({ onNavigate }) {
     const [tab, setTab] = useState('active');
@@ -11,7 +10,7 @@ export default function MSurveyList({ onNavigate }) {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`${VITE_API_URL}/api/surveys/list?tab=${tab}`)
+        fetch(`${API_URL}/api/surveys/list?tab=${tab}`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setList(Array.isArray(rows) ? rows : []))
             .catch(() => setList([]))

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MyReports.css';
-
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_URL } from '../utils/api';
 
 const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, userCreatedReports, updatedReportsMap }) => {
     const [activeTab, setActiveTab] = useState('mine'); // 'mine' | 'likes'
@@ -12,7 +11,7 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
 
     useEffect(() => {
         // Public list (used for 'likes' tab merge)
-        fetch(`${VITE_API_URL}/api/reports/full`)
+        fetch(`${API_URL}/api/reports/full`)
             .then(res => res.ok ? res.json() : [])
             .then(data => Array.isArray(data) ? setServerReports(data) : setServerReports([]))
             .catch(err => { console.error('Failed to load reports:', err); setServerReports([]); });
@@ -20,7 +19,7 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
         // My-only list (auth-gated)
         const token = localStorage.getItem('access_token');
         if (token) {
-            fetch(`${VITE_API_URL}/api/reports/mine`, { headers: { Authorization: `Bearer ${token}` } })
+            fetch(`${API_URL}/api/reports/mine`, { headers: { Authorization: `Bearer ${token}` } })
                 .then(res => res.ok ? res.json() : [])
                 .then(data => Array.isArray(data) ? setMyServerReports(data) : setMyServerReports([]))
                 .catch(err => { console.error('Failed to load my reports:', err); setMyServerReports([]); });

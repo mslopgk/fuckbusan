@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Survey.css';
+import { API_URL } from '../utils/api';
 
 const Survey = ({ onBack, onComplete }) => {
     const [questions, setQuestions] = useState([]);
@@ -7,7 +8,6 @@ const Survey = ({ onBack, onComplete }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
         const load = async () => {
             try {
                 let res = await fetch(`${API_URL}/checklist/comprehensive-survey`);

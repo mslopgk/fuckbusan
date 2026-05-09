@@ -3,8 +3,7 @@ import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
 import './MProposalDetail.css';
 import './MReportDetail.css';
-
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_URL } from '../utils/api';
 
 const STAGES = [
     { key: 'received', label: '접수' },
@@ -46,7 +45,7 @@ export default function MReportDetail({ onNavigate, report }) {
 
     useEffect(() => {
         if (!report?.id) return;
-        fetch(`${VITE_API_URL}/api/reports/${report.id}/comments`)
+        fetch(`${API_URL}/api/reports/${report.id}/comments`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setComments(Array.isArray(rows) ? rows : []))
             .catch(() => setComments([]));
@@ -63,7 +62,7 @@ export default function MReportDetail({ onNavigate, report }) {
             return;
         }
         try {
-            const res = await fetch(`${VITE_API_URL}/api/reports/${report.id}/like`, {
+            const res = await fetch(`${API_URL}/api/reports/${report.id}/like`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -85,7 +84,7 @@ export default function MReportDetail({ onNavigate, report }) {
             return;
         }
         try {
-            const res = await fetch(`${VITE_API_URL}/api/reports/${report.id}/comments`, {
+            const res = await fetch(`${API_URL}/api/reports/${report.id}/comments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ content: comment }),

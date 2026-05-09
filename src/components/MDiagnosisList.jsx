@@ -6,8 +6,7 @@ import {
     CATEGORIES_WITH_ALL as CATEGORIES,
 } from '../constants/diagnosis';
 import './MDiagnosisList.css';
-
-const VITE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+import { API_URL, authHeaders } from '../utils/api';
 
 export default function MDiagnosisList({ onNavigate }) {
     const [search, setSearch] = useState('');
@@ -18,7 +17,7 @@ export default function MDiagnosisList({ onNavigate }) {
     const mapRef = useRef(null);
 
     useEffect(() => {
-        fetch(`${VITE_API_URL}/checklist/list`)
+        fetch(`${API_URL}/checklist/list`, { headers: authHeaders() })
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setAllRows(Array.isArray(rows) ? rows : []))
             .catch(() => setAllRows([]));

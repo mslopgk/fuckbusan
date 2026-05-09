@@ -1,6 +1,7 @@
 /* MyProposals.jsx */
 import React, { useState, useEffect } from 'react';
 import { formatDate } from '../utils/format';
+import { API_URL } from '../utils/api';
 import './MyProposals.css';
 
 const DISTRICTS = ['부산전체','중구','서구','동구','영도구','부산진구','동래구','남구','북구','해운대구','사하구','금정구','강서구','연제구','수영구','사상구','기장군'];
@@ -17,9 +18,6 @@ const MyProposals = ({ onBack, onNavigate }) => {
     const [selectedDistrict, setSelectedDistrict] = useState('부산전체');
     const [selectedCategory, setSelectedCategory] = useState('전체');
 
-    // [중요] 127.0.0.1을 우선 사용하여 주소 충돌 방지
-    const VITE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-
     useEffect(() => {
         const fetchProposalsData = async () => {
             setLoading(true);
@@ -31,7 +29,7 @@ const MyProposals = ({ onBack, onNavigate }) => {
 
             try {
                 const endpoint = activeTab === 'mine' ? 'my-proposals' : 'voted-proposals';
-                const response = await fetch(`${VITE_API_URL}/api/reports/${endpoint}`, {
+                const response = await fetch(`${API_URL}/api/reports/${endpoint}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (response.ok) {
@@ -46,7 +44,7 @@ const MyProposals = ({ onBack, onNavigate }) => {
         };
 
         fetchProposalsData();
-    }, [VITE_API_URL, activeTab]);
+    }, [API_URL, activeTab]);
 
     // 카테고리별 배지 색상 정의
     const getCategoryStyle = (category) => {
@@ -179,9 +177,9 @@ const MyProposals = ({ onBack, onNavigate }) => {
                         } else if (firstFile.startsWith('/assets/')) {
                             imageUrl = firstFile;
                         } else if (firstFile.startsWith('/uploads/')) {
-                            imageUrl = `${VITE_API_URL}${firstFile}`;
+                            imageUrl = `${API_URL}${firstFile}`;
                         } else {
-                            imageUrl = `${VITE_API_URL}/uploads/${firstFile}`;
+                            imageUrl = `${API_URL}/uploads/${firstFile}`;
                         }
                     }
                     
