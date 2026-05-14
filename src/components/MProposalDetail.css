@@ -77,8 +77,12 @@
     width: 100%;
     height: 200px;
     border-radius: 8px;
-    background: linear-gradient(135deg, #1f2540 0%, #4a3070 60%, #d97a55 100%);
+    background-color: #f4f4f4;
+    background-size: cover;
+    background-position: center;
     margin-bottom: 14px;
+    display: block;
+    object-fit: cover;
 }
 
 .m-detail-map {

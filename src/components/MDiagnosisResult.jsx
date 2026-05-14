@@ -95,18 +95,25 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
     const [recommendations, setRecommendations] = useState([]);
 
     useEffect(() => {
+        // Use /checklist/clusters for overall stats (public, accurate total avg + count)
         const params = new URLSearchParams();
         if (district) params.set('district', district);
-        fetch(`${API_URL}/checklist/aggregate?${params.toString()}`)
+        fetch(`${API_URL}/checklist/clusters`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => {
                 if (!Array.isArray(rows) || rows.length === 0) return;
-                const sumScore = rows.reduce((s, r) => s + (r.avg_score || 0), 0);
-                const sumCount = rows.reduce((s, r) => s + (r.count || 0), 0);
-                if (rows.length > 0) {
+                // Sum weighted average across clusters
+                let totalScore = 0, totalCount = 0;
+                for (const r of rows) {
+                    if (r.avg_score && r.count) {
+                        totalScore += r.avg_score * r.count;
+                        totalCount += r.count;
+                    }
+                }
+                if (totalCount > 0) {
                     setStats({
-                        avg: (sumScore / rows.length).toFixed(2),
-                        count: sumCount,
+                        avg: (totalScore / totalCount).toFixed(2),
+                        count: totalCount,
                     });
                 }
             })
@@ -208,9 +215,9 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                                 <Radar
                                     name="Score"
                                     dataKey="A"
-                                    stroke="#E6235A"
+                                    stroke="#06AB69"
                                     strokeWidth={2}
-                                    fill="#E6235A"
+                                    fill="#06AB69"
                                     fillOpacity={0.25}
                                 />
                             </RadarChart>

@@ -86,10 +86,9 @@ function DonutChart({ data: chartData }) {
 
 export default function PCSurveyResults({ onNavigate, survey }) {
     const data = {
-        title: '사직구장 일대 보행환경 결과는?',
-        period: '2026.03.16 ~ 2026.04.05',
-        responses: 12453,
-        ...(survey || {}),
+        title: survey?.title || '—',
+        period: survey?.period || '',
+        responses: survey?.response_count ?? 0,
     };
     const [open, setOpen] = useState(true);
     const [resultsData, setResultsData] = useState(null);

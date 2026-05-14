@@ -17,10 +17,10 @@ export default function MSurveyDetail1({ onNavigate, survey }) {
 
     const enriched = { ...(survey || {}), ...(fullSurvey || {}) };
     const data = {
-        title: enriched.title || '사직구장 일대 보행환경의 현황 조사',
-        period: enriched.period || enriched.end_date || '~2026-05-30',
+        title: enriched.title || '',
+        period: enriched.period || enriched.end_date || '',
         minutes: enriched.minutes || 10,
-        intro: enriched.description || enriched.intro || '사직구장 갈 때, 걷기 불편했던 적 있으신가요? 여러분의 경험이 더 안전한 보행환경을 만듭니다. 지금 참여해주세요.',
+        intro: enriched.description || enriched.intro || '',
     };
 
     return (

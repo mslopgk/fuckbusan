@@ -2,18 +2,18 @@ import { useState } from 'react';
 import './MobileBottomNav.css';
 
 const ITEMS = [
-    { key: 'diagnosis',     label: '진단',       activeColor: '#23bdbb' },
+    { key: 'diagnosis',     label: '진단',       activeColor: '#06AB69' },
     { key: 'reportPropose', label: '제보/제안',  activeColor: '#5B2EAB' },
     { key: 'home',          label: '홈',        activeColor: '#5B2EAB' },
-    { key: 'survey',        label: '가상시민',   activeColor: '#23bdbb' },
+    { key: 'survey',        label: '가상시민',   activeColor: '#5B2EAB' },
     { key: 'activity',      label: '나의 활동',  activeColor: '#5B2EAB' },
 ];
 
 const SURVEY_VIEWS    = ['mAICitizen', 'mAICitizenDetail', 'mSurveyList', 'mSurveyDetail1', 'mSurveyDetail2', 'mSurveyJoin', 'mSurveyDone', 'mSurveyResults', 'survey', 'surveyDone'];
-const REPORT_VIEWS    = ['mReportList', 'mReportMap', 'mReportForm', 'mReportDetail', 'mReportDone', 'mMyReportDetail', 'mMyReportEdit', 'myReportList', 'myReports', 'reportList', 'reportForm', 'reportDetail', 'reportDone', 'report'];
+const REPORT_VIEWS    = ['mReportList', 'mReportMap', 'mReportForm', 'mReportDetail', 'mReportDone', 'reportList', 'reportForm', 'reportDetail', 'reportDone', 'report'];
 const PROPOSE_VIEWS   = ['mProposalList', 'mProposalMap', 'mProposalForm', 'mProposalDetail', 'mProposalDone', 'proposalList', 'proposalForm', 'proposalDetail', 'proposalDone'];
 const DIAG_VIEWS      = ['mDiagnosisList', 'mDiagnosisForm', 'mDiagnosisResult', 'mDiagnosisDone', 'mDiagnosisDetail', 'diagnosis', 'diagnosisStep1', 'bigCategory', 'checkList', 'satisfaction', 'review', 'checkDone', 'diagnosisResult', 'diagnosisList', 'diagnosisEdit', 'expertDiagnosisResult'];
-const ACTIVITY_VIEWS  = ['myPage', 'myActivity', 'myActivityHub', 'myProposals'];
+const ACTIVITY_VIEWS  = ['myPage', 'myActivity', 'myActivityHub', 'myProposals', 'myReportList', 'myReports', 'mMyReportDetail', 'mMyReportEdit'];
 
 const NAV_ICONS = {
     home:          { src: '/figma-assets/icons/nav_home.svg',              activeSrc: '/figma-assets/icons/nav_home_active.svg' },
@@ -47,7 +47,7 @@ export default function MobileBottomNav({ currentView, onNavigate }) {
         else if (key === 'survey')        onNavigate?.('mAICitizen');
         else if (key === 'reportPropose') setChooserOpen(true);
         else if (key === 'diagnosis')     onNavigate?.('mDiagnosisList');
-        else if (key === 'activity')      onNavigate?.('myPage');
+        else if (key === 'activity')      onNavigate?.('myActivityHub');
     };
 
     const handleChoose = (target) => {

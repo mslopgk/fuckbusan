@@ -5,17 +5,12 @@ import './MProposalDetail.css';
 import { API_URL } from '../utils/api';
 
 export default function MProposalDetail({ onNavigate, proposal }) {
-    const DEFAULT_BODY = '안녕하세요. 부산 해운대구에 거주하는 학생입니다.\n\n지역 시민들 수요를 반영해 데이터를 개선해 전기자전거 부족·과잉의 문제점을 해결하기 위한 시스템 자전 계발과 빠른 자전거 적사 가이드 모니터링 시스템 개선 동을 통해 운영 가능성을 마련하고, 관련 정책을 제안드립니다.\n\n- 수요 예측 기반 운영 시스템 도입\n- 실시간 정보 자공 및 위 유도 가능 강화\n- 방치 자전거 관리 및 보행환경 개선 체계 구축\n\n자세한 내용은 아래 첨부파일 참고 바랍니다.';
     const data = {
-        title: proposal?.title || '전기자전거 재고 불균형 해결 제안',
-        cat: proposal?.cat || '주거',
-        author: proposal?.author || '동래구 우리디자이너',
-        body: proposal?.body || DEFAULT_BODY,
-        date: proposal?.date || '2026.01.02',
-        views: proposal?.views ?? 333,
-        votes: proposal?.votes ?? 12,
-        commentsCount: proposal?.comments ?? 12,
-        attachment: '자전거 재고 불균형 제안 [hwp, 28KB]',
+        title: proposal?.title || '',
+        cat: proposal?.cat || proposal?.category || '',
+        author: proposal?.author || proposal?.nickname || '익명',
+        body: proposal?.body || proposal?.content || '',
+        date: proposal?.date || (proposal?.created_at ? new Date(proposal.created_at).toLocaleDateString('ko-KR') : ''),
         lat: proposal?.lat || 35.197,
         lng: proposal?.lng || 129.063,
         imageUrl: proposal?.image || null,
@@ -24,6 +19,8 @@ export default function MProposalDetail({ onNavigate, proposal }) {
     const [comment, setComment] = useState('');
     const [voted, setVoted] = useState(!!proposal?.has_voted);
     const [comments, setComments] = useState([]);
+    const [views, setViews] = useState(proposal?.views ?? proposal?.views_count ?? 0);
+    const [votes, setVotes] = useState(proposal?.votes ?? proposal?.likes_count ?? 0);
 
     useEffect(() => {
         if (!proposal?.id) return;
@@ -31,6 +28,15 @@ export default function MProposalDetail({ onNavigate, proposal }) {
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setComments(Array.isArray(rows) ? rows : []))
             .catch(() => setComments([]));
+
+        const token = localStorage.getItem('access_token');
+        fetch(`${API_URL}/api/reports/proposals/${proposal.id}/view`, {
+            method: 'POST',
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => { if (d?.views_count != null) setViews(d.views_count); })
+            .catch(() => {});
     }, [proposal?.id]);
 
     const submitComment = async () => {
@@ -74,6 +80,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
             if (res.ok) {
                 const j = await res.json();
                 setVoted(!!j.has_voted);
+                if (j.likes_count != null) setVotes(j.likes_count);
             }
         } catch (e) {
             console.error(e);
@@ -96,7 +103,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
                 <p className="m-detail-author">{data.author}</p>
 
                 <div className="m-detail-body">
-                    {data.body.split('\n').map((p, i) =>
+                    {(data.body || '').split('\n').map((p, i) =>
                         p.trim().startsWith('-') ? (
                             <li key={i}>{p.replace(/^-\s*/, '')}</li>
                         ) : (
@@ -116,18 +123,24 @@ export default function MProposalDetail({ onNavigate, proposal }) {
                         accentColor="#E6235A"
                     />
                 </div>
-                <p className="m-detail-coord-text">📍 위도 {data.lat.toFixed(4)}, 경도 {data.lng.toFixed(4)}</p>
+                <p className="m-detail-coord-text">📍 위도 {(data.lat ?? 0).toFixed(4)}, 경도 {(data.lng ?? 0).toFixed(4)}</p>
 
-                <div className="m-detail-attachment">
-                    <span>📎</span>
-                    <span>{data.attachment}</span>
-                </div>
+                {(proposal?.files?.length > 0) && (
+                    <div className="m-detail-attachment">
+                        {proposal.files.map((f, i) => (
+                            <div key={i}>
+                                <span>📎</span>
+                                <span>{typeof f === 'string' ? f : (f.name || f.url || f)}</span>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 <div className="m-detail-meta-row">
-                    <span className="m-detail-meta-left">{data.date} · 조회수 {data.views}</span>
+                    <span className="m-detail-meta-left">{data.date} · 조회수 {views}</span>
                     <span className="m-detail-meta-icons">
-                        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg> {data.votes}</span>
-                        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> {data.commentsCount}</span>
+                        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg> {votes}</span>
+                        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> {comments.length}</span>
                     </span>
                 </div>
 

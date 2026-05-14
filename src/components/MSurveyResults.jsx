@@ -82,9 +82,9 @@ function Donut({ slices, size = 130 }) {
 
 export default function MSurveyResults({ onNavigate, survey }) {
     const data = {
-        title: survey?.title || '2026년, 사직구장 일대 보행환경 결과는?',
-        period: survey?.period || '2026.03.16 ~ 2026.04.05',
-        respondents: survey?.respondents ?? survey?.response_count ?? 12453,
+        title: survey?.title || '',
+        period: survey?.period || '',
+        respondents: survey?.respondents ?? survey?.response_count ?? 0,
     };
     const [resultsData, setResultsData] = useState(null);
 
@@ -100,8 +100,11 @@ export default function MSurveyResults({ onNavigate, survey }) {
     const respondentCount = resultsData?.response_count ?? data.respondents;
 
     const compositeData = (() => {
-        const qs = (resultsData?.questions || []).filter(q => q.distribution?.length > 0).slice(0, 6);
-        if (!qs.length) return [];
+        const qs = (resultsData?.questions || [])
+            .filter(q => q.distribution?.length > 0 && q.distribution.some(d => (d.count || 0) > 0))
+            .slice(0, 6);
+        // Radar needs ≥3 axes to be meaningful
+        if (qs.length < 3) return [];
         const LABELS = ['접근성', '이동성', '안전성', '정보제공성', '포용성', '심미성'];
         return qs.map((q, idx) => {
             const total = q.distribution.reduce((s, d) => s + (d.count || 0), 0) || 1;
@@ -148,7 +151,9 @@ export default function MSurveyResults({ onNavigate, survey }) {
     const columnData = (() => {
         const singleQ = (resultsData?.questions || []).find(q => q.qtype === 'single');
         if (!singleQ?.distribution?.length) return [];
-        return singleQ.distribution.map(d => ({ label: d.label, value: d.count || 0 }));
+        const items = singleQ.distribution.map(d => ({ label: d.label, value: d.count || 0 }));
+        // Only show if there is at least one non-zero count
+        return items.some(d => d.value > 0) ? items : [];
     })();
     const columnTitle = (() => {
         const singleQ = (resultsData?.questions || []).find(q => q.qtype === 'single');
@@ -183,7 +188,7 @@ export default function MSurveyResults({ onNavigate, survey }) {
                 </section>
             )}
 
-            {donutSections.map((d, i) => (
+            {donutSections.filter(d => d.slices.length > 0).map((d, i) => (
                 <section key={i} className="m-results-section">
                     <h3 className="m-q-result-title">{d.title}</h3>
                     <div className="m-donut-row">
@@ -255,6 +260,12 @@ export default function MSurveyResults({ onNavigate, survey }) {
             {!resultsData && (
                 <section className="m-results-section" style={{ textAlign: 'center', color: '#aaa', padding: '40px 0' }}>
                     결과를 불러오는 중...
+                </section>
+            )}
+
+            {resultsData && compositeData.length === 0 && donutSections.filter(d => d.slices.length > 0).length === 0 && derivedBars.length === 0 && columnData.length === 0 && (
+                <section className="m-results-section" style={{ textAlign: 'center', color: '#aaa', padding: '40px 0' }}>
+                    아직 집계된 응답 데이터가 없습니다.
                 </section>
             )}
 

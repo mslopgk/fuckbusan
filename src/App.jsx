@@ -168,7 +168,13 @@ function App() {
     });
     const [isReportEdit, setIsReportEdit] = useState(false);
     const [reportToEdit, setReportToEdit] = useState(null);
-    const [selectedSurvey, setSelectedSurvey] = useState(null);
+    const [selectedSurvey, setSelectedSurvey] = useState(() => {
+        const stored = sessionStorage.getItem('selectedSurvey');
+        if (stored) {
+            try { return JSON.parse(stored); } catch (e) { return null; }
+        }
+        return null;
+    });
 
     const updateDiagnosisPayload = (key, value) => {
         setDiagnosisPayload(prev => ({
@@ -527,18 +533,25 @@ function App() {
             setView('pcSurveyList');
         } else if (target === 'pcSurveyDetail') {
             setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
             setView('pcSurveyDetail');
         } else if (target === 'pcSurveyConsent') {
             setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
             setView('pcSurveyConsent');
         } else if (target === 'pcSurveyJoin') {
             setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
             setView('pcSurveyJoin');
         } else if (target === 'pcSurveyResults') {
             setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
             setView('pcSurveyResults');
         } else if (target === 'pcSurveyDone') {
-            if (data) setSelectedSurvey(data);
+            if (data) {
+                setSelectedSurvey(data);
+                sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            }
             setView('pcSurveyDone');
         } else if (target === 'pcProposeMap') {
             setView('pcProposeMap');
@@ -560,18 +573,25 @@ function App() {
             setView('mSurveyList');
         } else if (target === 'mSurveyDetail1') {
             setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
             setView('mSurveyDetail1');
         } else if (target === 'mSurveyDetail2') {
             setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
             setView('mSurveyDetail2');
         } else if (target === 'mSurveyJoin') {
             setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
             setView('mSurveyJoin');
         } else if (target === 'mSurveyDone') {
-            if (data) setSelectedSurvey(data);
+            if (data) {
+                setSelectedSurvey(data);
+                sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            }
             setView('mSurveyDone');
         } else if (target === 'mSurveyResults') {
             setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
             setView('mSurveyResults');
         } else if (target === 'mProposalList') {
             setView('mProposalList');

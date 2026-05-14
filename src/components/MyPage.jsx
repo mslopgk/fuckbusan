@@ -48,7 +48,8 @@ const MyPage = ({ onBack }) => {
         };
 
         fetchUserData();
-    }, [API_URL, onBack]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleConfirm = async () => {
         const token = localStorage.getItem('access_token');

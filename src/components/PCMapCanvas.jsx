@@ -194,46 +194,30 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, acc
                     <CustomOverlayMap
                         key={pin.id}
                         position={{ lat: pin.lat, lng: pin.lng }}
-                        yAnchor={1}
+                        yAnchor={pinVariant === 'diagnosis' ? 0.5 : 1}
+                        xAnchor={pinVariant === 'diagnosis' ? 0.5 : 0.5}
                     >
                         {pinVariant === 'diagnosis' ? (
-                            /* ── 진단 지도 전용 핀 렌더링 ── */
+                            /* ── 진단 지도 핀: Figma 원형 버블 스타일 ── */
                             isCluster ? (
-                                /* 클러스터: gray solid + 카운트 배지 */
+                                /* 클러스터: 큰 원 + 반투명 후광 */
                                 <button
                                     type="button"
                                     onClick={() => handleClusterClick(pin)}
-                                    className="pc-diag-pin"
+                                    className="pc-diag-circle-pin pc-diag-circle-pin--cluster"
                                     aria-label={`${pin.count}건`}
                                 >
-                                    <svg width="30" height="36" viewBox="0 0 54 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d={DIAG_GRAY_PATH} fill="#777777"/>
-                                    </svg>
-                                    <span className="pc-diag-pin-badge">{pin.count}</span>
-                                </button>
-                            ) : pin.focus ? (
-                                /* 선택/포커스 핀: teal hollow */
-                                <button
-                                    type="button"
-                                    onClick={() => onPinClick && onPinClick(pin)}
-                                    className="pc-diag-pin pc-diag-pin--focus"
-                                    aria-label={pin.title}
-                                >
-                                    <svg width="30" height="36" viewBox="0 0 54 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d={DIAG_TEAL_PATH} fill="white" stroke="#25D2BC" strokeWidth="4"/>
-                                    </svg>
+                                    <span className="pc-diag-circle-num">{pin.count}</span>
                                 </button>
                             ) : (
-                                /* 일반 핀: gray solid */
+                                /* 개별 핀: 원형 버블 */
                                 <button
                                     type="button"
                                     onClick={() => onPinClick && onPinClick(pin)}
-                                    className="pc-diag-pin"
-                                    aria-label={pin.title}
+                                    className="pc-diag-circle-pin"
+                                    aria-label={pin.title || '진단'}
                                 >
-                                    <svg width="30" height="36" viewBox="0 0 54 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d={DIAG_GRAY_PATH} fill="#777777"/>
-                                    </svg>
+                                    <span className="pc-diag-circle-num">1</span>
                                 </button>
                             )
                         ) : isCluster ? (

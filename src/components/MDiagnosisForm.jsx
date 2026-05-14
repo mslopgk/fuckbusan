@@ -6,6 +6,7 @@ import {
     SATISFACTION_SCALE as SCALE,
 } from '../constants/diagnosis';
 import './MDiagnosisForm.css';
+import { API_URL, authHeaders } from '../utils/api';
 
 export default function MDiagnosisForm({ onNavigate }) {
     const [photo, setPhoto] = useState(null);
@@ -46,10 +47,52 @@ export default function MDiagnosisForm({ onNavigate }) {
     const ratedAll = QUESTIONS.every((_, i) => ratings[i] != null);
     const canSubmit = photo && category && sub && ratedAll;
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!canSubmit) return;
-        // 임시: 일반 진단 완료 화면으로 이동
-        onNavigate?.('mDiagnosisDone', { photo, category, sub, ratings, review });
+
+        try {
+            // 1. 이미지 업로드 (파일이 있을 때만)
+            let imageUrl = null;
+            if (photo) {
+                const formData = new FormData();
+                formData.append('file', photo);
+                const uploadRes = await fetch(`${API_URL}/checklist/upload`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: formData,
+                });
+                if (uploadRes.ok) {
+                    const uploadData = await uploadRes.json();
+                    imageUrl = uploadData.url ?? null;
+                }
+            }
+
+            // 2. 진단 결과 제출
+            const avgScore = Object.values(ratings).reduce((a, b) => a + b, 0) / QUESTIONS.length;
+            const payload = {
+                대분류: category,
+                중분류: sub,
+                answers: JSON.stringify(ratings),
+                점수: Math.round(avgScore),
+                리뷰: review || null,
+                이미지경로: imageUrl,
+            };
+            const submitRes = await fetch(`${API_URL}/checklist/submit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                body: JSON.stringify(payload),
+            });
+            if (!submitRes.ok) {
+                const err = await submitRes.json().catch(() => ({}));
+                alert(`제출 실패: ${err.detail ?? submitRes.status}`);
+                return;
+            }
+        } catch (e) {
+            // 네트워크 오류 — 오프라인 등의 경우 완료 화면은 계속 진행
+            console.warn('진단 제출 중 오류:', e);
+        }
+
+        onNavigate?.('mDiagnosisDone', { category, sub, ratings, review });
     };
 
     const handleDraft = () => {
@@ -63,12 +106,12 @@ export default function MDiagnosisForm({ onNavigate }) {
                 <button
                     type="button"
                     className="m-diagform-back"
-                    onClick={() => onNavigate?.('home')}
+                    onClick={() => onNavigate?.('mDiagnosisList')}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="15 18 9 12 15 6"/>
                     </svg>
-                    <span>홈으로</span>
+                    <span>뒤로</span>
                 </button>
             </header>
 

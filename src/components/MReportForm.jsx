@@ -25,6 +25,8 @@ export default function MReportForm({ onNavigate }) {
     const [draftMeta, setDraftMeta] = useState(null);
     const [toast, setToast] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [photoUrl, setPhotoUrl] = useState('');
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         try {
@@ -40,7 +42,30 @@ export default function MReportForm({ onNavigate }) {
         }
     }, []);
 
-    const canSubmit = cat && position && issue && body.trim() && !submitting;
+    const canSubmit = cat && position && issue && body.trim() && !submitting && !uploading;
+
+    const handlePhotoChange = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploading(true);
+        const form = new FormData();
+        form.append('file', file);
+        try {
+            const res = await fetch(`${API_URL}/api/reports/upload`, { method: 'POST', body: form });
+            if (res.ok) {
+                const j = await res.json();
+                setPhotoUrl(j.url || '');
+            } else {
+                setToast('사진 업로드에 실패했습니다.');
+                setTimeout(() => setToast(''), 2000);
+            }
+        } catch {
+            setToast('사진 업로드 중 오류가 발생했습니다.');
+            setTimeout(() => setToast(''), 2000);
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const handleSaveDraft = () => {
         const draft = { cat, position, issue, body, savedAt: new Date().toISOString() };
@@ -81,6 +106,7 @@ export default function MReportForm({ onNavigate }) {
             detailed_address: location || undefined,
             lat: location ? pickedLat : undefined,
             lng: location ? pickedLng : undefined,
+            image_url: photoUrl || undefined,
         };
         try {
             const res = await fetch(`${API_URL}/api/reports/report`, {
@@ -120,9 +146,16 @@ export default function MReportForm({ onNavigate }) {
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">사진 등록</h3>
-                    <button className="m-photo-add" type="button">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                    </button>
+                    <label className="m-photo-add" style={{ cursor: 'pointer', position: 'relative' }}>
+                        {uploading ? (
+                            <span style={{ fontSize: 12, color: '#999' }}>업로드 중...</span>
+                        ) : photoUrl ? (
+                            <img src={photoUrl} alt="등록 사진" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />
+                        ) : (
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        )}
+                        <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoChange} />
+                    </label>
                 </section>
 
                 <section className="m-form-section">

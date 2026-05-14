@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './MProposalForm.css';
 import './MProposalList.css';
 import './MReportForm.css';
 import { API_URL } from '../utils/api';
 
-const CATS = ['주거', '환경', '교통', '안전'];
+const CATS = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 const POSITIONS = ['', '공공/시설물', '도로/보도', '하수/배수', '가로등/조명', '벤치/쉼터', '쓰레기/청소', '안내판/표지판'];
 const ISSUES = ['', '파손', '오염', '고장', '미흡', '안전위험', '기타'];
 
@@ -17,9 +17,32 @@ export default function MMyReportEdit({ onNavigate, report, onComplete }) {
     const [issue, setIssue] = useState(report?.issue || '');
     const [body, setBody] = useState(report?.content || report?.body || '');
     const [submitting, setSubmitting] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
+    const fileInputRef = useRef(null);
 
-    const canSubmit = !!report?.id && !!cat && !!address.trim();
+    const handlePhotoChange = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploading(true);
+        const form = new FormData();
+        form.append('file', file);
+        try {
+            const res = await fetch(`${API_URL}/api/reports/upload`, { method: 'POST', body: form });
+            if (res.ok) {
+                const j = await res.json();
+                setPhoto(j.url || '');
+            } else {
+                setError('사진 업로드에 실패했습니다.');
+            }
+        } catch {
+            setError('사진 업로드 중 오류가 발생했습니다.');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const canSubmit = !!report?.id && !!cat && !!address.trim() && !uploading;
 
     const handleSubmit = async () => {
         if (!canSubmit || submitting) return;
@@ -99,9 +122,14 @@ export default function MMyReportEdit({ onNavigate, report, onComplete }) {
                                 <img src={photo} alt="등록 사진" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                             </div>
                         )}
-                        <button className="m-myrep-edit-photo-add" type="button" aria-label="사진 추가">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        </button>
+                        <label className="m-myrep-edit-photo-add" style={{ cursor: 'pointer' }} aria-label="사진 추가">
+                            {uploading ? (
+                                <span style={{ fontSize: 11, color: '#999' }}>업로드 중...</span>
+                            ) : (
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            )}
+                            <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoChange} />
+                        </label>
                     </div>
                 </section>
 

@@ -43,7 +43,10 @@ export default function MReportMap({ onNavigate }) {
     const ITEMS = useMemo(() => items.map((it) => ({
         id: it.id, cat: it.category, sub: it.sub_category, title: it.title,
         author: it.author || '익명', likes: it.likes || 0, comments: it.comments || 0,
-        hasImage: !!it.image, lat: it.lat, lng: it.lng,
+        hasImage: !!it.image, image: it.image || null,
+        lat: it.lat, lng: it.lng,
+        content: it.content, region: it.region, date: it.date, views: it.views,
+        progress_step: it.progress_step, status: it.status,
     })), [items]);
 
     const openRegion = () => { setRegionDraft(region); setRegionOpen(true); };
@@ -148,7 +151,7 @@ export default function MReportMap({ onNavigate }) {
                                         <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> {it.comments}</span>
                                     </div>
                                 </div>
-                                {it.hasImage && <div className="m-prop-card-img" />}
+                                {it.image && <div className="m-prop-card-img" style={{ backgroundImage: `url(${it.image})` }} />}
                             </li>
                         );
                     })}

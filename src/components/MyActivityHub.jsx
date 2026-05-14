@@ -1,6 +1,7 @@
 /* MyActivityHub.jsx */
 import React from 'react';
 import './MyActivityHub.css';
+import MobileBottomNav from './MobileBottomNav';
 
 const MyActivityHub = ({ onBack, onNavigate }) => {
     return (
@@ -17,7 +18,7 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
 
             <div className="ma-hub-body">
                 <h1 className="ma-hub-title">나의 활동</h1>
-                
+
                 <div className="ma-hub-welcome-section">
                     <h2 className="ma-hub-welcome-text">부산과 함께한 <br />당신의 소중한 발걸음입니다.</h2>
                     <p className="ma-hub-welcome-desc">제보와 제안 내역을 한눈에 확인해 보세요.</p>
@@ -25,8 +26,8 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
 
                 <div className="ma-hub-button-grid">
                     {/* My Report Button */}
-                    <button 
-                        className="ma-hub-card report" 
+                    <button
+                        className="ma-hub-card report"
                         onClick={() => onNavigate('myReportList')}
                     >
                         <div className="ma-hub-card-icon">
@@ -40,8 +41,8 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
                     </button>
 
                     {/* My Proposal Button */}
-                    <button 
-                        className="ma-hub-card proposal" 
+                    <button
+                        className="ma-hub-card proposal"
                         onClick={() => onNavigate('myProposals')}
                     >
                         <div className="ma-hub-card-icon">
@@ -55,6 +56,8 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
                     </button>
                 </div>
             </div>
+
+            <MobileBottomNav currentView="myActivityHub" onNavigate={onNavigate} />
         </div>
     );
 };

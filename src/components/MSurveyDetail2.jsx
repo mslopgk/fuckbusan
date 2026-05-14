@@ -9,7 +9,7 @@ const JOBS = ['학생(초중고생)', '대학교대학원생', '회사원', '전
 
 export default function MSurveyDetail2({ onNavigate, survey }) {
     const data = {
-        title: survey?.title || '사직구장 일대 보행환경의 현황 조사',
+        title: survey?.title || '',
     };
     const [agree, setAgree] = useState(true);
     const [gender, setGender] = useState('남자');

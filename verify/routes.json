@@ -105,7 +105,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-survey-detail-page",
-      "viewport": { "width": 1280, "height": 900 }
+      "viewport": { "width": 1280, "height": 900 },
+      "sessionSeed": {
+        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+      }
     },
     {
       "id": "pcSurveyConsent",
@@ -113,7 +116,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-survey-consent-page",
-      "viewport": { "width": 1280, "height": 1000 }
+      "viewport": { "width": 1280, "height": 1000 },
+      "sessionSeed": {
+        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+      }
     },
     {
       "id": "pcSurveyJoin",
@@ -121,7 +127,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-survey-join-page",
-      "viewport": { "width": 1280, "height": 1000 }
+      "viewport": { "width": 1280, "height": 1000 },
+      "sessionSeed": {
+        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+      }
     },
     {
       "id": "pcSurveyDone",
@@ -129,7 +138,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-survey-done-page",
-      "viewport": { "width": 1280, "height": 800 }
+      "viewport": { "width": 1280, "height": 800 },
+      "sessionSeed": {
+        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+      }
     },
     {
       "id": "pcSurveyResults",
@@ -137,7 +149,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-survey-results-page",
-      "viewport": { "width": 1280, "height": 1000 }
+      "viewport": { "width": 1280, "height": 1000 },
+      "sessionSeed": {
+        "selectedSurvey": { "id": 3, "title": "공공디자인 만족도 조사", "minutes": 10, "period": "2026-05-01 ~ 2026-05-18", "status": "result", "response_count": 79 }
+      }
     },
     {
       "id": "pcDiagnosisMap",
@@ -287,35 +302,50 @@
       "view": "mSurveyJoin",
       "path": "/",
       "auth": false,
-      "waitFor": ".m-survey-join-page"
+      "waitFor": ".m-survey-join-page",
+      "sessionSeed": {
+        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+      }
     },
     {
       "id": "mSurveyDone",
       "view": "mSurveyDone",
       "path": "/",
       "auth": false,
-      "waitFor": ".m-survey-done-page"
+      "waitFor": ".m-survey-done-page",
+      "sessionSeed": {
+        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+      }
     },
     {
       "id": "mSurveyDetail1",
       "view": "mSurveyDetail1",
       "path": "/",
       "auth": false,
-      "waitFor": ".m-survey-detail-page"
+      "waitFor": ".m-survey-detail-page",
+      "sessionSeed": {
+        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+      }
     },
     {
       "id": "mSurveyDetail2",
       "view": "mSurveyDetail2",
       "path": "/",
       "auth": false,
-      "waitFor": ".m-survey-detail-page"
+      "waitFor": ".m-survey-detail-page",
+      "sessionSeed": {
+        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+      }
     },
     {
       "id": "mSurveyResults",
       "view": "mSurveyResults",
       "path": "/",
       "auth": false,
-      "waitFor": ".m-survey-results-page"
+      "waitFor": ".m-survey-results-page",
+      "sessionSeed": {
+        "selectedSurvey": { "id": 3, "title": "공공디자인 만족도 조사", "minutes": 10, "period": "2026-05-01 ~ 2026-05-18", "status": "result", "response_count": 79 }
+      }
     },
     {
       "id": "adminLoginNew",

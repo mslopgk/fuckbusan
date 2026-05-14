@@ -140,7 +140,7 @@ export default function MAICitizen({ onNavigate }) {
     };
 
     const filtered = search
-        ? citizens.filter(c => c.name.includes(search) || c.district.includes(search) || c.tags.some(t => t.includes(search)))
+        ? citizens.filter(c => c.name?.includes(search) || c.district?.includes(search) || (c.tags || []).some(t => t.includes(search)))
         : citizens;
 
     const titleDistrict = selectedDistrict || null;

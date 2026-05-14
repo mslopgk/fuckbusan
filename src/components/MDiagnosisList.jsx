@@ -14,13 +14,23 @@ export default function MDiagnosisList({ onNavigate }) {
     const [mode, setMode] = useState('citizen');
     const [district, setDistrict] = useState('부산진구');
     const [allRows, setAllRows] = useState([]);
+    const [clusters, setClusters] = useState([]);
     const mapRef = useRef(null);
 
+    // /checklist/list requires auth; guests see empty list (by server design)
     useEffect(() => {
         fetch(`${API_URL}/checklist/list`, { headers: authHeaders() })
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setAllRows(Array.isArray(rows) ? rows : []))
             .catch(() => setAllRows([]));
+    }, []);
+
+    // /checklist/clusters is public — use it for map pins
+    useEffect(() => {
+        fetch(`${API_URL}/checklist/clusters`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((data) => setClusters(Array.isArray(data) ? data : []))
+            .catch(() => setClusters([]));
     }, []);
 
     const filtered = useMemo(() => {
@@ -38,22 +48,19 @@ export default function MDiagnosisList({ onNavigate }) {
             }));
     }, [allRows, district, category]);
 
+    // Build map pins from clusters endpoint (public, no auth needed)
     const DIAG_PINS = useMemo(() => {
-        const map = new globalThis.Map();
-        for (const r of allRows) {
-            const key = r.district_code || r.진단지역;
-            if (!key || !r.위도 || !r.경도) continue;
-            if (!map.has(key)) {
-                map.set(key, {
-                    id: key, district: key, count: 0,
-                    lat: parseFloat(r.위도), lng: parseFloat(r.경도),
-                    focus: key === district,
-                });
-            }
-            map.get(key).count += 1;
-        }
-        return Array.from(map.values());
-    }, [allRows, district]);
+        return clusters
+            .filter((c) => c.lat && c.lng)
+            .map((c) => ({
+                id: c.district ?? 'all',
+                district: c.district ?? 'all',
+                count: c.count,
+                lat: parseFloat(c.lat),
+                lng: parseFloat(c.lng),
+                focus: (c.district ?? 'all') === district,
+            }));
+    }, [clusters, district]);
 
     const kakaoKey = import.meta.env.VITE_KAKAO_MAP_KEY;
     const [kakaoLoading, kakaoError] = useKakaoLoader({ appkey: kakaoKey, libraries: ['services'] });
@@ -169,29 +176,36 @@ export default function MDiagnosisList({ onNavigate }) {
 
                 {/* 카드 리스트 */}
                 <ul className="m-diag-cards">
-                    {filtered.map((it) => (
-                        <li
-                            key={it.id}
-                            className="m-diag-card"
-                            onClick={() => onNavigate?.('mDiagnosisResult', it)}
-                        >
-                            <div className="m-diag-card-body">
-                                <div className="m-diag-card-tags">
-                                    <span className="m-diag-tag">{it.big}</span>
-                                    {it.mid && <span className="m-diag-tag">{it.mid}</span>}
-                                </div>
-                                <div className="m-diag-card-name-row">
-                                    <span className="m-diag-card-name">{it.name}</span>
-                                    {it.score != null && <span className="m-diag-card-score">{it.score}</span>}
-                                </div>
-                                {it.reviewText && <p className="m-diag-card-review">{it.reviewText}</p>}
-                            </div>
-                            <div
-                                className="m-diag-card-thumb"
-                                style={it.thumb ? { backgroundImage: `url(${it.thumb})` } : undefined}
-                            />
+                    {filtered.length === 0 ? (
+                        <li className="m-diag-empty">
+                            <p>진단 결과가 없습니다.</p>
+                            <p className="m-diag-empty-sub">로그인 후 전체 진단 내역을 볼 수 있습니다.</p>
                         </li>
-                    ))}
+                    ) : (
+                        filtered.map((it) => (
+                            <li
+                                key={it.id}
+                                className="m-diag-card"
+                                onClick={() => onNavigate?.('mDiagnosisResult', it)}
+                            >
+                                <div className="m-diag-card-body">
+                                    <div className="m-diag-card-tags">
+                                        <span className="m-diag-tag">{it.big}</span>
+                                        {it.mid && <span className="m-diag-tag">{it.mid}</span>}
+                                    </div>
+                                    <div className="m-diag-card-name-row">
+                                        <span className="m-diag-card-name">{it.name}</span>
+                                        {it.score != null && <span className="m-diag-card-score">{it.score}</span>}
+                                    </div>
+                                    {it.reviewText && <p className="m-diag-card-review">{it.reviewText}</p>}
+                                </div>
+                                <div
+                                    className="m-diag-card-thumb"
+                                    style={it.thumb ? { backgroundImage: `url(${it.thumb})` } : undefined}
+                                />
+                            </li>
+                        ))
+                    )}
                 </ul>
 
                 {/* 진단하기 FAB */}

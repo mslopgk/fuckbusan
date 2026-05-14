@@ -273,7 +273,7 @@ export default function MProposalForm({ onNavigate }) {
                             type="button"
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                            <span>홈으로</span>
+                            <span>뒤로</span>
                         </button>
                     </header>
                     <h2 className="m-loc-picker-title">우리동네 공공디자인을<br/>제안하고 싶은 장소를 선택해주세요.</h2>

@@ -28,7 +28,7 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
         likes: report?.likes ?? 0,
         comments: report?.comments ?? 0,
         currentStage: report?.currentStage || (report?.progress_step === 4 ? 'notice' : report?.progress_step === 3 ? 'inspect' : report?.progress_step === 2 ? 'review' : 'received'),
-        body: report?.body || '',
+        body: report?.body || report?.content || '',
         lat: report?.lat || 35.197,
         lng: report?.lng || 129.063,
         image: report?.image,
@@ -104,9 +104,7 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
 
                 {data.image ? (
                     <img className="m-detail-image" src={data.image} alt={data.title} onError={(e) => { e.target.style.display = 'none'; }} />
-                ) : (
-                    <div className="m-detail-image" />
-                )}
+                ) : null}
 
                 <div className="m-detail-map">
                     <PCMapCanvas

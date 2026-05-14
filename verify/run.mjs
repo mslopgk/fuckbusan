@@ -42,12 +42,17 @@ export async function runFrontend({ views, headless = true, token = null, adminT
         await page.goto(cfg.baseUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
 
         await page.evaluate(
-          ({ view, token, adminToken }) => {
+          ({ view, token, adminToken, sessionSeed }) => {
             sessionStorage.setItem('current_view', view);
             if (token) localStorage.setItem('access_token', token);
             if (adminToken) localStorage.setItem('admin_token', adminToken);
+            if (sessionSeed) {
+              for (const [k, v] of Object.entries(sessionSeed)) {
+                sessionStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+              }
+            }
           },
-          { view: v.view, token: v.auth ? token : null, adminToken: v.auth === 'admin' ? adminToken : null }
+          { view: v.view, token: v.auth ? token : null, adminToken: v.auth === 'admin' ? adminToken : null, sessionSeed: v.sessionSeed || null }
         );
 
         await page.goto(url, { waitUntil: 'networkidle', timeout: 20000 });

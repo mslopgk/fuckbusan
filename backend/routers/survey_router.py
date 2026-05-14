@@ -30,12 +30,18 @@ def _format_period(s: Optional[models.Survey]) -> str:
 @router.get("/list")
 def list_surveys(tab: Optional[str] = None, db: Session = Depends(get_db)):
     """tab=active → 진행중, tab=result → 종료/결과, 미지정 → 전체."""
+    from sqlalchemy import func
     q = db.query(models.Survey)
     if tab == "active":
         q = q.filter(models.Survey.status == "active")
     elif tab == "result":
         q = q.filter(models.Survey.status.in_(["result", "closed"]))
     rows = q.order_by(models.Survey.created_at.desc()).all()
+    ids = [s.id for s in rows]
+    actual_counts = {}
+    if ids:
+        for sid, cnt in db.query(models.SurveyResponse.survey_id, func.count(models.SurveyResponse.id)).filter(models.SurveyResponse.survey_id.in_(ids)).group_by(models.SurveyResponse.survey_id).all():
+            actual_counts[sid] = cnt
     return [
         {
             "id": s.id,
@@ -43,7 +49,7 @@ def list_surveys(tab: Optional[str] = None, db: Session = Depends(get_db)):
             "minutes": s.minutes or 10,
             "period": _format_period(s),
             "status": s.status,
-            "response_count": s.response_count or 0,
+            "response_count": actual_counts.get(s.id, 0),
         }
         for s in rows
     ]
@@ -269,12 +275,14 @@ def admin_delete_question(
 
 @router.get("/{survey_id}")
 def get_survey_detail(survey_id: int, db: Session = Depends(get_db)):
+    from sqlalchemy import func
     s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
     if not s:
         raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
     questions = db.query(models.SurveyQuestion).filter(
         models.SurveyQuestion.survey_id == survey_id
     ).order_by(models.SurveyQuestion.order_no.asc()).all()
+    actual_count = db.query(func.count(models.SurveyResponse.id)).filter(models.SurveyResponse.survey_id == survey_id).scalar() or 0
     return {
         "id": s.id,
         "title": s.title,
@@ -282,7 +290,7 @@ def get_survey_detail(survey_id: int, db: Session = Depends(get_db)):
         "minutes": s.minutes or 10,
         "period": _format_period(s),
         "status": s.status,
-        "response_count": s.response_count or 0,
+        "response_count": actual_count,
         "questions": [
             {
                 "id": q.id,
@@ -327,9 +335,11 @@ def submit_survey_response(
 @router.get("/{survey_id}/results")
 def get_survey_results(survey_id: int, db: Session = Depends(get_db)):
     """질문별 응답 분포 집계."""
+    from sqlalchemy import func as sqlfunc
     s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
     if not s:
         raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    actual_count = db.query(sqlfunc.count(models.SurveyResponse.id)).filter(models.SurveyResponse.survey_id == survey_id).scalar() or 0
     questions = db.query(models.SurveyQuestion).filter(
         models.SurveyQuestion.survey_id == survey_id
     ).order_by(models.SurveyQuestion.order_no.asc()).all()
@@ -368,6 +378,6 @@ def get_survey_results(survey_id: int, db: Session = Depends(get_db)):
     return {
         "id": s.id,
         "title": s.title,
-        "response_count": s.response_count or 0,
+        "response_count": actual_count,
         "questions": out,
     }

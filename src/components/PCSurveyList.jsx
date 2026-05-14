@@ -27,6 +27,7 @@ export default function PCSurveyList({ onNavigate }) {
                         duration: `${s.minutes || 10}분`,
                         period: s.period || '',
                         status: s.status,
+                        response_count: s.response_count || 0,
                     })) : []);
                 }
             } catch (_) {

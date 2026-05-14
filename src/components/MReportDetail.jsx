@@ -31,14 +31,20 @@ export default function MReportDetail({ onNavigate, report }) {
         lng: report?.lng || 129.063,
         result: report?.result || report?.result_details || null,
         imageUrl: report?.image || null,
-        resultImageUrl: report?.result_image || report?.result?.image || null,
-        resultComment: report?.result_comment || report?.result?.comment || report?.result?.result_comment || '',
+        resultImageUrl: report?.result_image || report?.result?.image || report?.result_details?.image || null,
+        resultComment: report?.result_comment || report?.result?.comment || report?.result?.result_comment || report?.result_details?.manager || '',
     };
     const stageIdx = STAGES.findIndex((s) => s.key === data.currentStage);
     const style = CAT_STYLES[data.cat] || { bg: '#E0F4F1', color: '#2C9A8F' };
 
     const [comment, setComment] = useState('');
-    const [liked, setLiked] = useState(false);
+    const [liked, setLiked] = useState(() => {
+        if (!report?.id) return false;
+        try {
+            const ids = JSON.parse(localStorage.getItem('likedReportIds') || '[]');
+            return ids.includes(report.id);
+        } catch { return false; }
+    });
     const [likeCount, setLikeCount] = useState(data.likes);
     const [resultOpen, setResultOpen] = useState(false);
     const [comments, setComments] = useState([]);
@@ -53,7 +59,10 @@ export default function MReportDetail({ onNavigate, report }) {
 
     const toggleLike = async () => {
         if (!report?.id) {
-            setLiked((prev) => { setLikeCount((c) => c + (prev ? -1 : 1)); return !prev; });
+            setLiked((prev) => {
+                setLikeCount((c) => c + (prev ? -1 : 1));
+                return !prev;
+            });
             return;
         }
         const token = localStorage.getItem('access_token');
@@ -68,8 +77,15 @@ export default function MReportDetail({ onNavigate, report }) {
             });
             if (res.ok) {
                 const j = await res.json();
-                setLiked(!!j.liked);
+                const nextLiked = !!j.liked;
+                setLiked(nextLiked);
                 setLikeCount(j.likes_count ?? likeCount);
+                // sync to localStorage
+                try {
+                    const ids = new Set(JSON.parse(localStorage.getItem('likedReportIds') || '[]'));
+                    if (nextLiked) ids.add(report.id); else ids.delete(report.id);
+                    localStorage.setItem('likedReportIds', JSON.stringify([...ids]));
+                } catch (_) {}
             }
         } catch (e) {
             console.error(e);
@@ -112,27 +128,29 @@ export default function MReportDetail({ onNavigate, report }) {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
                 <div className="m-rdetail-tags">
-                    <span className="m-rdetail-region-tag">{data.region}</span>
-                    <span className="m-prop-cat-tag" style={{ background: style.bg, color: style.color }}>{data.cat}</span>
-                    <span className="m-report-sub-tag">{data.sub}</span>
+                    {data.region && <span className="m-rdetail-region-tag">{data.region}</span>}
+                    {data.cat && <span className="m-prop-cat-tag" style={{ background: style.bg, color: style.color }}>{data.cat}</span>}
+                    {data.sub && <span className="m-report-sub-tag">{data.sub}</span>}
                 </div>
             </header>
 
             <div className="m-detail-content">
                 <div className="m-rdetail-author-row">
-                    <span className="m-rdetail-author">{data.author}</span>
-                    <span>· {data.authorRegion}</span>
-                    <span style={{ marginLeft: 'auto' }}>{data.createdAt}</span>
+                    {data.author && <span className="m-rdetail-author">{data.author}</span>}
+                    {data.authorRegion && <span>· {data.authorRegion}</span>}
+                    {data.createdAt && <span style={{ marginLeft: 'auto' }}>{data.createdAt}</span>}
                 </div>
 
                 <h1 className="m-detail-title">{data.title}</h1>
 
                 {data.body && <p className="m-rdetail-body">{data.body}</p>}
 
-                <div
-                    className="m-detail-image"
-                    style={data.imageUrl ? { backgroundImage: `url(${data.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
-                />
+                {data.imageUrl ? (
+                    <div
+                        className="m-detail-image"
+                        style={{ backgroundImage: `url(${data.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                    />
+                ) : null}
 
                 <div className="m-detail-map">
                     <PCMapCanvas

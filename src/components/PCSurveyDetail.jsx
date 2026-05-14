@@ -17,10 +17,10 @@ export default function PCSurveyDetail({ onNavigate, survey }) {
 
     const enriched = { ...(survey || {}), ...(fullSurvey || {}) };
     const data = {
-        title: '사직구장 일대 보행환경의 현황 조사',
-        period: '~2026-05-30',
-        duration: '10분',
-        description: '사직구장 갈 때, 걷기 불편했던 적 있으신가요?\n여러분의 경험이 더 안전한 보행환경을 만듭니다.\n지금 참여해주세요.',
+        title: '',
+        period: '',
+        duration: '',
+        description: '',
         ...enriched,
     };
 
