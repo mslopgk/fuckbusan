@@ -57,3 +57,12 @@ map_debug.mjs
 current-*.png
 *-verify.png
 *-debug.png
+
+# Auto-generated verify reports
+verify/reports/
+
+# Root-level screenshots from debugging
+screenshots-all/
+
+# Exported data / temp folders
+제목 없음/
