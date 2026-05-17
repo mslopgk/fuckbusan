@@ -1,3 +1,0 @@
-@echo off
-echo Starting Backend Server...
-python backend/main.py
