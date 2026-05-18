@@ -187,6 +187,8 @@ class NewProposalCreate(BaseModel):
     content: str
     region: str
     detailed_address: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
     files: List[str] = []
 
 class NewProposalRead(NewProposalCreate):

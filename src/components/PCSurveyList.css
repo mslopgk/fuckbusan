@@ -94,6 +94,14 @@
     line-height: 1.6;
 }
 
+.pc-survey-card-respondents {
+    color: #5B2EAB;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 .pc-survey-card-arrow {
     width: 36px;
     height: 36px;

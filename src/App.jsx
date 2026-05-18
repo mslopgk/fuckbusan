@@ -618,6 +618,7 @@ function App() {
         } else if (target === 'mDiagnosisList') {
             setView('mDiagnosisList');
         } else if (target === 'mDiagnosisForm') {
+            if (data) setSelectedReport(data);
             setView('mDiagnosisForm');
         } else if (target === 'mDiagnosisDetail') {
             if (data) setSelectedReport(data);
@@ -1363,7 +1364,7 @@ function App() {
                     <MDiagnosisList onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'mDiagnosisForm' && (
-                    <MDiagnosisForm onNavigate={(target, data) => onNavigate(target, data)} />
+                    <MDiagnosisForm onNavigate={(target, data) => onNavigate(target, data)} location={selectedReport} />
                 )}
                 {(view === 'mDiagnosisResult' || view === 'mDiagnosisDetail') && (
                     <MDiagnosisResult

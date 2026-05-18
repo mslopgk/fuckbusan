@@ -270,11 +270,19 @@
     z-index: 1;
 }
 
-.pc-diag-cta {
+.pc-diag-cta-wrap {
     position: absolute;
     bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 6;
+}
+
+.pc-diag-cta {
     width: 239px;
     height: 67px;
     border: none;
@@ -285,9 +293,41 @@
     font-weight: 700;
     cursor: pointer;
     box-shadow: 0 6px 16px rgba(35, 189, 187, 0.35);
-    z-index: 6;
     font-family: inherit;
     white-space: nowrap;
+}
+
+.pc-diag-cta.disabled,
+.pc-diag-cta:disabled {
+    background: #b0bec5;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.75;
+}
+
+.pc-diag-cta-addr {
+    font-size: 13px;
+    color: #fff;
+    background: var(--diag-teal);
+    border-radius: 20px;
+    padding: 5px 14px;
+    white-space: nowrap;
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 2px 8px rgba(35,189,187,0.3);
+    font-weight: 500;
+}
+
+.pc-diag-cta-hint {
+    font-size: 12px;
+    color: #555;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 5px 12px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
 /* ───── 우측 패널 (list/detail/form/done 공용 컨테이너) ───── */

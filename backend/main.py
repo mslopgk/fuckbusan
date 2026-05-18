@@ -16,7 +16,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy import text
 
 # Routers
-from routers import auth, dashboard, ai, user_router, checklist_router, report_router, survey_router, home_router, admin_router, notification_router, search_router, ai_citizens
+from routers import dashboard, ai, user_router, checklist_router, report_router, survey_router, home_router, admin_router, notification_router, search_router, ai_citizens
 
 import models
 from database import engine
@@ -72,7 +72,6 @@ app.add_middleware(
 )
 
 # Include Routers
-app.include_router(auth.router)
 app.include_router(dashboard.router)
 app.include_router(ai.router)
 app.include_router(user_router.router)

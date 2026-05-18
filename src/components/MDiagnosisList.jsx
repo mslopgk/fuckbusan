@@ -15,6 +15,7 @@ export default function MDiagnosisList({ onNavigate }) {
     const [district, setDistrict] = useState('부산진구');
     const [allRows, setAllRows] = useState([]);
     const [clusters, setClusters] = useState([]);
+    const [selectedPin, setSelectedPin] = useState(null);
     const mapRef = useRef(null);
 
     // /checklist/list requires auth; guests see empty list (by server design)
@@ -65,13 +66,17 @@ export default function MDiagnosisList({ onNavigate }) {
     const kakaoKey = import.meta.env.VITE_KAKAO_MAP_KEY;
     const [kakaoLoading, kakaoError] = useKakaoLoader({ appkey: kakaoKey, libraries: ['services'] });
     const kakaoReady = !!kakaoKey && !kakaoLoading && !kakaoError;
-    const mapCenter = useMemo(() => DISTRICT_CENTERS[district] ?? { lat: 35.158, lng: 129.06 }, [district]);
+    const districtCenter = useMemo(() => DISTRICT_CENTERS[district] ?? { lat: 35.158, lng: 129.06 }, [district]);
+    // 현재 지도 중심 — 드래그 후 스냅백 방지를 위해 별도 state로 관리
+    const [currentCenter, setCurrentCenter] = useState(districtCenter);
 
     useEffect(() => {
+        // district가 바뀔 때만 지도 중심 이동 (panTo) + currentCenter 갱신
+        setCurrentCenter(districtCenter);
         if (mapRef.current && window.kakao) {
-            mapRef.current.panTo(new window.kakao.maps.LatLng(mapCenter.lat, mapCenter.lng));
+            mapRef.current.panTo(new window.kakao.maps.LatLng(districtCenter.lat, districtCenter.lng));
         }
-    }, [mapCenter]);
+    }, [districtCenter]);
 
     return (
         <div className="m-diag-list-page">
@@ -104,19 +109,39 @@ export default function MDiagnosisList({ onNavigate }) {
                 {/* 지도 */}
                 {kakaoReady ? (
                     <Map
-                        center={mapCenter}
+                        center={currentCenter}
                         level={5}
                         style={{ width: '100%', height: '100%' }}
                         draggable
                         zoomable
-                        onCreate={(m) => { mapRef.current = m; }}
+                        onCreate={(m) => {
+                            mapRef.current = m;
+                        }}
+                        onDragEnd={(m) => {
+                            const c = m.getCenter();
+                            const lat = c.getLat();
+                            const lng = c.getLng();
+                            setCurrentCenter({ lat, lng }); // 스냅백 방지
+                            if (!window.kakao?.maps?.services) return;
+                            const geocoder = new window.kakao.maps.services.Geocoder();
+                            geocoder.coord2Address(lng, lat, (result, status) => {
+                                const addr = status === window.kakao.maps.services.Status.OK
+                                    ? (result[0]?.road_address?.address_name || result[0]?.address?.address_name || '선택된 위치')
+                                    : '선택된 위치';
+                                setSelectedPin({ lat, lng, address: addr });
+                            });
+                        }}
                     >
                         {DIAG_PINS.map((p) => (
                             <CustomOverlayMap key={p.id} position={{ lat: p.lat, lng: p.lng }} yAnchor={1}>
                                 <button
                                     type="button"
                                     className={`m-diag-pin${p.focus ? ' focus' : ''}`}
-                                    onClick={() => setDistrict(p.district)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDistrict(p.district);
+                                        setSelectedPin({ lat: p.lat, lng: p.lng, district: p.district });
+                                    }}
                                 >
                                     <span className="m-diag-pin-count">{p.count}</span>
                                 </button>
@@ -125,6 +150,27 @@ export default function MDiagnosisList({ onNavigate }) {
                     </Map>
                 ) : (
                     <div className="m-diag-map-bg" />
+                )}
+
+                {/* 중앙 고정 십자선 — 위치 미선택 시만 표시 */}
+                {kakaoReady && !selectedPin && (
+                    <div className="m-diag-crosshair" aria-hidden="true">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                            <line x1="14" y1="3" x2="14" y2="25" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
+                            <line x1="3" y1="14" x2="25" y2="14" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
+                            <circle cx="14" cy="14" r="3" stroke="#06AB69" strokeWidth="2" fill="none"/>
+                        </svg>
+                    </div>
+                )}
+
+                {/* 선택된 위치 핀 — CSS 절대 포지션 (crosshair보다 높은 z-index) */}
+                {kakaoReady && selectedPin && (
+                    <div className="m-diag-selected-marker" aria-hidden="true">
+                        <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
+                            <path d="M14 0C6.268 0 0 6.268 0 14c0 9.625 14 36 14 36s14-26.375 14-36C28 6.268 21.732 0 14 0z" fill="#06AB69"/>
+                            <circle cx="14" cy="14" r="6" fill="#fff"/>
+                        </svg>
+                    </div>
                 )}
 
                 {/* 현위치 버튼 */}
@@ -209,10 +255,17 @@ export default function MDiagnosisList({ onNavigate }) {
                 </ul>
 
                 {/* 진단하기 FAB */}
+                {!selectedPin && (
+                    <div className="m-diag-fab-hint">지도를 움직여 진단할 위치를 선택하세요</div>
+                )}
+                {selectedPin && (
+                    <div className="m-diag-fab-addr">{selectedPin.address}</div>
+                )}
                 <button
                     type="button"
-                    className="m-diag-fab"
-                    onClick={() => onNavigate?.('mDiagnosisForm')}
+                    className={`m-diag-fab${!selectedPin ? ' disabled' : ''}`}
+                    disabled={!selectedPin}
+                    onClick={() => selectedPin && onNavigate?.('mDiagnosisForm', selectedPin)}
                 >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19" />

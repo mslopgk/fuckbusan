@@ -8,7 +8,7 @@ import {
 import './MDiagnosisForm.css';
 import { API_URL, authHeaders } from '../utils/api';
 
-export default function MDiagnosisForm({ onNavigate }) {
+export default function MDiagnosisForm({ onNavigate, location }) {
     const [photo, setPhoto] = useState(null);
     const [photoPreview, setPhotoPreview] = useState('');
     const [category, setCategory] = useState('주거');
@@ -45,7 +45,7 @@ export default function MDiagnosisForm({ onNavigate }) {
 
     const subList = SUB_BY_CATEGORY[category] ?? [];
     const ratedAll = QUESTIONS.every((_, i) => ratings[i] != null);
-    const canSubmit = photo && category && sub && ratedAll;
+    const canSubmit = photo && category && sub && ratedAll && location;
 
     const handleSubmit = async () => {
         if (!canSubmit) return;
@@ -76,6 +76,9 @@ export default function MDiagnosisForm({ onNavigate }) {
                 점수: Math.round(avgScore),
                 리뷰: review || null,
                 이미지경로: imageUrl,
+                위도: location?.lat ?? null,
+                경도: location?.lng ?? null,
+                district_code: location?.district ?? null,
             };
             const submitRes = await fetch(`${API_URL}/checklist/submit`, {
                 method: 'POST',
@@ -117,6 +120,31 @@ export default function MDiagnosisForm({ onNavigate }) {
 
             <main className="m-diagform-body">
                 <h1 className="m-diagform-title">우리동네 개선 아이디어를<br/>진단해보세요</h1>
+
+                {/* 위치 정보 */}
+                <section className="m-diagform-section">
+                    <h2 className="m-diagform-label">진단 위치</h2>
+                    {location ? (
+                        <div className="m-diagform-location-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06AB69" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 13 8 13s8-7.75 8-13a8 8 0 0 0-8-8z"/>
+                            </svg>
+                            <span>
+                                {location.address || (location.district ? `${location.district}` : '선택된 위치')}
+                            </span>
+                            <button
+                                type="button"
+                                className="m-diagform-location-change"
+                                onClick={() => onNavigate?.('mDiagnosisList')}
+                            >변경</button>
+                        </div>
+                    ) : (
+                        <div className="m-diagform-location-empty">
+                            위치가 선택되지 않았습니다.
+                            <button type="button" className="m-diagform-location-change" onClick={() => onNavigate?.('mDiagnosisList')}>지도에서 선택</button>
+                        </div>
+                    )}
+                </section>
 
                 {/* 사진 등록 */}
                 <section className="m-diagform-section">

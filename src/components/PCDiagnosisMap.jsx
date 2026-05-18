@@ -62,6 +62,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
 
     const [panel, setPanel] = useState(initialPanel);
     const [selected, setSelected] = useState(initialItem);
+    const [selectedLocation, setSelectedLocation] = useState(null);
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -159,7 +160,10 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
 
     const goList = () => { setPanel('list'); setSelected(null); };
     const goDetail = (item) => { setPanel('detail'); setSelected(item); };
-    const goForm = () => { setPanel('form'); };
+    const goForm = (loc) => {
+        if (loc) setSelectedLocation(loc);
+        setPanel('form');
+    };
     const goDone = () => { setPanel('done'); };
 
     return (
@@ -264,9 +268,38 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                     <PCMapCanvas
                         ref={mapRef}
                         pins={pins}
-                        onPinClick={panel === 'list' ? goDetail : undefined}
+                        onPinClick={panel === 'list' ? (it) => {
+                            goDetail(it);
+                            if (it.lat && it.lng) {
+                                if (window.kakao?.maps?.services) {
+                                    const geocoder = new window.kakao.maps.services.Geocoder();
+                                    geocoder.coord2Address(it.lng, it.lat, (result, status) => {
+                                        const addr = status === window.kakao.maps.services.Status.OK
+                                            ? (result[0]?.road_address?.address_name || result[0]?.address?.address_name || it.location || '선택된 위치')
+                                            : (it.location || '선택된 위치');
+                                        setSelectedLocation({ lat: it.lat, lng: it.lng, address: addr });
+                                    });
+                                } else {
+                                    setSelectedLocation({ lat: it.lat, lng: it.lng, address: it.location || '선택된 위치' });
+                                }
+                            }
+                        } : undefined}
+                        onMapClick={(coords) => {
+                            if (!window.kakao?.maps?.services) {
+                                setSelectedLocation({ ...coords, address: '선택된 위치' });
+                                return;
+                            }
+                            const geocoder = new window.kakao.maps.services.Geocoder();
+                            geocoder.coord2Address(coords.lng, coords.lat, (result, status) => {
+                                const addr = status === window.kakao.maps.services.Status.OK
+                                    ? (result[0]?.road_address?.address_name || result[0]?.address?.address_name || '선택된 위치')
+                                    : '선택된 위치';
+                                setSelectedLocation({ ...coords, address: addr });
+                            });
+                        }}
                         accentColor="#23BDBB"
                         pinVariant="diagnosis"
+                        selectedPoint={selectedLocation}
                     />
                     <MapToolbar
                         mapRef={mapRef}
@@ -275,13 +308,24 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                     />
 
                     {panel === 'list' && (
-                        <button
-                            type="button"
-                            className="pc-diag-cta"
-                            onClick={goForm}
-                        >
-                            진단하기
-                        </button>
+                        <div className="pc-diag-cta-wrap">
+                            {selectedLocation && (
+                                <div className="pc-diag-cta-addr">
+                                    📍 {selectedLocation.address}
+                                </div>
+                            )}
+                            <button
+                                type="button"
+                                className={`pc-diag-cta${!selectedLocation ? ' disabled' : ''}`}
+                                disabled={!selectedLocation}
+                                onClick={() => selectedLocation && goForm(selectedLocation)}
+                            >
+                                진단하기
+                            </button>
+                            {!selectedLocation && (
+                                <div className="pc-diag-cta-hint">지도를 클릭해 진단할 위치를 선택하세요</div>
+                            )}
+                        </div>
                     )}
                 </div>
 
@@ -337,7 +381,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                     )}
 
                     {panel === 'form' && (
-                        <PCDiagPanelForm onCancel={goList} onSubmit={goDone} />
+                        <PCDiagPanelForm onCancel={goList} onSubmit={goDone} location={selectedLocation} />
                     )}
 
                     {panel === 'done' && (

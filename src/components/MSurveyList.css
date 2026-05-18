@@ -86,6 +86,14 @@
     line-height: 1.5;
 }
 
+.m-card-respondents {
+    color: #5B2EAB;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 4px !important;
+}
+
 .m-card-arrow {
     width: 28px;
     height: 28px;

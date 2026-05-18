@@ -349,3 +349,44 @@
     background: #c9d2d2;
     cursor: not-allowed;
 }
+
+.m-diagform-location-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f0faf6;
+    border: 1px solid #b2dfc8;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #2a7a55;
+}
+
+.m-diagform-location-badge span {
+    flex: 1;
+    font-weight: 500;
+}
+
+.m-diagform-location-empty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fafafa;
+    border: 1px dashed #d0d0d0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #888;
+}
+
+.m-diagform-location-change {
+    background: none;
+    border: none;
+    color: #06AB69;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+}

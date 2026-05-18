@@ -3,23 +3,6 @@ from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
 
-class LegacyUser(Base):
-    __tablename__ = "legacy_users"
-
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50))
-    email = Column(String(255), unique=True, index=True)
-    hashed_password = Column(String(255))
-    is_active = Column(Boolean, default=True)
-
-class Log(Base):
-    __tablename__ = "logs"
-
-    id = Column(Integer, primary_key=True, index=True)
-    action = Column(String(255))
-    timestamp = Column(DateTime, default=datetime.now)
-    user_id = Column(Integer, ForeignKey("legacy_users.id"))
-
 class DistrictAnalysis(Base):
     __tablename__ = "district_analysis"
 
@@ -198,6 +181,8 @@ class NewProposal(Base):
     region = Column(String(255))
     detailed_address = Column(String(255), nullable=True)
     files = Column(Text, nullable=True)  # JSON에서 Text로 변경 (호환성 문제 방지)
+    lat = Column(DECIMAL(10, 8), nullable=True)
+    lng = Column(DECIMAL(11, 8), nullable=True)
     views_count = Column(Integer, default=0)
     likes_count = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.now)

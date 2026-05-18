@@ -71,7 +71,7 @@ const DIAG_GRAY_PATH = 'M54 26.6667C54 41.3943 37.8 54.2222 27 64C15.3 54.2222 0
 // Teal hollow (imgGroup669/677): fill white + stroke #25D2BC — 선택/포커스 핀
 const DIAG_TEAL_PATH = 'M27 1.5C41.1009 1.5 52.5 12.7853 52.5 26.667C52.4999 33.4838 48.74 40.0256 43.4131 46.2109C38.4046 52.0265 32.23 57.2915 26.9658 62.0146C21.352 57.3161 15.1559 52.0298 10.2588 46.2227C5.05984 40.0575 1.50011 33.5078 1.5 26.667C1.5 12.7853 12.8991 1.5 27 1.5Z';
 
-const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, accentColor = '#E6235A', showRegions = true, mapType = 'roadmap', initialCenter = null, initialLevel = null, pinVariant = 'solid', showLocateBtn = false }, ref) {
+const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onMapClick, selectedPoint = null, accentColor = '#E6235A', showRegions = true, mapType = 'roadmap', initialCenter = null, initialLevel = null, pinVariant = 'solid', showLocateBtn = false }, ref) {
     useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services'] });
     const [geo, setGeo] = useState(null);
     const [internalShowRegions, setInternalShowRegions] = useState(showRegions);
@@ -149,7 +149,16 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, acc
             draggable
             zoomable
             mapTypeId={internalMapType === 'hybrid' ? 'HYBRID' : 'ROADMAP'}
-            onCreate={(m) => { mapInstance.current = m; }}
+            onCreate={(m) => {
+                mapInstance.current = m;
+                if (onMapClick) {
+                    window.kakao.maps.event.addListener(m, 'click', (mouseEvent) => {
+                        const lat = mouseEvent.latLng.getLat();
+                        const lng = mouseEvent.latLng.getLng();
+                        onMapClick({ lat, lng });
+                    });
+                }
+            }}
             onZoomChanged={(m) => setLevel(m.getLevel())}
             onDragEnd={(m) => {
                 const latlng = m.getCenter();
@@ -167,6 +176,17 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, acc
                     fillOpacity={0.10}
                 />
             )))}
+
+            {selectedPoint && (
+                <CustomOverlayMap position={{ lat: selectedPoint.lat, lng: selectedPoint.lng }} yAnchor={1} xAnchor={0.5}>
+                    <div style={{ pointerEvents: 'none', filter: 'drop-shadow(0 2px 6px rgba(6,171,105,0.5))' }}>
+                        <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
+                            <path d="M14 0C6.268 0 0 6.268 0 14c0 9.625 14 36 14 36s14-26.375 14-36C28 6.268 21.732 0 14 0z" fill="#06AB69"/>
+                            <circle cx="14" cy="14" r="6" fill="#fff"/>
+                        </svg>
+                    </div>
+                </CustomOverlayMap>
+            )}
 
             {myLocation && (
                 <CustomOverlayMap

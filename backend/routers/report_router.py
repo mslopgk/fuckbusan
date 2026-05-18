@@ -264,6 +264,8 @@ def create_new_proposal(
             content=proposal.content,
             region=proposal.region,
             detailed_address=proposal.detailed_address,
+            lat=proposal.lat,
+            lng=proposal.lng,
             files=json.dumps(proposal.files) # 리스트를 JSON 문자열로 변환하여 저장
         )
         db.add(new_proposal)
