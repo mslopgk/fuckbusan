@@ -35,7 +35,7 @@ const MyPage = ({ onBack }) => {
                         ID: data.ID || '',
                         name: data.name || '',
                         phone_num: data.phone_num || '',
-                        birth_date: data.birth_date || '880911'
+                        birth_date: data.birth_date || ''
                     });
                 } else {
                     console.error('Failed to fetch user data');

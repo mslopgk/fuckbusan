@@ -14,6 +14,33 @@ const PIE_COLORS = ['#16B5B0', '#5B2EAB', '#E6235A', '#F59E0B', '#10B981', '#636
 function SummaryRadar({ scores }) {
     if (!scores.length) return <div style={{ padding: '20px', color: '#999', textAlign: 'center' }}>응답 데이터가 없습니다.</div>;
     const data = scores.map(s => ({ subject: s.label, value: parseFloat(s.value.toFixed(1)), fullMark: 5 }));
+    const legend = (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {data.map(d => (
+                <div key={d.subject} style={{ display: 'flex', justifyContent: 'space-between', gap: 32, fontSize: 14 }}>
+                    <span style={{ color: '#555' }}>{d.subject}</span>
+                    <span style={{ fontWeight: 700, color: '#5B2EAB' }}>{d.value}</span>
+                </div>
+            ))}
+        </div>
+    );
+    if (data.length < 3) {
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                <div style={{ flex: '0 0 260px', height: 160 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                            <XAxis dataKey="subject" tick={{ fontSize: 11, fill: '#555' }} />
+                            <YAxis domain={[0, 5]} tick={{ fontSize: 11 }} />
+                            <Bar dataKey="value" fill="#5B2EAB" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+                {legend}
+            </div>
+        );
+    }
     return (
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
             <div style={{ flex: '0 0 260px', height: 260 }}>
@@ -25,14 +52,7 @@ function SummaryRadar({ scores }) {
                     </RadarChart>
                 </ResponsiveContainer>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {data.map(d => (
-                    <div key={d.subject} style={{ display: 'flex', justifyContent: 'space-between', gap: 32, fontSize: 14 }}>
-                        <span style={{ color: '#555' }}>{d.subject}</span>
-                        <span style={{ fontWeight: 700, color: '#5B2EAB' }}>{d.value}</span>
-                    </div>
-                ))}
-            </div>
+            {legend}
         </div>
     );
 }

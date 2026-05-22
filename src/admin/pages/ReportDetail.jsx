@@ -148,9 +148,9 @@ export default function ReportDetail({ report, onNavigate }) {
             </div>
 
             <div className="rfd-body">
-                {/* 제안제목 */}
+                {/* 제보제목 */}
                 <div className="rfd-row">
-                    <span className="rfd-label">제안제목</span>
+                    <span className="rfd-label">제보제목</span>
                     <div className="rfd-input">{data.title || '-'}</div>
                 </div>
 

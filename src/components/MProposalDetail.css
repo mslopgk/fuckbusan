@@ -85,6 +85,10 @@
     object-fit: cover;
 }
 
+.m-detail-image-placeholder {
+    background: linear-gradient(135deg, #f5e6ff 0%, #e8d0f7 100%);
+}
+
 .m-detail-map {
     width: 100%;
     height: 160px;

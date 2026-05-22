@@ -31,7 +31,6 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
-                    console.log("Location found:", latitude, longitude);
 
                     // BUSAN BOUNDS CHECK (approx)
                     // Lat: 34.8 ~ 35.4
@@ -188,10 +187,7 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
 
                 <div className="header-right">
                     <button className="header-action-btn" onClick={onList}>진단 목록</button>
-                    <button className="header-action-btn" onClick={() => {
-                        console.log("Diagnosis: My Activity Clicked");
-                        onMyActivity();
-                    }}>나의 활동</button>
+                    <button className="header-action-btn" onClick={onMyActivity}>나의 활동</button>
                 </div>
             </div>
 
@@ -369,8 +365,6 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
                                         cursor: 'pointer'
                                     }}
                                     onClick={() => {
-                                        // Navigate to DiagnosisResult with correct type
-                                        console.log("View Result Clicked for", selectedPin);
                                         if (onResult) {
                                             onResult({
                                                 ...mapPins[selectedPin],

@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import './MDiagnosisResult.css';
-import { API_URL } from '../utils/api';
+import { API_URL, authHeaders } from '../utils/api';
 
 const CATEGORIES = [
     { key: 'home',    label: '주거' },
@@ -64,7 +64,7 @@ const CATEGORY_ICONS = {
     ),
 };
 
-const RADAR_DATA = [
+const FALLBACK_RADAR_DATA = [
     { subject: '접근성',     A: 2.0, fullMark: 5 },
     { subject: '이동성',     A: 2.0, fullMark: 5 },
     { subject: '안전성',     A: 1.8, fullMark: 5 },
@@ -73,11 +73,41 @@ const RADAR_DATA = [
     { subject: '심미성',     A: 1.7, fullMark: 5 },
 ];
 
-const FALLBACK_TOTAL_AVG = (RADAR_DATA.reduce((sum, d) => sum + d.A, 0) / RADAR_DATA.length).toFixed(2);
+const FALLBACK_TOTAL_AVG = (FALLBACK_RADAR_DATA.reduce((sum, d) => sum + d.A, 0) / FALLBACK_RADAR_DATA.length).toFixed(2);
 const FALLBACK_RESPONSES = 36;
 
-function CustomTick({ payload, x, y, textAnchor }) {
-    const point = RADAR_DATA.find((d) => d.subject === payload.value);
+// 질문 인덱스를 레이더 축에 균등 배분 (4문항 → 6축)
+// 실제 연결 기준이 없으므로 사이클링으로 배분
+const RADAR_AXES = ['접근성', '이동성', '안전성', '정보제공성', '포용성', '심미성'];
+
+function buildRadarFromAnswers(answers) {
+    if (!answers || typeof answers !== 'object') return null;
+    const entries = Object.entries(answers);
+    if (entries.length === 0) return null;
+
+    // 6축에 점수를 균등 분배 (인덱스 % 6)
+    const axisScores = RADAR_AXES.map(() => ({ sum: 0, count: 0 }));
+    entries.forEach(([idx, score]) => {
+        const numScore = Number(score);
+        if (!Number.isFinite(numScore)) return;
+        const axisIdx = Number(idx) % RADAR_AXES.length;
+        axisScores[axisIdx].sum += numScore;
+        axisScores[axisIdx].count += 1;
+    });
+
+    // 각 축에 할당된 점수가 없으면 전체 평균으로 채우기
+    const totalAvg = entries.reduce((s, [, v]) => s + Number(v), 0) / entries.length;
+    return RADAR_AXES.map((subject, i) => ({
+        subject,
+        A: axisScores[i].count > 0
+            ? Number((axisScores[i].sum / axisScores[i].count).toFixed(2))
+            : Number(totalAvg.toFixed(2)),
+        fullMark: 5,
+    }));
+}
+
+function CustomTick({ payload, x, y, textAnchor, radarData }) {
+    const point = (radarData || FALLBACK_RADAR_DATA).find((d) => d.subject === payload.value);
     return (
         <g>
             <text x={x} y={y - 4} textAnchor={textAnchor} className="m-diagres-tick-label">
@@ -90,14 +120,56 @@ function CustomTick({ payload, x, y, textAnchor }) {
     );
 }
 
-export default function MDiagnosisResult({ onNavigate, address = '부산 부산진구 초연로 6', date = '2024/05/16', activeCategory = 'traffic', photo = null, district = null, resultId = null }) {
+export default function MDiagnosisResult({ onNavigate, address = '부산 부산진구 초연로 6', date = null, activeCategory = 'traffic', photo = null, district = null, resultId = null }) {
     const [stats, setStats] = useState({ avg: FALLBACK_TOTAL_AVG, count: FALLBACK_RESPONSES });
     const [recommendations, setRecommendations] = useState([]);
+    const [resultDetail, setResultDetail] = useState(null);
+
+    // Fetch individual result for radar data and date
+    useEffect(() => {
+        if (!resultId) return;
+        fetch(`${API_URL}/checklist/${resultId}`, { headers: authHeaders() })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((data) => {
+                if (data) setResultDetail(data);
+            })
+            .catch(() => {});
+    }, [resultId]);
+
+    // Derive radar data from result detail answers
+    const radarData = useMemo(() => {
+        if (!resultDetail?.answers) return FALLBACK_RADAR_DATA;
+        try {
+            const parsed = typeof resultDetail.answers === 'string'
+                ? JSON.parse(resultDetail.answers)
+                : resultDetail.answers;
+            return buildRadarFromAnswers(parsed) || FALLBACK_RADAR_DATA;
+        } catch {
+            return FALLBACK_RADAR_DATA;
+        }
+    }, [resultDetail]);
+
+    // Displayed date: prop → result created_at → today
+    const displayDate = useMemo(() => {
+        if (date && date !== '2024/05/16') return date;
+        if (resultDetail?.created_at) {
+            const d = new Date(resultDetail.created_at);
+            if (!isNaN(d)) return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+        }
+        if (date) return date;
+        const now = new Date();
+        return `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+    }, [date, resultDetail]);
+
+    // Radar total avg from actual data
+    const radarAvg = useMemo(() => {
+        if (!radarData || radarData === FALLBACK_RADAR_DATA) return stats.avg;
+        const avg = radarData.reduce((s, d) => s + d.A, 0) / radarData.length;
+        return avg.toFixed(2);
+    }, [radarData, stats.avg]);
 
     useEffect(() => {
         // Use /checklist/clusters for overall stats (public, accurate total avg + count)
-        const params = new URLSearchParams();
-        if (district) params.set('district', district);
         fetch(`${API_URL}/checklist/clusters`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => {
@@ -159,7 +231,7 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
             <main className="m-diagres-body">
                 <h1 className="m-diagres-title">일반 진단 결과</h1>
                 <p className="m-diagres-address">{address}</p>
-                <p className="m-diagres-date">진단일: {date}</p>
+                <p className="m-diagres-date">진단일: {displayDate}</p>
 
                 {/* 카테고리 그리드 — 가운데 상단 '전체' 배지 + 4x2 카테고리 */}
                 <section className="m-diagres-cats">
@@ -205,13 +277,16 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                 {/* 레이더 차트 카드 */}
                 <section className="m-diagres-card">
                     <p className="m-diagres-card-head">
-                        <span className="m-diagres-avg">{stats.avg}</span> 전체 평균 ({stats.count})
+                        <span className="m-diagres-avg">{radarAvg}</span> 전체 평균 ({stats.count})
                     </p>
-                    <div className="m-diagres-chart">
+                    <div className="m-diagres-chart" style={{ minHeight: '260px' }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={RADAR_DATA}>
+                            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
                                 <PolarGrid stroke="#dadde2" />
-                                <PolarAngleAxis dataKey="subject" tick={CustomTick} />
+                                <PolarAngleAxis
+                                    dataKey="subject"
+                                    tick={(props) => <CustomTick {...props} radarData={radarData} />}
+                                />
                                 <Radar
                                     name="Score"
                                     dataKey="A"
@@ -247,7 +322,7 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
 
                 {/* 세부 정보 */}
                 <section className="m-diagres-detail">
-                    <h2 className="m-diagres-detail-title">세부 정보도 확인해 보세요</h2>
+                    <h2 className="m-diagres-detail-title">세부 정보를 확인해 보세요</h2>
                     <p className="m-diagres-detail-desc">
                         시설물, 구역, 인원 기준으로<br />
                         진단 결과를 더욱 자세히 확인할 수 있습니다.
@@ -255,24 +330,24 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                     <div className="m-diagres-detail-btns">
                         <button
                             type="button"
-                            className="m-diagres-detail-btn purple"
-                            onClick={() => onNavigate?.('mDiagnosisDetailFacility')}
+                            className="m-diagres-detail-btn purple disabled"
+                            disabled
                         >
                             <span>시설물별 세부 정보</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
                         <button
                             type="button"
-                            className="m-diagres-detail-btn purple"
-                            onClick={() => onNavigate?.('mDiagnosisDetailZone')}
+                            className="m-diagres-detail-btn purple disabled"
+                            disabled
                         >
                             <span>구역별 세부 정보</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
                         <button
                             type="button"
-                            className="m-diagres-detail-btn green"
-                            onClick={() => onNavigate?.('mDiagnosisDetailPerson')}
+                            className="m-diagres-detail-btn green disabled"
+                            disabled
                         >
                             <span>인원별 세부 정보</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>

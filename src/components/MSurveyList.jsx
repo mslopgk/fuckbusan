@@ -3,6 +3,12 @@ import MobileBottomNav from './MobileBottomNav';
 import './MSurveyList.css';
 import { API_URL } from '../utils/api';
 
+const formatEndDate = (period) => {
+    if (!period) return '';
+    const parts = period.split('~');
+    return parts.length >= 2 ? `~${parts[1].trim()}` : period;
+};
+
 export default function MSurveyList({ onNavigate }) {
     const [tab, setTab] = useState('active');
     const [list, setList] = useState([]);
@@ -57,7 +63,7 @@ export default function MSurveyList({ onNavigate }) {
                         <div className="m-card-body">
                             <h3 className="m-card-title">{it.title}</h3>
                             <p className="m-card-meta">응답시간 : {it.minutes}분</p>
-                            <p className="m-card-meta">조사기간 : {it.period}</p>
+                            <p className="m-card-meta">조사기간 : {formatEndDate(it.period)}</p>
                             {tab === 'result' && (
                                 <p className="m-card-meta m-card-respondents">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: 4 }}>

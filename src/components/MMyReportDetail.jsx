@@ -36,6 +36,8 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
     const style = CAT_STYLES[data.cat] || { bg: '#E0F4F1', color: '#2C9A8F' };
 
     const [comments, setComments] = useState([]);
+    const [comment, setComment] = useState('');
+    const [commenting, setCommenting] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState('');
@@ -47,6 +49,32 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
             .then((rows) => setComments(Array.isArray(rows) ? rows : []))
             .catch(() => setComments([]));
     }, [report?.id]);
+
+    const submitComment = async () => {
+        if (!comment.trim() || !data.id || commenting) return;
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
+        setCommenting(true);
+        try {
+            const res = await fetch(`${API_URL}/api/reports/${data.id}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ content: comment }),
+            });
+            if (res.ok) {
+                const c = await res.json();
+                setComments((prev) => [...prev, c]);
+                setComment('');
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setCommenting(false);
+        }
+    };
 
     const handleDelete = async () => {
         if (deleting) return;
@@ -123,6 +151,20 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
 
                 {data.body && <p className="m-myrdetail-body">{data.body}</p>}
 
+                <div className="m-comment-input-row">
+                    <input
+                        type="text"
+                        placeholder="댓글을 입력해주세요"
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') submitComment(); }}
+                        className="m-comment-input"
+                    />
+                    <button className="m-comment-send" onClick={submitComment} disabled={commenting} aria-label="등록">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                    </button>
+                </div>
+
                 <ul className="m-rdetail-comments">
                     {comments.map((c, i) => (
                         <li key={c.id ?? i}>
@@ -131,7 +173,6 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
                                 <span>{c.date || ''}</span>
                             </div>
                             <p>{c.content}</p>
-                            <button className="m-comment-reply" type="button">답글쓰기</button>
                         </li>
                     ))}
                 </ul>

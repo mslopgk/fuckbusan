@@ -6,19 +6,36 @@ import { API_URL } from '../utils/api';
 export default function MSurveyJoin({ onNavigate, survey }) {
     const [questions, setQuestions] = useState(survey?.questions || null);
     const [answers, setAnswers] = useState({});
+    const [submitting, setSubmitting] = useState(false);
+    const [validationError, setValidationError] = useState('');
+
+    const surveyId = survey?.id;
+    const progressKey = surveyId ? `mSurveyProgress:${surveyId}` : null;
+
+    // Load saved progress from localStorage on mount
+    useEffect(() => {
+        if (!progressKey) return;
+        try {
+            const saved = localStorage.getItem(progressKey);
+            if (saved) {
+                const { answers: savedAnswers } = JSON.parse(saved);
+                if (savedAnswers) setAnswers(savedAnswers);
+            }
+        } catch (_) {}
+    }, [progressKey]);
 
     useEffect(() => {
         if (survey?.questions?.length) {
             setQuestions(survey.questions.map(normalizeQ));
             return;
         }
-        const id = survey?.id;
+        const id = surveyId;
         if (!id) return;
         fetch(`${API_URL}/api/surveys/${id}`)
             .then((r) => (r.ok ? r.json() : null))
             .then((d) => { if (d?.questions?.length) setQuestions(d.questions.map(normalizeQ)); })
             .catch(() => {});
-    }, [survey?.id]);
+    }, [surveyId]);
 
     const qs = questions || [];
 
@@ -31,26 +48,57 @@ export default function MSurveyJoin({ onNavigate, survey }) {
     const answeredCount = qs.filter(isAnswered).length;
     const progress = qs.length ? (answeredCount / qs.length) * 100 : 0;
 
-    const setSingle = (qid, value) => setAnswers((prev) => ({ ...prev, [qid]: value }));
+    const saveProgress = (newAnswers) => {
+        if (!progressKey) return;
+        try {
+            localStorage.setItem(progressKey, JSON.stringify({ answers: newAnswers }));
+        } catch (_) {}
+    };
+
+    const setSingle = (qid, value) => setAnswers((prev) => {
+        const next = { ...prev, [qid]: value };
+        saveProgress(next);
+        return next;
+    });
     const toggleMulti = (qid, value) =>
         setAnswers((prev) => {
             const cur = prev[qid] || [];
-            return { ...prev, [qid]: cur.includes(value) ? cur.filter((v) => v !== value) : [...cur, value] };
+            const next = { ...prev, [qid]: cur.includes(value) ? cur.filter((v) => v !== value) : [...cur, value] };
+            saveProgress(next);
+            return next;
         });
 
     const handleSubmit = async () => {
-        const surveyId = survey?.id;
+        if (submitting) return;
+
+        // Validate all questions are answered
+        const unanswered = qs.filter((q) => !isAnswered(q));
+        if (unanswered.length > 0) {
+            setValidationError('모든 질문에 답해주세요.');
+            return;
+        }
+        setValidationError('');
+        setSubmitting(true);
+
         if (surveyId && qs.length > 0) {
+            const demographics = survey?.demographics || null;
             const mappedAnswers = qs
                 .map((q) => ({ question_id: q.id, value: answers[q.id] ?? '' }))
                 .filter((a) => a.value !== '' && (Array.isArray(a.value) ? a.value.length > 0 : true));
             const token = localStorage.getItem('access_token');
+            const body = { answers: mappedAnswers };
+            if (demographics) body.demographics = demographics;
             await fetch(`${API_URL}/api/surveys/${surveyId}/responses`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-                body: JSON.stringify({ answers: mappedAnswers }),
+                body: JSON.stringify(body),
             }).catch(() => {});
+            // Clear saved progress after successful submission
+            if (progressKey) {
+                try { localStorage.removeItem(progressKey); } catch (_) {}
+            }
         }
+        setSubmitting(false);
         onNavigate && onNavigate('mSurveyDone', survey);
     };
 
@@ -105,6 +153,37 @@ export default function MSurveyJoin({ onNavigate, survey }) {
                             </div>
                         )}
 
+                        {(q.qtype === 'scale' || q.qtype === 'likert') && (
+                            <div style={{ paddingBottom: '36px' }}>
+                                <div className="m-scale" role="radiogroup" aria-label={q.text}>
+                                    <span className="m-scale-track" />
+                                    {[1, 2, 3, 4, 5].map((val) => {
+                                        const active = answers[q.id] === val;
+                                        return (
+                                            <button
+                                                key={val}
+                                                type="button"
+                                                role="radio"
+                                                aria-checked={active}
+                                                aria-label={`${val}점`}
+                                                className="m-scale-item"
+                                                onClick={() => setSingle(q.id, val)}
+                                            >
+                                                <span className={`m-scale-dot${active ? ' on' : ''}`} />
+                                            </button>
+                                        );
+                                    })}
+                                    <div className="m-scale-labels">
+                                        <span>전혀{'\n'}아니다</span>
+                                        <span></span>
+                                        <span>보통</span>
+                                        <span></span>
+                                        <span>매우{'\n'}그렇다</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {q.qtype === 'text' && (
                             <div className="m-q-textwrap">
                                 <textarea
@@ -121,9 +200,15 @@ export default function MSurveyJoin({ onNavigate, survey }) {
                 ))}
             </main>
 
+            {validationError && (
+                <div className="m-join-validation-error">{validationError}</div>
+            )}
+
             <footer className="m-join-footer">
                 <button className="m-join-prev" onClick={() => onNavigate && onNavigate('mSurveyDetail2', survey)} type="button">이전</button>
-                <button className="m-join-next" type="button" onClick={handleSubmit}>다음</button>
+                <button className="m-join-next" type="button" onClick={handleSubmit} disabled={submitting}>
+                    {submitting ? '제출 중...' : '다음'}
+                </button>
             </footer>
 
             <MobileBottomNav currentView="mSurveyJoin" onNavigate={onNavigate} />

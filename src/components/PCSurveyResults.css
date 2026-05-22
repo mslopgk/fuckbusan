@@ -129,6 +129,34 @@
 }
 .pc-toggle-detail:hover { background: #fafafa; }
 
+.pc-radar-detail-table-wrap {
+    margin-top: 16px;
+    overflow-x: auto;
+}
+
+.pc-radar-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.pc-radar-detail-table th,
+.pc-radar-detail-table td {
+    padding: 10px 14px;
+    border: 1px solid #e6e6e6;
+    text-align: center;
+}
+
+.pc-radar-detail-table th {
+    background: #f5f0ff;
+    color: #5B2EAB;
+    font-weight: 700;
+}
+
+.pc-radar-detail-table tr:nth-child(even) td {
+    background: #faf8ff;
+}
+
 /* ── 도넛 차트 행 ── */
 .pc-pie-row {
     display: flex;

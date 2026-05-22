@@ -91,6 +91,7 @@ class ChecklistResult(Base):
     리뷰 = Column(String(2000))
     만족도 = Column(String(50))
     이미지경로 = Column(String(500))
+    진단대상 = Column(String(50), nullable=True)
 
     
     # User 테이블과의 관계 설정 (선택사항)
@@ -266,6 +267,7 @@ class SurveyResponse(Base):
     id = Column(Integer, primary_key=True, index=True)
     survey_id = Column(Integer, ForeignKey("surveys.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    demographics = Column(JSON, nullable=True)
     submitted_at = Column(DateTime, default=datetime.now)
 
 

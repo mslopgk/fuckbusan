@@ -148,7 +148,7 @@ export default function MAICitizen({ onNavigate }) {
     return (
         <div className="m-ai-citizen">
             <style>{`
-                .leaflet-container { background: transparent !important; }
+                .leaflet-container { background: transparent !important; touch-action: pan-y !important; }
                 .m-ai-invis-marker { opacity: 0; }
                 .m-ai-district-label {
                     background: transparent !important; border: none !important;

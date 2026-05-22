@@ -86,6 +86,11 @@
     font-family: inherit;
 }
 
+.m-results-detail-link-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .m-q-result-title {
     font-size: 13px;
     font-weight: 700;

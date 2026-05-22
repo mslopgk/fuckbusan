@@ -23,7 +23,6 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
 
                 if (res.ok) {
                     const data = await res.json();
-                    console.log("Diagnosis List Loaded, count:", data.length);
                     // Map to card format
                     const mapped = data.map(item => {
                         let dateStr = '23.01.01';
@@ -177,7 +176,7 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
                             key={item.id}
                             item={item}
                             onBookmark={toggleBookmark}
-                            onClick={() => console.log('Card clicked', item.id)}
+                            onClick={() => {}}
                         />
                     ))}
             </div>

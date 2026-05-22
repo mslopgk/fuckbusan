@@ -25,7 +25,7 @@ const Home = ({ onNavigate }) => {
     const goReport   = () => onNavigate && onNavigate(isPC ? 'pcReportMap'    : 'mReportMap');
     const goPropose  = () => onNavigate && onNavigate(isPC ? 'pcProposeMap'   : 'mProposalMap');
     const goSurvey   = () => onNavigate && onNavigate(isPC ? 'pcSurveyList'   : 'mSurveyList');
-    const goDiagnose = () => onNavigate && onNavigate(isPC ? 'diagnosis'      : 'mDiagnosisList');
+    const goDiagnose = () => onNavigate && onNavigate(isPC ? 'pcDiagnosisMap' : 'mDiagnosisList');
 
     const handleLogout = () => {
         localStorage.removeItem('access_token');

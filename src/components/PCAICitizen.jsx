@@ -73,13 +73,18 @@ function PersonAvatar({ w = 80, h = 80, avatarUrl, shape = 'rect' }) {
 
 function FigmaDistrictMap({ selectedDistrict, onDistrictClick, hoveredDistrict, onDistrictHover, onDistrictLeave, hoverCitizen, hoverAvatarUrl }) {
     const containerRef = useRef(null);
-    const [scale, setScale] = useState(1);
+    const [layout, setLayout] = useState({ scale: 1, offsetX: 0, offsetY: 0 });
 
     useEffect(() => {
         const update = () => {
             if (containerRef.current) {
-                const { width } = containerRef.current.getBoundingClientRect();
-                setScale(width / 1920);
+                const { width, height } = containerRef.current.getBoundingClientRect();
+                const sc = Math.min(width / 1920, height / 1080);
+                setLayout({
+                    scale: sc,
+                    offsetX: (width - 1920 * sc) / 2,
+                    offsetY: (height - 1080 * sc) / 2,
+                });
             }
         };
         update();
@@ -103,10 +108,11 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, hoveredDistrict, 
             style={{ position: 'relative', width: '100%', height: '100%', background: '#d4e8ee', overflow: 'hidden' }}
         >
             <div style={{
-                position: 'absolute', top: 0, left: 0,
+                position: 'absolute',
+                top: layout.offsetY, left: layout.offsetX,
                 width: 1920, height: 1080,
                 transformOrigin: 'top left',
-                transform: `scale(${scale})`,
+                transform: `scale(${layout.scale})`,
             }}>
                 <img src="/assets/지도 배경 데스크탑.png" alt="" draggable={false}
                     style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 904, pointerEvents: 'none', userSelect: 'none' }} />
@@ -822,6 +828,17 @@ export default function PCAICitizen({ onNavigate }) {
                                 </>
                             )}
                         </div>
+
+                        {!loading && citizen && selectedIdx > 0 && (
+                            <button className="pc-ai-nav-circle pc-ai-nav-circle--prev"
+                                onClick={() => setSelectedIdx(i => Math.max(0, i - 1))}
+                                type="button" aria-label="이전 시민">
+                                <svg viewBox="0 0 34 34" width="34" height="34">
+                                    <circle cx="17" cy="17" r="17" fill="#23bdbb"/>
+                                    <polyline points="20 10 14 17 20 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </button>
+                        )}
 
                         {!loading && citizen && selectedIdx < citizens.length - 1 && (
                             <button className="pc-ai-nav-circle"

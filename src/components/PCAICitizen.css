@@ -414,6 +414,11 @@
     transform: translateY(-50%) scale(1.08);
 }
 
+.pc-ai-nav-circle--prev {
+    right: auto;
+    left: 6px;
+}
+
 /* ── Right-side icon control strip ── */
 .pc-ai-controls {
     position: absolute;

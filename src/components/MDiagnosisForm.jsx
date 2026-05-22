@@ -1,39 +1,42 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import {
-    CATEGORIES,
-    SUB_BY_CATEGORY,
-    DIAGNOSIS_QUESTIONS as QUESTIONS,
+    DIAGNOSIS_QUESTIONS as DEFAULT_QUESTIONS,
+    QUESTIONS_BY_SUB,
     SATISFACTION_SCALE as SCALE,
 } from '../constants/diagnosis';
 import './MDiagnosisForm.css';
 import { API_URL, authHeaders } from '../utils/api';
 
-export default function MDiagnosisForm({ onNavigate, location }) {
+// 칩 UI 라벨 → 백엔드 대분류 표준값 매핑
+const FACILITY_CHIP_MAP = {
+    '아파트/주택가':   { label: '아파트/주택가',   sub: '아파트·주택가', cat: '주거' },
+    '근린/어린이공원': { label: '근린/어린이공원', sub: '근린공원·어린이공원', cat: '문화·여가' },
+    '폐가/공가':       { label: '폐가/공가',       sub: '폐가·공가',       cat: '주거' },
+    '어린이보호구역':  { label: '어린이보호구역',  sub: '어린이보호구역',  cat: '안전' },
+    '상업가':          { label: '상업가',          sub: '상업가·상점가',   cat: '산업·일자리' },
+    '공공시설':        { label: '공공시설',        sub: '공공기관·행정',   cat: '산업·일자리' },
+    '기타':            { label: '기타',            sub: null,              cat: null },
+};
+const FACILITY_CHIPS = Object.keys(FACILITY_CHIP_MAP);
+
+export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' }) {
     const [photo, setPhoto] = useState(null);
     const [photoPreview, setPhotoPreview] = useState('');
-    const [category, setCategory] = useState('주거');
-    const [categoryOpen, setCategoryOpen] = useState(false);
-    const [sub, setSub] = useState('');
+    const [facilityName, setFacilityName] = useState('');
+    const [sub, setSub] = useState('');         // 칩 key (UI 라벨)
     const [ratings, setRatings] = useState({});
     const [review, setReview] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
     const photoInputRef = useRef(null);
-    const catWrapRef = useRef(null);
 
-    useEffect(() => {
-        if (!categoryOpen) return undefined;
-        const handler = (e) => {
-            if (catWrapRef.current && !catWrapRef.current.contains(e.target)) {
-                setCategoryOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handler);
-        document.addEventListener('touchstart', handler);
-        return () => {
-            document.removeEventListener('mousedown', handler);
-            document.removeEventListener('touchstart', handler);
-        };
-    }, [categoryOpen]);
+    // 선택된 칩에 따라 대분류(cat)·세부분류(subKey) 결정
+    const chipMeta = sub ? FACILITY_CHIP_MAP[sub] : null;
+    const catValue = chipMeta?.cat ?? sub;       // 백엔드 대분류 표준값
+    const subKey   = chipMeta?.sub ?? sub;       // QUESTIONS_BY_SUB 조회 키
+
+    // 세부분류별 질문 — 없으면 기본 질문 사용
+    const QUESTIONS = (subKey && QUESTIONS_BY_SUB[subKey]) ? QUESTIONS_BY_SUB[subKey] : DEFAULT_QUESTIONS;
 
     const handlePhotoPick = (e) => {
         const f = e.target.files?.[0];
@@ -43,15 +46,14 @@ export default function MDiagnosisForm({ onNavigate, location }) {
         setPhotoPreview(URL.createObjectURL(f));
     };
 
-    const subList = SUB_BY_CATEGORY[category] ?? [];
-    const ratedAll = QUESTIONS.every((_, i) => ratings[i] != null);
-    const canSubmit = photo && category && sub && ratedAll && location;
+    const ratedAll = sub && QUESTIONS.every((_, i) => ratings[i] != null);
+    const canSubmit = photo && sub && ratedAll && location && !submitting;
 
     const handleSubmit = async () => {
         if (!canSubmit) return;
+        setSubmitting(true);
 
         try {
-            // 1. 이미지 업로드 (파일이 있을 때만)
             let imageUrl = null;
             if (photo) {
                 const formData = new FormData();
@@ -67,11 +69,10 @@ export default function MDiagnosisForm({ onNavigate, location }) {
                 }
             }
 
-            // 2. 진단 결과 제출
             const avgScore = Object.values(ratings).reduce((a, b) => a + b, 0) / QUESTIONS.length;
             const payload = {
-                대분류: category,
-                중분류: sub,
+                대분류: catValue,
+                중분류: subKey || facilityName || sub,
                 answers: JSON.stringify(ratings),
                 점수: Math.round(avgScore),
                 리뷰: review || null,
@@ -79,6 +80,7 @@ export default function MDiagnosisForm({ onNavigate, location }) {
                 위도: location?.lat ?? null,
                 경도: location?.lng ?? null,
                 district_code: location?.district ?? null,
+                진단대상: mode === 'expert' ? '전문가' : '시민',
             };
             const submitRes = await fetch(`${API_URL}/checklist/submit`, {
                 method: 'POST',
@@ -88,18 +90,20 @@ export default function MDiagnosisForm({ onNavigate, location }) {
             if (!submitRes.ok) {
                 const err = await submitRes.json().catch(() => ({}));
                 alert(`제출 실패: ${err.detail ?? submitRes.status}`);
+                setSubmitting(false);
                 return;
             }
         } catch (e) {
-            // 네트워크 오류 — 오프라인 등의 경우 완료 화면은 계속 진행
             console.warn('진단 제출 중 오류:', e);
+            setSubmitting(false);
+            return;
         }
 
-        onNavigate?.('mDiagnosisDone', { category, sub, ratings, review });
+        setSubmitting(false);
+        onNavigate?.('mDiagnosisDone', { category: catValue, sub: subKey || sub, ratings, review });
     };
 
     const handleDraft = () => {
-        // 임시저장 — 후속 처리
         alert('임시저장은 준비 중입니다.');
     };
 
@@ -114,12 +118,17 @@ export default function MDiagnosisForm({ onNavigate, location }) {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="15 18 9 12 15 6"/>
                     </svg>
-                    <span>뒤로</span>
+                    <span>진단 목록</span>
                 </button>
+                {mode === 'expert' && (
+                    <span className="m-diagform-mode-badge">전문가 진단</span>
+                )}
             </header>
 
             <main className="m-diagform-body">
-                <h1 className="m-diagform-title">우리동네 개선 아이디어를<br/>진단해보세요</h1>
+                <h1 className="m-diagform-title">
+                    {mode === 'expert' ? '전문가 진단을\n시작해보세요' : '우리동네 개선 아이디어를\n진단해보세요'}
+                </h1>
 
                 {/* 위치 정보 */}
                 <section className="m-diagform-section">
@@ -171,88 +180,80 @@ export default function MDiagnosisForm({ onNavigate, location }) {
                     <p className="m-diagform-hint">* 사진을 첨부해주세요</p>
                 </section>
 
-                {/* 분류 */}
+                {/* 공공/시설물 */}
                 <section className="m-diagform-section">
                     <h2 className="m-diagform-label">분류</h2>
-                    <div className="m-diagform-cat-wrap" ref={catWrapRef}>
-                        <button
-                            type="button"
-                            className="m-diagform-cat-btn"
-                            onClick={() => setCategoryOpen((v) => !v)}
-                            aria-haspopup="listbox"
-                            aria-expanded={categoryOpen}
-                        >
-                            <span>{category}</span>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="6 9 12 15 18 9" />
-                            </svg>
-                        </button>
-                        {categoryOpen && (
-                            <ul className="m-diagform-cat-menu" role="listbox">
-                                {CATEGORIES.map((c) => (
-                                    <li key={c}>
-                                        <button
-                                            type="button"
-                                            role="option"
-                                            aria-selected={c === category}
-                                            className={c === category ? 'on' : ''}
-                                            onClick={() => {
-                                                setCategory(c);
-                                                setSub('');
-                                                setCategoryOpen(false);
-                                            }}
-                                        >{c}</button>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
+                    <input
+                        type="text"
+                        className="m-diagform-facility-input"
+                        placeholder="진단 대상물을 입력해주세요"
+                        value={facilityName}
+                        onChange={(e) => setFacilityName(e.target.value)}
+                    />
                     <div className="m-diagform-sub-row">
-                        {subList.map((s) => (
+                        {FACILITY_CHIPS.map((s) => (
                             <button
                                 key={s}
                                 type="button"
                                 className={`m-diagform-sub-chip ${sub === s ? 'on' : ''}`}
-                                onClick={() => setSub(s)}
+                                onClick={() => {
+                                    setSub((prev) => (prev === s ? '' : s));
+                                    setRatings({});
+                                }}
                             >{s}</button>
                         ))}
                     </div>
                 </section>
 
-                {/* 만족도 평가 */}
-                <section className="m-diagform-section">
-                    <h2 className="m-diagform-label">만족도 평가</h2>
-                    <p className="m-diagform-sublabel">해당 시설물의 만족도를 평가해 주세요.</p>
-                    <ol className="m-diagform-questions">
-                        {QUESTIONS.map((q, idx) => (
-                            <li key={idx} className="m-diagform-question">
-                                <div className="m-diagform-q-head">
-                                    <span className="m-diagform-q-num">{idx + 1}</span>
-                                    <p className="m-diagform-q-text">{q}</p>
-                                </div>
-                                <div className="m-diagform-scale" role="radiogroup" aria-label={`Q${idx + 1} 만족도`}>
-                                    <span className="m-diagform-scale-track" />
-                                    {SCALE.map((s) => {
-                                        const active = ratings[idx] === s.value;
-                                        return (
-                                            <button
-                                                key={s.value}
-                                                type="button"
-                                                role="radio"
-                                                aria-checked={active}
-                                                aria-label={s.label}
-                                                className={`m-diagform-scale-dot ${active ? 'on' : ''}`}
-                                                onClick={() => setRatings((prev) => ({ ...prev, [idx]: s.value }))}
-                                            >
-                                                                <img src={s.face} width="22" height="22" alt={s.label} className="m-diagform-scale-face" />
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </li>
-                        ))}
-                    </ol>
-                </section>
+                {/* 만족도 평가 — 시설물 선택 후 표시 */}
+                {sub && (
+                    <section className="m-diagform-section">
+                        <h2 className="m-diagform-label">만족도 평가</h2>
+                        <p className="m-diagform-sublabel">해당 시설물의 만족도를 평가해 주세요.</p>
+                        <ol className="m-diagform-questions">
+                            {QUESTIONS.map((q, idx) => (
+                                <li key={idx} className="m-diagform-question">
+                                    <div className="m-diagform-q-head">
+                                        <span className="m-diagform-q-num">{idx + 1}</span>
+                                        <p className="m-diagform-q-text">{q}</p>
+                                    </div>
+                                    <div className="m-diagform-scale" role="radiogroup" aria-label={`Q${idx + 1} 만족도`}>
+                                        <span className="m-diagform-scale-track" />
+                                        {SCALE.map((s) => {
+                                            const active = ratings[idx] === s.value;
+                                            return (
+                                                <button
+                                                    key={s.value}
+                                                    type="button"
+                                                    role="radio"
+                                                    aria-checked={active}
+                                                    aria-label={s.label}
+                                                    className={`m-diagform-scale-dot ${active ? 'on' : ''}`}
+                                                    onClick={() => setRatings((prev) => ({ ...prev, [idx]: s.value }))}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+                                    <div className="m-diagform-scale-faces">
+                                        {SCALE.map((s) => (
+                                            <div key={s.value} className="m-diagform-face-slot">
+                                                {s.face && (
+                                                    <img
+                                                        src={s.face}
+                                                        width="24"
+                                                        height="24"
+                                                        alt={s.label}
+                                                        className={`m-diagform-face-img ${ratings[idx] === s.value ? 'on' : ''}`}
+                                                    />
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </li>
+                            ))}
+                        </ol>
+                    </section>
+                )}
 
                 {/* 리뷰 */}
                 <section className="m-diagform-section">
@@ -272,9 +273,9 @@ export default function MDiagnosisForm({ onNavigate, location }) {
                 <button
                     type="button"
                     className="m-diagform-cta-primary"
-                    disabled={!canSubmit}
+                    disabled={!canSubmit || submitting}
                     onClick={handleSubmit}
-                >작성완료</button>
+                >{submitting ? '제출 중...' : '작성완료'}</button>
             </footer>
         </div>
     );

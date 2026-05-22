@@ -50,12 +50,13 @@ export default function PCReportMap({ onNavigate }) {
 
     const filtered = useMemo(() => {
         let arr = ITEMS;
+        if (district && district !== '중구') arr = arr.filter((it) => it.region === district);
         if (!livingCats.has('all')) arr = arr.filter((it) => livingCats.has(it.categoryKey));
         if (sort === 'views') arr = [...arr].sort((a, b) => b.views - a.views);
         else if (sort === 'votes') arr = [...arr].sort((a, b) => b.votes - a.votes);
         else arr = [...arr].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
         return arr;
-    }, [ITEMS, livingCats, sort]);
+    }, [ITEMS, district, livingCats, sort]);
 
     const counts = {
         report: ITEMS.length,

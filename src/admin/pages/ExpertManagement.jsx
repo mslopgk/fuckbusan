@@ -14,19 +14,19 @@ export default function ExpertManagement({ onNavigate }) {
         const fetchExperts = async () => {
             try {
                 const token = localStorage.getItem('access_token');
-                const response = await fetch(`${API_BASE}/users?user_type=expert`, {
+                const response = await fetch(`${API_BASE}/admin/users?limit=500`, {
                     headers: token ? { Authorization: `Bearer ${token}` } : {},
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setExperts(data.map((u, idx) => ({
+                    setExperts(data.map((u) => ({
                         id: u.user_id,
-                        name: u.name,
+                        name: u.name || '-',
                         nickname: u.nickname || '-',
                         phone: u.phone_num || '-',
-                        address: u.address || u.location || '-',
+                        address: u.district_code || '-',
                         email: u.ID,
-                        approval: idx % 2 === 0 ? '승인' : '대기',
+                        approval: '승인',
                     })));
                 }
             } catch (error) {

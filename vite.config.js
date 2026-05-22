@@ -26,5 +26,16 @@ export default defineConfig(() => {
         },
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom'],
+            'vendor-charts': ['recharts'],
+            'vendor-kakao': ['react-kakao-maps-sdk'],
+          },
+        },
+      },
+    },
   }
 })

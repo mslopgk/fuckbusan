@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import { formatDraftDate } from '../utils/format';
 import { API_URL } from '../utils/api';
+import { compressImage } from '../utils/imageCompress';
 import './MProposalForm.css';
 
 const TYPES = ['주거', '환경', '교육', '안전', '산업·일자리', '교통', '문화·여가', '보건·복지'];
@@ -14,9 +15,12 @@ export default function MProposalForm({ onNavigate }) {
     const [body, setBody] = useState('');
     const [location, setLocation] = useState('');
     const [photos, setPhotos] = useState([]);
+    const [uploadedUrls, setUploadedUrls] = useState([]);
+    const [uploading, setUploading] = useState(false);
     const [locationPickerOpen, setLocationPickerOpen] = useState(false);
     const [pickedLat, setPickedLat] = useState(35.197);
     const [pickedLng, setPickedLng] = useState(129.063);
+    const [pickedAddress, setPickedAddress] = useState('');
     const [restoreOpen, setRestoreOpen] = useState(false);
     const [draftMeta, setDraftMeta] = useState(null);
     const [toast, setToast] = useState('');
@@ -37,7 +41,7 @@ export default function MProposalForm({ onNavigate }) {
         }
     }, []);
 
-    const canSubmit = type && title.trim() && body.trim() && !submitting;
+    const canSubmit = type && title.trim() && body.trim() && !submitting && !uploading;
 
     const handleSaveDraft = () => {
         const draft = {
@@ -92,7 +96,10 @@ export default function MProposalForm({ onNavigate }) {
             content: body.trim(),
             region: '부산',
             detailed_address: location || undefined,
-            files: [],
+            files: uploadedUrls,
+            image_url: uploadedUrls[0] || undefined,
+            lat: pickedLat,
+            lng: pickedLng,
         };
         try {
             const res = await fetch(`${API_URL}/api/reports/new-proposal`, {
@@ -118,18 +125,53 @@ export default function MProposalForm({ onNavigate }) {
         }
     };
 
-    const handleFiles = (e) => {
+    const handleFiles = async (e) => {
         const files = Array.from(e.target.files || []);
-        const items = files.map((f) => ({
+        if (!files.length) return;
+
+        // Optimistic local preview
+        const previews = files.map((f) => ({
             id: `${f.name}-${f.size}-${f.lastModified}`,
             name: f.name,
             url: URL.createObjectURL(f),
         }));
-        setPhotos((prev) => [...prev, ...items]);
+        setPhotos((prev) => [...prev, ...previews]);
         e.target.value = '';
+
+        setUploading(true);
+        const uploaded = [];
+        for (const file of files) {
+            const compressed = await compressImage(file);
+            const form = new FormData();
+            form.append('file', compressed);
+            try {
+                const res = await fetch(`${API_URL}/api/reports/upload`, { method: 'POST', body: form });
+                if (res.ok) {
+                    const j = await res.json();
+                    if (j.url) uploaded.push(j.url);
+                } else {
+                    setToast('사진 업로드에 실패했습니다.');
+                    setTimeout(() => setToast(''), 2000);
+                }
+            } catch {
+                setToast('사진 업로드 중 오류가 발생했습니다.');
+                setTimeout(() => setToast(''), 2000);
+            }
+        }
+        setUploadedUrls((prev) => [...prev, ...uploaded]);
+        setUploading(false);
     };
 
-    const removePhoto = (id) => setPhotos((prev) => prev.filter((p) => p.id !== id));
+    const removePhoto = (id) => {
+        setPhotos((prev) => {
+            const removed = prev.find((p) => p.id === id);
+            if (removed) {
+                // revoke object URL to avoid memory leak
+                try { URL.revokeObjectURL(removed.url); } catch { /* ignore */ }
+            }
+            return prev.filter((p) => p.id !== id);
+        });
+    };
 
     return (
         <div className="m-prop-form-page">
@@ -235,7 +277,7 @@ export default function MProposalForm({ onNavigate }) {
                     type="button"
                     disabled={!canSubmit}
                     onClick={handleSubmit}
-                >{submitting ? '제출 중...' : '작성완료'}</button>
+                >{uploading ? '업로드 중...' : submitting ? '제출 중...' : '작성완료'}</button>
             </footer>
 
             {toast && (
@@ -284,16 +326,30 @@ export default function MProposalForm({ onNavigate }) {
                     </div>
                     <div className="m-loc-picker-map">
                         <PCMapCanvas
-                            pins={[{ id: 'pick', lat: pickedLat, lng: pickedLng, color: '#E6235A', title: '여기에 제안' }]}
+                            pins={[]}
                             accentColor="#E6235A"
+                            selectedPoint={{ lat: pickedLat, lng: pickedLng }}
+                            onMapClick={({ lat, lng }) => {
+                                setPickedLat(lat);
+                                setPickedLng(lng);
+                                if (window.kakao?.maps?.services) {
+                                    const geocoder = new window.kakao.maps.services.Geocoder();
+                                    geocoder.coord2Address(lng, lat, (result, status) => {
+                                        if (status === window.kakao.maps.services.Status.OK) {
+                                            const addr = result[0]?.road_address?.address_name || result[0]?.address?.address_name || '';
+                                            setPickedAddress(addr);
+                                        }
+                                    });
+                                }
+                            }}
                         />
                     </div>
-                    <p className="m-loc-picker-help">지도를 움직여서 선택해주세요</p>
+                    <p className="m-loc-picker-help">지도를 클릭하여 위치를 선택해주세요</p>
                     <button
                         className="m-loc-picker-confirm"
                         type="button"
                         onClick={() => {
-                            setLocation(`위도 ${pickedLat.toFixed(4)}, 경도 ${pickedLng.toFixed(4)}`);
+                            setLocation(pickedAddress || `위도 ${pickedLat.toFixed(4)}, 경도 ${pickedLng.toFixed(4)}`);
                             setLocationPickerOpen(false);
                         }}
                     >위치 선택완료</button>

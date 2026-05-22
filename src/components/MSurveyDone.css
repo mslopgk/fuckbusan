@@ -3,7 +3,7 @@
     background: #fff;
     display: flex;
     flex-direction: column;
-    padding: 0 16px 90px;
+    padding: 0 0 160px;
 }
 
 .m-done-content {
@@ -42,6 +42,13 @@
     margin: 0;
 }
 
+.m-done-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 24px 32px;
+}
+
 .m-done-cta {
     height: 54px;
     background: #5B2EAB;
@@ -53,4 +60,9 @@
     cursor: pointer;
     font-family: inherit;
     box-shadow: 0 4px 12px rgba(91, 46, 171, 0.25);
+}
+
+.m-done-cta-home {
+    background: #888;
+    box-shadow: none;
 }

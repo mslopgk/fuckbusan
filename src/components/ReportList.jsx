@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Map, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
 import './ReportList.css';
-import { API_URL } from '../utils/api';
+import { API_URL, authHeaders } from '../utils/api';
 
 
 // Category Styles from ProposalList.jsx
@@ -23,8 +23,11 @@ const REGIONS = [
     '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'
 ];
 
-const STATUSES = ['개선중', '개선예정', '개선완료'];
 const SORT_OPTIONS = ['최신순', '투표순', '조회수'];
+const SORT_API = { '최신순': 'latest', '투표순': 'votes', '조회수': 'views' };
+
+// Status tabs displayed in the UI and their API values
+const STATUS_TABS = ['전체', '개선중', '개선예정', '개선완료'];
 
 const ClusterPin = ({ count }) => {
     const isSingle = count === 1;
@@ -50,36 +53,52 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
     const [mapCenter, setMapCenter] = useState({ lat: 35.1795543, lng: 129.0756416 }); // Default: Busan City Hall
     const [hasLocated, setHasLocated] = useState(false);
 
-    // Reports loaded from backend
-    const [serverReports, setServerReports] = useState([]);
+    // Reports and cluster pins loaded from backend
+    const [reports, setReports] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [clusters, setClusters] = useState([]);
 
-    useEffect(() => {
-        fetch(`${API_URL}/api/reports/full`)
-            .then(res => res.ok ? res.json() : [])
-            .then(data => Array.isArray(data) ? setServerReports(data) : setServerReports([]))
-            .catch(err => { console.error('Failed to load reports:', err); setServerReports([]); });
+    // Track fetch generation to discard stale responses
+    const fetchGenRef = useRef(0);
 
-        fetch(`${API_URL}/api/reports/clusters`)
+    // Re-fetch reports whenever filters or sort change
+    useEffect(() => {
+        const gen = ++fetchGenRef.current;
+        const params = new URLSearchParams();
+        params.set('sort', SORT_API[sortBy] || 'latest');
+        if (selectedRegion && selectedRegion !== '부산 전 지역') params.set('region', selectedRegion);
+        if (selectedCategory && selectedCategory !== '전체') params.set('category', selectedCategory);
+        if (statusFilter && statusFilter !== '전체') params.set('status', statusFilter);
+
+        setLoading(true);
+        fetch(`${API_URL}/api/reports/full?${params.toString()}`, {
+            headers: authHeaders(),
+        })
+            .then(res => res.ok ? res.json() : { items: [], has_more: false })
+            .then(data => {
+                if (gen !== fetchGenRef.current) return;
+                const list = data.items ?? data;
+                setReports(Array.isArray(list) ? list : []);
+            })
+            .catch(err => {
+                if (gen !== fetchGenRef.current) return;
+                console.error('Failed to load reports:', err);
+                setReports([]);
+            })
+            .finally(() => { if (gen === fetchGenRef.current) setLoading(false); });
+    }, [selectedRegion, selectedCategory, statusFilter, sortBy]);
+
+    // Load cluster pins once (not filter-dependent)
+    useEffect(() => {
+        fetch(`${API_URL}/api/reports/clusters`, {
+            headers: authHeaders(),
+        })
             .then(res => res.ok ? res.json() : [])
             .then(data => Array.isArray(data) ? setClusters(data.filter(c => c.lat && c.lng)) : setClusters([]))
             .catch(() => setClusters([]));
     }, []);
 
-    // Filter logic – merge user created reports and updates with server data
-    const getFinalReports = () => {
-        let base = [...serverReports];
-        if (userCreatedReports && userCreatedReports.length > 0) {
-            base = [...userCreatedReports, ...base];
-        }
-        return base.map(r => {
-            if (updatedReportsMap && updatedReportsMap[r.id]) {
-                return { ...r, ...updatedReportsMap[r.id] };
-            }
-            return r;
-        });
-    };
-
+    // Geolocation on mount
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -97,25 +116,27 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
         }
     }, []);
 
-    const filteredReports = getFinalReports().filter(r => {
-        if (deletedIds && deletedIds.has(r.id)) return false;
-
-        const matchesCategory = selectedCategory === '전체' || r.category === selectedCategory;
-        const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                             r.location.toLowerCase().includes(searchQuery.toLowerCase());
-        const regionMatch = selectedRegion === '부산 전 지역' || r.region === selectedRegion;
-        const statusMatch = statusFilter === '전체' || (
-            (statusFilter === '접수' && r.status === '개선예정') ||
-            (statusFilter === '검토중' && r.status === '개선중') ||
-            (statusFilter === '검토완료' && r.status === '개선완료') ||
-            (statusFilter === '결과안내' && r.status === '개선완료' && r.progress_step === 4)
-        );
-        return matchesCategory && matchesSearch && regionMatch && statusMatch;
-    });
-
-    if (sortBy === '최신순') filteredReports.sort((a, b) => b.id - a.id);
-    else if (sortBy === '투표순') filteredReports.sort((a, b) => b.likes - a.likes);
-    else if (sortBy === '조회수') filteredReports.sort((a, b) => b.comments - a.comments);
+    // Merge user-created reports and local updates with server data, apply search + deletedIds
+    const filteredReports = (() => {
+        let base = [...reports];
+        if (userCreatedReports && userCreatedReports.length > 0) {
+            base = [...userCreatedReports, ...base];
+        }
+        return base
+            .map(r => {
+                if (updatedReportsMap && updatedReportsMap[r.id]) {
+                    return { ...r, ...updatedReportsMap[r.id] };
+                }
+                return r;
+            })
+            .filter(r => {
+                if (deletedIds && deletedIds.has(r.id)) return false;
+                const matchesSearch = !searchQuery ||
+                    (r.title && r.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    (r.location && r.location.toLowerCase().includes(searchQuery.toLowerCase()));
+                return matchesSearch;
+            });
+    })();
 
     return (
         <div className="rl-page">
@@ -218,7 +239,7 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
                     </svg>
                 </button>
                 <div className="rl-status-tabs">
-                    {['전체', '개선중', '개선예정', '개선완료'].map(tab => (
+                    {STATUS_TABS.map(tab => (
                         <button
                             key={tab}
                             className={`rl-status-tab${statusFilter === tab ? ' active' : ''}`}
@@ -239,8 +260,11 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
 
             {/* 3-column card grid */}
             <div className="rl-cards-grid">
-                {filteredReports.length === 0 && (
-                    <div className="rl-empty">검색 결과가 없습니다.</div>
+                {loading && (
+                    <div className="rl-empty">불러오는 중...</div>
+                )}
+                {!loading && filteredReports.length === 0 && (
+                    <div className="rl-empty">조건에 맞는 제보가 없습니다.</div>
                 )}
                 {filteredReports.map(report => {
                     const style = CATEGORY_STYLES[report.category] || { background: '#F3F4F6', color: '#666' };

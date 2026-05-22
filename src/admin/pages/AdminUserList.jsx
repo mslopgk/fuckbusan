@@ -71,7 +71,7 @@ export default function AdminUserList({ onNavigate }) {
     return (
         <AdminLayout onNavigate={onNavigate} currentView="adminUserList">
             <div className="content-header-new">
-                <h2 className="content-title-new">회원관리</h2>
+                <h2 className="content-title-new">회원관리 - 관리자</h2>
                 <div className="total-count-text">전체 회원 <span>{users.length}명</span></div>
             </div>
 

@@ -13,3 +13,4 @@ python-jose[cryptography]
 httpx
 boto3==1.34.0
 mangum
+Pillow>=10.0.0

@@ -3,6 +3,7 @@ import { Map, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk';
 import UserPCLayout from './UserPCLayout';
 import './PCFormShared.css';
 import { API_URL } from '../utils/api';
+import { compressImage } from '../utils/imageCompress';
 
 
 const TYPES = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
@@ -117,7 +118,9 @@ function LocationPickerModal({ onCancel, onConfirm }) {
 
 export default function PCReportForm({ onNavigate }) {
     const [photo, setPhoto] = useState(null); // { url, name, type }
-    const [location, setLocation] = useState(null); // { lat, lng }
+    const [uploadedUrl, setUploadedUrl] = useState(''); // server-side URL after upload
+    const [uploading, setUploading] = useState(false);
+    const [location, setLocation] = useState(null); // { lat, lng, address }
     const [type, setType] = useState('');
     const [facility, setFacility] = useState('공공/시설물');
     const [issue, setIssue] = useState('문제사항');
@@ -131,19 +134,73 @@ export default function PCReportForm({ onNavigate }) {
     const [submitError, setSubmitError] = useState('');
     const fileInputRef = useRef(null);
 
-    const valid = photo && location && type && description.trim() && !submitting;
+    // Load draft on mount
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem('pcReportForm:draft');
+            if (!raw) return;
+            const saved = JSON.parse(raw);
+            if (saved && window.confirm('임시저장된 내용이 있습니다. 불러오시겠습니까?')) {
+                if (saved.cat) setType(saved.cat);
+                if (saved.facility) setFacility(saved.facility);
+                if (saved.issue) setIssue(saved.issue);
+                if (saved.body) setDescription(saved.body);
+                if (saved.location) setLocation({ address: saved.location, lat: saved.lat, lng: saved.lng });
+            }
+        } catch { /* ignore */ }
+    }, []);
 
-    const handlePhotoChange = (e) => {
+    const valid = photo && location && type && description.trim() && !submitting && !uploading;
+
+    const handlePhotoChange = async (e) => {
         const f = e.target.files?.[0];
         if (!f) return;
+        // Show local preview immediately
         if (photo?.url) URL.revokeObjectURL(photo.url);
         setPhoto({ name: f.name, type: f.type, url: URL.createObjectURL(f) });
         e.target.value = '';
+        // Upload to server
+        setUploading(true);
+        setUploadedUrl('');
+        const compressed = await compressImage(f);
+        const form = new FormData();
+        form.append('file', compressed);
+        try {
+            const res = await fetch(`${API_URL}/api/reports/upload`, { method: 'POST', body: form });
+            if (res.ok) {
+                const j = await res.json();
+                setUploadedUrl(j.url || '');
+            } else {
+                setSubmitError('사진 업로드에 실패했습니다.');
+                setTimeout(() => setSubmitError(''), 2000);
+            }
+        } catch {
+            setSubmitError('사진 업로드 중 오류가 발생했습니다.');
+            setTimeout(() => setSubmitError(''), 2000);
+        } finally {
+            setUploading(false);
+        }
     };
 
     const removePhoto = () => {
         if (photo?.url) URL.revokeObjectURL(photo.url);
         setPhoto(null);
+        setUploadedUrl('');
+    };
+
+    const handleSaveDraft = () => {
+        try {
+            localStorage.setItem('pcReportForm:draft', JSON.stringify({
+                cat: type,
+                facility,
+                issue,
+                body: description,
+                location: location?.address || '',
+                lat: location?.lat,
+                lng: location?.lng,
+            }));
+            alert('임시저장 되었습니다.');
+        } catch { /* ignore */ }
     };
 
     const locationLabel = location
@@ -176,6 +233,7 @@ export default function PCReportForm({ onNavigate }) {
                             {photo && (
                                 <div className="pc-attach-item-thumb">
                                     <img src={photo.url} alt={photo.name} className="pc-attach-thumb-img" />
+                                    {uploading && <span style={{ position: 'absolute', bottom: 4, left: 4, fontSize: 10, color: '#fff', background: 'rgba(0,0,0,0.55)', borderRadius: 4, padding: '2px 5px' }}>업로드 중...</span>}
                                     <button className="pc-attach-remove" onClick={removePhoto} aria-label="삭제">×</button>
                                 </div>
                             )}
@@ -254,7 +312,7 @@ export default function PCReportForm({ onNavigate }) {
                     </div>
 
                     <div className="pc-form-actions">
-                        <button className="pc-btn-light" disabled={!valid}>임시저장</button>
+                        <button className="pc-btn-light" type="button" onClick={handleSaveDraft}>임시저장</button>
                         <button
                             className={`pc-btn-pink ${valid ? '' : 'disabled'}`}
                             disabled={!valid}
@@ -270,6 +328,8 @@ export default function PCReportForm({ onNavigate }) {
                                     content: description.trim(),
                                     lat: location?.lat,
                                     lng: location?.lng,
+                                    location: location?.address || undefined,
+                                    image_url: uploadedUrl || undefined,
                                 };
                                 try {
                                     const res = await fetch(`${API_URL}/api/reports/report`, {

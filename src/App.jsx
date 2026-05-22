@@ -33,10 +33,7 @@ const ReportList = lazy(() => import('./components/ReportList'));
 const ReportDetail = lazy(() => import('./components/ReportDetail'));
 const MyReports = lazy(() => import('./components/MyReports'));
 
-const AdminLogin = lazy(() => import('./admin/pages/Login'));
 const AdminLoginNew = lazy(() => import('./admin/pages/LoginNew'));
-const AdminSignup = lazy(() => import('./admin/pages/Signup'));
-const AdminDashboard = lazy(() => import('./admin/pages/Dashboard'));
 const AdminDashboardNew = lazy(() => import('./admin/pages/DashboardNew'));
 const MemberEdit = lazy(() => import('./admin/pages/MemberEdit'));
 const ExpertManagement = lazy(() => import('./admin/pages/ExpertManagement'));
@@ -114,14 +111,18 @@ function App() {
     // For adminLogin and adminSignup, force redirect to 'home' on refresh as per user request
     const [view, setView] = useState(() => {
         const path = window.location.pathname;
-        if (path === '/admin' || path === '/admin/') return 'adminLoginNew';
+        if (path === '/admin' || path === '/admin/') {
+            const token = localStorage.getItem('access_token');
+            if (token) return 'adminMain';
+            return 'adminLoginNew';
+        }
 
         const stored = sessionStorage.getItem('current_view');
         // If path is not /admin, but stored view is an admin view, reset to home
         const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit', 'adminProposalDetail'].includes(stored);
         if (path === '/' && isAdminView) return 'home';
 
-        if (stored === 'adminLogin' || stored === 'adminSignup') return 'home';
+        if (['adminLogin', 'adminSignup', 'adminDashboard'].includes(stored)) return 'home';
         return stored || 'home';
     });
 
@@ -434,12 +435,8 @@ function App() {
             // Keep direct access for testing/buttons
             setDiagnosisMode('expert');
             setView('expertDiagnosisResult');
-        } else if (target === 'adminLogin') {
-            setView('adminLogin');
         } else if (target === 'adminLoginNew') {
             setView('adminLoginNew');
-        } else if (target === 'adminDashboard') {
-            setView('adminDashboard');
         } else if (target === 'adminDashboardNew') {
             setView('adminDashboardNew');
         } else if (target === 'memberEdit') {
@@ -1174,23 +1171,8 @@ function App() {
                 {view === 'changePassword' && (
                     <ChangePassword onBack={() => setView('home')} />
                 )}
-                {view === 'adminLogin' && (
-                    <AdminLogin
-                        onNavigate={(target) => setView(target)}
-                    />
-                )}
                 {view === 'adminLoginNew' && (
                     <AdminLoginNew
-                        onNavigate={(target) => setView(target)}
-                    />
-                )}
-                {view === 'adminSignup' && (
-                    <AdminSignup
-                        onNavigate={(target) => setView(target)}
-                    />
-                )}
-                {view === 'adminDashboard' && (
-                    <AdminDashboard
                         onNavigate={(target) => setView(target)}
                     />
                 )}

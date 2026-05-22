@@ -66,7 +66,7 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
                             <line x1="9" y1="12" x2="15" y2="6"></line>
                         </svg>
                     </button>
-                    <span className="mr-header-title">홈으로</span>
+                    <span className="mr-header-title">나의 활동</span>
                 </div>
             </header>
 

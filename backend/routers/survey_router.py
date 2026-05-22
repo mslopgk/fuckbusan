@@ -314,9 +314,17 @@ def submit_survey_response(
     s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
     if not s:
         raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    if current_user:
+        existing = db.query(models.SurveyResponse).filter(
+            models.SurveyResponse.survey_id == survey_id,
+            models.SurveyResponse.user_id == current_user.user_id,
+        ).first()
+        if existing:
+            raise HTTPException(status_code=409, detail="이미 참여한 설문입니다.")
     resp = models.SurveyResponse(
         survey_id=survey_id,
         user_id=current_user.user_id if current_user else None,
+        demographics=payload.demographics,
     )
     db.add(resp)
     db.flush()

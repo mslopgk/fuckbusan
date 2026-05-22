@@ -68,6 +68,10 @@ export default function ReportManagement({ onNavigate }) {
     }, [statusFilter, search, authorSearch, itemsPerPage]);
 
     useEffect(() => {
+        fetchReports(1);
+    }, [statusFilter]);
+
+    useEffect(() => {
         fetchReports(page);
     }, [page]);
 
@@ -81,7 +85,7 @@ export default function ReportManagement({ onNavigate }) {
     return (
         <AdminLayout onNavigate={onNavigate} currentView="reportManagement">
             <div className="content-header-new">
-                <h2 className="content-title-new" style={{ marginBottom: 0 }}>제보</h2>
+                <h2 className="content-title-new" style={{ marginBottom: 0 }}>제보현황</h2>
                 <div className="total-count-text">전체 제보 <span>{total}건</span></div>
             </div>
 
@@ -97,7 +101,7 @@ export default function ReportManagement({ onNavigate }) {
                                 style={{
                                     height: 36,
                                     padding: '0 16px',
-                                    background: statusFilter === s ? '#5B2EAB' : '#f1f3f5',
+                                    background: statusFilter === s ? '#E6235A' : '#f1f3f5',
                                     color: statusFilter === s ? '#fff' : '#333',
                                     border: 'none',
                                     borderRadius: 6,

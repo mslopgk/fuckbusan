@@ -241,3 +241,25 @@
     color: #fff;
     box-shadow: 0 4px 12px rgba(91, 46, 171, 0.25);
 }
+
+.m-join-next:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.m-join-validation-error {
+    position: fixed;
+    bottom: 136px;
+    left: 16px;
+    right: 16px;
+    background: #fff0f3;
+    border: 1px solid #E6235A;
+    color: #E6235A;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    z-index: 51;
+}

@@ -14,20 +14,19 @@ export default function DashboardNew({ onNavigate }) {
         const fetchCitizens = async () => {
             try {
                 const token = localStorage.getItem('access_token');
-                const response = await fetch(`${API_BASE}/users?user_type=general`, {
+                const response = await fetch(`${API_BASE}/admin/users?limit=500`, {
                     headers: token ? { Authorization: `Bearer ${token}` } : {},
                 });
                 if (response.ok) {
                     const data = await response.json();
                     setMemberData(data.map((u) => ({
                         id: u.user_id,
-                        name: u.name,
+                        name: u.name || '-',
                         nickname: u.nickname || '-',
                         phone: u.phone_num || '-',
-                        address: u.address || u.location || '-',
+                        address: u.district_code || '-',
                         email: u.ID,
-                        birth: u.birth_date || '-',
-                        district_code: u.district_code,
+                        joinedAt: u.created_at ? String(u.created_at).slice(0, 10) : '-',
                     })));
                 }
             } catch (error) {
@@ -78,7 +77,7 @@ export default function DashboardNew({ onNavigate }) {
                             <th>연락처</th>
                             <th>주소</th>
                             <th>이메일</th>
-                            <th>생년월일</th>
+                            <th>가입일</th>
                             <th>메뉴</th>
                         </tr>
                     </thead>
@@ -96,7 +95,7 @@ export default function DashboardNew({ onNavigate }) {
                                 <td>{item.phone}</td>
                                 <td>{item.address}</td>
                                 <td>{item.email}</td>
-                                <td>{item.birth}</td>
+                                <td>{item.joinedAt}</td>
                                 <td>
                                     <div className="action-btns-new">
                                         <span

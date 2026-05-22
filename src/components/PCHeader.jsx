@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './PCHeader.css';
 
 const SURVEY_VIEWS = ['pcSurveyList', 'pcSurveyDetail', 'pcSurveyConsent', 'pcSurveyJoin', 'pcSurveyResults', 'pcSurveyDone'];
-const REPORT_SUGGEST_VIEWS = ['pcProposeMap', 'pcProposeForm', 'pcProposeDone', 'pcProposeDetail', 'pcReportMap', 'pcReportForm', 'pcReportDone', 'pcReportDetail', 'pcMyReportList', 'pcMyReportEdit', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'reportList', 'reportDetail', 'reportPostForm'];
+const REPORT_SUGGEST_VIEWS = ['pcProposeMap', 'pcProposeForm', 'pcProposeDone', 'pcProposeDetail', 'pcReportMap', 'pcReportForm', 'pcReportDone', 'pcReportDetail', 'pcMyReportList', 'pcMyReportEdit', 'myProposals', 'myReportList'];
 const DIAGNOSIS_VIEWS = ['diagnosis', 'diagnosisStep1', 'bigCategory', 'checkList', 'satisfaction', 'review', 'checkDone', 'diagnosisResult', 'diagnosisList', 'diagnosisEdit', 'expertDiagnosisResult', 'pcDiagnosisMap', 'pcDiagnosisForm', 'pcDiagnosisDetail', 'pcDiagnosisDone'];
 const AI_CITIZEN_VIEWS = ['pcAICitizen'];
 
@@ -101,6 +101,8 @@ const PCHeader = ({ currentView, onNavigate }) => {
                     {isLoggedIn ? (
                         <>
                             <span className="pc-user-name" onClick={() => onNavigate('myPage')} style={{ cursor: 'pointer' }}>{userName}</span>
+                            <button className="pc-auth-link" onClick={() => onNavigate('myActivityHub')}>나의 활동</button>
+                            <span className="pc-auth-divider"></span>
                             <button className="pc-auth-link" onClick={() => onNavigate('myPage')}>마이페이지</button>
                             <span className="pc-auth-divider"></span>
                             <button className="pc-auth-link" onClick={handleLogout}>로그아웃</button>

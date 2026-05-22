@@ -73,9 +73,11 @@ def submit_checklist(
         if "ID" in result_data:
             del result_data["ID"]
 
+        # admin synthetic user (user_id=999999) has no DB row → treat as anonymous
+        safe_user = current_user if (current_user and getattr(current_user, 'user_id', 0) < 999990) else None
         new_result = ChecklistResult(
-            ID=current_user.ID if current_user else None,
-            user_id=current_user.user_id if current_user else None,
+            ID=safe_user.ID if safe_user else None,
+            user_id=safe_user.user_id if safe_user else None,
             **result_data
         )
         db.add(new_result)
@@ -90,13 +92,21 @@ def submit_checklist(
 def get_checklist(
     skip: int = 0,
     limit: int = 100,
+    target: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user_optional),
 ):
-    """로그인 사용자는 전체 목록, 비로그인은 빈 배열."""
+    """로그인 사용자는 전체 목록, 비로그인은 빈 배열.
+    target=citizen → 진단대상='시민', target=expert → 진단대상='전문가'
+    """
     if current_user is None:
         return []
-    return db.query(ChecklistResult).offset(skip).limit(min(limit, 500)).all()
+    q = db.query(ChecklistResult).order_by(ChecklistResult.result_id.desc())
+    if target == "expert":
+        q = q.filter(ChecklistResult.진단대상 == "전문가")
+    elif target == "citizen":
+        q = q.filter(ChecklistResult.진단대상 == "시민")
+    return q.offset(skip).limit(min(limit, 500)).all()
 
 
 @router.get("/clusters")

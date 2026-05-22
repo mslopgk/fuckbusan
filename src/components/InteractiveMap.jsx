@@ -192,7 +192,6 @@ const InteractiveMap = () => {
                             icon={L.divIcon({ className: 'invisible-marker' })}
                             eventHandlers={{
                                 click: (e) => {
-                                    console.log(`Marker clicked for district: ${name}`);
                                     L.DomEvent.stopPropagation(e);
                                     setSelectedDistrict(name);
                                 },
@@ -214,7 +213,6 @@ const InteractiveMap = () => {
                                 )}
                                 <span
                                     onClick={(e) => {
-                                        console.log(`Text label clicked: ${name}`);
                                         e.stopPropagation();
                                         setSelectedDistrict(name);
                                     }}

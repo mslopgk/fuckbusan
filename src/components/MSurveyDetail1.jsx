@@ -59,7 +59,21 @@ export default function MSurveyDetail1({ onNavigate, survey }) {
                 </ul>
 
                 <p className="m-body-terms">
-                    <span className="link">이용약관</span> 및 <span className="link">개인정보처리방침</span>
+                    <span
+                        className="link"
+                        style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                        onClick={() => alert('이용약관 내용입니다. (준비 중)')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === 'Enter' && alert('이용약관 내용입니다. (준비 중)')}
+                    >이용약관</span> 및 <span
+                        className="link"
+                        style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                        onClick={() => alert('개인정보처리방침 내용입니다. (준비 중)')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === 'Enter' && alert('개인정보처리방침 내용입니다. (준비 중)')}
+                    >개인정보처리방침</span>
                 </p>
 
                 <button className="m-survey-cta" onClick={() => onNavigate && onNavigate('mSurveyDetail2', fullSurvey || survey)}>참여하기</button>

@@ -106,7 +106,7 @@ export default function PCSurveyResults({ onNavigate, survey }) {
 
     const radarData = (() => {
         const qs = (resultsData?.questions || []).filter(q => q.distribution?.length > 0).slice(0, 6);
-        if (!qs.length) return [];
+        if (qs.length < 3) return [];
         const LABELS = ['접근성', '이동성', '안전성', '정보제공성', '포용성', '심미성'];
         return qs.map((q, idx) => {
             const total = q.distribution.reduce((s, d) => s + (d.count || 0), 0) || 1;
@@ -193,6 +193,26 @@ export default function PCSurveyResults({ onNavigate, survey }) {
                                     <polyline points="6 9 12 15 18 9" />
                                 </svg>
                             </button>
+                            {open && (
+                                <div className="pc-radar-detail-table-wrap">
+                                    <table className="pc-radar-detail-table">
+                                        <thead>
+                                            <tr>
+                                                <th>항목</th>
+                                                <th>점수 (5점 만점)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {radarData.map((d) => (
+                                                <tr key={d.label}>
+                                                    <td>{d.label}</td>
+                                                    <td>{d.value}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -245,8 +265,8 @@ export default function PCSurveyResults({ onNavigate, survey }) {
                             <h4 className="pc-results-q-title">응답 분포</h4>
                             <div className="pc-col-chart-wrap">
                                 <div className="pc-col-y-axis">
-                                    {[colMax, Math.round(colMax * 0.75), Math.round(colMax * 0.5), Math.round(colMax * 0.25), 0].map((v) => (
-                                        <span key={v}>{v}</span>
+                                    {[colMax, Math.round(colMax * 0.75), Math.round(colMax * 0.5), Math.round(colMax * 0.25), 0].map((v, i) => (
+                                        <span key={i}>{v}</span>
                                     ))}
                                 </div>
                                 <div className="pc-col-chart-inner">

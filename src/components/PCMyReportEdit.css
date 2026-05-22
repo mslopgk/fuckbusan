@@ -11,6 +11,7 @@
     overflow: hidden;
     flex-shrink: 0;
     background: #f1f3f5;
+    position: relative;
 }
 
 .pc-myrep-edit-photo img {

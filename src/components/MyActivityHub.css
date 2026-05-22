@@ -92,6 +92,18 @@
     background: linear-gradient(135deg, rgba(22, 181, 176, 0.02) 0%, rgba(22, 181, 176, 0.05) 100%);
 }
 
+.ma-hub-card.diagnosis {
+    background: linear-gradient(135deg, rgba(6, 171, 105, 0.02) 0%, rgba(6, 171, 105, 0.05) 100%);
+}
+
+.ma-hub-card.diagnosis:hover {
+    border-color: #06AB69;
+}
+
+.ma-hub-card.diagnosis:hover .ma-hub-card-arrow {
+    color: #06AB69;
+}
+
 .ma-hub-card-icon {
     width: 56px;
     height: 56px;

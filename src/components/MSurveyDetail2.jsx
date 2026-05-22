@@ -1,11 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyDetail.css';
+import { API_URL } from '../utils/api';
 
 const GENDERS = ['남자', '여자'];
 const AGES = ['20대 미만', '20대', '30대', '40대', '50대 이상'];
 const DEVICES = ['PC', '모바일', '태블릿', '기타'];
 const JOBS = ['학생(초중고생)', '대학교대학원생', '회사원', '전문직', '개인사업자', '기타'];
+
+function birthToAgeGroup(birthDate) {
+    if (!birthDate) return null;
+    const year = parseInt(String(birthDate).slice(0, 4), 10);
+    if (!year || isNaN(year)) return null;
+    const age = new Date().getFullYear() - year;
+    if (age < 20) return '20대 미만';
+    if (age < 30) return '20대';
+    if (age < 40) return '30대';
+    if (age < 50) return '40대';
+    return '50대 이상';
+}
+
+function detectDevice() {
+    const ua = navigator.userAgent.toLowerCase();
+    if (/ipad|tablet/.test(ua)) return '태블릿';
+    if (/mobile|android|iphone/.test(ua) || window.innerWidth < 1024) return '모바일';
+    return 'PC';
+}
 
 export default function MSurveyDetail2({ onNavigate, survey }) {
     const data = {
@@ -14,11 +34,31 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
     const [agree, setAgree] = useState(true);
     const [gender, setGender] = useState('남자');
     const [age, setAge] = useState('20대');
-    const [device, setDevice] = useState('PC');
+    const [device, setDevice] = useState(() => detectDevice());
     const [job, setJob] = useState('학생(초중고생)');
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+        fetch(`${API_URL}/users/me`, { headers: { Authorization: `Bearer ${token}` } })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => {
+                if (!d) return;
+                if (d.name) setName(d.name);
+                if (d.phone_num) {
+                    const digits = d.phone_num.replace(/\D/g, '').slice(0, 11);
+                    if (digits.length <= 3) setPhone(digits);
+                    else if (digits.length <= 7) setPhone(`${digits.slice(0, 3)}-${digits.slice(3)}`);
+                    else setPhone(`${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`);
+                }
+                const ageGroup = birthToAgeGroup(d.birth_date);
+                if (ageGroup) setAge(ageGroup);
+            })
+            .catch(() => {});
+    }, []);
 
     const handlePhoneChange = (e) => {
         const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
@@ -32,7 +72,17 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
         if (!/^[가-힣]{2,10}$/.test(name.trim())) next.name = '이름은 한글 2~10자로 입력해주세요.';
         if (!/^01[016789]-\d{3,4}-\d{4}$/.test(phone)) next.phone = '올바른 휴대폰번호를 입력해주세요. (예: 010-1234-5678)';
         setErrors(next);
-        if (Object.keys(next).length === 0) onNavigate && onNavigate('mSurveyJoin', survey);
+        if (Object.keys(next).length === 0) onNavigate && onNavigate('mSurveyJoin', {
+            ...survey,
+            demographics: {
+                gender,
+                ageGroup: age,
+                device,
+                job,
+                name,
+                phone,
+            },
+        });
     };
 
     return (

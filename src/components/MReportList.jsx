@@ -1,12 +1,56 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+
+const PAGE_SIZE = 25;
+const SORT_API = { '최신순': 'latest', '조회수': 'views', '투표순': 'votes' };
 import MobileBottomNav from './MobileBottomNav';
 import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
 import { REGIONS, SORTS, REPORT_STAGES as STAGES } from '../constants/mapConstants';
 import { RegionSheet, SortSheet } from './MFilterSheets';
 import { API_URL } from '../utils/api';
+import { useLazyImage } from '../hooks/useLazyImage';
 import './MProposalList.css';
 import './MReportList.css';
+
+function ReportListCard({ it, likedIds, onNavigate, onToggleLike }) {
+    const style = CAT_STYLES[it.category] || { bg: '#eee', color: '#555' };
+    const { ref: imgRef, bgStyle } = useLazyImage(it.image);
+    return (
+        <li
+            className="m-prop-card"
+            onClick={() => onNavigate && onNavigate('mReportDetail', { ...it, cat: it.category, sub: it.sub_category })}
+        >
+            <div className="m-prop-card-text">
+                <div className="m-report-tags">
+                    <span className="m-prop-cat-tag" style={{ background: style.bg, color: style.color }}>{it.category}</span>
+                    {it.sub_category && <span className="m-report-sub-tag">{it.sub_category}</span>}
+                </div>
+                <h3 className="m-prop-title">{it.title}</h3>
+                <div className="m-report-author-stat-row">
+                    <p className="m-prop-author">{it.author || '익명'}</p>
+                    <div className="m-prop-stats">
+                        <span
+                            onClick={(e) => onToggleLike(e, it.id)}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill={likedIds.has(it.id) ? '#E6235A' : 'none'} stroke={likedIds.has(it.id) ? '#E6235A' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                            {it.likes ?? 0}
+                        </span>
+                        <span>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            {it.comments ?? 0}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {it.image && <div ref={imgRef} className="m-prop-card-img" style={bgStyle} />}
+        </li>
+    );
+}
 
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 
@@ -21,45 +65,81 @@ export default function MReportList({ onNavigate }) {
     const [sortOpen, setSortOpen] = useState(false);
     const [listOpen, setListOpen] = useState(true);
     const [items, setItems] = useState([]);
+    const [hasMore, setHasMore] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [likedIds, setLikedIds] = useState(() => {
         try { return new Set(JSON.parse(localStorage.getItem('likedReportIds') || '[]')); } catch { return new Set(); }
     });
     const [loading, setLoading] = useState(true);
+    const [mapPins, setMapPins] = useState([]);
+    const fetchGenRef = useRef(0);
 
-
-
+    // 지도 핀: 전체 좌표만 별도 1회 로드
     useEffect(() => {
-        const params = new URLSearchParams();
+        fetch(`${API_URL}/api/reports/pins`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((rows) => setMapPins(
+                (Array.isArray(rows) ? rows : []).map((r) => ({
+                    id: String(r.id), lat: r.lat, lng: r.lng, color: '#E6235A', title: r.category || ''
+                }))
+            ))
+            .catch(() => {});
+    }, []);
+
+    // 목록: 필터/정렬 변경 시 page 1부터 재로드
+    useEffect(() => {
+        const gen = ++fetchGenRef.current;
+        const stageDef = STAGES.find((s) => s.key === stage);
+        const params = new URLSearchParams({ page: 1, size: PAGE_SIZE, sort: SORT_API[sort] || 'latest' });
         if (region && region !== '부산전체') params.set('region', region);
         if (cat && cat !== '전체') params.set('category', cat);
-        const stageDef = STAGES.find((s) => s.key === stage);
         if (stageDef) params.set('status', stageDef.apiValue);
         setLoading(true);
+        setItems([]);
+        setHasMore(true);
         fetch(`${API_URL}/api/reports/full?${params.toString()}`)
-            .then((r) => (r.ok ? r.json() : []))
-            .then((rows) => setItems(Array.isArray(rows) ? rows : []))
+            .then((r) => (r.ok ? r.json() : { items: [], has_more: false }))
+            .then((data) => {
+                if (gen !== fetchGenRef.current) return;
+                const list = data.items ?? data;
+                setItems(Array.isArray(list) ? list : []);
+                setHasMore(data.has_more ?? false);
+            })
             .catch(() => setItems([]))
-            .finally(() => setLoading(false));
-    }, [region, cat, stage]);
+            .finally(() => { if (gen === fetchGenRef.current) setLoading(false); });
+    }, [region, cat, stage, sort]);
 
-    const sortedItems = useMemo(() => {
-        const arr = [...items];
-        if (sort === '조회수') arr.sort((a, b) => (b.views || 0) - (a.views || 0));
-        else if (sort === '투표순') arr.sort((a, b) => (b.likes || 0) - (a.likes || 0));
-        return arr;
-    }, [items, sort]);
+    const loadMore = useCallback(() => {
+        if (!hasMore || loadingMore) return;
+        setLoadingMore(true);
+        setItems((prev) => {
+            const nextPage = Math.floor(prev.length / PAGE_SIZE) + 1;
+            const stageDef = STAGES.find((s) => s.key === stage);
+            const params = new URLSearchParams({ page: nextPage, size: PAGE_SIZE, sort: SORT_API[sort] || 'latest' });
+            if (region && region !== '부산전체') params.set('region', region);
+            if (cat && cat !== '전체') params.set('category', cat);
+            if (stageDef) params.set('status', stageDef.apiValue);
+            fetch(`${API_URL}/api/reports/full?${params.toString()}`)
+                .then((r) => (r.ok ? r.json() : { items: [] }))
+                .then((data) => {
+                    const newItems = data.items ?? data;
+                    setItems((p) => [...p, ...(Array.isArray(newItems) ? newItems : [])]);
+                    setHasMore(data.has_more ?? false);
+                })
+                .finally(() => setLoadingMore(false));
+            return prev;
+        });
+    }, [hasMore, loadingMore, region, cat, stage, sort]);
+
+    const handleScroll = useCallback((e) => {
+        const el = e.currentTarget;
+        if (el.scrollHeight - el.scrollTop - el.clientHeight < 250) loadMore();
+    }, [loadMore]);
 
     const openRegion = () => { setRegionDraft(region); setRegionOpen(true); };
     const openSort = () => { setSortDraft(sort); setSortOpen(true); };
     const confirmRegion = () => { setRegion(regionDraft); setRegionOpen(false); };
     const confirmSort = () => { setSort(sortDraft); setSortOpen(false); };
-
-    const mapPins = useMemo(() =>
-        items
-            .filter((it) => it.lat && it.lng)
-            .map((it) => ({ id: String(it.id), lat: it.lat, lng: it.lng, color: '#E6235A', title: it.title })),
-        [items]
-    );
 
     const toggleLike = async (e, id) => {
         e.stopPropagation();
@@ -120,7 +200,7 @@ export default function MReportList({ onNavigate }) {
                     </span>
                 </div>
 
-                <div className="m-prop-list-content">
+                <div className="m-prop-list-content" onScroll={handleScroll}>
                     <div className="m-cat-chips">
                         {CATEGORIES.map((c) => (
                             <button
@@ -150,48 +230,19 @@ export default function MReportList({ onNavigate }) {
 
                     <ul className="m-prop-cards">
                         {loading && <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>불러오는 중...</li>}
-                        {!loading && sortedItems.length === 0 && (
+                        {!loading && items.length === 0 && (
                             <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>조건에 맞는 제보가 없습니다.</li>
                         )}
-                        {sortedItems.map((it) => {
-                            const style = CAT_STYLES[it.category] || { bg: '#eee', color: '#555' };
-                            return (
-                                <li
-                                    key={it.id}
-                                    className="m-prop-card"
-                                    onClick={() => onNavigate && onNavigate('mReportDetail', { ...it, cat: it.category, sub: it.sub_category })}
-                                >
-                                    <div className="m-prop-card-text">
-                                        <div className="m-report-tags">
-                                            <span className="m-prop-cat-tag" style={{ background: style.bg, color: style.color }}>{it.category}</span>
-                                            {it.sub_category && <span className="m-report-sub-tag">{it.sub_category}</span>}
-                                        </div>
-                                        <h3 className="m-prop-title">{it.title}</h3>
-                                        <div className="m-report-author-stat-row">
-                                            <p className="m-prop-author">{it.author || '익명'}</p>
-                                            <div className="m-prop-stats">
-                                                <span
-                                                    onClick={(e) => toggleLike(e, it.id)}
-                                                    style={{ cursor: 'pointer' }}
-                                                >
-                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill={likedIds.has(it.id) ? '#E6235A' : 'none'} stroke={likedIds.has(it.id) ? '#E6235A' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
-                                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                                                    </svg>
-                                                    {it.likes ?? 0}
-                                                </span>
-                                                <span>
-                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
-                                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                                                    </svg>
-                                                    {it.comments ?? 0}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {it.image && <div className="m-prop-card-img" style={{ backgroundImage: `url(${it.image})` }} />}
-                                </li>
-                            );
-                        })}
+                        {items.map((it) => (
+                            <ReportListCard
+                                key={it.id}
+                                it={it}
+                                likedIds={likedIds}
+                                onNavigate={onNavigate}
+                                onToggleLike={toggleLike}
+                            />
+                        ))}
+                        {loadingMore && <li style={{ padding: '12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>불러오는 중...</li>}
                     </ul>
                 </div>
             </div>

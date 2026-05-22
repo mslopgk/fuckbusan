@@ -1,5 +1,8 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react';
+
+const DIAG_PAGE_SIZE = 50;
 import { Map, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
+import { useLazyImage } from '../hooks/useLazyImage';
 import MobileBottomNav from './MobileBottomNav';
 import {
     DISTRICT_CENTERS,
@@ -8,23 +11,128 @@ import {
 import './MDiagnosisList.css';
 import { API_URL, authHeaders } from '../utils/api';
 
+// 줌 레벨 → 클러스터 합치기 반경 (위경도 도 단위)
+// Kakao level 1=가장 가까이, 14=가장 멀리
+const CLUSTER_RADIUS = {
+    1: 0.0008, 2: 0.0015, 3: 0.003, 4: 0.006, 5: 0.02,
+    6: 0.04,   7: 0.08,   8: 0.15,  9: 0.3,   10: 0.6,
+};
+
+function buildClusterPins(rawPins, level, activeDistrict) {
+    if (!rawPins.length) return [];
+    const r = CLUSTER_RADIUS[level] ?? CLUSTER_RADIUS[5];
+    const taken = new Array(rawPins.length).fill(false);
+    const result = [];
+
+    for (let i = 0; i < rawPins.length; i++) {
+        if (taken[i]) continue;
+        const p = rawPins[i];
+        let wLat = p.lat * p.count, wLng = p.lng * p.count, total = p.count;
+        let dist = p.district ?? null;
+        taken[i] = true;
+
+        for (let j = i + 1; j < rawPins.length; j++) {
+            if (taken[j]) continue;
+            const q = rawPins[j];
+            // 유클리드 거리 체크 (작은 범위에서는 도 단위 근사 충분)
+            const dlat = Math.abs(q.lat - p.lat);
+            const dlng = Math.abs(q.lng - p.lng);
+            if (dlat <= r && dlng <= r) {
+                wLat += q.lat * q.count;
+                wLng += q.lng * q.count;
+                total += q.count;
+                // district: 명시적 값 있는 것 우선
+                if (!dist && q.district) dist = q.district;
+                taken[j] = true;
+            }
+        }
+
+        result.push({
+            id: dist ?? `geo_${i}`,
+            district: dist,
+            count: total,
+            lat: wLat / total,
+            lng: wLng / total,
+            focus: dist != null && dist === activeDistrict,
+        });
+    }
+    return result;
+}
+
+const DiagCard = memo(function DiagCard({ it, onNavigate }) {
+    const { ref: thumbRef, bgStyle } = useLazyImage(it.thumb);
+    return (
+        <li
+            className="m-diag-card"
+            onClick={() => onNavigate?.('mDiagnosisResult', it)}
+        >
+            <div className="m-diag-card-body">
+                <div className="m-diag-card-tags">
+                    <span className="m-diag-tag">{it.big}</span>
+                    {it.mid && <span className="m-diag-tag">{it.mid}</span>}
+                </div>
+                <div className="m-diag-card-name-row">
+                    <span className="m-diag-card-name">{it.name}</span>
+                    {it.score != null && <span className="m-diag-card-score">{it.score}</span>}
+                </div>
+                {it.reviewText && <p className="m-diag-card-review">{it.reviewText}</p>}
+            </div>
+            <div ref={thumbRef} className="m-diag-card-thumb" style={bgStyle} />
+        </li>
+    );
+});
+
 export default function MDiagnosisList({ onNavigate }) {
     const [search, setSearch] = useState('');
     const [category, setCategory] = useState('전체');
     const [mode, setMode] = useState('citizen');
-    const [district, setDistrict] = useState('부산진구');
+    const [district, setDistrict] = useState('');
     const [allRows, setAllRows] = useState([]);
+    const [diagHasMore, setDiagHasMore] = useState(true);
+    const [diagLoadingMore, setDiagLoadingMore] = useState(false);
     const [clusters, setClusters] = useState([]);
     const [selectedPin, setSelectedPin] = useState(null);
+    const [mapLevel, setMapLevel] = useState(5);
     const mapRef = useRef(null);
+    // panTo 중 onDragEnd 이벤트가 발생해 selectedPin을 덮어쓰는 것을 방지
+    const isPanningRef = useRef(false);
 
-    // /checklist/list requires auth; guests see empty list (by server design)
+    // /checklist/list requires auth; mode 변경 시 page 1부터 재로드
     useEffect(() => {
-        fetch(`${API_URL}/checklist/list`, { headers: authHeaders() })
+        setAllRows([]);
+        setDiagHasMore(true);
+        const params = new URLSearchParams({ skip: 0, limit: DIAG_PAGE_SIZE });
+        fetch(`${API_URL}/checklist/list?${params.toString()}`, { headers: authHeaders() })
             .then((r) => (r.ok ? r.json() : []))
-            .then((rows) => setAllRows(Array.isArray(rows) ? rows : []))
+            .then((rows) => {
+                const arr = Array.isArray(rows) ? rows : [];
+                setAllRows(arr);
+                setDiagHasMore(arr.length === DIAG_PAGE_SIZE);
+            })
             .catch(() => setAllRows([]));
-    }, []);
+    }, [mode]);
+
+    const loadMoreDiag = useCallback(() => {
+        if (!diagHasMore || diagLoadingMore) return;
+        setDiagLoadingMore(true);
+        setAllRows((prev) => {
+            const params = new URLSearchParams({ skip: prev.length, limit: DIAG_PAGE_SIZE });
+            fetch(`${API_URL}/checklist/list?${params.toString()}`, { headers: authHeaders() })
+                .then((r) => (r.ok ? r.json() : []))
+                .then((rows) => {
+                    const arr = Array.isArray(rows) ? rows : [];
+                    setAllRows((p) => [...p, ...arr]);
+                    setDiagHasMore(arr.length === DIAG_PAGE_SIZE);
+                })
+                .finally(() => setDiagLoadingMore(false));
+            return prev;
+        });
+    }, [diagHasMore, diagLoadingMore]);
+
+    const handleDiagScroll = useCallback((e) => {
+        const el = e.currentTarget;
+        if (el.scrollHeight - el.scrollTop - el.clientHeight < 250) loadMoreDiag();
+    }, [loadMoreDiag]);
 
     // /checklist/clusters is public — use it for map pins
     useEffect(() => {
@@ -38,6 +146,18 @@ export default function MDiagnosisList({ onNavigate }) {
         return allRows
             .filter((r) => !district || r.진단지역 === district || r.district_code === district)
             .filter((r) => category === '전체' || r.대분류 === category)
+            .filter((r) => {
+                // 시민/전문가 탭 필터
+                const target = r.진단대상 ?? r.target ?? null;
+                if (mode === 'expert') return target === '전문가' || target === 'expert';
+                // citizen 모드: 전문가 제외 (미설정 포함)
+                return target !== '전문가' && target !== 'expert';
+            })
+            .filter((r) => !search ||
+                (r.질문기준 && r.질문기준.includes(search)) ||
+                (r.대분류 && r.대분류.includes(search)) ||
+                (r.진단지역 && r.진단지역.includes(search))
+            )
             .map((r) => ({
                 id: r.result_id,
                 big: r.대분류 || '주거',
@@ -47,21 +167,21 @@ export default function MDiagnosisList({ onNavigate }) {
                 reviewText: r.리뷰 || '',
                 thumb: r.이미지경로 || null,
             }));
-    }, [allRows, district, category]);
+    }, [allRows, district, category, search, mode]);
 
-    // Build map pins from clusters endpoint (public, no auth needed)
+    // 지도 핀: 서버 clusters를 줌 레벨 기반 지리 클러스터링으로 표시
+    // allRows 개별 좌표는 리스트 카드 필터에만 사용
     const DIAG_PINS = useMemo(() => {
-        return clusters
+        const rawPins = clusters
             .filter((c) => c.lat && c.lng)
             .map((c) => ({
-                id: c.district ?? 'all',
-                district: c.district ?? 'all',
-                count: c.count,
                 lat: parseFloat(c.lat),
                 lng: parseFloat(c.lng),
-                focus: (c.district ?? 'all') === district,
+                count: c.count,
+                district: c.district ?? null,
             }));
-    }, [clusters, district]);
+        return buildClusterPins(rawPins, mapLevel, district);
+    }, [clusters, mapLevel, district]);
 
     const kakaoKey = import.meta.env.VITE_KAKAO_MAP_KEY;
     const [kakaoLoading, kakaoError] = useKakaoLoader({ appkey: kakaoKey, libraries: ['services'] });
@@ -74,7 +194,10 @@ export default function MDiagnosisList({ onNavigate }) {
         // district가 바뀔 때만 지도 중심 이동 (panTo) + currentCenter 갱신
         setCurrentCenter(districtCenter);
         if (mapRef.current && window.kakao) {
+            isPanningRef.current = true;
             mapRef.current.panTo(new window.kakao.maps.LatLng(districtCenter.lat, districtCenter.lng));
+            // panTo 애니메이션 완료 후 플래그 해제 (카카오맵 panTo는 약 500ms)
+            setTimeout(() => { isPanningRef.current = false; }, 800);
         }
     }, [districtCenter]);
 
@@ -116,13 +239,24 @@ export default function MDiagnosisList({ onNavigate }) {
                         zoomable
                         onCreate={(m) => {
                             mapRef.current = m;
+                            setMapLevel(m.getLevel());
+                        }}
+                        onZoomChanged={(m) => setMapLevel(m.getLevel())}
+                        onDragStart={() => {
+                            // 드래그 시작 시 기존 핀 해제 → crosshair 복귀 (순간이동 방지)
+                            if (!isPanningRef.current) setSelectedPin(null);
                         }}
                         onDragEnd={(m) => {
+                            // panTo 중 발생한 이벤트는 무시 (기존 핀 클릭 덮어쓰기 방지)
+                            if (isPanningRef.current) return;
                             const c = m.getCenter();
                             const lat = c.getLat();
                             const lng = c.getLng();
                             setCurrentCenter({ lat, lng }); // 스냅백 방지
-                            if (!window.kakao?.maps?.services) return;
+                            if (!window.kakao?.maps?.services) {
+                                setSelectedPin({ lat, lng, address: '선택된 위치' });
+                                return;
+                            }
                             const geocoder = new window.kakao.maps.services.Geocoder();
                             geocoder.coord2Address(lng, lat, (result, status) => {
                                 const addr = status === window.kakao.maps.services.Status.OK
@@ -133,14 +267,20 @@ export default function MDiagnosisList({ onNavigate }) {
                         }}
                     >
                         {DIAG_PINS.map((p) => (
-                            <CustomOverlayMap key={p.id} position={{ lat: p.lat, lng: p.lng }} yAnchor={1}>
+                            <CustomOverlayMap key={p.id} position={{ lat: p.lat, lng: p.lng }} yAnchor={1} clickable>
                                 <button
                                     type="button"
                                     className={`m-diag-pin${p.focus ? ' focus' : ''}`}
+                                    onTouchStart={(e) => e.stopPropagation()}
+                                    onTouchEnd={(e) => e.stopPropagation()}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        setDistrict(p.district);
-                                        setSelectedPin({ lat: p.lat, lng: p.lng, district: p.district });
+                                        isPanningRef.current = true;
+                                        const addr = p.district && p.district !== 'all'
+                                            ? `${p.district} (${p.count}건)` : '진단 위치';
+                                        setSelectedPin({ lat: p.lat, lng: p.lng, district: p.district, address: addr });
+                                        if (p.district && p.district !== 'all') setDistrict(p.district);
+                                        setTimeout(() => { isPanningRef.current = false; }, 800);
                                     }}
                                 >
                                     <span className="m-diag-pin-count">{p.count}</span>
@@ -221,36 +361,25 @@ export default function MDiagnosisList({ onNavigate }) {
                 </div>
 
                 {/* 카드 리스트 */}
-                <ul className="m-diag-cards">
+                <ul className="m-diag-cards" onScroll={handleDiagScroll}>
                     {filtered.length === 0 ? (
                         <li className="m-diag-empty">
-                            <p>진단 결과가 없습니다.</p>
-                            <p className="m-diag-empty-sub">로그인 후 전체 진단 내역을 볼 수 있습니다.</p>
+                            {!localStorage.getItem('access_token') ? (
+                                <>
+                                    <p>진단 결과가 없습니다.</p>
+                                    <p className="m-diag-empty-sub">로그인 후 전체 진단 내역을 볼 수 있습니다.</p>
+                                </>
+                            ) : (
+                                <p>해당 구역의 진단 결과가 없습니다.</p>
+                            )}
                         </li>
                     ) : (
                         filtered.map((it) => (
-                            <li
-                                key={it.id}
-                                className="m-diag-card"
-                                onClick={() => onNavigate?.('mDiagnosisResult', it)}
-                            >
-                                <div className="m-diag-card-body">
-                                    <div className="m-diag-card-tags">
-                                        <span className="m-diag-tag">{it.big}</span>
-                                        {it.mid && <span className="m-diag-tag">{it.mid}</span>}
-                                    </div>
-                                    <div className="m-diag-card-name-row">
-                                        <span className="m-diag-card-name">{it.name}</span>
-                                        {it.score != null && <span className="m-diag-card-score">{it.score}</span>}
-                                    </div>
-                                    {it.reviewText && <p className="m-diag-card-review">{it.reviewText}</p>}
-                                </div>
-                                <div
-                                    className="m-diag-card-thumb"
-                                    style={it.thumb ? { backgroundImage: `url(${it.thumb})` } : undefined}
-                                />
-                            </li>
+                            <DiagCard key={it.id} it={it} onNavigate={onNavigate} />
                         ))
+                    )}
+                    {diagLoadingMore && (
+                        <li style={{ padding: '12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>불러오는 중...</li>
                     )}
                 </ul>
 
@@ -265,7 +394,7 @@ export default function MDiagnosisList({ onNavigate }) {
                     type="button"
                     className={`m-diag-fab${!selectedPin ? ' disabled' : ''}`}
                     disabled={!selectedPin}
-                    onClick={() => selectedPin && onNavigate?.('mDiagnosisForm', selectedPin)}
+                    onClick={() => selectedPin && onNavigate?.('mDiagnosisForm', { ...selectedPin, mode })}
                 >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19" />

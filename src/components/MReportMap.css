@@ -1,0 +1,79 @@
+/* MReportMap — 제보 지도 뷰 (Figma 848:19015) */
+/* Brand: #E6235A (pink), shadows match 제보·제안 계열 */
+
+/* Page container override for report brand */
+.m-rmap-page {
+    background: #f7f7f8;
+}
+
+/* Region button inside the sheet (button variant of m-sheet-region) */
+.m-sheet-region-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a1a1b;
+    letter-spacing: -0.02em;
+    padding: 4px 0;
+}
+
+.m-sheet-region-btn .m-region-arrow {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #E6235A;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* FAB: always visible (not scoped inside expanded sheet) */
+.m-rmap-fab {
+    position: fixed;
+    right: 16px;
+    bottom: 88px; /* above MobileBottomNav (≈76px) + gap */
+    z-index: 60;
+    background: #E6235A;
+    box-shadow: 0 4px 16px rgba(230, 35, 90, 0.25);
+    /* m-prop-fab base styles handle the rest */
+}
+
+/* Override chip active color to report pink */
+.m-rmap-page .m-cat-chip.on {
+    background: #E6235A;
+    color: #fff;
+    border-color: #E6235A;
+}
+
+/* Region pill arrow circle: report pink */
+.m-rmap-page .m-sheet-region-btn .m-region-arrow {
+    background: #E6235A;
+}
+
+/* Stage chip active: report pink */
+.m-rmap-page .m-stage-chip.on {
+    background: #FCDAE3;
+    color: #E6235A;
+    border-color: #E6235A;
+}
+
+/* Expanded state: hide standalone FAB (sheet's own FAB takes over) */
+.m-rmap-page.expanded .m-rmap-fab {
+    display: none;
+}
+
+/* When sheet is expanded, show FAB inside sheet context */
+.m-rmap-page.expanded .m-map-sheet.expanded .m-prop-fab {
+    display: flex;
+    position: fixed;
+    right: 16px;
+    bottom: 88px;
+    z-index: 60;
+    background: #E6235A;
+    box-shadow: 0 4px 16px rgba(230, 35, 90, 0.25);
+}

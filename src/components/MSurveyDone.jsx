@@ -1,3 +1,4 @@
+import MobileBottomNav from './MobileBottomNav';
 import './MSurveyDone.css';
 
 export default function MSurveyDone({ onNavigate, survey }) {
@@ -14,11 +15,10 @@ export default function MSurveyDone({ onNavigate, survey }) {
                     더 나은 동네를 만들기 위해 지속적으로 노력하겠습니다.
                 </p>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '0 24px 32px' }}>
+            <div className="m-done-actions">
                 {survey?.id && (
                     <button
                         className="m-done-cta"
-                        style={{ background: '#5B2EAB' }}
                         onClick={() => onNavigate && onNavigate('mSurveyResults', survey)}
                         type="button"
                     >
@@ -26,14 +26,14 @@ export default function MSurveyDone({ onNavigate, survey }) {
                     </button>
                 )}
                 <button
-                    className="m-done-cta"
-                    style={{ background: '#888' }}
+                    className="m-done-cta m-done-cta-home"
                     onClick={() => onNavigate && onNavigate('home')}
                     type="button"
                 >
                     홈으로 이동
                 </button>
             </div>
+            <MobileBottomNav currentView="mSurveyDone" onNavigate={onNavigate} />
         </div>
     );
 }

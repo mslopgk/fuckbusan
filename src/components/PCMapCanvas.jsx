@@ -135,9 +135,9 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
     const renderedPins = useMemo(() => buildClusters(pins, level), [pins, level]);
 
     const handleClusterClick = (cluster) => {
-        // 클러스터 클릭 시 zoom in (level 1단계 줄임) + 클러스터 위치로 센터 이동.
         setCenter({ lat: cluster.lat, lng: cluster.lng });
-        setLevel((l) => Math.max(1, l - 2));
+        // 클러스터가 여전히 겹칠 수 있도록 CLUSTER_LEVEL_THRESHOLD 이하까지 과감히 확대
+        setLevel((l) => Math.max(1, Math.min(l - 4, CLUSTER_LEVEL_THRESHOLD - 2)));
     };
 
     return (
@@ -223,6 +223,8 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                                 /* 클러스터: 큰 원 + 반투명 후광 */
                                 <button
                                     type="button"
+                                    onTouchStart={(e) => e.stopPropagation()}
+                                    onTouchEnd={(e) => e.stopPropagation()}
                                     onClick={() => handleClusterClick(pin)}
                                     className="pc-diag-circle-pin pc-diag-circle-pin--cluster"
                                     aria-label={`${pin.count}건`}
@@ -233,6 +235,8 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                                 /* 개별 핀: 원형 버블 */
                                 <button
                                     type="button"
+                                    onTouchStart={(e) => e.stopPropagation()}
+                                    onTouchEnd={(e) => e.stopPropagation()}
                                     onClick={() => onPinClick && onPinClick(pin)}
                                     className="pc-diag-circle-pin"
                                     aria-label={pin.title || '진단'}

@@ -14,7 +14,7 @@ export default function PCProposeMap({ onNavigate }) {
     const [kind, setKind] = useState(null);
     const [sort, setSort] = useState('latest');
     const [policyItem, setPolicyItem] = useState(null);
-    const [policyDismissed, setPolicyDismissed] = useState(false);
+    const [policyDismissed, setPolicyDismissed] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const mapRef = useRef(null);
 
@@ -38,7 +38,16 @@ export default function PCProposeMap({ onNavigate }) {
             lng: r.lng,
         }));
         const proposalItems = proposals.map((p) => {
-            const c = DISTRICT_CENTERS[p.region];
+            let lat, lng;
+            if (p.lat && p.lng) {
+                lat = p.lat;
+                lng = p.lng;
+            } else {
+                const c = DISTRICT_CENTERS[p.region] || [35.1796, 129.0756];
+                const seed = typeof p.id === 'number' ? p.id : String(p.id).split('').reduce((a, ch) => a + ch.charCodeAt(0), 0);
+                lat = c[0] + ((seed * 7919) % 1000 / 1000 - 0.5) * 0.005;
+                lng = c[1] + ((seed * 6271) % 1000 / 1000 - 0.5) * 0.005;
+            }
             return {
                 id: `p-${p.id}`,
                 rawId: p.id,
@@ -52,8 +61,8 @@ export default function PCProposeMap({ onNavigate }) {
                 views: p.views_count || 0,
                 votes: p.likes_count || 0,
                 image: p.image || null,
-                lat: c ? c[0] + (Math.random() - 0.5) * 0.005 : null,
-                lng: c ? c[1] + (Math.random() - 0.5) * 0.005 : null,
+                lat,
+                lng,
             };
         });
         return [...reportItems, ...proposalItems];
@@ -80,13 +89,14 @@ export default function PCProposeMap({ onNavigate }) {
 
     const filtered = useMemo(() => {
         let arr = ITEMS;
+        if (district && district !== '중구') arr = arr.filter((it) => it.region === district);
         if (!livingCats.has('all')) arr = arr.filter((it) => livingCats.has(it.categoryKey));
         if (kind) arr = arr.filter((it) => it.kind === kind);
         if (sort === 'views') arr = [...arr].sort((a, b) => b.views - a.views);
         else if (sort === 'votes') arr = [...arr].sort((a, b) => b.votes - a.votes);
         else arr = [...arr].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
         return arr;
-    }, [ITEMS, livingCats, kind, sort]);
+    }, [ITEMS, district, livingCats, kind, sort]);
 
     const counts = {
         report: ITEMS.filter((i) => i.kind === '제보').length,
@@ -193,7 +203,7 @@ export default function PCProposeMap({ onNavigate }) {
                             <div className="pc-map3-policy-actions">
                                 <button
                                     className="pc-map3-policy-cta"
-                                    onClick={() => onNavigate && onNavigate(policyItem.kind === '제안' ? 'pcProposeDetail' : 'pcReportDetail', policyItem)}
+                                    onClick={() => onNavigate && onNavigate(policyItem.kind === '제안' ? 'pcProposeDetail' : 'pcReportDetail', { ...policyItem, id: policyItem.rawId })}
                                 >
                                     자세히 보기
                                 </button>
@@ -230,7 +240,7 @@ export default function PCProposeMap({ onNavigate }) {
                         {filtered.map((it) => (
                             <li
                                 key={it.id}
-                                onClick={() => onNavigate && onNavigate(it.kind === '제안' ? 'pcProposeDetail' : 'pcReportDetail', it)}
+                                onClick={() => onNavigate && onNavigate(it.kind === '제안' ? 'pcProposeDetail' : 'pcReportDetail', { ...it, id: it.rawId })}
                             >
                                 <div className="pc-map3-list-info">
                                     <div className="pc-map3-list-tags">

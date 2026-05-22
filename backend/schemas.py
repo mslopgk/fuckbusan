@@ -113,7 +113,7 @@ class Token(BaseModel):
 
 class ChecklistCreate(BaseModel):
     진단지역: Optional[str] = None
-    ID: Optional[str] = None 
+    ID: Optional[str] = None
     district_code: Optional[str] = None
     위도: Optional[float] = None
     경도: Optional[float] = None
@@ -125,6 +125,7 @@ class ChecklistCreate(BaseModel):
     리뷰: Optional[str] = None
     만족도: Optional[str] = None
     이미지경로: Optional[str] = None
+    진단대상: Optional[str] = None
 
 class ChecklistResponse(ChecklistCreate):
     result_id: int
@@ -206,10 +207,12 @@ class NewProposalRead(NewProposalCreate):
 
     @validator("files", pre=True)
     def parse_files(cls, v):
+        if v is None:
+            return []
         if isinstance(v, str):
             try:
                 return json.loads(v)
-            except:
+            except Exception:
                 return []
         return v
 
@@ -284,6 +287,7 @@ class SurveyAnswerSubmit(BaseModel):
 
 class SurveyResponseSubmit(BaseModel):
     answers: List[SurveyAnswerSubmit]
+    demographics: Optional[Dict[str, Any]] = None
 
 
 # ===== Home / stats =====

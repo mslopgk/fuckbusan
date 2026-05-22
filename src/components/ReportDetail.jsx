@@ -40,7 +40,7 @@ const ReportDetail = ({ report, onBack, onNavigate, onDelete, likedIds, onToggle
     }
 
     const style = CATEGORY_STYLES[report.category] || { background: '#F3F4F6', color: '#666' };
-    const steps = ['접수', '검토중', '검토완료', '결과안내'];
+    const steps = ['접수', '검토중', '검토완료', '처리완료'];
 
     // Provide default coordinates if missing
     const handleDelete = () => {
@@ -178,7 +178,7 @@ const ReportDetail = ({ report, onBack, onNavigate, onDelete, likedIds, onToggle
                                     <div 
                                         className={`rd-step-pill ${isActive ? 'active' : ''}`}
                                         onClick={() => {
-                                            if (step === '결과안내' && isActive && report.result_details) {
+                                            if (step === '처리완료' && isActive && report.result_details) {
                                                 setShowResultModal(true);
                                             }
                                         }}

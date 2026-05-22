@@ -228,3 +228,9 @@
 .m-diagres-detail-btn.purple { color: var(--diag-purple); }
 .m-diagres-detail-btn.blue   { color: var(--diag-blue); }
 .m-diagres-detail-btn.green  { color: var(--diag-green); }
+
+.m-diagres-detail-btn.disabled,
+.m-diagres-detail-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}

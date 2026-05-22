@@ -40,13 +40,6 @@ const Signup = ({ onBack, onNavigate }) => {
     };
 
     const handleSignup = async () => {
-        // [DEBUG]
-        console.log("Signup Attempt. API_URL:", API_URL);
-        console.log("Signup FormData:", formData);
-
-        if (!API_URL) {
-        }
-
         if (!isFormValid || loading) return;
         setLoading(true);
         setError(null);
@@ -60,7 +53,6 @@ const Signup = ({ onBack, onNavigate }) => {
                 phone_num: formData.phone,
                 district_code: userType === 'expert' ? 'expert' : 'general'
             };
-            console.log("Signup Payload:", payload);
 
             const response = await fetch(`${API_URL}/users/signup`, {
                 method: 'POST',
@@ -68,11 +60,8 @@ const Signup = ({ onBack, onNavigate }) => {
                 body: JSON.stringify(payload)
             });
 
-            console.log("Signup Response Status:", response.status);
-
             if (!response.ok) {
                 const errData = await response.json();
-                console.error("Signup Error Data:", errData);
                 throw new Error(errData.detail || '회원가입에 실패했습니다.');
             }
 
@@ -80,14 +69,11 @@ const Signup = ({ onBack, onNavigate }) => {
             if (onNavigate) {
                 onNavigate('signupDone');
             } else {
-                console.warn('onNavigate prop missing in Signup');
-                // Fallback to onBack if desired, or just alert
                 alert('회원가입 성공');
                 onBack();
             }
 
         } catch (err) {
-            console.error(err);
             const msg = err.message || '회원가입 에러 발생';
             setError(msg);
             alert(`회원가입 오류: ${msg}`);

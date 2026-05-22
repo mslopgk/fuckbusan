@@ -33,6 +33,17 @@
     font-family: inherit;
 }
 
+.m-diagform-mode-badge {
+    margin-left: auto;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: #5B2EAB;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
 /* ───── 본문 ───── */
 .m-diagform-body {
     padding: 0 20px;
@@ -102,60 +113,27 @@
     object-fit: cover;
 }
 
-/* ───── 분류 드롭다운 ───── */
-.m-diagform-cat-wrap {
-    position: relative;
-}
-
-.m-diagform-cat-btn {
+/* ───── 공공/시설물 입력 ───── */
+.m-diagform-facility-input {
     width: 100%;
     height: 44px;
-    background: #fff;
+    box-sizing: border-box;
     border: 1px solid var(--diag-border);
     border-radius: 8px;
     padding: 0 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     font-size: 15px;
     color: var(--diag-text);
-    cursor: pointer;
     font-family: inherit;
+    outline: none;
+    margin-bottom: 10px;
 }
 
-.m-diagform-cat-menu {
-    list-style: none;
-    margin: 6px 0 0;
-    padding: 6px;
-    background: #fff;
-    border: 1px solid var(--diag-border);
-    border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    max-height: 240px;
-    overflow-y: auto;
-    z-index: 4;
-    position: absolute;
-    left: 0;
-    right: 0;
+.m-diagform-facility-input:focus {
+    border-color: var(--diag-green);
 }
 
-.m-diagform-cat-menu li button {
-    width: 100%;
-    background: none;
-    border: none;
-    padding: 10px 12px;
-    border-radius: 8px;
-    text-align: left;
-    font-size: 14px;
-    color: var(--diag-text);
-    cursor: pointer;
-    font-family: inherit;
-}
-
-.m-diagform-cat-menu li button.on {
-    background: rgba(6, 171, 105, 0.08);
-    color: var(--diag-green);
-    font-weight: 700;
+.m-diagform-facility-input::placeholder {
+    color: var(--diag-text-mute);
 }
 
 .m-diagform-sub-row {
@@ -231,7 +209,7 @@
 
 .m-diagform-scale {
     position: relative;
-    height: 56px;
+    height: 36px;
     padding: 0 22px;
     display: flex;
     justify-content: space-between;
@@ -242,7 +220,8 @@
     position: absolute;
     left: 30px;
     right: 30px;
-    top: 18px;
+    top: 50%;
+    transform: translateY(-50%);
     height: 2px;
     background: #e3e5e8;
     border-radius: 1px;
@@ -258,8 +237,8 @@
     background: transparent;
     cursor: pointer;
     display: inline-flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: center;
     z-index: 1;
 }
 
@@ -277,16 +256,29 @@
     background: var(--diag-teal);
 }
 
-.m-diagform-scale-face {
-    margin-top: 8px;
-    font-size: 22px;
-    line-height: 1;
-    filter: grayscale(0.6);
-    opacity: 0.65;
+/* 얼굴 레이블 행 — 1·3·5번 위치에만 표시 */
+.m-diagform-scale-faces {
+    padding: 6px 22px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.m-diagform-face-slot {
+    width: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.m-diagform-face-img {
+    width: 24px;
+    height: 24px;
+    filter: grayscale(0.5);
+    opacity: 0.5;
     transition: filter 140ms, opacity 140ms;
 }
 
-.m-diagform-scale-dot.on .m-diagform-scale-face {
+.m-diagform-face-img.on {
     filter: grayscale(0);
     opacity: 1;
 }

@@ -194,14 +194,12 @@
 
 .pc-diagform-scale-face {
     margin-top: 10px;
-    font-size: 24px;
-    line-height: 1;
-    filter: grayscale(0.6);
-    opacity: 0.65;
+    display: block;
+    opacity: 0.3;
+    transition: opacity 0.15s;
 }
 
 .pc-diagform-scale-dot.on .pc-diagform-scale-face {
-    filter: grayscale(0);
     opacity: 1;
 }
 

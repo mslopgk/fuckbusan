@@ -13,10 +13,11 @@ export default function MProposalDetail({ onNavigate, proposal }) {
         date: proposal?.date || (proposal?.created_at ? new Date(proposal.created_at).toLocaleDateString('ko-KR') : ''),
         lat: proposal?.lat || 35.197,
         lng: proposal?.lng || 129.063,
-        imageUrl: proposal?.image || null,
+        imageUrl: proposal?.image || (Array.isArray(proposal?.files) && proposal.files.length > 0 ? proposal.files[0] : null) || null,
     };
 
     const [comment, setComment] = useState('');
+    const [commenting, setCommenting] = useState(false);
     const [voted, setVoted] = useState(!!proposal?.has_voted);
     const [comments, setComments] = useState([]);
     const [views, setViews] = useState(proposal?.views ?? proposal?.views_count ?? 0);
@@ -40,12 +41,13 @@ export default function MProposalDetail({ onNavigate, proposal }) {
     }, [proposal?.id]);
 
     const submitComment = async () => {
-        if (!comment.trim() || !proposal?.id) return;
+        if (!comment.trim() || !proposal?.id || commenting) return;
         const token = localStorage.getItem('access_token');
         if (!token) {
             alert('로그인이 필요합니다.');
             return;
         }
+        setCommenting(true);
         try {
             const res = await fetch(`${API_URL}/api/reports/proposals/${proposal.id}/comments`, {
                 method: 'POST',
@@ -59,6 +61,8 @@ export default function MProposalDetail({ onNavigate, proposal }) {
             }
         } catch (e) {
             console.error(e);
+        } finally {
+            setCommenting(false);
         }
     };
 
@@ -112,10 +116,14 @@ export default function MProposalDetail({ onNavigate, proposal }) {
                     )}
                 </div>
 
-                <div
-                    className="m-detail-image"
-                    style={data.imageUrl ? { backgroundImage: `url(${data.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
-                />
+                {data.imageUrl ? (
+                    <div
+                        className="m-detail-image"
+                        style={{ backgroundImage: `url(${data.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                    />
+                ) : (
+                    <div className="m-detail-image m-detail-image-placeholder" />
+                )}
 
                 <div className="m-detail-map">
                     <PCMapCanvas
@@ -154,7 +162,6 @@ export default function MProposalDetail({ onNavigate, proposal }) {
                                     <span>{c.created_at ? new Date(c.created_at).toLocaleDateString('ko-KR') : (c.date || '')}</span>
                                 </div>
                                 <p>{c.content || c.body}</p>
-                                <button className="m-comment-reply" type="button">답글쓰기</button>
                             </li>
                         ))}
                     </ul>

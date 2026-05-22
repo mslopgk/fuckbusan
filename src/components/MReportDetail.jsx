@@ -9,7 +9,7 @@ const STAGES = [
     { key: 'received', label: '접수' },
     { key: 'review',   label: '검토중' },
     { key: 'inspect',  label: '검토완료' },
-    { key: 'notice',   label: '결과안내' },
+    { key: 'notice',   label: '처리완료' },
 ];
 
 export default function MReportDetail({ onNavigate, report }) {
@@ -38,6 +38,7 @@ export default function MReportDetail({ onNavigate, report }) {
     const style = CAT_STYLES[data.cat] || { bg: '#E0F4F1', color: '#2C9A8F' };
 
     const [comment, setComment] = useState('');
+    const [commenting, setCommenting] = useState(false);
     const [liked, setLiked] = useState(() => {
         if (!report?.id) return false;
         try {
@@ -93,12 +94,13 @@ export default function MReportDetail({ onNavigate, report }) {
     };
 
     const submitComment = async () => {
-        if (!comment.trim() || !report?.id) return;
+        if (!comment.trim() || !report?.id || commenting) return;
         const token = localStorage.getItem('access_token');
         if (!token) {
             alert('로그인이 필요합니다.');
             return;
         }
+        setCommenting(true);
         try {
             const res = await fetch(`${API_URL}/api/reports/${report.id}/comments`, {
                 method: 'POST',
@@ -112,6 +114,8 @@ export default function MReportDetail({ onNavigate, report }) {
             }
         } catch (e) {
             console.error(e);
+        } finally {
+            setCommenting(false);
         }
     };
 
@@ -202,7 +206,6 @@ export default function MReportDetail({ onNavigate, report }) {
                                 <span>{c.date || ''}</span>
                             </div>
                             <p>{c.content}</p>
-                            <button className="m-comment-reply" type="button">답글쓰기</button>
                         </li>
                     ))}
                 </ul>

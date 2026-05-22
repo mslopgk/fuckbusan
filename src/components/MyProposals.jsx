@@ -36,8 +36,8 @@ const MyProposals = ({ onBack, onNavigate }) => {
                     const data = await response.json();
                     setProposals(data || []);
                 }
-            } catch (error) {
-                console.error(`Failed to fetch ${activeTab} proposals:`, error);
+            } catch {
+                // ignore fetch error
             } finally {
                 setLoading(false);
             }
@@ -183,14 +183,11 @@ const MyProposals = ({ onBack, onNavigate }) => {
                         }
                     }
                     
-                    // 디버깅용 로그 (나중에 지워도 됨)
-                    if (imageUrl) console.log(`Proposal Image [${item.id}]:`, imageUrl);
-
                     return (
-                        <div 
-                            key={item.id} 
+                        <div
+                            key={item.id}
                             className="mp-proposal-card"
-                            onClick={() => onNavigate('proposalDetail', {
+                            onClick={() => onNavigate(window.innerWidth >= 1024 ? 'pcMyProposalDetail' : 'mProposalDetail', {
                                 ...item,
                                 description: item.content,
                                 author: item.nickname,
@@ -214,10 +211,7 @@ const MyProposals = ({ onBack, onNavigate }) => {
                                         alt={item.title} 
                                         className="mp-card-image" 
                                         loading="lazy"
-                                        onError={(e) => { 
-                                            console.warn("Image load failed:", imageUrl);
-                                            e.target.style.display='none'; 
-                                        }} 
+                                        onError={(e) => { e.target.style.display = 'none'; }}
                                     />
                                 </div>
                             )}

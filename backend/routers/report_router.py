@@ -5,8 +5,15 @@ from typing import List, Optional
 import json
 import os
 import uuid
+import io
 import boto3
 from botocore.exceptions import ClientError
+
+try:
+    from PIL import Image as PilImage
+    _PIL_AVAILABLE = True
+except ImportError:
+    _PIL_AVAILABLE = False
 
 # [수정] 필요한 의존성 import
 from database import get_db
@@ -42,6 +49,21 @@ async def upload_file(file: UploadFile = File(...)):
     file_extension = os.path.splitext(file.filename)[1]
     unique_filename = f"{uuid.uuid4()}{file_extension}"
     contents = await file.read()
+
+    # Server-side image compression (safety net for large uploads)
+    content_type = file.content_type or ''
+    if _PIL_AVAILABLE and content_type.startswith('image/'):
+        try:
+            img = PilImage.open(io.BytesIO(contents))
+            img = img.convert('RGB')
+            img.thumbnail((1200, 1200), PilImage.LANCZOS)
+            out = io.BytesIO()
+            img.save(out, 'JPEG', quality=82, optimize=True)
+            contents = out.getvalue()
+            file_extension = '.jpg'
+            unique_filename = f"{uuid.uuid4()}{file_extension}"
+        except Exception:
+            pass  # keep original if PIL processing fails
 
     # AWS 키 있으면 S3, 없으면 로컬 저장 (개발 환경 폴백)
     if _AWS_KEY:
@@ -123,6 +145,7 @@ def list_reports_full(
     status: Optional[str] = None,
     page: Optional[int] = None,
     size: Optional[int] = None,
+    sort: str = "latest",
 ):
     """Return all reports with the full shape the frontend ReportList expects.
 
@@ -136,7 +159,12 @@ def list_reports_full(
         q = q.filter(models.Report.category == category)
     if status and status != "전체":
         q = q.filter(models.Report.status == status)
-    q = q.order_by(models.Report.created_at.desc())
+    if sort == "views":
+        q = q.order_by(models.Report.views.desc())
+    elif sort == "votes":
+        q = q.order_by(models.Report.likes_count.desc())
+    else:
+        q = q.order_by(models.Report.created_at.desc())
 
     if page is not None or size is not None:
         page = max(1, page or 1)
@@ -153,6 +181,7 @@ def list_reports_full(
             "total": total,
             "page": page,
             "size": size,
+            "has_more": page * size < total,
         }
 
     rows = q.all()
@@ -190,9 +219,10 @@ def create_report(
     db: Session = Depends(get_db),
     current_user: Optional[models.User] = Depends(get_current_user_optional),
 ):
+    safe_user = current_user if (current_user and getattr(current_user, 'user_id', 0) < 999990) else None
     new_report = models.Report(
-        user_id=current_user.user_id if current_user else None,
-        author_name=(current_user.nickname or current_user.name) if current_user else None,
+        user_id=safe_user.user_id if safe_user else None,
+        author_name=(safe_user.nickname or safe_user.name) if safe_user else None,
         type=report.type,
         category=report.category,
         sub_category=report.sub_category,
@@ -235,6 +265,28 @@ def get_report_clusters(db: Session = Depends(get_db)):
         for r in rows
     ]
 
+@router.get("/pins")
+def get_report_pins(db: Session = Depends(get_db)):
+    """지도 핀용 경량 엔드포인트 — 좌표 있는 제보만 id/lat/lng 반환."""
+    rows = (
+        db.query(models.Report.id, models.Report.lat, models.Report.lng, models.Report.category)
+        .filter(models.Report.lat.isnot(None), models.Report.lng.isnot(None))
+        .all()
+    )
+    return [{"id": r.id, "lat": float(r.lat), "lng": float(r.lng), "category": r.category} for r in rows]
+
+
+@router.get("/proposal-pins")
+def get_proposal_pins(db: Session = Depends(get_db)):
+    """지도 핀용 경량 엔드포인트 — 좌표 있는 제안만 id/lat/lng 반환."""
+    rows = (
+        db.query(models.NewProposal.id, models.NewProposal.lat, models.NewProposal.lng, models.NewProposal.category)
+        .filter(models.NewProposal.lat.isnot(None), models.NewProposal.lng.isnot(None))
+        .all()
+    )
+    return [{"id": r.id, "lat": float(r.lat), "lng": float(r.lng), "category": r.category} for r in rows]
+
+
 @router.post("/suggest", status_code=status.HTTP_201_CREATED)
 def create_suggestion(suggestion: schemas.SuggestionCreate, db: Session = Depends(get_db)):
     new_suggestion = models.Suggestion(
@@ -257,8 +309,9 @@ def create_new_proposal(
     current_user: Optional[models.User] = Depends(get_current_user_optional),
 ):
     try:
+        safe_user = current_user if (current_user and getattr(current_user, 'user_id', 0) < 999990) else None
         new_proposal = models.NewProposal(
-            user_id=current_user.user_id if current_user else None,
+            user_id=safe_user.user_id if safe_user else None,
             category=proposal.category,
             title=proposal.title,
             content=proposal.content,
@@ -274,21 +327,35 @@ def create_new_proposal(
         return {"message": "새로운 제안이 성공적으로 접수되었습니다.", "id": new_proposal.id}
     except Exception as e:
         db.rollback()
-        print(f"Error saving proposal: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # --- [추가] 전체 제안 목록 조회 API ---
-@router.get("/proposals", response_model=List[schemas.NewProposalRead])
+@router.get("/proposals")
 def get_all_proposals(
     db: Session = Depends(get_db),
     current_user: Optional[models.User] = Depends(get_current_user_optional),
+    skip: int = 0,
+    limit: int = 25,
+    sort: str = "latest",
+    region: Optional[str] = None,
+    category: Optional[str] = None,
 ):
-    proposals = (
+    q = (
         db.query(models.NewProposal)
         .options(joinedload(models.NewProposal.creator))
-        .order_by(models.NewProposal.created_at.desc())
-        .all()
     )
+    if region and region != "부산전체":
+        q = q.filter(models.NewProposal.region == region)
+    if category and category != "전체":
+        q = q.filter(models.NewProposal.category == category)
+    if sort == "views":
+        q = q.order_by(models.NewProposal.views_count.desc())
+    elif sort == "votes":
+        q = q.order_by(models.NewProposal.likes_count.desc())
+    else:
+        q = q.order_by(models.NewProposal.created_at.desc())
+    total = q.count()
+    proposals = q.offset(skip).limit(limit).all()
     ids = [p.id for p in proposals]
     comment_counts = {}
     liked_ids: set = set()
@@ -303,7 +370,13 @@ def get_all_proposals(
         p.comments_count = comment_counts.get(p.id, 0)
         p.is_mine = current_user is not None and p.user_id == current_user.user_id
         p.has_voted = p.id in liked_ids
-    return proposals
+    from pydantic import TypeAdapter
+    ta = TypeAdapter(list[schemas.NewProposalRead])
+    return {
+        "items": ta.validate_python(proposals),
+        "total": total,
+        "has_more": skip + limit < total,
+    }
 
 # --- [추가] 나의 제안 목록 조회 API ---
 @router.get("/my-proposals", response_model=List[schemas.NewProposalRead])
@@ -374,8 +447,8 @@ def increment_proposal_view(
     if not current_user:
         return {"views_count": proposal.views_count or 0, "counted": False}
 
-    # 본인 글이면 조회수 증가 안 함
-    if proposal.user_id == current_user.user_id:
+    # 관리자 또는 본인 글이면 조회수 증가 안 함
+    if current_user.user_id >= 999990 or proposal.user_id == current_user.user_id:
         return {"views_count": proposal.views_count or 0, "counted": False}
 
     # 이미 본 글인지 확인

@@ -40,6 +40,17 @@ async def lifespan(app: FastAPI):
         logger.info("Startup: Creating tables...")
         models.Base.metadata.create_all(bind=engine)
         logger.info("Startup: Tables created successfully.")
+
+        # Safe column migrations — silently ignored if column already exists
+        with engine.connect() as conn:
+            for stmt in [
+                "ALTER TABLE checklist_result ADD COLUMN 진단대상 VARCHAR(50) NULL",
+            ]:
+                try:
+                    conn.execute(text(stmt))
+                    conn.commit()
+                except Exception:
+                    pass
     except Exception as e:
         logger.error(f"Startup Error: Database connection failed. {e}")
         # We don't exit to allow frontend to serve even if DB fails, but dependent APIs will fail.

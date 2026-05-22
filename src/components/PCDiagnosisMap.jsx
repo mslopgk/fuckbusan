@@ -66,6 +66,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
         setPanel(initialPanel);
@@ -105,7 +106,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                     _sessionKey: `${r.ID}_${Number(r.위도 || 0).toFixed(4)}_${Number(r.경도 || 0).toFixed(4)}_${String(r.created_at || '').slice(0, 10)}`,
                     _criteria: r.질문기준 || '',
                     _score: r.점수 != null ? Number(r.점수) : null,
-                })).filter((it) => it.lat && it.lng);
+                })).filter((it) => it.lat != null && it.lng != null && !isNaN(it.lat) && !isNaN(it.lng));
 
                 // 세션 중복 제거: 같은 (user+좌표+날짜) = 한 세션, 기준별 점수를 sessionPeers로 집계
                 const sessionMap = {};
@@ -125,7 +126,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
             })
             .catch(() => setItems([]))
             .finally(() => setLoading(false));
-    }, []);
+    }, [refreshKey]);
 
     const toggleLivingCat = (key) => {
         setLivingCats((prev) => {
@@ -164,7 +165,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
         if (loc) setSelectedLocation(loc);
         setPanel('form');
     };
-    const goDone = () => { setPanel('done'); };
+    const goDone = () => { setPanel('done'); setRefreshKey((k) => k + 1); };
 
     return (
         <UserPCLayout currentView="pcDiagnosisMap" onNavigate={onNavigate}>
@@ -268,22 +269,11 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                     <PCMapCanvas
                         ref={mapRef}
                         pins={pins}
-                        onPinClick={panel === 'list' ? (it) => {
+                        onPinClick={(it) => {
                             goDetail(it);
-                            if (it.lat && it.lng) {
-                                if (window.kakao?.maps?.services) {
-                                    const geocoder = new window.kakao.maps.services.Geocoder();
-                                    geocoder.coord2Address(it.lng, it.lat, (result, status) => {
-                                        const addr = status === window.kakao.maps.services.Status.OK
-                                            ? (result[0]?.road_address?.address_name || result[0]?.address?.address_name || it.location || '선택된 위치')
-                                            : (it.location || '선택된 위치');
-                                        setSelectedLocation({ lat: it.lat, lng: it.lng, address: addr });
-                                    });
-                                } else {
-                                    setSelectedLocation({ lat: it.lat, lng: it.lng, address: it.location || '선택된 위치' });
-                                }
-                            }
-                        } : undefined}
+                            // 기존 핀 클릭 시 선택 위치(초록 핀) 해제
+                            setSelectedLocation(null);
+                        }}
                         onMapClick={(coords) => {
                             if (!window.kakao?.maps?.services) {
                                 setSelectedLocation({ ...coords, address: '선택된 위치' });
@@ -309,10 +299,18 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
 
                     {panel === 'list' && (
                         <div className="pc-diag-cta-wrap">
-                            {selectedLocation && (
+                            {selectedLocation ? (
                                 <div className="pc-diag-cta-addr">
-                                    📍 {selectedLocation.address}
+                                    <span>📍 {selectedLocation.address}</span>
+                                    <button
+                                        type="button"
+                                        className="pc-diag-cta-clear"
+                                        onClick={() => setSelectedLocation(null)}
+                                        title="위치 선택 해제"
+                                    >×</button>
                                 </div>
+                            ) : (
+                                <div className="pc-diag-cta-hint">지도를 클릭해 진단할 위치를 선택하세요</div>
                             )}
                             <button
                                 type="button"
@@ -322,9 +320,6 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                             >
                                 진단하기
                             </button>
-                            {!selectedLocation && (
-                                <div className="pc-diag-cta-hint">지도를 클릭해 진단할 위치를 선택하세요</div>
-                            )}
                         </div>
                     )}
                 </div>

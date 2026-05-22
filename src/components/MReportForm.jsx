@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import { formatDraftDate } from '../utils/format';
 import { API_URL } from '../utils/api';
+import { compressImage } from '../utils/imageCompress';
 import './MProposalForm.css';
 import './MProposalList.css';
 import './MReportForm.css';
@@ -21,12 +22,14 @@ export default function MReportForm({ onNavigate }) {
     const [locationPickerOpen, setLocationPickerOpen] = useState(false);
     const [pickedLat, setPickedLat] = useState(35.197);
     const [pickedLng, setPickedLng] = useState(129.063);
+    const [pickedAddress, setPickedAddress] = useState('');
     const [restoreOpen, setRestoreOpen] = useState(false);
     const [draftMeta, setDraftMeta] = useState(null);
     const [toast, setToast] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [photoUrl, setPhotoUrl] = useState('');
     const [uploading, setUploading] = useState(false);
+    const [detailAddr, setDetailAddr] = useState('');
 
     useEffect(() => {
         try {
@@ -48,8 +51,9 @@ export default function MReportForm({ onNavigate }) {
         const file = e.target.files?.[0];
         if (!file) return;
         setUploading(true);
+        const compressed = await compressImage(file);
         const form = new FormData();
-        form.append('file', file);
+        form.append('file', compressed);
         try {
             const res = await fetch(`${API_URL}/api/reports/upload`, { method: 'POST', body: form });
             if (res.ok) {
@@ -68,7 +72,16 @@ export default function MReportForm({ onNavigate }) {
     };
 
     const handleSaveDraft = () => {
-        const draft = { cat, position, issue, body, savedAt: new Date().toISOString() };
+        const draft = {
+            cat,
+            position,
+            issue,
+            body,
+            location,
+            pickedLat,
+            pickedLng,
+            savedAt: new Date().toISOString(),
+        };
         try {
             localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
             setToast('임시저장 되었습니다');
@@ -85,6 +98,9 @@ export default function MReportForm({ onNavigate }) {
         setPosition(draftMeta.position || '');
         setIssue(draftMeta.issue || '');
         setBody(draftMeta.body || '');
+        if (draftMeta.location) setLocation(draftMeta.location);
+        if (draftMeta.pickedLat) setPickedLat(draftMeta.pickedLat);
+        if (draftMeta.pickedLng) setPickedLng(draftMeta.pickedLng);
         setRestoreOpen(false);
     };
 
@@ -103,9 +119,10 @@ export default function MReportForm({ onNavigate }) {
             sub_category: `${position} · ${issue}`,
             title,
             content: body,
+            location: detailAddr || undefined,
             detailed_address: location || undefined,
-            lat: location ? pickedLat : undefined,
-            lng: location ? pickedLng : undefined,
+            lat: pickedLat,
+            lng: pickedLng,
             image_url: photoUrl || undefined,
         };
         try {
@@ -166,6 +183,16 @@ export default function MReportForm({ onNavigate }) {
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="2.5"/></svg>
                         </span>
                     </button>
+                    {location && (
+                        <input
+                            className="m-loc-input m-loc-detail-input"
+                            type="text"
+                            placeholder="세부 위치를 입력해주세요 (예: 3층 계단 옆)"
+                            value={detailAddr}
+                            onChange={(e) => setDetailAddr(e.target.value)}
+                            style={{ marginTop: 8, cursor: 'text' }}
+                        />
+                    )}
                 </section>
 
                 <section className="m-form-section">
@@ -238,16 +265,30 @@ export default function MReportForm({ onNavigate }) {
                     <h2 className="m-loc-picker-title">제보할 위치를<br/>지도에서 선택해주세요.</h2>
                     <div className="m-loc-picker-map">
                         <PCMapCanvas
-                            pins={[{ id: 'pick', lat: pickedLat, lng: pickedLng, color: '#E6235A', title: '제보 위치' }]}
+                            pins={[]}
                             accentColor="#E6235A"
+                            selectedPoint={{ lat: pickedLat, lng: pickedLng }}
+                            onMapClick={({ lat, lng }) => {
+                                setPickedLat(lat);
+                                setPickedLng(lng);
+                                if (window.kakao?.maps?.services) {
+                                    const geocoder = new window.kakao.maps.services.Geocoder();
+                                    geocoder.coord2Address(lng, lat, (result, status) => {
+                                        if (status === window.kakao.maps.services.Status.OK) {
+                                            const addr = result[0]?.road_address?.address_name || result[0]?.address?.address_name || '';
+                                            setPickedAddress(addr);
+                                        }
+                                    });
+                                }
+                            }}
                         />
                     </div>
-                    <p className="m-loc-picker-help">지도를 움직여서 선택해주세요</p>
+                    <p className="m-loc-picker-help">지도를 클릭하여 위치를 선택해주세요</p>
                     <button
                         className="m-loc-picker-confirm"
                         type="button"
                         onClick={() => {
-                            setLocation(`위도 ${pickedLat.toFixed(4)}, 경도 ${pickedLng.toFixed(4)}`);
+                            setLocation(pickedAddress || `위도 ${pickedLat.toFixed(4)}, 경도 ${pickedLng.toFixed(4)}`);
                             setLocationPickerOpen(false);
                         }}
                     >위치 선택완료</button>

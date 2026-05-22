@@ -5,7 +5,7 @@ import '../styles/admin_layout.css';
 import { API_BASE } from '../api';
 
 const CARDS = [
-    { key: 'member',        label: '회원관리',   imgSrc: '/figma-assets/admin/member_icon.svg',       view: 'adminDashboardNew' },
+    { key: 'member',        label: '회원관리',   imgSrc: '/figma-assets/admin/member_icon.svg',       view: 'adminUserList' },
     { key: 'reportSuggest', label: '제보/제안',  imgSrc: '/figma-assets/admin/report_propose_icon.svg', view: 'reportManagement' },
     { key: 'diagnosis',     label: '진단',       imgSrc: '/figma-assets/admin/diagnosis_icon.svg',    view: 'comingSoon' },
     { key: 'survey',        label: '설문',       imgSrc: '/figma-assets/admin/survey_icon.svg',       view: 'surveyManagement' },
@@ -63,11 +63,6 @@ export default function AdminMain({ onNavigate }) {
                                 </div>
                             )}
                             <div className="admin-card-label">{card.label}</div>
-                            {stats && STAT_KEY_BY_CARD[card.key] && (
-                                <div style={{ fontSize: 13, color: '#5B2EAB', fontWeight: 600, marginTop: 4 }}>
-                                    {stats[STAT_KEY_BY_CARD[card.key]] ?? 0}건
-                                </div>
-                            )}
                         </div>
                     );
                 })}

@@ -16,6 +16,7 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
     const [detail, setDetail] = useState(proposal || null);
     const [comments, setComments] = useState([]);
     const [comment, setComment] = useState('');
+    const [commenting, setCommenting] = useState(false);
     const [voteDoneType, setVoteDoneType] = useState(null); // null | 'voted' | 'cancelled'
     const [voted, setVoted] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
@@ -92,9 +93,10 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
     const submitComment = async () => {
         const rawId = detail?.id ?? proposal?.id;
         const proposalId = typeof rawId === 'string' ? parseInt(rawId.replace(/\D/g, ''), 10) : rawId;
-        if (!comment.trim() || !proposalId) return;
+        if (!comment.trim() || !proposalId || commenting) return;
         const token = localStorage.getItem('access_token');
         if (!token) { alert('로그인이 필요합니다.'); return; }
+        setCommenting(true);
         try {
             const res = await fetch(`${API_URL}/api/reports/proposals/${proposalId}/comments`, {
                 method: 'POST',
@@ -113,6 +115,8 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
         } catch (e) {
             console.error('comment failed', e);
             alert('서버 연결 오류가 발생했습니다.');
+        } finally {
+            setCommenting(false);
         }
     };
 
@@ -211,7 +215,6 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                                 <li key={c.id || i} className="pcd-comment-item">
                                     <div className="pcd-comment-author">{c.nickname || '익명'}</div>
                                     <p className="pcd-comment-text">{c.content}</p>
-                                    <button className="pcd-comment-reply-btn">답글쓰기</button>
                                 </li>
                             ))}
                         </ul>

@@ -363,6 +363,9 @@
     justify-content: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.22);
     transition: transform 0.12s, box-shadow 0.15s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 1;
 }
 
 .pc-diag-circle-pin:hover {

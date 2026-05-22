@@ -184,7 +184,7 @@ export default function MSurveyResults({ onNavigate, survey }) {
                     <div className="m-radar-wrap">
                         <RadarHexagon data={compositeData} />
                     </div>
-                    <button className="m-results-detail-link" type="button">자세히보기 ▸</button>
+                    <button className="m-results-detail-link m-results-detail-link-disabled" type="button" disabled>자세히보기 ▸</button>
                 </section>
             )}
 
