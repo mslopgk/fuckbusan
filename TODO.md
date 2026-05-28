@@ -1,6 +1,6 @@
 # 부산 BDP — 미완료 항목
 
-> **갱신**: 2026-05-28 (11차 — 제보 5개 화면 Figma 전수조사 및 수정)
+> **갱신**: 2026-05-28 (12차 — 진단/가상시민/제안제보/설문 Figma 전수 일치화)
 > **Figma 파일**: `jWpcqQv2jhb2mkzjEs1fuI`
 > 완료 항목은 `CHANGES_2026-05-06.md` 참조.
 
@@ -106,6 +106,7 @@
 - [x] `MDiagnosisForm` title "진단하기" pink #E6235A 28px, 섹션 라벨 번호 형식 추가 (2026-05-28)
 - [x] `MDiagnosisForm` CTA 버튼 green→pink #E6235A, height 56px, font-size 18px (2026-05-28)
 - [x] `MDiagnosisDone`/`CheckDone` 아이콘 60px→40px, 타이틀 24px→28px, 설명 16px→14px (2026-05-28)
+- [x] `MDiagnosisResult` 테이블 레이아웃 + 4개 레이더차트 구조로 전면 재작성 (2026-05-28)
 - [ ] `MDiagnosisResult` "관련 시민 제안" 섹션: Figma에 없는 코드 전용 섹션. keep/remove **결정 대기**
 - [ ] 모바일 전문가 진단 전용 플로우 — 현재 mode 전달만, 전용 화면 없음
 - [?] PC 셸 (A안 통합) Figma `941:10538`/`12315`/`12749` 재검증
@@ -174,6 +175,9 @@
 - [x] `PCDiagnosisMap` 우측 패널 보강 (2026-05-09): 시민/전문가 탭, teal name+score 카드 스타일 — `PCDiagPanelDetail` radar chart 이미 구현됨
 - [x] AI가상시민 PC `FigmaDistrictMap` 하단구역 클리핑 수정 (2026-05-21): `scale(width/1920)` → `Math.min(scaleW, scaleH)` + 중앙 정렬 — 1440px~1920px 모든 뷰포트에서 영도구/사하구/서구 완전 표시
 - [x] AI가상시민 모바일(`MAICitizen`) 지도 스크롤 차단 수정 (2026-05-21): `.leaflet-container`에 `touch-action: pan-y` 추가
+- [x] `MAICitizenDetail` 전면 재작성 — 히어로/프로필그리드/시민목소리/핵심이슈/여정지도/정책신호등/참여현황/레이더차트 (2026-05-28)
+- [x] `MAICitizen` 말풍선에 아바타 이미지 추가 (2026-05-28)
+- [x] `PCAICitizen` 참여현황 차트·카드 스타일 개선 (2026-05-28)
 - [?] AI가상시민 실제 DB 연동 (현재 mock 데이터)
 - [?] 공공디자인 현황 메가 대시보드 미구현
 - [?] 진단정보 / 정책정보 / 공공데이터 / 디자인생태 페이지 미구현
