@@ -349,59 +349,52 @@
     letter-spacing: -0.3px;
 }
 
-/* 진단 지도 핀 — Figma 원형 버블 스타일 */
-.pc-diag-circle-pin {
+/* 진단 핀 — Figma teardrop (시민=회색 solid / 전문가=청록 테두리 + 카테고리 아이콘) */
+.pc-diag-tdrop-btn {
     position: relative;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #23BDBB;
+    background: none;
     border: none;
+    padding: 0;
     cursor: pointer;
+    display: block;
+    line-height: 0;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.28));
+    transition: filter 0.15s, transform 0.12s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.pc-diag-tdrop-btn:hover {
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.40));
+    transform: translateY(-2px);
+}
+
+.pc-diag-tdrop-btn--focus {
+    filter: drop-shadow(0 0 6px rgba(35,189,187,0.55)) drop-shadow(0 3px 8px rgba(0,0,0,0.35));
+    transform: scale(1.1);
+    transform-origin: bottom center;
+}
+
+.pc-diag-tdrop-btn--cluster {
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,0.38));
+}
+
+/* 카테고리 아이콘 — 핀 원형 영역(상단) 중앙 */
+.pc-diag-tdrop-icon {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.22);
-    transition: transform 0.12s, box-shadow 0.15s;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    z-index: 1;
+    line-height: 0;
 }
 
-.pc-diag-circle-pin:hover {
-    transform: scale(1.12);
-    box-shadow: 0 4px 10px rgba(35,189,187,0.4);
-}
-
-.pc-diag-circle-num {
-    color: #fff;
-    font-weight: 700;
-    font-size: 14px;
-    line-height: 1;
-    pointer-events: none;
-    font-family: 'Inter', sans-serif;
-    position: relative;
-    z-index: 1;
-}
-
-/* 클러스터 핀: 더 크고 반투명 후광 */
-.pc-diag-circle-pin--cluster {
-    width: 46px;
-    height: 46px;
-}
-
-.pc-diag-circle-pin--cluster::before {
-    content: '';
-    position: absolute;
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: rgba(35,189,187,0.3);
-    pointer-events: none;
-}
-
-.pc-diag-circle-pin--cluster .pc-diag-circle-num {
-    font-size: 17px;
+.pc-diag-tdrop-icon svg {
+    width: 15px !important;
+    height: 15px !important;
 }
 
 /* 줌인 시 개별 핀 + 투표수 배지 (핀 옆에 작은 카드) */

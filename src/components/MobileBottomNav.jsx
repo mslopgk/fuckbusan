@@ -2,10 +2,10 @@ import { useState } from 'react';
 import './MobileBottomNav.css';
 
 const ITEMS = [
+    { key: 'diagnosis',     label: '진단',       activeColor: '#06AB69' },
+    { key: 'reportPropose', label: '제보/제안',  activeColor: '#5B2EAB' },
     { key: 'home',          label: '홈',        activeColor: '#5B2EAB' },
     { key: 'survey',        label: '가상시민',   activeColor: '#5B2EAB' },
-    { key: 'reportPropose', label: '제보/제안',  activeColor: '#5B2EAB' },
-    { key: 'diagnosis',     label: '진단',       activeColor: '#06AB69' },
     { key: 'activity',      label: '나의 활동',  activeColor: '#5B2EAB' },
 ];
 

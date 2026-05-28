@@ -4,11 +4,12 @@ import './CheckDone.css';
 const CheckDone = ({ onGoHome, color = '#E6235A', type = 'diagnosis' }) => {
     const isExpert = color === '#542AA3';
 
-    let title, subtitle, description;
+    let title, subtitle, description, btnLabel;
 
     if (type === 'survey') {
         title = "설문 제출 완료";
         subtitle = "참여해 주셔서 감사합니다";
+        btnLabel = "홈으로 이동";
         description = (
             <>
                 귀하의 의견은 지역 개선을 위한 자료로 활용됩니다.<br />
@@ -19,6 +20,7 @@ const CheckDone = ({ onGoHome, color = '#E6235A', type = 'diagnosis' }) => {
         // Default diagnosis
         title = isExpert ? '전문가 진단 완료' : '일반 진단 완료';
         subtitle = '진단 결과가 제출되었습니다';
+        btnLabel = '진단 홈으로 가기';
         description = '입력하신 진단 내용이 정상적으로 제출되었습니다.';
     }
 
@@ -40,7 +42,7 @@ const CheckDone = ({ onGoHome, color = '#E6235A', type = 'diagnosis' }) => {
 
             <div className="check-done-footer">
                 <button className="btn-home" onClick={onGoHome} style={{ backgroundColor: color, color: '#fff', border: 'none' }}>
-                    홈으로 이동
+                    {btnLabel}
                 </button>
             </div>
         </div>

@@ -8,6 +8,7 @@ export default function PCSurveyJoin({ onNavigate, survey }) {
     const [questions, setQuestions] = useState(survey?.questions || null);
     const [answers, setAnswers] = useState({});
     const [copied, setCopied] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         if (survey?.questions?.length) {
@@ -32,6 +33,8 @@ export default function PCSurveyJoin({ onNavigate, survey }) {
         });
 
     const handleSubmit = async () => {
+        if (submitting) return;
+        setSubmitting(true);
         const surveyId = survey?.id;
         if (surveyId && qs.length > 0) {
             const mappedAnswers = qs
@@ -134,7 +137,7 @@ export default function PCSurveyJoin({ onNavigate, survey }) {
 
                 <div className="pc-join-actions">
                     <button className="pc-btn-secondary" onClick={() => onNavigate && onNavigate('pcSurveyDetail', data)}>이전</button>
-                    <button className="pc-btn-primary" onClick={handleSubmit}>다음</button>
+                    <button className="pc-btn-primary" onClick={handleSubmit} disabled={submitting}>{submitting ? '제출 중...' : '다음'}</button>
                 </div>
             </div>
         </UserPCLayout>

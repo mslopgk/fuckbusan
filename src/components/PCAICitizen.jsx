@@ -230,6 +230,11 @@ const EMOTION_LEVEL = {
     '개쾌함': 1, '기대됨': 1, '집중됨': 2, '보통': 3, '불안함': 4, '매우불안함': 5, '매우 불안함': 5,
 };
 
+const EMOTION_EMOJI = {
+    '개쾌함': '😊', '기대됨': '🌟', '집중됨': '😌',
+    '보통': '😐', '불안함': '😟', '매우불안함': '😨', '매우 불안함': '😨',
+};
+
 function EmotionLineGraph({ journey }) {
     const n = journey.length;
     if (n < 1) return null;
@@ -249,7 +254,7 @@ function EmotionLineGraph({ journey }) {
 
     return (
         <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', overflow: 'visible' }}>
-            <path d={d} fill="none" stroke="#d0d0d0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d={d} fill="none" stroke="#c8c8c8" strokeWidth="2" strokeDasharray="5 3" strokeLinecap="round" strokeLinejoin="round" />
             {pts.map(([x, y], i) => (
                 <circle key={i} cx={x} cy={y} r={6}
                     fill={EMOTION_COLORS[journey[i].emotion] || '#ccc'}
@@ -269,18 +274,18 @@ function ParticipationChart({ data }) {
     const items = Object.entries(data);
     const max = Math.max(...items.map(([, v]) => v));
     return (
-        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 100, marginTop: 8 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 120, marginTop: 8 }}>
             {items.map(([label, value]) => (
                 <div key={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <span style={{ fontSize: 10, color: '#555' }}>{value}%</span>
-                    <div style={{ width: '100%', background: '#f0f0f0', borderRadius: 4, height: 64, display: 'flex', alignItems: 'flex-end' }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#333' }}>{value}%</span>
+                    <div style={{ width: '100%', background: '#edf7f7', borderRadius: 5, height: 80, display: 'flex', alignItems: 'flex-end' }}>
                         <div style={{
-                            width: '100%', borderRadius: 4,
-                            height: `${Math.max(8, (value / max) * 64)}px`,
+                            width: '100%', borderRadius: 5,
+                            height: `${Math.max(8, (value / max) * 80)}px`,
                             background: '#23bdbb',
                         }} />
                     </div>
-                    <span style={{ fontSize: 10, color: '#737373', textAlign: 'center' }}>{label}</span>
+                    <span style={{ fontSize: 11, color: '#555', textAlign: 'center', fontWeight: 500 }}>{label}</span>
                 </div>
             ))}
         </div>
@@ -334,10 +339,56 @@ function CategoryRadar({ scores }) {
     );
 }
 
+function PersonIcons({ total = 5 }) {
+    return (
+        <div className="person-icons-row">
+            {Array.from({ length: total }, (_, i) => {
+                const active = i === total - 1;
+                return (
+                    <svg key={i} width="16" height="20" viewBox="0 0 16 20">
+                        <circle cx="8" cy="5" r="3.5" fill={active ? '#23bdbb' : '#b2dfde'} />
+                        <path d="M1 19c0-3.9 3.1-7 7-7s7 3.1 7 7" fill={active ? '#23bdbb' : '#b2dfde'} />
+                    </svg>
+                );
+            })}
+        </div>
+    );
+}
+
+function CategoryHBars({ scores }) {
+    if (!scores) return null;
+    const CATS = [
+        { label: '안전', key: '안전' },
+        { label: '교통', key: '교통' },
+        { label: '주거', key: '주거' },
+        { label: '산업·일자리', key: '산업일자리' },
+        { label: '교육', key: '교육' },
+        { label: '환경', key: '환경' },
+        { label: '문화·여가', key: '문화여가' },
+        { label: '보건·복지', key: '보건' },
+    ];
+    return (
+        <div className="cat-hbars">
+            {CATS.map(({ label, key }) => (
+                <div key={key} className="cat-hbar-row">
+                    <span className="cat-hbar-label">{label}</span>
+                    <div className="cat-hbar-track">
+                        <div className="cat-hbar-fill" style={{ width: `${((scores[key] || 0) / 5) * 100}%` }} />
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
 function CitizenDetailPanel({ citizen, avatarUrl, district, onClose }) {
     const d = citizen.detail || {};
     const journey = d.journey || [];
     const ps = d.policy_signals || {};
+    const [categoryView, setCategoryView] = useState('bar');
+
+    const totalMatch = (d.similar_desc || '').match(/약?\s*(\d+)명\s*중/);
+    const personTotal = totalMatch ? Math.min(parseInt(totalMatch[1]), 8) : 5;
 
     return (
         <div className="pc-ai-detail-panel">
@@ -383,6 +434,7 @@ function CitizenDetailPanel({ citizen, avatarUrl, district, onClose }) {
                 </div>
                 <div className="pc-ai-detail-ratio-box">
                     <div className="ratio-title">유사 시민 비율</div>
+                    <PersonIcons total={personTotal} />
                     <div className="ratio-desc">{d.similar_desc || `${district} 유사 생활 유형`}</div>
                     <div className="ratio-pct">{d.similar_ratio || '-'}</div>
                 </div>
@@ -392,7 +444,11 @@ function CitizenDetailPanel({ citizen, avatarUrl, district, onClose }) {
             <div className="pc-ai-detail-voices-row">
                 <div className="voice-card">
                     <div className="voice-section-title">시민 체감 언어</div>
-                    <p className="voice-body-text">"{d.body_language || citizen.quote}"</p>
+                    <div className="voice-quote-wrap">
+                        <span className="voice-quote-open">❝</span>
+                        <p className="voice-body-text">{d.body_language || citizen.quote}</p>
+                        <span className="voice-quote-close">❞</span>
+                    </div>
                 </div>
                 <div className="voice-card">
                     <div className="voice-section-title">시민 목소리</div>
@@ -451,6 +507,15 @@ function CitizenDetailPanel({ citizen, avatarUrl, district, onClose }) {
                                 </div>
                             ))}
                         </div>
+                        {/* Emoji row */}
+                        <div className="journey-row-label"></div>
+                        <div className="journey-cells journey-emoji-row">
+                            {journey.map((step, i) => (
+                                <div key={i} className="journey-emoji-cell">
+                                    <span className="journey-emoji">{EMOTION_EMOJI[step.emotion] || '😐'}</span>
+                                </div>
+                            ))}
+                        </div>
                         {/* Emotion line graph */}
                         <div className="journey-row-label"></div>
                         <div className="journey-graph-cell">
@@ -469,19 +534,54 @@ function CitizenDetailPanel({ citizen, avatarUrl, district, onClose }) {
                         <span className="policy-tab-badge" style={{ background: '#fb923c' }}>보통</span>
                         <span className="policy-tab-badge" style={{ background: '#4ade80' }}>낮음</span>
                     </div>
-                    {[['high', '#ef4444'], ['medium', '#fb923c'], ['low', '#4ade80']].map(([lvKey, color]) => (
-                        (ps[lvKey] || []).map((s, i) => (
-                            <p key={`${lvKey}-${i}`} className="policy-level-text" style={{ color }}>{s}</p>
-                        ))
-                    ))}
+                    <div className="policy-items-list">
+                        {[['high', '#ef4444'], ['medium', '#fb923c'], ['low', '#4ade80']].flatMap(([lvKey, color]) =>
+                            (ps[lvKey] || []).map((s, i) => (
+                                <div key={`${lvKey}-${i}`} className="policy-item-row">
+                                    <span className="policy-item-dot" style={{ background: color }} />
+                                    <span>{s}</span>
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
                 <div className="detail-bottom-card">
                     <div className="detail-bottom-title">공공데이터 참여 현황 (참여 비율)</div>
                     <ParticipationChart data={d.participation} />
+                    {d.participation_note && (
+                        <p className="participation-note">{d.participation_note}</p>
+                    )}
                 </div>
                 <div className="detail-bottom-card">
-                    <div className="detail-bottom-title">카테고리별 관심도 (8대 영역)</div>
-                    <CategoryRadar scores={d.category_scores} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                        <div className="detail-bottom-title" style={{ margin: 0 }}>카테고리별 관심도 (8대 영역)</div>
+                        <button className="cat-view-toggle" type="button"
+                            onClick={() => setCategoryView(v => v === 'bar' ? 'radar' : 'bar')}
+                            title={categoryView === 'bar' ? '레이더 차트로 보기' : '막대 그래프로 보기'}>
+                            {categoryView === 'bar' ? (
+                                /* radar/spider chart icon */
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polygon points="12 2 19 8 17 17 7 17 5 8"/>
+                                    <line x1="12" y1="2" x2="12" y2="9.5"/>
+                                    <line x1="19" y1="8" x2="12" y2="9.5"/>
+                                    <line x1="17" y1="17" x2="12" y2="9.5"/>
+                                    <line x1="7" y1="17" x2="12" y2="9.5"/>
+                                    <line x1="5" y1="8" x2="12" y2="9.5"/>
+                                </svg>
+                            ) : (
+                                /* horizontal bars icon */
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                                    <rect x="3" y="5" width="8" height="3" rx="1.5" fill="currentColor" stroke="none"/>
+                                    <rect x="3" y="10.5" width="14" height="3" rx="1.5" fill="currentColor" stroke="none"/>
+                                    <rect x="3" y="16" width="11" height="3" rx="1.5" fill="currentColor" stroke="none"/>
+                                </svg>
+                            )}
+                        </button>
+                    </div>
+                    {categoryView === 'bar'
+                        ? <CategoryHBars scores={d.category_scores} />
+                        : <CategoryRadar scores={d.category_scores} />
+                    }
                 </div>
             </div>
 

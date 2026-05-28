@@ -92,7 +92,7 @@ export default function MProposalMap({ onNavigate }) {
 
     return (
         <div className={`m-prop-map-page ${expanded ? 'expanded' : ''}`}>
-            <MMapSearchBar value={search} onChange={setSearch} onBack={() => onNavigate?.('home')} />
+            <MMapSearchBar value={search} onChange={setSearch} onBack={() => onNavigate?.('mProposalList')} />
 
             <div className="m-map-canvas">
                 <PCMapCanvas

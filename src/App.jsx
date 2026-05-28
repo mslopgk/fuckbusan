@@ -1357,6 +1357,8 @@ function App() {
                         photo={selectedReport?.thumb || null}
                         district={selectedReport?.region || null}
                         resultId={selectedReport?.id || null}
+                        big={selectedReport?.big || null}
+                        mid={selectedReport?.mid || null}
                     />
                 )}
                 {view === 'mDiagnosisDone' && (

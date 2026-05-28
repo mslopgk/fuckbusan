@@ -220,7 +220,7 @@ export default function MDiagnosisList({ onNavigate }) {
                         value={district}
                         onChange={(e) => setDistrict(e.target.value)}
                     >
-                        <option value="">전체</option>
+                        <option value="">지역검색</option>
                         {Object.keys(DISTRICT_CENTERS).map((d) => (
                             <option key={d} value={d}>{d}</option>
                         ))}

@@ -1,18 +1,154 @@
 import { useState, useEffect } from 'react';
-import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
 import MobileBottomNav from './MobileBottomNav';
 import { API_URL } from '../utils/api';
 import './MAICitizenDetail.css';
 
+const CATEGORY_LABELS = ['안전', '주거', '교통', '산업일자리', '교육', '환경', '문화여가', '보건'];
+
 const EMOTION_COLORS = {
-    '개쾌함': '#23bdbb',
-    '집중됨': '#5B2EAB',
-    '보통': '#888',
-    '불안함': '#E6235A',
-    '매우불안함': '#c00',
+    '기대됨': '#0da000',
+    '개쾌함': '#0da000',
+    '집중됨': '#c7a300',
+    '보통': '#c7a300',
+    '불안함': '#ff7200',
+    '매우불안함': '#ff0000',
+    '매우 불안함': '#ff0000',
 };
 
-const CATEGORY_LABELS = ['안전', '주거', '교통', '산업일자리', '교육', '환경', '문화여가', '보건'];
+function PersonIconsRow({ total = 5, highlighted = 1 }) {
+    return (
+        <div className="m-ai-detail__person-icons">
+            {Array.from({ length: Math.min(total, 8) }, (_, i) => {
+                const active = i >= total - highlighted;
+                return (
+                    <svg key={i} width="18" height="22" viewBox="0 0 16 20">
+                        <circle cx="8" cy="5" r="3.5" fill={active ? '#23bdba' : '#c8e8e8'} />
+                        <path d="M1 19c0-3.9 3.1-7 7-7s7 3.1 7 7" fill={active ? '#23bdba' : '#c8e8e8'} />
+                    </svg>
+                );
+            })}
+        </div>
+    );
+}
+
+function CategoryRadar({ scores }) {
+    if (!scores) return null;
+    const CATS = ['안전', '주거', '교통', '산업\n일자리', '교육', '환경', '문화\n여가', '보건'];
+    const SCORE_KEYS = ['안전', '주거', '교통', '산업일자리', '교육', '환경', '문화여가', '보건'];
+    const SIZE = 200;
+    const cx = SIZE / 2, cy = SIZE / 2;
+    const maxR = 66;
+    const n = CATS.length;
+    const step = (2 * Math.PI) / n;
+
+    const pt = (i, r) => {
+        const a = i * step - Math.PI / 2;
+        return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+    };
+
+    const gridLevels = [0.25, 0.5, 0.75, 1.0];
+    const dataPts = SCORE_KEYS.map((k, i) => pt(i, ((scores[k] || 0) / 5) * maxR));
+    const dPath = dataPts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ') + 'Z';
+
+    return (
+        <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ display: 'block', margin: '8px auto 0' }}>
+            {gridLevels.map((lv, li) => {
+                const gPts = CATS.map((_, i) => pt(i, lv * maxR));
+                const gPath = gPts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ') + 'Z';
+                return <path key={li} d={gPath} fill="none" stroke="#d9d9d9" strokeWidth="1" />;
+            })}
+            {CATS.map((_, i) => {
+                const p = pt(i, maxR);
+                return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="#d9d9d9" strokeWidth="1" />;
+            })}
+            <path d={dPath} fill="rgba(35,189,186,0.2)" stroke="#23bdba" strokeWidth="2" />
+            {CATS.map((cat, i) => {
+                const p = pt(i, maxR + 22);
+                return cat.includes('\n') ? (
+                    <text key={i} x={p.x} y={p.y} textAnchor="middle" fontSize="10" fill="#111111">
+                        {cat.split('\n').map((ln, li) => (
+                            <tspan key={li} x={p.x} dy={li === 0 ? '-0.5em' : '1.2em'}>{ln}</tspan>
+                        ))}
+                    </text>
+                ) : (
+                    <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" fontSize="10" fill="#111111">{cat}</text>
+                );
+            })}
+        </svg>
+    );
+}
+
+function ParticipationBars({ data }) {
+    if (!data) return null;
+    const items = Object.entries(data);
+    const max = Math.max(...items.map(([, v]) => v), 1);
+    return (
+        <div className="m-ai-detail__vbars">
+            {items.map(([label, value]) => (
+                <div key={label} className="m-ai-detail__vbar-col">
+                    <span className="m-ai-detail__vbar-pct">{value}%</span>
+                    <div className="m-ai-detail__vbar-track">
+                        <div
+                            className="m-ai-detail__vbar-fill"
+                            style={{ height: `${Math.max(6, (value / max) * 90)}px` }}
+                        />
+                    </div>
+                    <span className="m-ai-detail__vbar-label">{label}</span>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function JourneyTable({ journey }) {
+    if (!journey || journey.length === 0) return null;
+    const cols = journey.length;
+    const gridCols = `28px repeat(${cols}, 1fr)`;
+    return (
+        <div className="m-ai-detail__journey-table-wrap">
+            <div className="m-ai-detail__journey-table">
+                {/* Step circles row */}
+                <div className="m-ai-detail__journey-row m-ai-detail__journey-circles-row" style={{ gridTemplateColumns: gridCols }}>
+                    <span className="m-ai-detail__journey-row-label" />
+                    {journey.map((step, i) => (
+                        <div key={i} className="m-ai-detail__journey-cell m-ai-detail__journey-circle-cell">
+                            <div
+                                className="m-ai-detail__journey-step-num"
+                                style={{ background: EMOTION_COLORS[step.emotion] || '#c7a300' }}
+                            >
+                                {i + 1}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                {/* Action row */}
+                <div className="m-ai-detail__journey-row" style={{ gridTemplateColumns: gridCols }}>
+                    <span className="m-ai-detail__journey-row-label">행동</span>
+                    {journey.map((step, i) => (
+                        <div key={i} className="m-ai-detail__journey-cell">
+                            <div className="m-ai-detail__journey-time">{step.time}</div>
+                            <div className="m-ai-detail__journey-action">{step.action}</div>
+                        </div>
+                    ))}
+                </div>
+                {/* Feeling row */}
+                <div className="m-ai-detail__journey-row" style={{ gridTemplateColumns: gridCols }}>
+                    <span className="m-ai-detail__journey-row-label">감정</span>
+                    {journey.map((step, i) => (
+                        <div key={i} className="m-ai-detail__journey-cell m-ai-detail__journey-cell--feeling">
+                            <span
+                                className="m-ai-detail__journey-emotion"
+                                style={{ color: EMOTION_COLORS[step.emotion] || '#c7a300' }}
+                            >
+                                {step.emotion}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }) {
     const [citizen, setCitizen] = useState(initialCitizen || null);
@@ -49,18 +185,22 @@ export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }
 
     const d = detail || {};
     const participation = d.participation || {};
-    const maxParticipation = Math.max(...Object.values(participation), 1);
+    const journey = d.journey || [];
+    const ps = d.policy_signals || {};
     const radarData = CATEGORY_LABELS.map(cat => ({
         subject: cat,
         value: d.category_scores?.[cat] ?? 1,
-        fullMark: 5,
     }));
 
-    const policyPriorities = [
-        ...(d.policy_signals?.high || []).map(s => ({ level: 'high', text: s })),
-        ...(d.policy_signals?.medium || []).map(s => ({ level: 'medium', text: s })),
-        ...(d.policy_signals?.low || []).map(s => ({ level: 'low', text: s })),
+    const policyItems = [
+        ...(ps.high || []).map(s => ({ level: 'high', text: s })),
+        ...(ps.medium || []).map(s => ({ level: 'medium', text: s })),
+        ...(ps.low || []).map(s => ({ level: 'low', text: s })),
     ];
+
+    const totalMatch = (d.similar_desc || '').match(/약?\s*(\d+)명\s*중/);
+    const personTotal = totalMatch ? Math.min(parseInt(totalMatch[1]), 8) : 5;
+    const highlighted = 1;
 
     return (
         <div className="m-ai-detail">
@@ -72,86 +212,105 @@ export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }
                     onClick={() => onNavigate?.('mAICitizen')}
                     aria-label="뒤로가기"
                 >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
                 </button>
-                <div className="m-ai-detail__header-name">
-                    <span className="m-ai-detail__name">{citizen.name}</span>
-                    <span className="m-ai-detail__age">{citizen.age}세</span>
-                    {citizen.gender && <span className="m-ai-detail__gender">{citizen.gender}</span>}
-                </div>
-                {d.similar_ratio && (
-                    <div className="m-ai-detail__ratio-badge">{d.similar_ratio}</div>
-                )}
             </div>
 
             <div className="m-ai-detail__scroll">
-                {/* Avatar + similar ratio */}
+                {/* Hero: avatar + identity */}
                 <div className="m-ai-detail__hero">
                     <div className="m-ai-detail__avatar-wrap">
                         {avatarUrl ? (
                             <img src={avatarUrl} alt="아바타" className="m-ai-detail__avatar-img" />
                         ) : (
-                            <svg viewBox="0 0 100 100" width="96" height="96" style={{ display: 'block' }}>
-                                <circle cx="50" cy="50" r="50" fill="#f2dfc8"/>
-                                <circle cx="50" cy="36" r="17" fill="#d4aa82"/>
-                                <path d="M18 100 C18 70 50 65 50 65 C50 65 82 70 82 100 Z" fill="#d4aa82"/>
+                            <svg viewBox="0 0 75 94" width="100%" height="100%" style={{ display: 'block' }}>
+                                <rect width="75" height="94" fill="#f0ece6"/>
+                                <ellipse cx="37" cy="32" rx="16" ry="18" fill="#d4aa82"/>
+                                <path d="M5 94 C5 60 37 52 37 52 C37 52 70 60 70 94 Z" fill="#d4aa82"/>
                             </svg>
                         )}
                     </div>
                     <div className="m-ai-detail__hero-info">
+                        <div className="m-ai-detail__name-row">
+                            <span className="m-ai-detail__name">{citizen.name}</span>
+                            <span className="m-ai-detail__age-gender">
+                                {citizen.age}세{citizen.gender ? ` · ${citizen.gender}` : ''}
+                            </span>
+                        </div>
                         <div className="m-ai-detail__tags">
                             {(citizen.tags || []).slice(0, 3).map(t => (
                                 <span key={t} className="m-ai-detail__tag">{t}</span>
                             ))}
                         </div>
-                        {d.similar_ratio && (
-                            <div className="m-ai-detail__similar">
-                                <span className="m-ai-detail__similar-ratio">{d.similar_ratio}</span>
-                                <span className="m-ai-detail__similar-desc">{d.similar_desc}</span>
-                            </div>
-                        )}
+                        {/* Similarity ratio */}
+                        <div className="m-ai-detail__ratio-section">
+                            <div className="m-ai-detail__ratio-title">유사 시민 비율</div>
+                            <PersonIconsRow total={personTotal} highlighted={highlighted} />
+                            <div className="m-ai-detail__ratio-pct">{d.similar_ratio || '-'}</div>
+                            <div className="m-ai-detail__ratio-desc">{d.similar_desc || `${citizen.district || ''} 유사 생활 유형`}</div>
+                        </div>
                     </div>
                 </div>
 
-                {/* Profile info grid */}
-                {(d.job || d.family || d.interests || d.hobbies) && (
+                {/* Profile grid */}
+                {(d.job || d.family || d.interests || d.hobbies || d.motto || d.dream_life || d.concerns || d.activities) && (
                     <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">시민 정보</h3>
-                        <div className="m-ai-detail__info-grid">
-                            {d.job && <><dt>직업</dt><dd>{d.job}</dd></>}
-                            {citizen.district && <><dt>거주지역</dt><dd>{citizen.district}</dd></>}
-                            {d.interests && <><dt>관심사</dt><dd>{d.interests}</dd></>}
-                            {d.hobbies && <><dt>취미</dt><dd>{d.hobbies}</dd></>}
-                            {d.concerns && <><dt>주요관심</dt><dd>{d.concerns}</dd></>}
-                            {d.dream_life && <><dt>희망사항</dt><dd>{d.dream_life}</dd></>}
+                        <div className="m-ai-detail__profile-grid">
+                            {[
+                                ['직업', d.job],
+                                ['가족', d.family],
+                                ['좌우명', d.motto],
+                                ['꿈꾸는 생활', d.dream_life],
+                                ['관심사', d.interests],
+                                ['고민', d.concerns],
+                                ['취미', d.hobbies],
+                                ['활동', d.activities],
+                            ].filter(([, v]) => v).map(([label, value], i, arr) => (
+                                <div key={label} className={`m-ai-detail__profile-row${i < arr.length - 1 ? '' : ' last'}`}>
+                                    <dt className="m-ai-detail__profile-label">{label}</dt>
+                                    <dd className="m-ai-detail__profile-value">{value}</dd>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}
 
-                {/* Key quote */}
+                {/* Quote section — 시민 체감 언어 */}
                 {(d.body_language || citizen.quote) && (
                     <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">시민 발언</h3>
-                        <div className="m-ai-detail__quote-bubble">
-                            <p>{d.body_language || citizen.quote}</p>
+                        <h3 className="m-ai-detail__section-title">시민 체감 언어</h3>
+                        <div className="m-ai-detail__quote-block">
+                            <span className="m-ai-detail__quote-open">❝</span>
+                            <p className="m-ai-detail__quote-text">{d.body_language || citizen.quote}</p>
+                            <span className="m-ai-detail__quote-close">❞</span>
                         </div>
-                        {d.voices && d.voices.length > 0 && (
-                            <ul className="m-ai-detail__voices">
-                                {d.voices.map((v, i) => (
-                                    <li key={i}>{v}</li>
-                                ))}
-                            </ul>
-                        )}
                     </div>
                 )}
 
-                {/* Top issues */}
+                {/* 시민 목소리 */}
+                {d.voices && d.voices.length > 0 && (
+                    <div className="m-ai-detail__section">
+                        <h3 className="m-ai-detail__section-title">시민 목소리</h3>
+                        <div className="m-ai-detail__voices">
+                            {d.voices.map((v, i) => (
+                                <div key={i} className="m-ai-detail__voice-item">
+                                    <span className="m-ai-detail__voice-num">0{i + 1}</span>
+                                    <span className="m-ai-detail__voice-text">{v}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* 핵심 이슈 */}
                 {d.top_issues && d.top_issues.length > 0 && (
                     <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">주요 이슈</h3>
+                        <h3 className="m-ai-detail__section-title">핵심 이슈 TOP 3</h3>
                         <div className="m-ai-detail__issues">
                             {d.top_issues.map((issue, i) => (
-                                <div key={i} className="m-ai-detail__issue-card">
+                                <div key={i} className="m-ai-detail__issue-item">
                                     <span className="m-ai-detail__issue-num">0{i + 1}</span>
                                     <span className="m-ai-detail__issue-text">{issue}</span>
                                 </div>
@@ -160,89 +319,75 @@ export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }
                     </div>
                 )}
 
-                {/* Journey timeline */}
-                {d.journey && d.journey.length > 0 && (
+                {/* 여정지도 */}
+                {journey.length > 0 && (
                     <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">행동 시나리오</h3>
-                        <div className="m-ai-detail__journey">
-                            {d.journey.map((step, i) => (
-                                <div key={i} className="m-ai-detail__journey-step">
-                                    <div className="m-ai-detail__journey-dot" style={{ background: EMOTION_COLORS[step.emotion] || '#888' }} />
-                                    <div className="m-ai-detail__journey-content">
-                                        <div className="m-ai-detail__journey-time">{step.time}</div>
-                                        <div className="m-ai-detail__journey-action">{step.action}</div>
-                                        <div className="m-ai-detail__journey-feeling">{step.feeling}</div>
-                                        <span className="m-ai-detail__journey-emotion" style={{ background: EMOTION_COLORS[step.emotion] || '#888' }}>
-                                            {step.emotion}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <h3 className="m-ai-detail__section-title">여정지도</h3>
+                        <JourneyTable journey={journey} />
                     </div>
                 )}
 
-                {/* Policy priorities */}
-                {policyPriorities.length > 0 && (
+                {/* 정책 신호등 */}
+                {policyItems.length > 0 && (
                     <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">정책 선호도</h3>
+                        <h3 className="m-ai-detail__section-title">정책 신호등</h3>
+                        <div className="m-ai-detail__policy-legend">
+                            <span className="m-ai-detail__policy-badge m-ai-detail__policy-badge--high">높음</span>
+                            <span className="m-ai-detail__policy-badge m-ai-detail__policy-badge--medium">보통</span>
+                            <span className="m-ai-detail__policy-badge m-ai-detail__policy-badge--low">낮음</span>
+                        </div>
                         <div className="m-ai-detail__policies">
-                            {policyPriorities.map((p, i) => (
-                                <div key={i} className={`m-ai-detail__policy-item m-ai-detail__policy--${p.level}`}>
-                                    <span className="m-ai-detail__policy-badge">
-                                        {p.level === 'high' ? '높음' : p.level === 'medium' ? '중간' : '낮음'}
-                                    </span>
-                                    <span className="m-ai-detail__policy-text">{p.text}</span>
+                            {policyItems.map((p, i) => (
+                                <div key={i} className={`m-ai-detail__policy-row m-ai-detail__policy-row--${p.level}`}>
+                                    <div className="m-ai-detail__policy-light">
+                                        <span className="m-ai-detail__policy-dot" style={{
+                                            background: p.level === 'high' ? '#ff0000' : p.level === 'medium' ? '#ff6100' : '#029e50'
+                                        }} />
+                                    </div>
+                                    <span className="m-ai-detail__policy-text" style={{
+                                        color: p.level === 'high' ? '#ff0000' : p.level === 'medium' ? '#df7700' : '#333',
+                                        fontWeight: p.level === 'high' ? 600 : p.level === 'medium' ? 500 : 400,
+                                    }}>{p.text}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
                 )}
 
-                {/* Participation bar chart */}
+                {/* 공공데이터 참여 현황 */}
                 {Object.keys(participation).length > 0 && (
                     <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">공공서비스 실천 현황</h3>
-                        <div className="m-ai-detail__bars">
-                            {Object.entries(participation).map(([label, val]) => (
-                                <div key={label} className="m-ai-detail__bar-row">
-                                    <span className="m-ai-detail__bar-label">{label}</span>
-                                    <div className="m-ai-detail__bar-track">
-                                        <div
-                                            className="m-ai-detail__bar-fill"
-                                            style={{ width: `${(val / maxParticipation) * 100}%` }}
-                                        />
-                                    </div>
-                                    <span className="m-ai-detail__bar-val">{val}%</span>
-                                </div>
-                            ))}
-                        </div>
+                        <h3 className="m-ai-detail__section-title">공공데이터 참여 현황 (참여 비율)</h3>
+                        <ParticipationBars data={participation} />
+                        {d.participation_note && (
+                            <p className="m-ai-detail__participation-note">{d.participation_note}</p>
+                        )}
                     </div>
                 )}
 
-                {/* Radar chart */}
+                {/* 카테고리별 관심도 */}
                 {radarData.some(d => d.value > 0) && (
                     <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">카테고리별 관심도</h3>
-                        <div className="m-ai-detail__radar-wrap">
-                            <ResponsiveContainer width="100%" height={240}>
-                                <RadarChart data={radarData} margin={{ top: 10, right: 20, bottom: 10, left: 20 }}>
-                                    <PolarGrid stroke="#e0e0e0" />
-                                    <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11, fill: '#555' }} />
-                                    <Radar
-                                        name="관심도"
-                                        dataKey="value"
-                                        stroke="#23bdbb"
-                                        fill="#23bdbb"
-                                        fillOpacity={0.3}
-                                    />
-                                </RadarChart>
-                            </ResponsiveContainer>
-                        </div>
+                        <h3 className="m-ai-detail__section-title">카테고리별 관심도 (8대 영역)</h3>
+                        <CategoryRadar scores={d.category_scores} />
                     </div>
                 )}
 
-                <div style={{ height: 100 }} />
+                {/* Footer */}
+                <div className="m-ai-detail__footer">
+                    <p className="m-ai-detail__footer-desc">
+                        이 리포트는 {citizen.district || '부산'} 시민 의견과 공공데이터를 기반으로 AI 분석을 통해 생성된 가상 인물입니다.
+                    </p>
+                    <button
+                        className="m-ai-detail__footer-btn"
+                        type="button"
+                        onClick={() => onNavigate?.('mAICitizen')}
+                    >
+                        다른 시민 유형 보기 &gt;
+                    </button>
+                </div>
+
+                <div style={{ height: 80 }} />
             </div>
 
             <MobileBottomNav currentView="mAICitizenDetail" onNavigate={onNavigate} />

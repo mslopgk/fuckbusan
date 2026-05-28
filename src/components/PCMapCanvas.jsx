@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo, forwardRef, useImperativeHandle, useRef } from 'react';
 import { Map, Polygon, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
+import { CategoryIcon } from '../constants/mapConstants.jsx';
 
 const toPath = (coords) => coords.map(([lng, lat]) => ({ lat, lng }));
 const featureToPaths = (feature) => {
@@ -66,10 +67,16 @@ function buildClusters(pins, level) {
 }
 
 // Figma 진단 핀 paths (viewBox 0 0 54 64)
-// Gray solid (imgGroup670/672): fill #777 — 일반 진단 핀
+// Gray solid: fill #777 — 시민 진단 핀
 const DIAG_GRAY_PATH = 'M54 26.6667C54 41.3943 37.8 54.2222 27 64C15.3 54.2222 0 41.3943 0 26.6667C0 11.9391 12.0883 0 27 0C41.9117 0 54 11.9391 54 26.6667Z';
-// Teal hollow (imgGroup669/677): fill white + stroke #25D2BC — 선택/포커스 핀
+// Teal hollow: fill white + stroke #23BDBB — 전문가 진단 핀
 const DIAG_TEAL_PATH = 'M27 1.5C41.1009 1.5 52.5 12.7853 52.5 26.667C52.4999 33.4838 48.74 40.0256 43.4131 46.2109C38.4046 52.0265 32.23 57.2915 26.9658 62.0146C21.352 57.3161 15.1559 52.0298 10.2588 46.2227C5.05984 40.0575 1.50011 33.5078 1.5 26.667C1.5 12.7853 12.8991 1.5 27 1.5Z';
+
+// 대분류 → CategoryIcon kind 매핑
+const BIG_TO_ICON = {
+    '주거': 'home', '환경': 'leaf', '교통': 'bus', '안전': 'shield',
+    '교육': 'book', '산업·일자리': 'briefcase', '문화·여가': 'heart', '보건·복지': 'plus',
+};
 
 const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onMapClick, selectedPoint = null, accentColor = '#E6235A', showRegions = true, mapType = 'roadmap', initialCenter = null, initialLevel = null, pinVariant = 'solid', showLocateBtn = false, selectedDistrict = null }, ref) {
     useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services'] });
@@ -259,34 +266,50 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                     <CustomOverlayMap
                         key={pin.id}
                         position={{ lat: pin.lat, lng: pin.lng }}
-                        yAnchor={pinVariant === 'diagnosis' ? 0.5 : 1}
-                        xAnchor={pinVariant === 'diagnosis' ? 0.5 : 0.5}
+                        yAnchor={1}
+                        xAnchor={0.5}
                     >
                         {pinVariant === 'diagnosis' ? (
-                            /* ── 진단 지도 핀: Figma 원형 버블 스타일 ── */
+                            /* ── 진단 핀: 시민=회색 teardrop / 전문가=청록 테두리 teardrop + 카테고리 아이콘 ── */
                             isCluster ? (
-                                /* 클러스터: 큰 원 + 반투명 후광 */
                                 <button
                                     type="button"
                                     onTouchStart={(e) => e.stopPropagation()}
                                     onTouchEnd={(e) => e.stopPropagation()}
                                     onClick={() => handleClusterClick(pin)}
-                                    className="pc-diag-circle-pin pc-diag-circle-pin--cluster"
+                                    className="pc-diag-tdrop-btn pc-diag-tdrop-btn--cluster"
                                     aria-label={`${pin.count}건`}
                                 >
-                                    <span className="pc-diag-circle-num">{pin.count}</span>
+                                    <svg width="44" height="52" viewBox="0 0 54 64" fill="none">
+                                        <path d={DIAG_GRAY_PATH} fill="#555" />
+                                        <text x="27" y="29" textAnchor="middle" dominantBaseline="middle"
+                                            fill="white" fontSize="17" fontWeight="800" fontFamily="inherit">
+                                            {pin.count}
+                                        </text>
+                                    </svg>
                                 </button>
                             ) : (
-                                /* 개별 핀: 원형 버블 */
                                 <button
                                     type="button"
                                     onTouchStart={(e) => e.stopPropagation()}
                                     onTouchEnd={(e) => e.stopPropagation()}
                                     onClick={() => onPinClick && onPinClick(pin)}
-                                    className="pc-diag-circle-pin"
+                                    className={`pc-diag-tdrop-btn${pin.focus ? ' pc-diag-tdrop-btn--focus' : ''}`}
                                     aria-label={pin.title || '진단'}
                                 >
-                                    <span className="pc-diag-circle-num">1</span>
+                                    <svg width="40" height="47" viewBox="0 0 54 64" fill="none">
+                                        {pin.targetType === '전문가' ? (
+                                            <path d={DIAG_TEAL_PATH} fill="#fff" stroke="#23BDBB" strokeWidth="3" />
+                                        ) : (
+                                            <path d={DIAG_GRAY_PATH} fill="#777" />
+                                        )}
+                                    </svg>
+                                    <span
+                                        className="pc-diag-tdrop-icon"
+                                        style={{ color: pin.targetType === '전문가' ? '#23BDBB' : '#fff' }}
+                                    >
+                                        <CategoryIcon kind={BIG_TO_ICON[pin.big] || 'grid'} />
+                                    </span>
                                 </button>
                             )
                         ) : isCluster ? (

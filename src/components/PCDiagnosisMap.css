@@ -249,15 +249,10 @@
     font-weight: 700;
 }
 
-/* ───── 툴바: PCDiagnosisMap right panel(395px)+margin(16+16) ───── */
+/* ───── 툴바: Figma 기준 화면 오른쪽 끝 (right panel 위에 오버레이, z-index 6 > 5) ───── */
 .pc-diag-canvas .pc-map3-toolbar {
-    right: 427px;
-    top: 16px;
-    transition: right 0.38s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.pc-diag-sidebar-closed .pc-diag-canvas .pc-map3-toolbar {
     right: 16px;
+    top: 16px;
 }
 
 /* ───── 중앙 지도 ───── */

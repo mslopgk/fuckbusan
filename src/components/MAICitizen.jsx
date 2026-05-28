@@ -187,7 +187,19 @@ export default function MAICitizen({ onNavigate }) {
             <div className="m-ai-map-section">
                 {quoteCitizen && (
                     <div className="m-ai-quote-bubble">
-                        <p>{quoteCitizen.quote.slice(0, 60)}{quoteCitizen.quote.length > 60 ? '…' : ''}</p>
+                        <div className="m-ai-quote-bubble__avatar">
+                            {avatarUrls[quoteCitizen.id] && avatarUrls[quoteCitizen.id] !== 'loading' ? (
+                                <img src={`${API_URL}${avatarUrls[quoteCitizen.id]}`} alt="" />
+                            ) : (
+                                <svg viewBox="0 0 75 94" width="100%" height="100%">
+                                    <rect width="75" height="94" fill="#f0ece6"/>
+                                    <ellipse cx="37" cy="32" rx="16" ry="18" fill="#d4aa82"/>
+                                    <path d="M5 94 C5 60 37 52 37 52 C37 52 70 60 70 94 Z" fill="#d4aa82"/>
+                                </svg>
+                            )}
+                        </div>
+                        <p>{quoteCitizen.quote.slice(0, 55)}{quoteCitizen.quote.length > 55 ? '…' : ''}</p>
+                        <div className="m-ai-quote-bubble__tail" />
                     </div>
                 )}
                 <MiniMap
