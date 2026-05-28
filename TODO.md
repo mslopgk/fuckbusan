@@ -1,6 +1,6 @@
 # 부산 BDP — 미완료 항목
 
-> **갱신**: 2026-05-28 (12차 — 진단/가상시민/제안제보/설문 Figma 전수 일치화)
+> **갱신**: 2026-05-28 (13차 — TODO 최신화)
 > **Figma 파일**: `jWpcqQv2jhb2mkzjEs1fuI`
 > 완료 항목은 `CHANGES_2026-05-06.md` 참조.
 
@@ -35,7 +35,7 @@
 ## 🟡 P2 — Figma diff 보류
 
 - [ ] **MReportForm 카테고리 4 vs 8개** — Figma `848:18955`는 4개(주거/환경/교통/안전), 코드는 8개. 정책 결정 필요
-- [ ] **MDiagnosisResult 레이아웃** — 데이터 표 + radar 차트 4종 리팩. 규모가 커서 별도 작업 단위 필요
+- [x] **MDiagnosisResult 레이아웃** — 테이블 레이아웃 + 레이더차트 4종으로 전면 재작성 완료 (2026-05-28)
 
 ---
 
@@ -48,6 +48,7 @@
 ### 제보 폼 (`MReportForm.jsx`)
 - [x] 사진 등록: MReportForm은 이미 구현되어 있었음 확인 (2026-05-21)
 - [x] 임시저장에 location/pickedLat/pickedLng 누락 → 추가 완료 (2026-05-21)
+- [x] back 버튼 → `mReportList` (목록으로) 수정 (2026-05-28)
 
 ### 제보 폼 PC (`PCReportForm.jsx`)
 - [x] 사진 업로드 API 연결 완료 — POST /api/reports/upload 호출 + image_url payload 포함 (2026-05-21)
@@ -77,10 +78,12 @@
 
 ### 제안 폼 (`MProposalForm.jsx`)
 - [x] 사진 업로드 API 연결 — POST /api/reports/upload 호출 + files/image_url payload (2026-05-21)
+- [x] back 버튼 → `mProposalList` (목록으로) 수정 (2026-05-28)
 
 ### 제안 지도 (`MProposalMap.jsx`)
 - [x] 정렬(최신/조회/투표) 실제 반영 — useMemo에 sort 로직 추가 (2026-05-21)
 - [x] 카드 이미지 빈 div → backgroundImage 설정 (2026-05-21)
+- [x] back 버튼 → `mProposalList` 수정 (2026-05-28)
 
 ### 나의 제안 (`MyProposals.jsx`)
 - [x] 클릭 시 구버전 ProposalDetail → 기기별 pcMyProposalDetail/mProposalDetail 분기 (2026-05-21)
@@ -128,6 +131,7 @@
 - [x] `MSurveyResults` 히어로 타이틀 raw title → "YYYY년,\n[title] 결과는?" 형식 (Figma 스펙) (2026-05-28)
 - [x] `PCSurveyResults` open toggle → 실제 콘텐츠 show/hide 구현 (2026-05-21)
 - [x] `MSurveyDetail1` 이용약관/개인정보처리방침 span → onClick alert + cursor:pointer (2026-05-21)
+- [x] `PCSurveyJoin` submitting guard → 중복 제출 방지 (2026-05-28)
 - [ ] 중복 응답 방지: 백엔드 unique constraint 미적용 — 추가 필요
 
 ---
@@ -178,6 +182,8 @@
 - [x] `MAICitizenDetail` 전면 재작성 — 히어로/프로필그리드/시민목소리/핵심이슈/여정지도/정책신호등/참여현황/레이더차트 (2026-05-28)
 - [x] `MAICitizen` 말풍선에 아바타 이미지 추가 (2026-05-28)
 - [x] `PCAICitizen` 참여현황 차트·카드 스타일 개선 (2026-05-28)
+- [x] `PCMapCanvas` 진단 핀 원형→teardrop (시민=회색 solid / 전문가=청록 outline) (2026-05-28)
+- [x] `PCMapShared.css` / `PCDiagnosisMap.css` teardrop 핀 CSS + 툴바 위치 수정 (2026-05-28)
 - [?] AI가상시민 실제 DB 연동 (현재 mock 데이터)
 - [?] 공공디자인 현황 메가 대시보드 미구현
 - [?] 진단정보 / 정책정보 / 공공데이터 / 디자인생태 페이지 미구현
@@ -210,6 +216,23 @@
 - [ ] **인증 가드 토큰 리다이렉트**: auth-gated 뷰 미인증 시 login 리다이렉트 verify 토큰 헬퍼 미구현
 - [ ] **임시저장 다중 키**: `mProposalForm:draft` 단일 키 — 사용자별 분리 미고려
 - [?] **ESLint 설정 미비**: `.eslintrc` 파일 없음, `eslint` 미설치. Vite 기본 설정만 존재
+
+---
+
+## ⏳ 정책·기획 결정 대기 (코드 작업 불가)
+
+| 항목 | 파일 | 내용 |
+|---|---|---|
+| MReportForm 카테고리 수 | `MReportForm.jsx` | Figma=4개(주거/환경/교통/안전), 코드=8개 — 통일 여부 결정 필요 |
+| CAT 종류 통일 | 전체 | 제보 4개 vs 제안 8개 vs 필터 9개 — 명세 확정 필요 |
+| MReportDetail cat 태그 색상 | `MReportDetail.jsx` | Figma=노랑, 리스트=청록 — 상세화면 색 결정 |
+| MProposalDetail cat 태그 색상 | `MProposalDetail.jsx` | variant마다 다름 — catStyles.js 재검증 |
+| MReportDetail 단계바 클릭 | `MReportDetail.jsx` | "결과안내" 외 단계 클릭 가능 여부 |
+| MProposalDetail 댓글 페이지네이션 | `MProposalDetail.jsx` | Figma long variant 기준 더보기 구현 여부 |
+| MDiagnosisResult "관련 시민 제안" 섹션 | `MDiagnosisResult.jsx` | Figma에 없는 코드 전용 섹션 — keep/remove |
+| MSurveyJoin 진행 표시 | `MSurveyJoin.jsx` | Figma=보라 dot indicator, 코드=linear fill bar |
+| mDiagnosisResult vs mDiagnosisDetail | `App.jsx` | 두 view 동일 컴포넌트 공유 — 분리 여부 |
+| Home 통계 섹션 활성화 | `Home.jsx:186-273` | `{false && ...}` 블록 활성화 여부 |
 
 ---
 
