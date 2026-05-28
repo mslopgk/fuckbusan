@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
 import './MProposalDetail.css';
@@ -22,6 +22,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
     const [comments, setComments] = useState([]);
     const [views, setViews] = useState(proposal?.views ?? proposal?.views_count ?? 0);
     const [votes, setVotes] = useState(proposal?.likes_count ?? proposal?.votes ?? 0);
+    const viewCalled = useRef(false);
 
     useEffect(() => {
         if (!proposal?.id) return;
@@ -30,6 +31,8 @@ export default function MProposalDetail({ onNavigate, proposal }) {
             .then((rows) => setComments(Array.isArray(rows) ? rows : []))
             .catch(() => setComments([]));
 
+        if (viewCalled.current) return;
+        viewCalled.current = true;
         const token = localStorage.getItem('access_token');
         fetch(`${API_URL}/api/reports/proposals/${proposal.id}/view`, {
             method: 'POST',

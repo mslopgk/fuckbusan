@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 import json
 import os
@@ -490,15 +491,19 @@ def increment_proposal_view(
         return {"views_count": proposal.views_count or 0, "counted": False}
 
     try:
-        # 조회 기록 저장
         new_view = models.ProposalView(
             user_id=current_user.user_id,
             proposal_id=proposal_id
         )
         db.add(new_view)
+        db.flush()  # unique constraint 위반 즉시 감지
         proposal.views_count = (proposal.views_count or 0) + 1
         db.commit()
         return {"views_count": proposal.views_count, "counted": True}
+    except IntegrityError:
+        # 동시 요청으로 unique 제약 위반 → 이미 카운트됨
+        db.rollback()
+        return {"views_count": proposal.views_count or 0, "counted": False}
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, JSON, DateTime, DECIMAL, Text
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, JSON, DateTime, DECIMAL, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
@@ -207,7 +207,10 @@ class ProposalLike(Base):
 
 class ProposalView(Base):
     __tablename__ = "proposal_views"
-    __table_args__ = {'mysql_charset': 'utf8mb4'}
+    __table_args__ = (
+        UniqueConstraint('user_id', 'proposal_id', name='uq_proposal_view_user'),
+        {'mysql_charset': 'utf8mb4'},
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)

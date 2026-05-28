@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef} from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
 import './PCDetailShared.css';
@@ -28,9 +28,11 @@ export default function PCReportDetail({ onNavigate, report }) {
     const [liked, setLiked] = useState(() => getLikedSet().has(reportId));
     const [likeCount, setLikeCount] = useState(0);
     const [voteDoneType, setVoteDoneType] = useState(null); // 'liked' | 'unliked' | null
+    const fetchCalled = useRef(false);
 
     useEffect(() => {
-        if (!reportId) return;
+        if (!reportId || fetchCalled.current) return;
+        fetchCalled.current = true;
         setLiked(getLikedSet().has(reportId));
         fetch(`${API_URL}/api/reports/${reportId}`)
             .then((r) => (r.ok ? r.json() : null))

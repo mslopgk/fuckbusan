@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
 import './PCDetailShared.css';
@@ -20,6 +20,7 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
     const [voteDoneType, setVoteDoneType] = useState(null); // null | 'voted' | 'cancelled'
     const [voted, setVoted] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
+    const viewCalled = useRef(false);
 
     useEffect(() => {
         if (!proposal?.id) return;
@@ -42,7 +43,10 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setComments(Array.isArray(rows) ? rows : []))
             .catch(() => setComments([]));
-        fetch(`${API_URL}/api/reports/proposals/${numId}/view`, { method: 'POST' }).catch(() => {});
+        if (!viewCalled.current) {
+            viewCalled.current = true;
+            fetch(`${API_URL}/api/reports/proposals/${numId}/view`, { method: 'POST' }).catch(() => {});
+        }
     }, [proposal?.id]);
 
     const district = detail?.region
