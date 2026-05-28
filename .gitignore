@@ -35,8 +35,10 @@ package-lock.json
 figma-pages/
 figma-pages-thumb/
 figma.pdf
+figma/
+figma-compare/
 verify/figma-refs/
-verify/screenshots/figma_*.png
+verify/screenshots/
 
 # Work-only markdown docs
 FIGMA_DIFF.md
@@ -49,7 +51,7 @@ QA_REPORT_*.md
 _refs/
 
 # Backend logs
-backend/output.log
+backend/*.log
 
 # Playwright MCP session logs
 .playwright-mcp/
@@ -71,3 +73,6 @@ screenshots-all/
 
 # Exported data / temp folders
 제목 없음/
+
+# Nested external repos
+external-repo/
