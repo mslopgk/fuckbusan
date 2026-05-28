@@ -83,7 +83,6 @@ const DiagCard = memo(function DiagCard({ it, onNavigate }) {
 });
 
 export default function MDiagnosisList({ onNavigate }) {
-    const [search, setSearch] = useState('');
     const [category, setCategory] = useState('전체');
     const [mode, setMode] = useState('citizen');
     const [district, setDistrict] = useState('');
@@ -97,12 +96,12 @@ export default function MDiagnosisList({ onNavigate }) {
     // panTo 중 onDragEnd 이벤트가 발생해 selectedPin을 덮어쓰는 것을 방지
     const isPanningRef = useRef(false);
 
-    // /checklist/list requires auth; mode 변경 시 page 1부터 재로드
+    // mode 변경 시 page 1부터 재로드
     useEffect(() => {
         setAllRows([]);
         setDiagHasMore(true);
         const params = new URLSearchParams({ skip: 0, limit: DIAG_PAGE_SIZE });
-        fetch(`${API_URL}/checklist/list?${params.toString()}`, { headers: authHeaders() })
+        fetch(`${API_URL}/checklist/list?${params.toString()}`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => {
                 const arr = Array.isArray(rows) ? rows : [];
@@ -117,7 +116,7 @@ export default function MDiagnosisList({ onNavigate }) {
         setDiagLoadingMore(true);
         setAllRows((prev) => {
             const params = new URLSearchParams({ skip: prev.length, limit: DIAG_PAGE_SIZE });
-            fetch(`${API_URL}/checklist/list?${params.toString()}`, { headers: authHeaders() })
+            fetch(`${API_URL}/checklist/list?${params.toString()}`)
                 .then((r) => (r.ok ? r.json() : []))
                 .then((rows) => {
                     const arr = Array.isArray(rows) ? rows : [];
@@ -153,11 +152,6 @@ export default function MDiagnosisList({ onNavigate }) {
                 // citizen 모드: 전문가 제외 (미설정 포함)
                 return target !== '전문가' && target !== 'expert';
             })
-            .filter((r) => !search ||
-                (r.질문기준 && r.질문기준.includes(search)) ||
-                (r.대분류 && r.대분류.includes(search)) ||
-                (r.진단지역 && r.진단지역.includes(search))
-            )
             .map((r) => ({
                 id: r.result_id,
                 big: r.대분류 || '주거',
@@ -167,7 +161,7 @@ export default function MDiagnosisList({ onNavigate }) {
                 reviewText: r.리뷰 || '',
                 thumb: r.이미지경로 || null,
             }));
-    }, [allRows, district, category, search, mode]);
+    }, [allRows, district, category, mode]);
 
     // 지도 핀: 서버 clusters를 줌 레벨 기반 지리 클러스터링으로 표시
     // allRows 개별 좌표는 리스트 카드 필터에만 사용
@@ -203,18 +197,39 @@ export default function MDiagnosisList({ onNavigate }) {
 
     return (
         <div className="m-diag-list-page">
+            {/* 헤더 — 흰 배경, 뒤로가기 + 모드명 + 구 드롭다운 */}
+            <div className="m-diag-header">
+                <div className="m-diag-header-top">
+                    <button
+                        type="button"
+                        className="m-diag-back-btn"
+                        aria-label="뒤로"
+                        onClick={() => onNavigate?.('home')}
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                    </button>
+                    <span className="m-diag-header-title">
+                        {mode === 'expert' ? '전문가 진단' : '일반 진단'}
+                    </span>
+                </div>
+                <div className="m-diag-district-row">
+                    <select
+                        className="m-diag-district-select"
+                        value={district}
+                        onChange={(e) => setDistrict(e.target.value)}
+                    >
+                        <option value="">전체</option>
+                        {Object.keys(DISTRICT_CENTERS).map((d) => (
+                            <option key={d} value={d}>{d}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
             {/* 지도 영역 */}
             <div className="m-diag-map-area">
-                {/* 검색바 — 지도 위 플로팅 */}
-                <div className="m-diag-search-wrap">
-                    <input
-                        className="m-diag-search"
-                        placeholder="지역검색"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                </div>
-
                 {/* 카테고리 칩 바 — 지도 위 플로팅, 수평 스크롤 */}
                 <div className="m-diag-cats-bar">
                     {CATEGORIES.map((c) => (

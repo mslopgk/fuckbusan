@@ -65,11 +65,11 @@
 }
 
 .user-pc-nav-link:hover {
-    color: #16B5B0;
+    color: #5B2EAB;
 }
 
 .user-pc-nav-link.active {
-    color: #16B5B0;
+    color: #5B2EAB;
 }
 
 .user-pc-header-actions {
@@ -89,7 +89,7 @@
 }
 
 .user-pc-auth:hover {
-    color: #16B5B0;
+    color: #5B2EAB;
 }
 
 .user-pc-divider {
@@ -111,7 +111,7 @@
 }
 
 .user-pc-bell:hover {
-    color: #16B5B0;
+    color: #5B2EAB;
 }
 
 .user-pc-main {
@@ -210,6 +210,7 @@
 }
 .pc-btn-primary:hover { background: #4a1f93; }
 .pc-btn-primary:active { transform: translateY(1px); }
+.pc-btn-primary:disabled { background: #c8b8e8; cursor: not-allowed; transform: none; }
 
 .pc-btn-secondary {
     background: #fff;

@@ -26,9 +26,9 @@ const CloseIcon = () => (
     </svg>
 );
 
-const CheckIcon = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="20 6 9 17 4 12"/>
+const ChevronDownIcon = ({ active }) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={active ? '#E6235A' : '#b0b0b0'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
     </svg>
 );
 
@@ -45,7 +45,7 @@ export function RegionSheet({ regions, draft, onSelect, onConfirm, onClose }) {
                 <ul className="m-region-list">
                     {regions.map((r) => (
                         <li key={r} className={`m-region-item ${draft === r ? 'on' : ''}`} onClick={() => onSelect(r)}>
-                            <span className="m-modal-chevron">{draft === r && <CheckIcon />}</span>
+                            <span className="m-modal-chevron"><ChevronDownIcon active={draft === r} /></span>
                             <span>{r}</span>
                         </li>
                     ))}
@@ -69,7 +69,7 @@ export function SortSheet({ sorts, draft, onSelect, onConfirm, onClose }) {
                 <ul className="m-sort-list">
                     {sorts.map((s) => (
                         <li key={s} className={`m-sort-item ${draft === s ? 'on' : ''}`} onClick={() => onSelect(s)}>
-                            <span className="m-modal-chevron">{draft === s && <CheckIcon />}</span>
+                            <span className="m-modal-chevron"><ChevronDownIcon active={draft === s} /></span>
                             <span>{s}</span>
                         </li>
                     ))}

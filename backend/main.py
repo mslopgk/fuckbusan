@@ -45,6 +45,10 @@ async def lifespan(app: FastAPI):
         with engine.connect() as conn:
             for stmt in [
                 "ALTER TABLE checklist_result ADD COLUMN 진단대상 VARCHAR(50) NULL",
+                # proposal_comments.user_id nullable 변경 (익명/관리자 댓글 허용)
+                "ALTER TABLE proposal_comments MODIFY COLUMN user_id INT NULL",
+                # survey_responses.demographics 컬럼 추가 (설문 인구통계 정보)
+                "ALTER TABLE survey_responses ADD COLUMN demographics JSON NULL",
             ]:
                 try:
                     conn.execute(text(stmt))

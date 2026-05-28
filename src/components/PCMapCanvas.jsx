@@ -30,24 +30,24 @@ const CLUSTER_LEVEL_THRESHOLD = 7;
 
 function buildClusters(pins, level) {
     if (level < CLUSTER_LEVEL_THRESHOLD) return pins.map((p) => ({ ...p, _isPin: true }));
-    // bucket size scales with level. 더 멀수록 큰 셀.
     const cellDeg = level >= 12 ? 0.3 : level >= 10 ? 0.15 : level >= 8 ? 0.04 : 0.02;
-    // 카카오맵 sdk에서 Map(컴포넌트)을 import 했기 때문에 ES Map 생성자 사용 시 이름 충돌.
-    // 평범한 객체로 buckets 관리.
     const buckets = Object.create(null);
     pins.forEach((pin) => {
         if (pin.lat == null || pin.lng == null) return;
         const r = Math.round(pin.lat / cellDeg);
         const c = Math.round(pin.lng / cellDeg);
         const key = `${r}_${c}`;
+        // r, c를 저장해 격자 셀 중심 계산에 사용
         if (buckets[key]) buckets[key].items.push(pin);
-        else buckets[key] = { items: [pin] };
+        else buckets[key] = { r, c, items: [pin] };
     });
     const result = [];
     Object.entries(buckets).forEach(([key, b]) => {
         if (b.items.length === 1) {
             result.push({ ...b.items[0], _isPin: true });
         } else {
+            // 격자 셀 중심 대신 실제 멤버 centroid 사용
+            // → 줌 변화/패널 전환 시 클러스터가 실제 핀 위치에서 크게 벗어나지 않아 순간이동 최소화
             const lat = b.items.reduce((s, p) => s + p.lat, 0) / b.items.length;
             const lng = b.items.reduce((s, p) => s + p.lng, 0) / b.items.length;
             const color = b.items[0].color;
@@ -71,7 +71,7 @@ const DIAG_GRAY_PATH = 'M54 26.6667C54 41.3943 37.8 54.2222 27 64C15.3 54.2222 0
 // Teal hollow (imgGroup669/677): fill white + stroke #25D2BC — 선택/포커스 핀
 const DIAG_TEAL_PATH = 'M27 1.5C41.1009 1.5 52.5 12.7853 52.5 26.667C52.4999 33.4838 48.74 40.0256 43.4131 46.2109C38.4046 52.0265 32.23 57.2915 26.9658 62.0146C21.352 57.3161 15.1559 52.0298 10.2588 46.2227C5.05984 40.0575 1.50011 33.5078 1.5 26.667C1.5 12.7853 12.8991 1.5 27 1.5Z';
 
-const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onMapClick, selectedPoint = null, accentColor = '#E6235A', showRegions = true, mapType = 'roadmap', initialCenter = null, initialLevel = null, pinVariant = 'solid', showLocateBtn = false }, ref) {
+const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onMapClick, selectedPoint = null, accentColor = '#E6235A', showRegions = true, mapType = 'roadmap', initialCenter = null, initialLevel = null, pinVariant = 'solid', showLocateBtn = false, selectedDistrict = null }, ref) {
     useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services'] });
     const [geo, setGeo] = useState(null);
     const [internalShowRegions, setInternalShowRegions] = useState(showRegions);
@@ -80,10 +80,51 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
     const [level, setLevel] = useState(initialLevel ?? BUSAN_DEFAULT_LEVEL);
     const [myLocation, setMyLocation] = useState(null);
     const mapInstance = useRef(null);
+    const containerRef = useRef(null);
+    const geoRef = useRef(null);
+    const isFirstDistrictRun = useRef(true);
 
     useEffect(() => {
-        loadGeo().then((d) => { if (d) setGeo(d); });
+        loadGeo().then((d) => { if (d) { setGeo(d); geoRef.current = d; } });
     }, []);
+
+    // 컨테이너 크기 변경(사이드바 토글 등) 시 카카오맵 relayout 호출 → 핀 위치 틀어짐 방지
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el || !('ResizeObserver' in window)) return;
+        const ro = new ResizeObserver(() => {
+            const map = mapInstance.current;
+            if (map && typeof map.relayout === 'function') map.relayout();
+        });
+        ro.observe(el);
+        return () => ro.disconnect();
+    }, []);
+
+    // Fly to selected district (only on user-triggered changes, not on initial mount)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        if (isFirstDistrictRun.current) {
+            isFirstDistrictRun.current = false;
+            return;
+        }
+        const currentGeo = geoRef.current;
+        if (!selectedDistrict || !currentGeo) return;
+        const feature = currentGeo.features.find(f => f.properties.name === selectedDistrict);
+        if (!feature) return;
+        const g = feature.geometry;
+        const allCoords = [];
+        if (g.type === 'Polygon') g.coordinates[0].forEach(([lng, lat]) => allCoords.push({ lat, lng }));
+        else if (g.type === 'MultiPolygon') g.coordinates.forEach(poly => poly[0].forEach(([lng, lat]) => allCoords.push({ lat, lng })));
+        if (!allCoords.length) return;
+        const lats = allCoords.map(c => c.lat);
+        const lngs = allCoords.map(c => c.lng);
+        const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+        const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+        const maxSpan = Math.max(Math.max(...lats) - Math.min(...lats), Math.max(...lngs) - Math.min(...lngs));
+        const zoomLevel = maxSpan < 0.03 ? 6 : maxSpan < 0.06 ? 7 : maxSpan < 0.1 ? 8 : 9;
+        setCenter({ lat: centerLat, lng: centerLng });
+        setLevel(zoomLevel);
+    }, [selectedDistrict]);
 
     useEffect(() => {
         if (!('geolocation' in navigator)) return;
@@ -141,7 +182,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
     };
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '100%' }}>
         <Map
             center={center}
             level={level}
@@ -165,17 +206,21 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                 setCenter({ lat: latlng.getLat(), lng: latlng.getLng() });
             }}
         >
-            {internalShowRegions && polygons.map((p) => p.paths.map((path, i) => (
-                <Polygon
-                    key={`${p.name}-${i}`}
-                    path={path}
-                    strokeColor="#888"
-                    strokeWeight={1}
-                    strokeOpacity={0.6}
-                    fillColor="#fff"
-                    fillOpacity={0.10}
-                />
-            )))}
+            {internalShowRegions && polygons.map((p) => {
+                const isSelected = selectedDistrict && p.name === selectedDistrict;
+                return p.paths.map((path, i) => (
+                    <Polygon
+                        key={`${p.name}-${i}`}
+                        path={path}
+                        strokeColor={isSelected ? accentColor : "#888"}
+                        strokeWeight={isSelected ? 3 : 1}
+                        strokeOpacity={isSelected ? 1 : 0.6}
+                        fillColor={isSelected ? accentColor : "#fff"}
+                        fillOpacity={isSelected ? 0.12 : 0.10}
+                        zIndex={isSelected ? 1 : 0}
+                    />
+                ));
+            })}
 
             {selectedPoint && (
                 <CustomOverlayMap position={{ lat: selectedPoint.lat, lng: selectedPoint.lng }} yAnchor={1} xAnchor={0.5}>

@@ -1,8 +1,15 @@
 .m-stage-chips {
     display: flex;
     gap: 8px;
-    padding: 0 20px 12px;
+    padding: 0 16px 12px;
     background: #f7f7f8;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.m-stage-chips::-webkit-scrollbar {
+    display: none;
 }
 
 .m-stage-chip {
@@ -10,13 +17,15 @@
     border: 1px solid #ddd;
     border-radius: 10px;
     height: 43px;
-    min-width: 78px;
+    min-width: 72px;
     padding: 0 16px;
     font-size: 16px;
     color: #777;
     cursor: pointer;
     font-weight: 500;
     font-family: inherit;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .m-stage-chip.on {
@@ -34,6 +43,11 @@
     margin-bottom: 6px;
 }
 
+/* In report list/map cards, cat-tag should not have its own bottom margin */
+.m-report-tags .m-prop-cat-tag {
+    margin-bottom: 0;
+}
+
 .m-report-author-stat-row {
     display: flex;
     align-items: center;
@@ -45,8 +59,9 @@
 }
 
 .m-report-list-page .m-prop-title {
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
 }
 
 .m-report-sub-tag {

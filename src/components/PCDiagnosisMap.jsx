@@ -51,7 +51,7 @@ const BIG_TO_KEY = {
  * 다른 initialPanel prop으로 호출. 화면 전환은 라우팅 없이 내부 panel state로 처리.
  */
 export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', initialItem = null }) {
-    const [district, setDistrict] = useState('중구');
+    const [district, setDistrict] = useState('');
     const [livingCats, setLivingCats] = useState(() => new Set(['all']));
     const [bigSel, setBigSel] = useState(new Set(['공간 및 가로 환경']));
     const [facilityMid, setFacilityMid] = useState('');
@@ -59,6 +59,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
     const [target, setTarget] = useState('all');
     const [sort, setSort] = useState('latest');
     const mapRef = useRef(null);
+    const geocodeReqRef = useRef(0);
 
     const [panel, setPanel] = useState(initialPanel);
     const [selected, setSelected] = useState(initialItem);
@@ -103,6 +104,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                     lat: r.위도 ? Number(r.위도) : null,
                     lng: r.경도 ? Number(r.경도) : null,
                     thumb: r.이미지경로 || null,
+                    targetType: r.진단대상 || '',
                     _sessionKey: `${r.ID}_${Number(r.위도 || 0).toFixed(4)}_${Number(r.경도 || 0).toFixed(4)}_${String(r.created_at || '').slice(0, 10)}`,
                     _criteria: r.질문기준 || '',
                     _score: r.점수 != null ? Number(r.점수) : null,
@@ -148,16 +150,18 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
     });
 
     let filtered = items;
-    if (district && district !== '중구') filtered = filtered.filter((it) => it.region === district);
+    if (district) filtered = filtered.filter((it) => it.region === district);
     if (!livingCats.has('all')) filtered = filtered.filter((it) => livingCats.has(it.categoryKey));
+    if (target === 'citizen') filtered = filtered.filter((it) => it.targetType === '시민');
+    else if (target === 'expert') filtered = filtered.filter((it) => it.targetType === '전문가');
     if (sort === 'views') filtered = [...filtered].sort((a, b) => b.views - a.views);
     if (sort === 'votes') filtered = [...filtered].sort((a, b) => b.likes - a.likes);
 
-    const pins = filtered.map((it, idx) => ({
-        ...it,
-        color: idx === 0 ? '#23bdbb' : '#808080',
-        focus: idx === 0,
-    }));
+    // 디테일 모드: 선택된 핀 하나만 청록으로 표시 (나머지 지워짐)
+    // → 클러스터 평균 재계산 없이 핀 셋이 교체되므로 순간이동 없음
+    const pins = (panel === 'detail' && selected)
+        ? [{ ...selected, color: '#23bdbb', focus: true }]
+        : filtered.map((it) => ({ ...it, color: '#808080', focus: false }));
 
     const goList = () => { setPanel('list'); setSelected(null); };
     const goDetail = (item) => { setPanel('detail'); setSelected(item); };
@@ -177,9 +181,10 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                         <div className="pc-diag-section-label">구역별</div>
                         <div className="pc-diag-dropdown">
                             <select value={district} onChange={(e) => setDistrict(e.target.value)}>
+                                <option value="">전체</option>
                                 {DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
                             </select>
-                            <button className="pc-diag-dropdown-x" onClick={() => setDistrict('중구')} aria-label="초기화" type="button">×</button>
+                            <button className="pc-diag-dropdown-x" onClick={() => setDistrict('')} aria-label="초기화" type="button">×</button>
                         </div>
                     </aside>
 
@@ -274,22 +279,25 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                             // 기존 핀 클릭 시 선택 위치(초록 핀) 해제
                             setSelectedLocation(null);
                         }}
+                        selectedDistrict={district}
                         onMapClick={(coords) => {
-                            if (!window.kakao?.maps?.services) {
-                                setSelectedLocation({ ...coords, address: '선택된 위치' });
-                                return;
+                            if (panel !== 'list') goList();
+                            setSelectedLocation({ ...coords, address: '선택된 위치' });
+                            if (window.kakao?.maps?.services) {
+                                const reqId = ++geocodeReqRef.current;
+                                const geocoder = new window.kakao.maps.services.Geocoder();
+                                geocoder.coord2Address(coords.lng, coords.lat, (result, status) => {
+                                    if (reqId !== geocodeReqRef.current) return;
+                                    const addr = status === window.kakao.maps.services.Status.OK
+                                        ? (result[0]?.road_address?.address_name || result[0]?.address?.address_name || '선택된 위치')
+                                        : '선택된 위치';
+                                    setSelectedLocation({ ...coords, address: addr });
+                                });
                             }
-                            const geocoder = new window.kakao.maps.services.Geocoder();
-                            geocoder.coord2Address(coords.lng, coords.lat, (result, status) => {
-                                const addr = status === window.kakao.maps.services.Status.OK
-                                    ? (result[0]?.road_address?.address_name || result[0]?.address?.address_name || '선택된 위치')
-                                    : '선택된 위치';
-                                setSelectedLocation({ ...coords, address: addr });
-                            });
                         }}
                         accentColor="#23BDBB"
                         pinVariant="diagnosis"
-                        selectedPoint={selectedLocation}
+                        selectedPoint={panel === 'list' ? selectedLocation : null}
                     />
                     <MapToolbar
                         mapRef={mapRef}

@@ -2,18 +2,16 @@ import './MProposalDone.css';
 
 function DoneIllustration() {
     return (
-        <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            {/* document body */}
-            <rect x="14" y="10" width="80" height="98" rx="10" fill="#fff" stroke="#1a1a1b" strokeWidth="5"/>
-            {/* curl flap bottom-right */}
-            <path d="M74 98 L94 108 L94 88 Z" fill="#f0f0f0" stroke="#1a1a1b" strokeWidth="3" strokeLinejoin="round"/>
-            {/* document lines */}
-            <line x1="28" y1="34" x2="80" y2="34" stroke="#1a1a1b" strokeWidth="4" strokeLinecap="round"/>
-            <line x1="28" y1="50" x2="80" y2="50" stroke="#1a1a1b" strokeWidth="4" strokeLinecap="round"/>
-            <line x1="28" y1="66" x2="62" y2="66" stroke="#1a1a1b" strokeWidth="4" strokeLinecap="round"/>
+        <svg width="120" height="130" viewBox="0 0 120 130" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            {/* scroll body */}
+            <rect x="8" y="4" width="76" height="96" rx="10" fill="#fff" stroke="#1a1a1b" strokeWidth="4.5"/>
+            {/* scroll top curl bar */}
+            <rect x="4" y="4" width="84" height="14" rx="7" fill="#f0f0f0" stroke="#1a1a1b" strokeWidth="4"/>
+            {/* scroll bottom curl bar */}
+            <rect x="4" y="86" width="84" height="14" rx="7" fill="#f0f0f0" stroke="#1a1a1b" strokeWidth="4"/>
             {/* check circle badge */}
-            <circle cx="90" cy="90" r="30" fill="#E6235A"/>
-            <path d="M77 90 L86 99 L105 78" stroke="#fff" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="84" cy="94" r="28" fill="#E6235A"/>
+            <path d="M73 94 L81 102 L97 81" stroke="#fff" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
     );
 }

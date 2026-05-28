@@ -96,11 +96,7 @@ def get_checklist(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user_optional),
 ):
-    """로그인 사용자는 전체 목록, 비로그인은 빈 배열.
-    target=citizen → 진단대상='시민', target=expert → 진단대상='전문가'
-    """
-    if current_user is None:
-        return []
+    """공개 진단 결과 목록. target=expert → 전문가, target=citizen → 시민."""
     q = db.query(ChecklistResult).order_by(ChecklistResult.result_id.desc())
     if target == "expert":
         q = q.filter(ChecklistResult.진단대상 == "전문가")

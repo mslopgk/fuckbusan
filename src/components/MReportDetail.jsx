@@ -9,7 +9,7 @@ const STAGES = [
     { key: 'received', label: '접수' },
     { key: 'review',   label: '검토중' },
     { key: 'inspect',  label: '검토완료' },
-    { key: 'notice',   label: '처리완료' },
+    { key: 'notice',   label: '결과안내' },
 ];
 
 export default function MReportDetail({ onNavigate, report }) {
@@ -21,8 +21,8 @@ export default function MReportDetail({ onNavigate, report }) {
         region: report?.region || '',
         author: report?.author || '',
         authorRegion: report?.authorRegion || '',
-        createdAt: report?.createdAt || report?.date || '',
-        date: report?.date || '',
+        createdAt: report?.createdAt || report?.date || report?.created_at || '',
+        date: report?.date || report?.created_at || '',
         views: report?.views ?? 0,
         likes: report?.likes ?? 0,
         comments: report?.comments ?? 0,
@@ -139,10 +139,15 @@ export default function MReportDetail({ onNavigate, report }) {
             </header>
 
             <div className="m-detail-content">
-                <div className="m-rdetail-author-row">
+                <div className="m-rdetail-author-block">
                     {data.author && <span className="m-rdetail-author">{data.author}</span>}
-                    {data.authorRegion && <span>· {data.authorRegion}</span>}
-                    {data.createdAt && <span style={{ marginLeft: 'auto' }}>{data.createdAt}</span>}
+                    {(data.authorRegion || data.createdAt) && (
+                        <span className="m-rdetail-author-sub">
+                            {data.authorRegion}
+                            {data.authorRegion && data.createdAt && ' · '}
+                            {data.createdAt}
+                        </span>
+                    )}
                 </div>
 
                 <h1 className="m-detail-title">{data.title}</h1>
@@ -203,9 +208,9 @@ export default function MReportDetail({ onNavigate, report }) {
                         <li key={c.id ?? i}>
                             <div className="m-comment-meta">
                                 <strong>{c.author || '익명'}</strong>
-                                <span>{c.date || ''}</span>
                             </div>
-                            <p>{c.content}</p>
+                            <p className="m-rdetail-comment-content">{c.content}</p>
+                            <button type="button" className="m-comment-reply">답글쓰기</button>
                         </li>
                     ))}
                 </ul>

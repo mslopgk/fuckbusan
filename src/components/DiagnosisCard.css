@@ -1,42 +1,43 @@
 /* DiagnosisCard.css */
 .diagnosis-card-component {
     background-color: white;
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 0;
     display: flex;
     flex-direction: column;
+    gap: 16px;
     font-family: 'Pretendard Variable', sans-serif;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.diagnosis-card-component:active {
-    transform: scale(0.99);
+    cursor: pointer;
 }
 
 .dc-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 0;
 }
 
 .dc-type-badge {
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid currentColor;
+    font-family: 'GmarketSans', sans-serif;
+    letter-spacing: -0.56px;
+    line-height: 1.35;
 }
 
 .dc-type-badge.general {
-    background-color: #FFF0F5;
     color: #E6235A;
+    border-color: #E6235A;
 }
 
 .dc-type-badge.expert {
-    background-color: #F3E5F5;
     color: #542AA3;
+    border-color: #542AA3;
 }
 
 .dc-date-row {
@@ -46,8 +47,9 @@
 }
 
 .dc-date {
-    font-size: 0.8125rem;
-    color: #999;
+    font-size: 14px;
+    color: #737373;
+    line-height: 1.35;
 }
 
 .dc-bookmark-icon {
@@ -57,14 +59,15 @@
 /* Main Info layout */
 .dc-main-info {
     display: flex;
-    gap: 16px;
-    margin-bottom: 20px;
+    gap: 24px;
+    margin-bottom: 0;
+    align-items: center;
 }
 
 .dc-img {
-    width: 100px;
-    height: 100px;
-    border-radius: 12px;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
     overflow: hidden;
     flex-shrink: 0;
     background-color: #f0f0f0;
@@ -82,43 +85,51 @@
     flex-direction: column;
 }
 
+.dc-text-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
 .dc-title {
     font-family: 'GmarketSans', sans-serif;
-    font-weight: 800;
-    font-size: 1rem;
+    font-weight: 700;
+    font-size: 16px;
     color: #242424;
-    margin-bottom: 6px;
+    letter-spacing: -0.64px;
+    line-height: 1.4;
 }
 
 .dc-score-large {
-    font-size: 1.5rem;
-    font-weight: 900;
-    color: #E6235A;
+    font-size: 24px;
+    font-weight: 700;
+    color: #242424;
     font-family: 'GmarketSans', sans-serif;
-    margin-bottom: 8px;
+    letter-spacing: -0.96px;
+    line-height: 1.4;
 }
 
 .dc-result {
-    font-size: 1rem;
-    font-weight: 800;
-    padding: 4px 0;
-    margin-bottom: 8px;
+    font-size: 24px;
+    font-weight: 700;
     font-family: 'GmarketSans', sans-serif;
+    letter-spacing: -0.96px;
+    line-height: 1.4;
 }
 
 .dc-result.suitable {
-    color: #2196F3;
-    /* Blue */
+    color: #542AA3;
 }
 
 .dc-result.unsuitable {
-    color: #F44336;
-    /* Red */
+    color: #E6235A;
 }
 
 .dc-coords {
     display: flex;
-    gap: 12px;
+    gap: 24px;
 }
 
 .dc-coord-col {
@@ -127,63 +138,69 @@
 }
 
 .dc-coord-label {
-    font-size: 0.625rem;
-    color: #aaa;
+    font-size: 12px;
+    color: #737373;
+    line-height: 1.35;
 }
 
 .dc-coord-val {
-    font-size: 0.75rem;
-    color: #666;
-    font-family: monospace;
+    font-size: 12px;
+    color: #242424;
+    line-height: 1.35;
 }
 
 /* Score Grid */
 .dc-score-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 4px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 16px;
+    gap: 6px;
+    margin-bottom: 0;
 }
 
 .dc-score-box {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: #F2F2F2;
+    border-radius: 8px;
+    padding: 12px 4px 8px;
+    gap: 5px;
 }
 
 .dc-score-label {
-    font-size: 0.625rem;
-    color: #888;
+    font-size: 12px;
+    color: #737373;
     text-align: center;
-    margin-bottom: 2px;
+    line-height: 1.35;
     white-space: pre-wrap;
-    line-height: 1.1;
 }
 
 .dc-score-val {
-    font-size: 0.8125rem;
+    font-size: 14px;
     font-weight: 700;
-    color: #333;
+    color: #242424;
+    font-family: 'GmarketSans', sans-serif;
+    letter-spacing: -0.56px;
+    line-height: 1.35;
 }
 
 /* Divider */
 .dc-divider {
     height: 1px;
-    background-color: #eee;
+    border: none;
+    border-top: 1px dashed #e6e6e6;
     width: 100%;
-    margin-bottom: 12px;
+    margin: 0;
 }
 
 .dc-desc {
-    font-size: 0.8125rem;
-    color: #666;
-    line-height: 1.5;
+    font-size: 14px;
+    color: #737373;
+    line-height: 1.35;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
+    height: 72px;
+    padding: 8px;
 }

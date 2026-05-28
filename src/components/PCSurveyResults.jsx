@@ -92,6 +92,7 @@ export default function PCSurveyResults({ onNavigate, survey }) {
     };
     const [open, setOpen] = useState(true);
     const [resultsData, setResultsData] = useState(null);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const id = survey?.id;
@@ -156,8 +157,46 @@ export default function PCSurveyResults({ onNavigate, survey }) {
     })();
     const colMax = Math.max(...colData.map(d => d.value), 1);
 
-    const handleCopy = () => {
-        try { navigator.clipboard.writeText(window.location.href); } catch (_) {}
+    const handleCopy = async () => {
+        const lines = [`${data.title} - 설문 결과`];
+        if (data.period) lines.push(`조사기간: ${data.period}`);
+        lines.push(`총 응답자: ${responseCount.toLocaleString()}명`);
+        if (radarData.length > 0) {
+            lines.push('');
+            lines.push('■ 종합결과');
+            radarData.forEach(d => lines.push(`  ${d.label}: ${d.value}점`));
+        }
+        pieSections.forEach(s => {
+            if (!s.data.length) return;
+            lines.push('');
+            lines.push(`■ ${s.title}`);
+            s.data.forEach(d => lines.push(`  ${d.label}: ${d.value}%`));
+        });
+        if (derivedBarData.length > 0) {
+            lines.push('');
+            lines.push(`■ ${multiQTitle}`);
+            derivedBarData.forEach(d => lines.push(`  ${d.label}: ${d.value}%`));
+        }
+        if (colData.length > 0) {
+            lines.push('');
+            lines.push('■ 응답 분포');
+            colData.forEach(d => lines.push(`  ${d.label}: ${d.value}건`));
+        }
+        const text = lines.join('\n');
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0.01;pointer-events:none;';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try { document.execCommand('copy'); } catch {}
+            document.body.removeChild(ta);
+        }
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     return (
@@ -175,8 +214,11 @@ export default function PCSurveyResults({ onNavigate, survey }) {
                             </span>
                         </div>
                         <button className="pc-banner-copy" onClick={handleCopy}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
-                            복사하기
+                            {copied
+                                ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+                            }
+                            {copied ? '복사됨' : '복사하기'}
                         </button>
                     </div>
                 </div>

@@ -3,7 +3,7 @@
     background: #fff;
     display: flex;
     flex-direction: column;
-    padding: 0 0 160px;
+    padding: 0;
 }
 
 .m-done-content {
@@ -16,8 +16,15 @@
     padding: 0 8px;
 }
 
-.m-done-icon {
-    margin-bottom: 14px;
+.m-done-check-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #5B2EAB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
 }
 
 .m-done-title {
@@ -46,7 +53,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding: 0 24px 32px;
+    padding: 0 20px 40px;
 }
 
 .m-done-cta {
@@ -54,15 +61,11 @@
     background: #5B2EAB;
     color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 27px;
     font-size: 15px;
     font-weight: 800;
     cursor: pointer;
     font-family: inherit;
     box-shadow: 0 4px 12px rgba(91, 46, 171, 0.25);
-}
-
-.m-done-cta-home {
-    background: #888;
-    box-shadow: none;
+    width: 100%;
 }

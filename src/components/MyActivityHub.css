@@ -35,6 +35,7 @@
     font-size: 1.8rem;
     color: #333;
     margin-bottom: 30px;
+    letter-spacing: -0.02em;
 }
 
 .ma-hub-welcome-section {
@@ -47,6 +48,7 @@
     line-height: 1.4;
     color: #333;
     margin-bottom: 12px;
+    letter-spacing: -0.02em;
 }
 
 .ma-hub-welcome-desc {
@@ -80,7 +82,7 @@
 .ma-hub-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    border-color: #16B5B0;
+    border-color: #5B2EAB;
 }
 
 /* Background Color Variation */
@@ -146,7 +148,7 @@
 }
 
 .ma-hub-card:hover .ma-hub-card-arrow {
-    color: #16B5B0;
+    color: #5B2EAB;
     transform: translateX(5px);
 }
 

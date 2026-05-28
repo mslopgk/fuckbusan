@@ -51,11 +51,11 @@
 
 .m-diagform-title {
     margin: 4px 0 24px;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: 800;
     line-height: 1.4;
-    letter-spacing: -0.03em;
-    color: var(--diag-text);
+    letter-spacing: -0.04em;
+    color: #E6235A;
 }
 
 .m-diagform-section {
@@ -69,9 +69,10 @@
 
 .m-diagform-label {
     margin: 0 0 12px;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--diag-text);
+    font-size: 20px;
+    font-weight: 800;
+    color: #242424;
+    letter-spacing: -0.04em;
 }
 
 .m-diagform-sublabel {
@@ -189,7 +190,7 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: var(--diag-teal);
+    background: var(--diag-green);
     color: #fff;
     font-size: 13px;
     font-weight: 700;
@@ -253,7 +254,7 @@
 }
 
 .m-diagform-scale-dot.on::before {
-    background: var(--diag-teal);
+    background: var(--diag-green);
 }
 
 /* 얼굴 레이블 행 — 1·3·5번 위치에만 표시 */
@@ -318,13 +319,14 @@
 .m-diagform-cta-secondary,
 .m-diagform-cta-primary {
     flex: 1;
-    height: 48px;
+    height: 56px;
     border: none;
-    border-radius: 24px;
-    font-size: 15px;
+    border-radius: 8px;
+    font-size: 18px;
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
+    letter-spacing: -0.04em;
 }
 
 .m-diagform-cta-secondary {
@@ -333,12 +335,12 @@
 }
 
 .m-diagform-cta-primary {
-    background: var(--diag-teal);
+    background: #E6235A;
     color: #fff;
 }
 
 .m-diagform-cta-primary:disabled {
-    background: #c9d2d2;
+    background: #f5a3bb;
     cursor: not-allowed;
 }
 

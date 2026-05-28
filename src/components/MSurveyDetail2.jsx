@@ -31,7 +31,7 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
     const data = {
         title: survey?.title || '',
     };
-    const [agree, setAgree] = useState(true);
+    const [agree, setAgree] = useState(null);
     const [gender, setGender] = useState('남자');
     const [age, setAge] = useState('20대');
     const [device, setDevice] = useState(() => detectDevice());
@@ -39,6 +39,7 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [errors, setErrors] = useState({});
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('access_token');
@@ -67,10 +68,14 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
         else setPhone(`${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`);
     };
 
+    const nameValid = /^[가-힣]{2,10}$/.test(name.trim());
+    const phoneValid = /^01[016789]-\d{3,4}-\d{4}$/.test(phone);
+    const canSubmit = agree === true && nameValid && phoneValid;
+
     const handleSubmit = () => {
         const next = {};
-        if (!/^[가-힣]{2,10}$/.test(name.trim())) next.name = '이름은 한글 2~10자로 입력해주세요.';
-        if (!/^01[016789]-\d{3,4}-\d{4}$/.test(phone)) next.phone = '올바른 휴대폰번호를 입력해주세요. (예: 010-1234-5678)';
+        if (!nameValid) next.name = '이름은 한글 2~10자로 입력해주세요.';
+        if (!phoneValid) next.phone = '올바른 휴대폰번호를 입력해주세요. (예: 010-1234-5678)';
         setErrors(next);
         if (Object.keys(next).length === 0) onNavigate && onNavigate('mSurveyJoin', {
             ...survey,
@@ -92,9 +97,28 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
                     <button className="m-hero-back" onClick={() => onNavigate && onNavigate('mSurveyDetail1', survey)} aria-label="뒤로">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
-                    <button className="m-hero-copy" type="button">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <span>복사하기</span>
+                    <button className="m-hero-copy" type="button" onClick={async () => {
+                        const url = window.location.href;
+                        try {
+                            await navigator.clipboard.writeText(url);
+                        } catch {
+                            const ta = document.createElement('textarea');
+                            ta.value = url;
+                            ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0.01;pointer-events:none;';
+                            document.body.appendChild(ta);
+                            ta.focus();
+                            ta.select();
+                            try { document.execCommand('copy'); } catch {}
+                            document.body.removeChild(ta);
+                        }
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                    }}>
+                        {copied
+                            ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        }
+                        <span>{copied ? '복사됨' : '복사하기'}</span>
                     </button>
                 </div>
                 <h1 className="m-hero-title">{data.title}</h1>
@@ -120,8 +144,8 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
                     </ul>
                     <p className="m-consent-final">위 내용을 확인하여 개인정보 수집·이용에 동의합니다.</p>
                     <div className="m-consent-radios">
-                        <label><input type="radio" name="agree" checked={agree} onChange={() => setAgree(true)} /><span>동의함</span></label>
-                        <label><input type="radio" name="agree" checked={!agree} onChange={() => setAgree(false)} /><span>동의하지 않음</span></label>
+                        <label><input type="radio" name="agree" checked={agree === true} onChange={() => setAgree(true)} /><span>동의함</span></label>
+                        <label><input type="radio" name="agree" checked={agree === false} onChange={() => setAgree(false)} /><span>동의하지 않음</span></label>
                     </div>
             </div>
 
@@ -157,7 +181,7 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
 
                 <div className="m-form-row">
                     <label className="m-form-label">직업(소속) <span className="req">*</span></label>
-                    <div className="m-form-radios m-form-radios-grid">
+                    <div className="m-form-radios m-form-radios-col">
                         {JOBS.map((j) => (
                             <label key={j}><input type="radio" name="job" checked={job === j} onChange={() => setJob(j)} /><span>{j}</span></label>
                         ))}
@@ -191,7 +215,7 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
 
                 <button
                     className="m-survey-cta"
-                    disabled={!agree}
+                    disabled={!canSubmit}
                     onClick={handleSubmit}
                 >참여하기</button>
             </div>

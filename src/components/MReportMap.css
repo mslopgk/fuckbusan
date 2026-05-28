@@ -55,10 +55,10 @@
     background: #E6235A;
 }
 
-/* Stage chip active: report pink */
+/* Stage chip active: report pink (solid, matches MReportList) */
 .m-rmap-page .m-stage-chip.on {
-    background: #FCDAE3;
-    color: #E6235A;
+    background: #E6235A;
+    color: #fff;
     border-color: #E6235A;
 }
 

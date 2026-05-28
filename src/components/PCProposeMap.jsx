@@ -4,12 +4,13 @@ import PCMapCanvas from './PCMapCanvas';
 import MapToolbar from './PCMapToolbar';
 import { LIVING_CATS, CAT_TO_KEY, CAT_COLOR, DISTRICTS, DISTRICT_CENTERS, CategoryIcon } from '../constants/mapConstants';
 import { useReportsData } from '../hooks/useReportsData';
+import { thumbUrl } from '../utils/format';
 import './PCMapShared.css';
 import './PCMap3.css';
 
 
 export default function PCProposeMap({ onNavigate }) {
-    const [district, setDistrict] = useState('중구');
+    const [district, setDistrict] = useState('');
     const [livingCats, setLivingCats] = useState(() => new Set(['all']));
     const [kind, setKind] = useState(null);
     const [sort, setSort] = useState('latest');
@@ -89,7 +90,7 @@ export default function PCProposeMap({ onNavigate }) {
 
     const filtered = useMemo(() => {
         let arr = ITEMS;
-        if (district && district !== '중구') arr = arr.filter((it) => it.region === district);
+        if (district) arr = arr.filter((it) => it.region === district);
         if (!livingCats.has('all')) arr = arr.filter((it) => livingCats.has(it.categoryKey));
         if (kind) arr = arr.filter((it) => it.kind === kind);
         if (sort === 'views') arr = [...arr].sort((a, b) => b.views - a.views);
@@ -114,9 +115,10 @@ export default function PCProposeMap({ onNavigate }) {
                         <div className="pc-map3-section-label">구역별</div>
                         <div className="pc-map3-dropdown">
                             <select value={district} onChange={(e) => setDistrict(e.target.value)}>
+                                <option value="">전체</option>
                                 {DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
                             </select>
-                            <button className="pc-map3-dropdown-x" onClick={() => setDistrict('중구')} aria-label="초기화">×</button>
+                            <button className="pc-map3-dropdown-x" onClick={() => setDistrict('')} aria-label="초기화">×</button>
                         </div>
                     </aside>
 
@@ -164,6 +166,7 @@ export default function PCProposeMap({ onNavigate }) {
                         pins={pins}
                         onPinClick={(p) => setPolicyItem(p)}
                         accentColor="#E6235A"
+                        selectedDistrict={district}
                     />
 
                     {/* Right toolbar */}
@@ -253,7 +256,7 @@ export default function PCProposeMap({ onNavigate }) {
                                 <div className="pc-map3-list-right">
                                     <div
                                         className="pc-map3-list-thumb"
-                                        style={{ backgroundImage: it.image ? `url(${it.image})` : "url('/figma-assets/detail-hero-haeundae.png')" }}
+                                        style={{ backgroundImage: it.image ? `url(${thumbUrl(it.image) || it.image})` : "url('/figma-assets/detail-hero-haeundae.png')" }}
                                     />
                                     <div className="pc-map3-list-stats">
                                         <span>

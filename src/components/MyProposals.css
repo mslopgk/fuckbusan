@@ -82,7 +82,7 @@
 }
 
 .mp-tab-btn.active {
-    background-color: #16B5B0;
+    background-color: #5B2EAB;
     color: white;
 }
 
@@ -186,7 +186,7 @@
 }
 
 .mp-stat-icon-circle.active {
-    background-color: #16B5B0;
+    background-color: #5B2EAB;
 }
 
 .mp-stat.active {
@@ -298,7 +298,7 @@
         letter-spacing: -0.64px;
     }
 
-    .mp-search-input:focus { border-color: #23BDBB; }
+    .mp-search-input:focus { border-color: #5B2EAB; }
     .mp-search-input::placeholder { color: #A6A6A6; }
 
     .mp-search-btn {
@@ -340,8 +340,8 @@
     }
 
     .mp-district-tab:last-child { border-right: none; }
-    .mp-district-tab:hover { background-color: #f0fafa; color: #23BDBB; }
-    .mp-district-tab.active { background-color: #23BDBB; color: white; font-weight: 700; }
+    .mp-district-tab:hover { background-color: #f3edff; color: #5B2EAB; }
+    .mp-district-tab.active { background-color: #5B2EAB; color: white; font-weight: 700; }
 
     .mp-category-chips {
         display: flex;
@@ -363,8 +363,8 @@
         white-space: nowrap;
     }
 
-    .mp-category-chip:hover { border-color: #23BDBB; color: #23BDBB; }
-    .mp-category-chip.active { background-color: #23BDBB; border-color: #23BDBB; color: white; font-weight: 700; }
+    .mp-category-chip:hover { border-color: #5B2EAB; color: #5B2EAB; }
+    .mp-category-chip.active { background-color: #5B2EAB; border-color: #5B2EAB; color: white; font-weight: 700; }
 
     /* 탭 스위처 */
     .mp-tabs-container {
@@ -403,7 +403,7 @@
     }
 
     .mp-tab-btn.active {
-        background-color: #23BDBB;
+        background-color: #5B2EAB;
         color: white;
         font-weight: 600;
     }

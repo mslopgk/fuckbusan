@@ -1,6 +1,6 @@
 # 부산 BDP — 미완료 항목
 
-> **갱신**: 2026-05-21 (9차 — 모바일 전수조사 후 P1/P2/P3 39건 일괄 수정)
+> **갱신**: 2026-05-28 (11차 — 제보 5개 화면 Figma 전수조사 및 수정)
 > **Figma 파일**: `jWpcqQv2jhb2mkzjEs1fuI`
 > 완료 항목은 `CHANGES_2026-05-06.md` 참조.
 
@@ -43,6 +43,7 @@
 
 ### 제보 리스트 (`MReportList.jsx`)
 - [x] 카드 좋아요 토글 인터랙션 (2026-05-06): 하트 클릭 시 active/inactive 아이콘 전환 + 낙관적 카운트 업데이트 + API 호출
+- [x] Figma 전수조사 완료 (2026-05-28): 전체 레이아웃·카드 구조 일치 확인
 
 ### 제보 폼 (`MReportForm.jsx`)
 - [x] 사진 등록: MReportForm은 이미 구현되어 있었음 확인 (2026-05-21)
@@ -60,6 +61,8 @@
 - [x] 이미지 hero: `report.image` → `background-image` 적용 (없으면 그라데이션 fallback 유지)
 - [ ] 단계바: "결과안내" 외 단계 클릭 가능 여부 미정
 - [x] 답글쓰기 dead button 제거 (2026-05-21)
+- [x] author 섹션 2-line 레이아웃으로 수정 — Figma 848:19789 기준 (2026-05-28)
+- [x] `created_at` snake_case 필드 매핑 추가 (2026-05-28)
 
 ### 나의 제보 상세 (`MMyReportDetail.jsx`)
 - [x] 댓글 작성 UI 추가 — input + 전송 버튼 + POST /api/reports/{id}/comments (2026-05-21)
@@ -95,6 +98,14 @@
 - [x] `MDiagnosisResult` 레이더 차트 실제 데이터 — GET /checklist/{resultId} + answers 파싱 (2026-05-21)
 - [x] `MDiagnosisResult` 날짜 하드코딩 제거 (2026-05-21)
 - [x] `MDiagnosisResult` 세부정보 버튼 alert → disabled 처리 (2026-05-21)
+- [x] `MDiagnosisResult` 레이더 차트 fill/stroke 색 `#06AB69` → `#E6235A` (Figma+token 일치) (2026-05-28)
+- [x] `MDiagnosisList` 헤더 검색바 → Figma 기준 뒤로가기+모드명+구 드롭다운으로 교체 (2026-05-28)
+- [x] `MDiagnosisList` 카테고리 칩 font-size 16px 수정 (2026-05-28)
+- [x] `MDiagnosisResult` 세부정보 버튼 3개 모두 green 통일 (2026-05-28)
+- [x] `MDiagnosisResult` title font-size 28px (2026-05-28)
+- [x] `MDiagnosisForm` title "진단하기" pink #E6235A 28px, 섹션 라벨 번호 형식 추가 (2026-05-28)
+- [x] `MDiagnosisForm` CTA 버튼 green→pink #E6235A, height 56px, font-size 18px (2026-05-28)
+- [x] `MDiagnosisDone`/`CheckDone` 아이콘 60px→40px, 타이틀 24px→28px, 설명 16px→14px (2026-05-28)
 - [ ] `MDiagnosisResult` "관련 시민 제안" 섹션: Figma에 없는 코드 전용 섹션. keep/remove **결정 대기**
 - [ ] 모바일 전문가 진단 전용 플로우 — 현재 mode 전달만, 전용 화면 없음
 - [?] PC 셸 (A안 통합) Figma `941:10538`/`12315`/`12749` 재검증
@@ -105,11 +116,15 @@
 
 - [ ] `MSurveyJoin` 진행 표시: Figma=보라 dot indicator, 코드=linear fill bar — 스타일 통일 **정책 결정 대기** (`TCuOzEqNhoLKjhF0reBDks:0:11000`)
 - [x] `MSurveyDone` MobileBottomNav 추가 + 홈 버튼 인라인 스타일 → CSS 클래스 (2026-05-21)
+- [x] `MSurveyDone` 하단 여백 과다 수정 — padding 160px → 0, actions padding 조정 (2026-05-28)
 - [x] `MSurveyJoin` 필수 응답 검증 추가 — 미응답 시 제출 차단 (2026-05-21)
 - [x] `MSurveyJoin` submitting 중복제출 방지 + localStorage 이어하기 저장 (2026-05-21)
 - [x] `MSurveyDetail2` demographics(성별/연령/기기/직업) MSurveyJoin으로 전달 → 백엔드 저장 (2026-05-21)
+- [x] `MSurveyDetail2` 동의 입력 스타일 circle radio → square checkbox (Figma 스펙) (2026-05-28)
+- [x] `MSurveyDetail2` 직업(소속) 2-column grid → 1-column (Figma 스펙) (2026-05-28)
 - [x] 백엔드 SurveyResponse.demographics JSON 컬럼 추가 (2026-05-21)
 - [x] `MSurveyResults` "자세히보기" alert → disabled 처리 (2026-05-21)
+- [x] `MSurveyResults` 히어로 타이틀 raw title → "YYYY년,\n[title] 결과는?" 형식 (Figma 스펙) (2026-05-28)
 - [x] `PCSurveyResults` open toggle → 실제 콘텐츠 show/hide 구현 (2026-05-21)
 - [x] `MSurveyDetail1` 이용약관/개인정보처리방침 span → onClick alert + cursor:pointer (2026-05-21)
 - [ ] 중복 응답 방지: 백엔드 unique constraint 미적용 — 추가 필요
@@ -121,6 +136,17 @@
 - [?] `MyPage.jsx` (계정/프로필 편집) — Figma 노드 미식별
 - [x] `MyActivityHub.jsx` — 진단 내역 카드 추가 (2026-05-21)
 - [x] `MyActivity.jsx` — 정렬 로직 구현 + 이메일 API 연동 + 북마크 탭 안내 메시지 + console.log 제거 (2026-05-21)
+- [x] `MyActivity.jsx` + `DiagnosisCard.jsx` Figma 기준 대규모 스타일 수정 (2026-05-28):
+  - 타이틀 `나의 활동` pink #E6235A
+  - 카드 border 1px solid #e6e6e6, border-radius 8px, padding 12px, no shadow
+  - 타입 뱃지 fill→outline border style (일반인 #E6235A, 전문가 #542AA3)
+  - 이미지 100px→120px, border-radius 8px
+  - 점수/결과 24px bold GmarketSans
+  - 스코어 박스 #F2F2F2 bg, 6-col grid
+  - 구분선 dashed #e6e6e6
+  - 좌표 12px #737373
+  - 탭 버튼 pill shape 36px, 14px, border-radius 9999px
+  - 프로필 아바타 gray #e6e6e6, gap 20px
 - [x] `MyReports.jsx` — 헤더 "홈으로" → "나의 활동" 수정 (2026-05-21)
 - [?] `MyProposals.jsx` (모바일 나의 제안) — PC 버전 `830:7090` 참고 가능
 
@@ -129,7 +155,8 @@
 ## 🟨 홈 / 로그인 / 회원가입
 
 - [ ] `Home.jsx` 통계/차트 섹션 활성화 — **사용자 결정 대기**
-- [?] Figma 모바일 홈 노드 ID 식별 필요
+- [x] Figma 모바일 홈 노드 `575:22588` 확인 완료 (2026-05-28)
+- [x] `Home.jsx` 제안하기 카드 색상 green→teal #23BDBB 수정 (2026-05-28)
 - [x] `Login.jsx` console.log 제거 (2026-05-21)
 - [x] `Signup.jsx` console.log 제거 (2026-05-21)
 - [x] `PCHeader.jsx` — '나의 활동' 메뉴 추가 → myActivityHub (2026-05-21)
@@ -162,6 +189,11 @@
 - [x] **진단 제출 후 핑 추가 안됨** — `PCDiagnosisMap` `refreshKey` state 추가, `goDone()` 시 increment → useEffect 재실행 (2026-05-21)
 - [x] **제보/제안 핑 추가 안됨** — `MReportForm` lat/lng 항상 전송 수정 (2026-05-21)
 - [x] **진단 만족도 2,4번 선택지 이미지 제거** — `diagnosis.js` face: null for values 2,4; `PCDiagPanelForm` 조건부 렌더 (2026-05-21)
+- [x] **MSurveyResults 앱 크래시** — `respondentCount`·`compositeData` 등 `const` 선언 순서 오류(TDZ) 수정: `handleCopy` useCallback을 모든 파생값 선언 이후로 이동 (2026-05-28)
+- [x] **MReportDetail author 2-line 레이아웃** — Figma 848:19789 기준 작성자/날짜 2줄 구조로 수정 (2026-05-28)
+- [x] **MReportDetail created_at 필드 매핑 누락** — `report?.created_at` fallback 추가 (2026-05-28)
+- [x] **MFilterSheets RegionSheet/SortSheet 아이콘** — checkmark → chevron-down (always visible, pink when active) — Figma 848:19327·848:19455 기준 (2026-05-28)
+- [x] **MReportForm 카테고리 칩 스타일** — bordered white style로 수정 (Figma 848:18955 기준) (2026-05-28)
 
 ---
 

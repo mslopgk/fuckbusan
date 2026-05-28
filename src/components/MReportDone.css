@@ -1,0 +1,27 @@
+/* MReportDone — 제보 완료 화면 (Figma 848:20468) */
+/* Overrides shared MProposalDone.css to match Figma spec */
+
+.m-report-done-page .m-prop-done-title {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.m-report-done-page .m-prop-done-primary,
+.m-report-done-page .m-prop-done-secondary {
+    height: 59px;
+    border-radius: 15px;
+    font-size: 18px;
+}
+
+.m-report-done-page .m-prop-done-primary {
+    background: #E6235A;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(230, 35, 90, 0.3);
+}
+
+.m-report-done-page .m-prop-done-secondary {
+    background: #ffdde7;
+    color: #E6235A;
+    font-weight: 600;
+}

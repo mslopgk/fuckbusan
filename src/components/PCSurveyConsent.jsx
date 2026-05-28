@@ -1,6 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import UserPCLayout from './UserPCLayout';
 import './PCSurveyConsent.css';
+import { API_URL } from '../utils/api';
+
+function detectDevice() {
+    const ua = navigator.userAgent.toLowerCase();
+    if (/ipad|tablet/.test(ua)) return 'tablet';
+    if (/mobile|android|iphone/.test(ua) || window.innerWidth < 1024) return 'mobile';
+    return 'pc';
+}
 
 export default function PCSurveyConsent({ onNavigate, survey }) {
     const data = survey || { title: '사직구장 일대 보행환경의 현황 조사' };
@@ -8,12 +16,41 @@ export default function PCSurveyConsent({ onNavigate, survey }) {
     const [agree, setAgree] = useState(null);
     const [gender, setGender] = useState(null);
     const [age, setAge] = useState(null);
-    const [device, setDevice] = useState(null);
+    const [device, setDevice] = useState(() => detectDevice());
     const [job, setJob] = useState(null);
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [jobOther, setJobOther] = useState('');
     const [deviceOther, setDeviceOther] = useState('');
+
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+        fetch(`${API_URL}/users/me`, { headers: { Authorization: `Bearer ${token}` } })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => {
+                if (!d) return;
+                if (d.name) setName(d.name);
+                if (d.phone_num) {
+                    const digits = d.phone_num.replace(/\D/g, '').slice(0, 11);
+                    if (digits.length <= 3) setPhone(digits);
+                    else if (digits.length <= 7) setPhone(`${digits.slice(0, 3)}-${digits.slice(3)}`);
+                    else setPhone(`${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`);
+                }
+                if (d.birth_date) {
+                    const year = parseInt(String(d.birth_date).slice(0, 4), 10);
+                    if (year && !isNaN(year)) {
+                        const age = new Date().getFullYear() - year;
+                        if (age < 20) setAge('under20');
+                        else if (age < 30) setAge('20s');
+                        else if (age < 40) setAge('30s');
+                        else if (age < 50) setAge('40s');
+                        else setAge('50plus');
+                    }
+                }
+            })
+            .catch(() => {});
+    }, []);
 
     const handleNameChange = (e) => {
         setName(e.target.value);
@@ -30,28 +67,17 @@ export default function PCSurveyConsent({ onNavigate, survey }) {
         setPhone(formatted);
     };
 
+    const phoneDigits = phone.replace(/\D/g, '');
+    const canSubmit =
+        agree === 'agree' &&
+        gender !== null &&
+        age !== null &&
+        job !== null &&
+        name.trim().length > 0 &&
+        !/[^가-힣a-zA-Z\s]/.test(name) &&
+        phoneDigits.length >= 10 && phoneDigits.length <= 11;
+
     const handleSubmit = () => {
-        if (agree !== 'agree') {
-            alert('개인정보 수집에 동의해 주세요.');
-            return;
-        }
-        if (!gender || !age || !device || !job) {
-            alert('모든 필수 항목을 선택해 주세요.');
-            return;
-        }
-        if (!name.trim()) {
-            alert('성명을 입력해 주세요.');
-            return;
-        }
-        if (/[^가-힣a-zA-Z\s]/.test(name)) {
-            alert('성명은 한글 또는 영문만 입력해 주세요.');
-            return;
-        }
-        const phoneDigits = phone.replace(/\D/g, '');
-        if (phoneDigits.length < 10 || phoneDigits.length > 11) {
-            alert('올바른 휴대폰번호를 입력해 주세요. (예: 010-1234-5678)');
-            return;
-        }
         if (onNavigate) onNavigate('pcSurveyJoin', data);
     };
 
@@ -180,7 +206,7 @@ export default function PCSurveyConsent({ onNavigate, survey }) {
                     </div>
 
                     <div className="pc-consent-action">
-                        <button className="pc-btn-primary" onClick={handleSubmit}>참여하기</button>
+                        <button className="pc-btn-primary" onClick={handleSubmit} disabled={!canSubmit}>참여하기</button>
                     </div>
                 </div>
             </div>

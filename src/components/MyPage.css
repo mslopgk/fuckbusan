@@ -58,6 +58,7 @@
     color: #242424;
     margin: 0 0 32px 0;
     font-family: 'GmarketSans', sans-serif;
+    letter-spacing: -0.02em;
 }
 
 .mypage-welcome-section {
@@ -69,7 +70,7 @@
     font-weight: 700;
     color: #222;
     margin: 0 0 8px 0;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.02em;
 }
 
 .mypage-welcome-desc {
@@ -126,7 +127,7 @@
 }
 
 .mypage-input:focus {
-    border-color: #16B5B0;
+    border-color: #5B2EAB;
 }
 
 .mypage-input.second-pw {
@@ -147,7 +148,7 @@
 .mypage-submit-btn {
     width: 100%;
     height: 56px;
-    background-color: #ddd;
+    background-color: #5B2EAB;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -155,10 +156,11 @@
     font-weight: 700;
     cursor: pointer;
     transition: background-color 0.2s;
+    letter-spacing: -0.02em;
 }
 
 .mypage-submit-btn:hover {
-    background-color: #ccc;
+    background-color: #491C9C;
 }
 
 .mypage-loading {

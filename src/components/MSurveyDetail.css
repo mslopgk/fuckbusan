@@ -146,13 +146,14 @@
 .m-survey-cta {
     display: block;
     margin: 8px auto 0;
-    width: 180px;
-    height: 46px;
+    min-width: 160px;
+    width: 55%;
+    height: 52px;
     border: none;
-    border-radius: 23px;
+    border-radius: 26px;
     background: #5B2EAB;
     color: #fff;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 800;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(91, 46, 171, 0.25);
@@ -215,8 +216,41 @@
     cursor: pointer;
 }
 
-/* 자체 라디오 — 선택 시 녹색 (#06AB69) */
-.m-consent-radios input[type="radio"],
+/* 동의 체크박스 스타일 — 정사각형 + 체크마크 (Figma 스펙) */
+.m-consent-radios input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #c8c8c8;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    margin: 0;
+    position: relative;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.m-consent-radios input[type="radio"]:checked {
+    background: #5B2EAB;
+    border-color: #5B2EAB;
+}
+
+.m-consent-radios input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    width: 7px;
+    height: 4px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg);
+}
+
+/* 자체 라디오 — 설문 테마 보라 (#5B2EAB) */
 .m-form-radios input[type="radio"] {
     appearance: none;
     -webkit-appearance: none;
@@ -232,12 +266,10 @@
     box-sizing: border-box;
 }
 
-.m-consent-radios input[type="radio"]:checked,
 .m-form-radios input[type="radio"]:checked {
-    border-color: #06AB69;
+    border-color: #5B2EAB;
 }
 
-.m-consent-radios input[type="radio"]:checked::after,
 .m-form-radios input[type="radio"]:checked::after {
     content: '';
     position: absolute;
@@ -246,7 +278,7 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #06AB69;
+    background: #5B2EAB;
 }
 
 /* Form rows */
@@ -283,6 +315,12 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px 16px;
+}
+
+.m-form-radios-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .m-form-radios label {

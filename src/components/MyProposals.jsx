@@ -172,14 +172,16 @@ const MyProposals = ({ onBack, onNavigate }) => {
                     let imageUrl = null;
                     if (item.files && item.files.length > 0) {
                         const firstFile = item.files[0];
-                        if (firstFile.startsWith('http')) {
-                            imageUrl = firstFile;
-                        } else if (firstFile.startsWith('/assets/')) {
-                            imageUrl = firstFile;
-                        } else if (firstFile.startsWith('/uploads/')) {
-                            imageUrl = `${API_URL}${firstFile}`;
-                        } else {
-                            imageUrl = `${API_URL}/uploads/${firstFile}`;
+                        if (typeof firstFile === 'string' && firstFile) {
+                            if (firstFile.startsWith('http')) {
+                                imageUrl = firstFile;
+                            } else if (firstFile.startsWith('/assets/')) {
+                                imageUrl = firstFile;
+                            } else if (firstFile.startsWith('/uploads/')) {
+                                imageUrl = `${API_URL}${firstFile}`;
+                            } else {
+                                imageUrl = `${API_URL}/uploads/${firstFile}`;
+                            }
                         }
                     }
                     

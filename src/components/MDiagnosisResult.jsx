@@ -290,9 +290,9 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                                 <Radar
                                     name="Score"
                                     dataKey="A"
-                                    stroke="#06AB69"
+                                    stroke="#E6235A"
                                     strokeWidth={2}
-                                    fill="#06AB69"
+                                    fill="#E6235A"
                                     fillOpacity={0.25}
                                 />
                             </RadarChart>
@@ -330,7 +330,7 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                     <div className="m-diagres-detail-btns">
                         <button
                             type="button"
-                            className="m-diagres-detail-btn purple disabled"
+                            className="m-diagres-detail-btn green disabled"
                             disabled
                         >
                             <span>시설물별 세부 정보</span>
@@ -338,7 +338,7 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         </button>
                         <button
                             type="button"
-                            className="m-diagres-detail-btn purple disabled"
+                            className="m-diagres-detail-btn green disabled"
                             disabled
                         >
                             <span>구역별 세부 정보</span>

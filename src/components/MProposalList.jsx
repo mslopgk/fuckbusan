@@ -9,6 +9,7 @@ import { REGIONS, SORTS } from '../constants/mapConstants';
 import { RegionSheet, SortSheet } from './MFilterSheets';
 import { API_URL } from '../utils/api';
 import { useLazyImage } from '../hooks/useLazyImage';
+import { thumbUrl } from '../utils/format';
 import './MProposalList.css';
 
 function ProposalListCard({ it, onNavigate }) {
@@ -16,7 +17,7 @@ function ProposalListCard({ it, onNavigate }) {
     const nickname = it.nickname || '익명';
     const author = it.region ? `${it.region} ${nickname}` : nickname;
     const imageUrl = Array.isArray(it.files) && it.files.length > 0 ? it.files[0] : null;
-    const { ref: imgRef, bgStyle } = useLazyImage(imageUrl);
+    const { ref: imgRef, bgStyle } = useLazyImage(imageUrl, thumbUrl(imageUrl));
     const hasImage = Array.isArray(it.files) && it.files.length > 0;
     return (
         <li

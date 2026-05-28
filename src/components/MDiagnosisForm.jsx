@@ -126,9 +126,7 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
             </header>
 
             <main className="m-diagform-body">
-                <h1 className="m-diagform-title">
-                    {mode === 'expert' ? '전문가 진단을\n시작해보세요' : '우리동네 개선 아이디어를\n진단해보세요'}
-                </h1>
+                <h1 className="m-diagform-title">진단하기</h1>
 
                 {/* 위치 정보 */}
                 <section className="m-diagform-section">
@@ -157,7 +155,7 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
 
                 {/* 사진 등록 */}
                 <section className="m-diagform-section">
-                    <h2 className="m-diagform-label">사진등록</h2>
+                    <h2 className="m-diagform-label">1) 사진 등록</h2>
                     <button
                         type="button"
                         className={`m-diagform-photo ${photoPreview ? 'has-photo' : ''}`}
@@ -182,7 +180,7 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
 
                 {/* 공공/시설물 */}
                 <section className="m-diagform-section">
-                    <h2 className="m-diagform-label">분류</h2>
+                    <h2 className="m-diagform-label">2) 시설물 선택</h2>
                     <input
                         type="text"
                         className="m-diagform-facility-input"
@@ -208,7 +206,7 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
                 {/* 만족도 평가 — 시설물 선택 후 표시 */}
                 {sub && (
                     <section className="m-diagform-section">
-                        <h2 className="m-diagform-label">만족도 평가</h2>
+                        <h2 className="m-diagform-label">3) 만족도 평가</h2>
                         <p className="m-diagform-sublabel">해당 시설물의 만족도를 평가해 주세요.</p>
                         <ol className="m-diagform-questions">
                             {QUESTIONS.map((q, idx) => (

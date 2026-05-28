@@ -158,6 +158,7 @@ export default function MReportMap({ onNavigate }) {
                         setExpanded(false);
                     }}
                     showLocateBtn
+                    selectedDistrict={region !== '부산전체' ? region : null}
                 />
             </div>
 

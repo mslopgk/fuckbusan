@@ -21,7 +21,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
     const [voted, setVoted] = useState(!!proposal?.has_voted);
     const [comments, setComments] = useState([]);
     const [views, setViews] = useState(proposal?.views ?? proposal?.views_count ?? 0);
-    const [votes, setVotes] = useState(proposal?.votes ?? proposal?.likes_count ?? 0);
+    const [votes, setVotes] = useState(proposal?.likes_count ?? proposal?.votes ?? 0);
 
     useEffect(() => {
         if (!proposal?.id) return;

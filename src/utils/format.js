@@ -1,3 +1,20 @@
+/**
+ * Given an image URL from the uploads endpoint, returns the thumbnail URL.
+ * Pattern: /uploads/abc.jpg → /uploads/thumb_abc.jpg
+ *          https://s3.../abc.jpg → https://s3.../thumb_abc.jpg
+ * Returns null if src is falsy.
+ */
+export function thumbUrl(src) {
+    if (!src) return null;
+    // local /uploads/<filename>
+    const localMatch = src.match(/^(\/uploads\/)([^/]+)$/);
+    if (localMatch) return `${localMatch[1]}thumb_${localMatch[2]}`;
+    // S3 https://bucket.s3.region.amazonaws.com/<filename>
+    const s3Match = src.match(/^(https:\/\/[^/]+\.amazonaws\.com\/)([^/]+)$/);
+    if (s3Match) return `${s3Match[1]}thumb_${s3Match[2]}`;
+    return null;
+}
+
 export function formatDate(dateStr) {
     if (!dateStr) return '';
     const d = new Date(dateStr);

@@ -492,7 +492,7 @@
     position: absolute;
     right: 68px;
     top: 12px;
-    width: 420px;
+    width: 483px;
     height: calc(100% - 24px);
     background: #fff;
     border-radius: 12px;
@@ -689,7 +689,7 @@
     position: absolute;
     top: 12px;
     left: 294px;
-    right: 496px; /* 64px sidebar + 420px sidebar + 12px gap */
+    right: 559px; /* 68px controls + 483px sidebar + 8px gap */
     bottom: 12px;
     background: #fff;
     border-radius: 14px;
@@ -785,8 +785,8 @@
 
 .pc-ai-detail-info-box {
     flex: 1;
-    background: #fff;
-    border: 1px solid #e6e6e6;
+    background: #f4f4f4;
+    border: none;
     border-radius: 8px;
     padding: 0;
     display: flex;
@@ -803,7 +803,7 @@
     letter-spacing: -0.02em;
     min-width: 0;
     padding: 6px 10px;
-    border-bottom: 1px solid #efefef;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .pc-ai-detail-info-box .info-row:last-child {
@@ -868,8 +868,8 @@
 }
 
 .voice-card {
-    background: #fff;
-    border: 1px solid #ebebeb;
+    background: #f4f4f4;
+    border: none;
     border-radius: 10px;
     padding: 12px 14px;
     display: flex;
@@ -902,7 +902,7 @@
     display: flex;
     gap: 8px;
     align-items: flex-start;
-    background: #f4f4f4;
+    background: #fff;
     border-radius: 6px;
     padding: 7px 10px;
     font-size: 12px;
@@ -1031,8 +1031,8 @@
 }
 
 .detail-bottom-card {
-    background: #fff;
-    border: 1px solid #ebebeb;
+    background: #f4f4f4;
+    border: none;
     border-radius: 10px;
     padding: 12px 14px;
     display: flex;

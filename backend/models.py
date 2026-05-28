@@ -69,6 +69,7 @@ class User(Base):
     birth_date = Column(String(20)) # Added birth_date
     created_at = Column(DateTime, default=datetime.now)
     district_code = Column(String(50))
+    is_approved = Column(Boolean, default=True, server_default='1')
 
 class ChecklistResult(Base):
     __tablename__ = "checklist_result"
@@ -222,7 +223,7 @@ class ProposalComment(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     proposal_id = Column(Integer, ForeignKey("new_proposals.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
     content = Column(Text, nullable=False)
     parent_comment_id = Column(Integer, ForeignKey("proposal_comments.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.now)

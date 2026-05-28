@@ -44,18 +44,35 @@ def _local_uploads_dir() -> str:
     os.makedirs(base, exist_ok=True)
     return base
 
+def _make_thumbnail(img_bytes: bytes, size: int = 400, quality: int = 55) -> bytes | None:
+    if not _PIL_AVAILABLE:
+        return None
+    try:
+        img = PilImage.open(io.BytesIO(img_bytes))
+        img = img.convert('RGB')
+        img.thumbnail((size, size), PilImage.LANCZOS)
+        out = io.BytesIO()
+        img.save(out, 'JPEG', quality=quality, optimize=True)
+        return out.getvalue()
+    except Exception:
+        return None
+
+
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
     file_extension = os.path.splitext(file.filename)[1]
     unique_filename = f"{uuid.uuid4()}{file_extension}"
     contents = await file.read()
 
-    # Server-side image compression (safety net for large uploads)
     content_type = file.content_type or ''
-    if _PIL_AVAILABLE and content_type.startswith('image/'):
+    is_image = content_type.startswith('image/')
+    thumb_contents: bytes | None = None
+
+    if _PIL_AVAILABLE and is_image:
         try:
             img = PilImage.open(io.BytesIO(contents))
             img = img.convert('RGB')
+            # 원본: 1200px, quality 82
             img.thumbnail((1200, 1200), PilImage.LANCZOS)
             out = io.BytesIO()
             img.save(out, 'JPEG', quality=82, optimize=True)
@@ -63,27 +80,38 @@ async def upload_file(file: UploadFile = File(...)):
             file_extension = '.jpg'
             unique_filename = f"{uuid.uuid4()}{file_extension}"
         except Exception:
-            pass  # keep original if PIL processing fails
+            pass
 
-    # AWS 키 있으면 S3, 없으면 로컬 저장 (개발 환경 폴백)
+        # 썸네일: 400px, quality 55
+        thumb_contents = _make_thumbnail(contents)
+
+    thumb_filename = f"thumb_{unique_filename}" if thumb_contents else None
+
     if _AWS_KEY:
         try:
-            get_s3_client().put_object(
-                Bucket=S3_BUCKET,
-                Key=unique_filename,
-                Body=contents,
-                ContentType=file.content_type,
-            )
+            s3 = get_s3_client()
+            s3.put_object(Bucket=S3_BUCKET, Key=unique_filename, Body=contents, ContentType='image/jpeg' if is_image else file.content_type)
             url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{unique_filename}"
+            if thumb_contents and thumb_filename:
+                s3.put_object(Bucket=S3_BUCKET, Key=thumb_filename, Body=thumb_contents, ContentType='image/jpeg')
+                thumb_url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{thumb_filename}"
+            else:
+                thumb_url = url
         except ClientError as e:
             raise HTTPException(status_code=500, detail=f"S3 업로드 실패: {str(e)}")
     else:
-        save_path = os.path.join(_local_uploads_dir(), unique_filename)
-        with open(save_path, "wb") as f:
+        uploads = _local_uploads_dir()
+        with open(os.path.join(uploads, unique_filename), "wb") as f:
             f.write(contents)
         url = f"/uploads/{unique_filename}"
+        if thumb_contents and thumb_filename:
+            with open(os.path.join(uploads, thumb_filename), "wb") as f:
+                f.write(thumb_contents)
+            thumb_url = f"/uploads/{thumb_filename}"
+        else:
+            thumb_url = url
 
-    return {"filename": unique_filename, "url": url}
+    return {"filename": unique_filename, "url": url, "thumb_url": thumb_url}
 
 @router.get("/list")
 def list_reports(db: Session = Depends(get_db)):

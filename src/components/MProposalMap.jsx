@@ -100,6 +100,7 @@ export default function MProposalMap({ onNavigate }) {
                     accentColor="#E6235A"
                     onPinClick={(pin) => { setSelectedPinId(pin.id); setExpanded(false); }}
                     showLocateBtn
+                    selectedDistrict={region !== '부산전체' ? region : null}
                 />
             </div>
 

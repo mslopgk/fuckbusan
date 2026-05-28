@@ -9,12 +9,13 @@ import { REGIONS, SORTS, REPORT_STAGES as STAGES } from '../constants/mapConstan
 import { RegionSheet, SortSheet } from './MFilterSheets';
 import { API_URL } from '../utils/api';
 import { useLazyImage } from '../hooks/useLazyImage';
+import { thumbUrl } from '../utils/format';
 import './MProposalList.css';
 import './MReportList.css';
 
 function ReportListCard({ it, likedIds, onNavigate, onToggleLike }) {
     const style = CAT_STYLES[it.category] || { bg: '#eee', color: '#555' };
-    const { ref: imgRef, bgStyle } = useLazyImage(it.image);
+    const { ref: imgRef, bgStyle } = useLazyImage(it.image, thumbUrl(it.image));
     return (
         <li
             className="m-prop-card"

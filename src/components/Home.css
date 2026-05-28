@@ -35,7 +35,7 @@
 .logo-icon {
     width: 24px;
     height: 24px;
-    background-color: #16B5B0;
+    background-color: #5B2EAB;
     border-radius: 50%;
 }
 
@@ -65,7 +65,7 @@
 }
 
 .btn-header.signup {
-    background-color: #16B5B0;
+    background-color: #5B2EAB;
     color: white;
     border-radius: 20px;
     padding: 8px 20px;
@@ -73,8 +73,7 @@
 }
 
 .btn-header.signup:hover {
-    background-color: #0F8581;
-    /* Darker Mint */
+    background-color: #491C9C;
 }
 
 .header-icons {
@@ -177,7 +176,7 @@
 }
 
 .card.diagnose {
-    background-color: #16B5B0;
+    background-color: #06AB69;
     color: white;
 }
 

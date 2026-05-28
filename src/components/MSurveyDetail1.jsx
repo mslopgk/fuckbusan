@@ -5,6 +5,7 @@ import { API_URL } from '../utils/api';
 
 export default function MSurveyDetail1({ onNavigate, survey }) {
     const [fullSurvey, setFullSurvey] = useState(null);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const id = survey?.id;
@@ -32,12 +33,33 @@ export default function MSurveyDetail1({ onNavigate, survey }) {
                     </button>
                     <button
                         className="m-hero-copy"
-                        onClick={() => {
-                            if (navigator.clipboard) navigator.clipboard.writeText(window.location.href);
+                        onClick={async () => {
+                            const lines = [data.title];
+                            if (data.period) lines.push(`조사기간: ${data.period}`);
+                            lines.push(`응답시간: ${data.minutes}분`);
+                            if (data.intro) lines.push(`내용: ${data.intro}`);
+                            const text = lines.join('\n');
+                            try {
+                                await navigator.clipboard.writeText(text);
+                            } catch {
+                                const ta = document.createElement('textarea');
+                                ta.value = text;
+                                ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0.01;pointer-events:none;';
+                                document.body.appendChild(ta);
+                                ta.focus();
+                                ta.select();
+                                try { document.execCommand('copy'); } catch {}
+                                document.body.removeChild(ta);
+                            }
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 2000);
                         }}
                     >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <span>복사하기</span>
+                        {copied
+                            ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        }
+                        <span>{copied ? '복사됨' : '복사하기'}</span>
                     </button>
                 </div>
                 <h1 className="m-hero-title">{data.title}</h1>

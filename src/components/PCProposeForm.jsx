@@ -7,6 +7,13 @@ import { API_URL } from '../utils/api';
 
 const TYPES = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 const BUSAN_CENTER = { lat: 35.158, lng: 129.06 };
+const DRAFT_KEY = 'pcProposeForm:draft';
+
+function extractDistrict(address) {
+    if (!address) return '부산';
+    const m = address.match(/([가-힣]+구)/);
+    return m ? m[1] : '부산';
+}
 
 function LocationPickerModal({ title = '제안하고 싶은 장소를 선택해주세요.', onCancel, onConfirm }) {
     const [kakaoLoading] = useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services'] });
@@ -129,6 +136,13 @@ export default function PCProposeForm({ onNavigate }) {
 
     const valid = type && title.trim() && body.trim() && !submitting;
 
+    const handleDraft = () => {
+        const draft = { type, title, body, location, savedAt: new Date().toISOString() };
+        try {
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        } catch { }
+    };
+
     const handleSelectLocation = ({ lat, lng, address }) => {
         setLocation({ lat, lng, address });
         setShowMap(false);
@@ -246,7 +260,7 @@ export default function PCProposeForm({ onNavigate }) {
                     </div>
 
                     <div className="pc-form-actions">
-                        <button className="pc-btn-light" disabled={!valid}>임시저장</button>
+                        <button className="pc-btn-light" disabled={!valid} onClick={handleDraft}>임시저장</button>
                         <button
                             className={`pc-btn-pink ${valid ? '' : 'disabled'}`}
                             disabled={!valid}
@@ -258,7 +272,7 @@ export default function PCProposeForm({ onNavigate }) {
                                     category: type,
                                     title: title.trim(),
                                     content: body.trim(),
-                                    region: '부산',
+                                    region: extractDistrict(location?.address),
                                     lat: location?.lat,
                                     lng: location?.lng,
                                     files: [],

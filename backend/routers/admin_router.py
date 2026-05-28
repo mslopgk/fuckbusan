@@ -301,6 +301,7 @@ def admin_list_users(
             "phone_num": u.phone_num,
             "district_code": u.district_code,
             "created_at": u.created_at.isoformat() if u.created_at else None,
+            "is_approved": getattr(u, 'is_approved', True),
         }
         for u in rows
     ]

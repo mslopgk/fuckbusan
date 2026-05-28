@@ -43,6 +43,10 @@ FIGMA_DIFF.md
 FIGMA_FIX_REPORT.md
 DEV_PLAN.md
 CHANGES_*.md
+QA_REPORT_*.md
+
+# Reference data & work docs (data files, changelogs, figma exports)
+_refs/
 
 # Backend logs
 backend/output.log

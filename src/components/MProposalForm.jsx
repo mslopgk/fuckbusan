@@ -8,6 +8,12 @@ import './MProposalForm.css';
 const TYPES = ['주거', '환경', '교육', '안전', '산업·일자리', '교통', '문화·여가', '보건·복지'];
 const DRAFT_KEY = 'mProposalForm:draft';
 
+function extractDistrict(address) {
+    if (!address) return '부산';
+    const m = address.match(/([가-힣]+구)/);
+    return m ? m[1] : '부산';
+}
+
 
 export default function MProposalForm({ onNavigate }) {
     const [type, setType] = useState('');
@@ -94,7 +100,7 @@ export default function MProposalForm({ onNavigate }) {
             category: type,
             title: title.trim(),
             content: body.trim(),
-            region: '부산',
+            region: extractDistrict(pickedAddress),
             detailed_address: location || undefined,
             files: uploadedUrls,
             image_url: uploadedUrls[0] || undefined,
@@ -230,7 +236,7 @@ export default function MProposalForm({ onNavigate }) {
                             {location || '지도로 위치 설정하기'}
                         </span>
                         <span className="m-form-loc-pin">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="2.5"/></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                         </span>
                     </button>
                 </section>

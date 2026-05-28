@@ -1,13 +1,21 @@
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyDone.css';
 
+function DoneCheckIcon() {
+    return (
+        <div className="m-done-check-circle" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+            </svg>
+        </div>
+    );
+}
+
 export default function MSurveyDone({ onNavigate, survey }) {
     return (
         <div className="m-survey-done-page">
             <div className="m-done-content">
-                <div className="m-done-icon">
-                    <img src="/figma-assets/survey_done_check.svg" alt="" width="40" height="40" />
-                </div>
+                <DoneCheckIcon />
                 <h1 className="m-done-title">설문 제출 완료</h1>
                 <p className="m-done-subtitle">참여해 주셔서 감사합니다</p>
                 <p className="m-done-text">
@@ -16,17 +24,8 @@ export default function MSurveyDone({ onNavigate, survey }) {
                 </p>
             </div>
             <div className="m-done-actions">
-                {survey?.id && (
-                    <button
-                        className="m-done-cta"
-                        onClick={() => onNavigate && onNavigate('mSurveyResults', survey)}
-                        type="button"
-                    >
-                        결과 보기
-                    </button>
-                )}
                 <button
-                    className="m-done-cta m-done-cta-home"
+                    className="m-done-cta"
                     onClick={() => onNavigate && onNavigate('home')}
                     type="button"
                 >

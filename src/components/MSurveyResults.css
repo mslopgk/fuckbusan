@@ -1,14 +1,25 @@
+/* ============================================================
+   MSurveyResults — Figma-aligned design + entrance animations
+   ============================================================ */
+
 .m-survey-results-page {
     min-height: 100vh;
-    background: #f7f7f8;
+    background: #f4f4f4;
     padding-bottom: 80px;
 }
 
+/* ── 히어로 ─────────────────────────────────────────────────── */
 .m-results-hero {
     background: #5B2EAB;
-    padding: 16px 20px 20px;
+    padding: 0 20px 0;
     color: #fff;
-    position: relative;
+}
+
+.m-hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0 4px;
 }
 
 .m-hero-back {
@@ -16,30 +27,65 @@
     border: none;
     padding: 6px;
     cursor: pointer;
-    color: #fff;
-    margin-left: -6px;
+    display: flex;
+    align-items: center;
 }
+
+.m-hero-copy {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 13px;
+    letter-spacing: -0.02em;
+    transition: background 0.2s;
+}
+.m-hero-copy:hover { background: rgba(255,255,255,0.3); }
 
 .m-results-title {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 800;
-    line-height: 1.4;
-    margin: 8px 0 14px;
+    line-height: 1.45;
+    margin: 14px 0 20px;
     letter-spacing: -0.02em;
+    text-align: center;
+    white-space: pre-wrap;
+    word-break: keep-all;
 }
 
-.m-results-meta {
+.m-results-meta-pill {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    font-size: 12px;
-    opacity: 0.95;
+    justify-content: center;
+    gap: 12px;
+    background: #fff;
+    border-radius: 30px;
+    padding: 11px 22px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+    font-size: 13px;
+    color: #111;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: -22px;  /* 콘텐츠 영역 위로 올라오게 */
+    position: relative;
+    z-index: 2;
+}
+
+.m-results-sep {
+    width: 1px;
+    height: 14px;
+    background: #ddd;
+    flex-shrink: 0;
 }
 
 .m-results-period {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 14px;
-    padding: 5px 10px;
+    color: #555;
 }
 
 .m-results-count {
@@ -47,142 +93,275 @@
     align-items: center;
     gap: 4px;
     font-weight: 700;
+    color: #5B2EAB;
+}
+
+/* ── 콘텐츠 영역 ─────────────────────────────────────────────── */
+.m-results-content {
+    background: #fff;
+    padding-top: 36px;   /* pill 카드가 올라온 만큼 여백 확보 */
+    margin-top: 0;
+}
+
+.m-section-divider {
+    height: 5px;
+    background: #f4f4f4;
 }
 
 .m-results-section {
-    background: #fff;
-    margin: 12px 16px 0;
-    border-radius: 12px;
-    padding: 18px 18px 22px;
+    padding: 22px 20px 26px;
 }
 
 .m-results-section-title {
-    font-size: 14px;
-    font-weight: 800;
-    color: #1a1a1b;
-    margin: 0 0 8px;
-    letter-spacing: -0.01em;
-}
-
-.m-radar-wrap {
-    display: flex;
-    justify-content: center;
-}
-
-.m-radar-svg {
-    width: 240px;
-    max-width: 100%;
-    height: auto;
-}
-
-.m-results-detail-link {
-    display: block;
-    margin: 4px auto 0;
-    background: none;
-    border: none;
-    color: #888;
-    font-size: 12px;
-    cursor: pointer;
-    font-family: inherit;
-}
-
-.m-results-detail-link-disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 18px;
+    letter-spacing: -0.02em;
 }
 
 .m-q-result-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: #1a1a1b;
-    margin: 0 0 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111;
+    margin: 0 0 16px;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
 }
 
-/* Donut + legend */
+.m-results-empty {
+    text-align: center;
+    color: #aaa;
+    padding: 44px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    font-size: 14px;
+}
+
+/* ── 로딩 스피너 ──────────────────────────────────────────────── */
+.m-results-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #f0f0f0;
+    border-top-color: #542AA3;
+    border-radius: 50%;
+    animation: srSpin 0.8s linear infinite;
+}
+@keyframes srSpin { to { transform: rotate(360deg); } }
+
+/* ── 레이더 차트 ─────────────────────────────────────────────── */
+.m-radar-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.m-radar-svg {
+    width: 268px;
+    max-width: 100%;
+    height: auto;
+    opacity: 0;
+}
+.m-radar-svg.animated {
+    animation: srFadeScale 0.7s ease-out 0.1s both;
+}
+
+.m-radar-polygon {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0.4);
+}
+.m-radar-polygon.animated {
+    animation: radarExpand 0.9s cubic-bezier(0.34, 1.4, 0.64, 1) 0.3s both;
+}
+@keyframes radarExpand {
+    from { opacity: 0; transform: scale(0.4); }
+    to   { opacity: 1; transform: scale(1); }
+}
+@keyframes srFadeScale {
+    from { opacity: 0; transform: scale(0.88); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* 자세히보기 버튼 */
+.m-results-detail-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-size: 14px;
+    color: #666;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    letter-spacing: -0.02em;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.m-results-detail-btn:hover { background: #f8f8f8; box-shadow: 0 3px 14px rgba(0,0,0,0.12); }
+.m-results-detail-btn.expanded { color: #542AA3; border-color: #d5c8f0; }
+
+/* 레이더 상세 리스트 */
+.m-radar-detail-list {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    animation: srFadeUp 0.4s ease-out both;
+}
+@keyframes srFadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.m-radar-detail-list li {
+    display: grid;
+    grid-template-columns: 68px 1fr 32px;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+.m-radar-detail-list li > span { color: #666; }
+.m-radar-detail-bar {
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.m-radar-detail-fill {
+    height: 100%;
+    background: #542AA3;
+    border-radius: 4px;
+}
+.m-radar-detail-list strong { color: #542AA3; font-size: 13px; text-align: right; }
+
+/* ── 도넛 차트 ───────────────────────────────────────────────── */
 .m-donut-row {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
 }
-
-.m-donut { flex-shrink: 0; }
+.m-donut {
+    flex-shrink: 0;
+    opacity: 0;
+}
+.m-donut.animated {
+    animation: donutPop 0.6s cubic-bezier(0.34, 1.36, 0.64, 1) 0.1s both;
+}
+@keyframes donutPop {
+    from { opacity: 0; transform: scale(0.65); }
+    to   { opacity: 1; transform: scale(1); }
+}
 
 .m-legend {
     list-style: none;
     margin: 0;
     padding: 0;
     flex: 1;
+    min-width: 0;
 }
-
 .m-legend li {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 11px;
-    line-height: 1.8;
+    font-size: 12px;
+    line-height: 2.0;
 }
-
 .m-legend-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
 }
-
 .m-legend-pct {
-    width: 28px;
-    color: #1a1a1b;
+    width: 34px;
+    color: #111;
     font-weight: 700;
+    font-size: 13px;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
 }
-
-.m-legend-label { color: #555; }
-
-/* Bars */
-.m-bar-row {
-    display: grid;
-    grid-template-columns: 110px 1fr 36px;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.m-bar-label {
-    font-size: 11px;
-    color: #1a1a1b;
-}
-
-.m-bar-track {
-    height: 14px;
-    background: #f1f3f5;
-    border-radius: 7px;
+.m-legend-label {
+    color: #777;
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.m-bar-fill {
-    height: 100%;
-    background: #5B2EAB;
-    border-radius: 7px;
-}
+/* ── 가로 바 차트 (Figma 컬러드) ────────────────────────────── */
+.m-hbars { display: flex; flex-direction: column; gap: 10px; }
 
-.m-bar-pct {
-    font-size: 11px;
-    font-weight: 700;
-    color: #1a1a1b;
-    text-align: right;
-}
-
-/* Bubbles */
-.m-bubbles {
-    position: relative;
-    height: 220px;
+.m-hbar-row {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     align-items: center;
     gap: 10px;
 }
 
-.m-bubble {
+.m-hbar-track {
+    flex: 1;
+    height: 28px;
+    background: #f4f4f4;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.m-hbar-fill {
+    height: 100%;
+    border-radius: 0 30px 30px 0;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    box-sizing: border-box;
+    transform: scaleX(0);
+    transform-origin: left;
+}
+.m-hbar-fill.animated {
+    animation: barSlide 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes barSlide {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+.m-hbar-inner-label {
+    font-size: 12px;
+    color: #fff;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.02em;
+}
+
+.m-hbar-pct {
+    font-size: 14px;
+    font-weight: 700;
+    width: 38px;
+    text-align: right;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+}
+
+/* ── 버블 클라우드 ───────────────────────────────────────────── */
+.m-bubble-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0 4px;
+    min-height: 200px;
+}
+
+.m-bubble-item {
     border-radius: 50%;
     color: #fff;
     display: flex;
@@ -190,33 +369,53 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 4px;
+    padding: 6px;
     box-sizing: border-box;
+    transform: scale(0);
+    opacity: 0;
 }
-
-.m-bubble-label {
-    font-size: 10px;
+.m-bubble-item.animated {
+    animation: bubblePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes bubblePop {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+.m-bubble-text {
+    font-size: 11px;
     font-weight: 700;
-    line-height: 1.1;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    word-break: keep-all;
 }
-
 .m-bubble-pct {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 800;
     margin-top: 2px;
 }
 
-/* Columns */
-.m-cols {
+/* ── 세로 바 차트 ────────────────────────────────────────────── */
+.m-col-chart { padding: 4px 0 0; }
+
+.m-col-chart-inner {
     display: flex;
     align-items: flex-end;
-    height: 200px;
-    gap: 14px;
-    padding: 20px 4px 0;
-    border-bottom: 1px solid #ececec;
+    gap: 8px;
+    height: 180px;
+    padding: 16px 4px 0;
+    border-bottom: 1px solid #e0e0e0;
+    /* 배경 그리드: 25 / 50 / 75% 위치에 수평선 */
+    background:
+        repeating-linear-gradient(
+            to top,
+            transparent 0,
+            transparent calc(25% - 1px),
+            #efefef calc(25% - 1px),
+            #efefef 25%
+        );
 }
 
-.m-col {
+.m-col-item {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -224,23 +423,47 @@
     height: 100%;
 }
 
+.m-col-bar-area {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
 .m-col-val {
     font-size: 9px;
     font-weight: 700;
-    color: #1a1a1b;
-    margin-bottom: 4px;
+    color: #111;
+    margin-bottom: 3px;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
 }
 
 .m-col-bar {
     width: 100%;
-    background: linear-gradient(180deg, #7E4FCF 0%, #5B2EAB 100%);
+    background: linear-gradient(180deg, #7E55CC 0%, #542AA3 100%);
     border-radius: 4px 4px 0 0;
-    margin-top: auto;
-    min-height: 6px;
+    min-height: 4px;
+    transform: scaleY(0);
+    transform-origin: bottom;
+}
+.m-col-bar.animated {
+    animation: colRise 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes colRise {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
 }
 
-.m-col-label {
-    font-size: 11px;
-    color: #888;
-    margin-top: 4px;
+.m-col-x-label {
+    font-size: 10px;
+    color: #999;
+    margin-top: 5px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }

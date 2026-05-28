@@ -145,18 +145,18 @@ const Home = ({ onNavigate }) => {
                             </div>
                             <div className="card-arrow">→</div>
                         </div>
-                        <div className="action-item card diagnose" onClick={() => {
+                        <div className="action-item card diagnose" style={{ background: '#23BDBB' }} onClick={() => {
                                 if (!isLoggedIn) { alert('로그인 후 이용할 수 있습니다.'); onNavigate && onNavigate('login'); return; }
                                 goPropose();
                             }}>
                             <div className="card-top">
                                 <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
-                                    <div className="card-title">제안하기</div>
+                                    <div className="card-title" style={{ color: 'white' }}>제안하기</div>
                                     <img src="/lighticon.svg" alt="제안하기 아이콘" className="card-icon-img" />
                                 </div>
-                                <div className="card-subtitle">우리 동네 디자인,<br />같이 점검해볼까요?</div>
+                                <div className="card-subtitle" style={{ color: 'white' }}>우리 동네 디자인,<br />같이 점검해볼까요?</div>
                             </div>
-                            <div className="card-arrow">→</div>
+                            <div className="card-arrow" style={{ color: 'white' }}>→</div>
                         </div>
                     </div>
                     <div className="action-row" style={{ marginTop: '10px' }}>
@@ -164,7 +164,7 @@ const Home = ({ onNavigate }) => {
                             <div className="card-top">
                                 <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
                                     <div className="card-title" style={{ color: 'white' }}>진단하기</div>
-                                    <img src="/lighticon.svg" alt="진단하기 아이콘" className="card-icon-img" style={{ filter: 'brightness(0) invert(1)' }} />
+                                    <img src="/graph.svg" alt="진단하기 아이콘" className="card-icon-img" style={{ filter: 'brightness(0) invert(1)' }} />
                                 </div>
                                 <div className="card-subtitle" style={{ color: 'white', opacity: 0.85 }}>우리 동네 디자인,<br />같이 점검해볼까요?</div>
                             </div>

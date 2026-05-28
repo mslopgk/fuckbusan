@@ -1,22 +1,27 @@
 import './MProposalDone.css';
+import './MReportDone.css';
 
 function DoneIllustration() {
     return (
         <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect x="14" y="10" width="80" height="98" rx="10" fill="#fff" stroke="#1a1a1b" strokeWidth="5"/>
-            <path d="M74 98 L94 108 L94 88 Z" fill="#f0f0f0" stroke="#1a1a1b" strokeWidth="3" strokeLinejoin="round"/>
-            <line x1="28" y1="34" x2="80" y2="34" stroke="#1a1a1b" strokeWidth="4" strokeLinecap="round"/>
-            <line x1="28" y1="50" x2="80" y2="50" stroke="#1a1a1b" strokeWidth="4" strokeLinecap="round"/>
-            <line x1="28" y1="66" x2="62" y2="66" stroke="#1a1a1b" strokeWidth="4" strokeLinecap="round"/>
-            <circle cx="90" cy="90" r="30" fill="#E6235A"/>
-            <path d="M77 90 L86 99 L105 78" stroke="#fff" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round"/>
+            {/* Scroll body */}
+            <rect x="20" y="14" width="72" height="88" rx="8" fill="#fff" stroke="#1a1a1b" strokeWidth="4.5"/>
+            {/* Scroll bottom roll */}
+            <rect x="14" y="88" width="84" height="18" rx="9" fill="#f0f0f0" stroke="#1a1a1b" strokeWidth="4.5"/>
+            {/* Text lines on scroll */}
+            <line x1="32" y1="36" x2="80" y2="36" stroke="#1a1a1b" strokeWidth="3.5" strokeLinecap="round"/>
+            <line x1="32" y1="50" x2="80" y2="50" stroke="#1a1a1b" strokeWidth="3.5" strokeLinecap="round"/>
+            <line x1="32" y1="64" x2="64" y2="64" stroke="#1a1a1b" strokeWidth="3.5" strokeLinecap="round"/>
+            {/* Pink checkmark circle — overlaid top-right */}
+            <circle cx="88" cy="44" r="27" fill="#E6235A"/>
+            <path d="M77 44 L85 52 L101 34" stroke="#fff" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
     );
 }
 
 export default function MReportDone({ onNavigate }) {
     return (
-        <div className="m-prop-done-page">
+        <div className="m-prop-done-page m-report-done-page">
             <div className="m-prop-done-icon" aria-hidden="true">
                 <DoneIllustration />
             </div>

@@ -166,7 +166,7 @@
     border: none;
     border-radius: 20px;
     padding: 7px 14px;
-    font-size: 16px;
+    font-size: 14px;
     color: #242424;
     cursor: pointer;
     font-family: inherit;
@@ -188,7 +188,7 @@
 .m-sort-btn {
     background: none;
     border: none;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     color: #242424;
     display: inline-flex;
@@ -196,6 +196,34 @@
     gap: 4px;
     cursor: pointer;
     font-family: inherit;
+}
+
+/* Shared tag/author-row classes used by ProposalListCard */
+.m-report-tags {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.m-report-author-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.m-report-author-stat-row .m-prop-author {
+    margin: 0;
+}
+
+.m-report-sub-tag {
+    background: #FCDAE3;
+    color: #C2456A;
+    padding: 3px 10px;
+    border-radius: 11px;
+    font-size: 11px;
+    font-weight: 600;
 }
 
 .m-prop-cards {
@@ -224,9 +252,9 @@
     display: inline-block;
     padding: 3px 10px;
     border-radius: 15px;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
-    margin-bottom: 6px;
+    margin-bottom: 0;
 }
 
 .m-prop-title {
@@ -238,7 +266,7 @@
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.02em;
 }
 
 .m-prop-author {

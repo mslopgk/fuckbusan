@@ -33,10 +33,10 @@
 
 .m-diagres-title {
     margin: 4px 0 8px;
-    font-size: 22px;
+    font-size: 28px;
     font-weight: 800;
     color: var(--diag-green);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
 }
 
 .m-diagres-address {
@@ -192,7 +192,8 @@
     margin: 0 0 6px;
     font-size: 17px;
     font-weight: 800;
-    color: var(--diag-text);
+    color: #242424;
+    letter-spacing: -0.02em;
 }
 
 .m-diagres-detail-desc {

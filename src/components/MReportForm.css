@@ -1,8 +1,8 @@
 .m-photo-add {
-    width: 86px;
-    height: 86px;
-    border: 1px solid #d8d8d8;
-    border-radius: 12px;
+    width: 80px;
+    height: 80px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
     background: #fff;
     display: flex;
     align-items: center;
@@ -12,24 +12,66 @@
 
 .m-loc-input {
     width: 100%;
-    height: 50px;
-    border: 1px solid #d8d8d8;
-    border-radius: 25px;
+    height: 55px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
     padding: 0 18px;
     background: #fff;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 13px;
-    color: #b0b0b0;
+    font-size: 16px;
+    color: #a6a6a6;
     cursor: pointer;
     font-family: inherit;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.m-loc-input:focus {
+    border-color: #E6235A;
 }
 
 .m-loc-pin {
     display: inline-flex;
     align-items: center;
     color: #b0b0b0;
+}
+
+/* Filled location text color */
+.m-form-loc-text {
+    color: #1a1a1b;
+    font-size: 16px;
+}
+
+/* Footer buttons: Figma 848:18955 — height 59px, border-radius 15px */
+.m-report-form-page .m-form-footer {
+    padding: 16px 20px;
+}
+
+.m-report-form-page .m-form-save,
+.m-report-form-page .m-form-submit {
+    height: 59px;
+    border-radius: 15px;
+    font-size: 18px;
+}
+
+.m-report-form-page .m-form-save {
+    flex: 0 0 103px;
+    background: #e6e6e6;
+    color: #777;
+}
+
+.m-report-form-page .m-form-submit:not(:disabled) {
+    background: #E6235A;
+}
+
+/* Section title override: Figma 848:18955 specifies 18px semi-bold */
+.m-report-form-page .m-form-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
 }
 
 .m-rcat-chips {
@@ -40,8 +82,18 @@
 }
 
 .m-rcat-chips .m-cat-chip {
-    padding: 8px 18px;
-    font-size: 13px;
+    padding: 6px 14px;
+    font-size: 14px;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    color: #555;
+}
+
+.m-rcat-chips .m-cat-chip.on {
+    background: #E6235A;
+    border-color: #E6235A;
+    color: #fff;
+    font-weight: 700;
 }
 
 .m-row-with-suffix {
@@ -53,15 +105,15 @@
 
 .m-select {
     flex: 0 0 60%;
-    height: 46px;
-    border: 1px solid #d8d8d8;
-    border-radius: 12px;
+    height: 55px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
     padding: 0 14px;
-    font-size: 13px;
+    font-size: 16px;
     font-family: inherit;
     background: #fff;
     appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231a1a1b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='8' viewBox='0 0 24 12' fill='none' stroke='%231a1a1b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='0 0 12 12 24 0'/></svg>");
     background-repeat: no-repeat;
     background-position: right 14px center;
     color: #1a1a1b;
@@ -72,19 +124,19 @@
 .m-select option { color: #1a1a1b; }
 
 .m-row-suffix {
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 400;
     color: #1a1a1b;
     flex-shrink: 0;
 }
 
 .m-row-input {
     width: 100%;
-    height: 46px;
-    border: 1px solid #d8d8d8;
-    border-radius: 12px;
+    height: 55px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
     padding: 0 14px;
-    font-size: 13px;
+    font-size: 16px;
     font-family: inherit;
     outline: none;
     background: #fff;

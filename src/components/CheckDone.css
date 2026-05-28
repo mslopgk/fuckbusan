@@ -26,23 +26,25 @@
 }
 
 .done-title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
     color: #E6235A;
     margin: 0 0 16px 0;
+    letter-spacing: -0.04em;
 }
 
 .done-subtitle {
     font-size: 20px;
     font-weight: 700;
-    color: #111;
-    margin: 0 0 12px 0;
+    color: #242424;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.04em;
 }
 
 .done-description {
-    font-size: 16px;
-    color: #888;
-    line-height: 1.5;
+    font-size: 14px;
+    color: #737373;
+    line-height: 1.35;
     margin: 0;
 }
 
@@ -53,13 +55,15 @@
 
 .btn-home {
     width: 100%;
-    padding: 16px;
+    height: 56px;
+    padding: 12px;
     border-radius: 8px;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 700;
     color: #fff;
     background-color: #E6235A;
     border: none;
     cursor: pointer;
     font-family: 'GmarketSans', sans-serif;
+    letter-spacing: -0.04em;
 }

@@ -5,6 +5,7 @@ import { API_URL } from '../utils/api';
 
 export default function PCSurveyDetail({ onNavigate, survey }) {
     const [fullSurvey, setFullSurvey] = useState(null);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const id = survey?.id;
@@ -24,10 +25,26 @@ export default function PCSurveyDetail({ onNavigate, survey }) {
         ...enriched,
     };
 
-    const handleCopy = () => {
+    const handleCopy = async () => {
+        const lines = [data.title];
+        if (data.period || data.end_date) lines.push(`조사기간: ${data.period || data.end_date}`);
+        if (data.duration || data.minutes) lines.push(`응답시간: ${data.duration || `${data.minutes}분`}`);
+        if (data.description) lines.push(`내용: ${data.description}`);
+        const text = lines.join('\n');
         try {
-            navigator.clipboard.writeText(window.location.href);
-        } catch (_) {}
+            await navigator.clipboard.writeText(text);
+        } catch {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0.01;pointer-events:none;';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try { document.execCommand('copy'); } catch {}
+            document.body.removeChild(ta);
+        }
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     return (
@@ -36,8 +53,11 @@ export default function PCSurveyDetail({ onNavigate, survey }) {
                 <div className="pc-purple-banner pc-banner-tall">
                     <h1 className="pc-banner-title">{data.title}</h1>
                     <button className="pc-banner-copy-btn" onClick={handleCopy}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        복사하기
+                        {copied
+                            ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        }
+                        {copied ? '복사됨' : '복사하기'}
                     </button>
                 </div>
 

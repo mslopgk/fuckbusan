@@ -314,16 +314,20 @@ def submit_survey_response(
     s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
     if not s:
         raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    # 관리자(user_id >= 999990)는 FK 제약 위반 방지를 위해 None 처리
+    safe_user_id = None
     if current_user:
+        safe_user_id = current_user.user_id if current_user.user_id < 999990 else None
+    if safe_user_id is not None:
         existing = db.query(models.SurveyResponse).filter(
             models.SurveyResponse.survey_id == survey_id,
-            models.SurveyResponse.user_id == current_user.user_id,
+            models.SurveyResponse.user_id == safe_user_id,
         ).first()
         if existing:
             raise HTTPException(status_code=409, detail="이미 참여한 설문입니다.")
     resp = models.SurveyResponse(
         survey_id=survey_id,
-        user_id=current_user.user_id if current_user else None,
+        user_id=safe_user_id,
         demographics=payload.demographics,
     )
     db.add(resp)
@@ -367,7 +371,11 @@ def get_survey_results(survey_id: int, db: Session = Depends(get_db)):
         opts = q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else [])
         if q.qtype in ("single", "agree"):
             counter = Counter([a.value for a in answers if a.value])
-            distribution = [{"label": opt, "count": counter.get(opt, 0)} for opt in opts]
+            total_sel = sum(counter.values()) or 1
+            distribution = [
+                {"label": opt, "count": counter.get(opt, 0), "pct": round(counter.get(opt, 0) / total_sel * 100)}
+                for opt in opts
+            ]
             out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
         elif q.qtype == "multi":
             counter = Counter()
@@ -378,7 +386,11 @@ def get_survey_results(survey_id: int, db: Session = Depends(get_db)):
                         counter.update(vals)
                 except Exception:
                     pass
-            distribution = [{"label": opt, "count": counter.get(opt, 0)} for opt in opts]
+            total_sel = sum(counter.values()) or 1
+            distribution = [
+                {"label": opt, "count": counter.get(opt, 0), "pct": round(counter.get(opt, 0) / total_sel * 100)}
+                for opt in opts
+            ]
             out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
         else:
             samples = [a.value for a in answers[:5] if a.value]

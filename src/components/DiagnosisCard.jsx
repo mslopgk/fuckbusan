@@ -43,13 +43,6 @@ const DiagnosisCard = ({ item, onBookmark, onClick, style }) => {
                 </div>
                 <div className="dc-text-info">
                     <div className="dc-title">{item.title}</div>
-                    {/* Place Name - New Field */}
-                    {item.placeName && (
-                        <div className="dc-place-name" style={{ fontSize: '0.875rem', color: '#111', fontWeight: 500, marginBottom: '4px' }}>
-                            {item.placeName}
-                        </div>
-                    )}
-
                     {item.type === 'general' ? (
                         <div className="dc-score-large">{item.score}</div>
                     ) : (
@@ -57,19 +50,14 @@ const DiagnosisCard = ({ item, onBookmark, onClick, style }) => {
                             {item.result === 'suitable' ? '적합' : '부적합'}
                         </div>
                     )}
-
                     <div className="dc-coords">
-                        {/* Address Side by Side with Coords or Just Above */}
-                        <div className="dc-coord-row" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {item.address && (
-                                <div className="dc-address" style={{ color: '#555', fontSize: '0.8125rem', wordBreak: 'keep-all' }}>
-                                    {item.address}
-                                </div>
-                            )}
-                            <div style={{ display: 'flex', gap: '8px', fontSize: '0.75rem', color: '#888' }}>
-                                <span>위도 {Number(item.lat || 0).toFixed(6)}</span>
-                                <span>경도 {Number(item.lng || 0).toFixed(6)}</span>
-                            </div>
+                        <div className="dc-coord-col">
+                            <span className="dc-coord-label">위도</span>
+                            <span className="dc-coord-val">{Number(item.lat || 0).toFixed(7)}</span>
+                        </div>
+                        <div className="dc-coord-col">
+                            <span className="dc-coord-label">경도</span>
+                            <span className="dc-coord-val">{Number(item.lng || 0).toFixed(7)}</span>
                         </div>
                     </div>
                 </div>

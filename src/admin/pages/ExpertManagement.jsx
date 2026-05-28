@@ -26,7 +26,7 @@ export default function ExpertManagement({ onNavigate }) {
                         phone: u.phone_num || '-',
                         address: u.district_code || '-',
                         email: u.ID,
-                        approval: '승인',
+                        approval: u.is_approved ? '승인' : '미승인',
                     })));
                 }
             } catch (error) {
