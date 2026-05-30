@@ -67,9 +67,11 @@ react-router **미사용**. `App.jsx`의 `view` state machine으로 동작. URL�
 
 ## 모바일 하단 네비 (`MobileBottomNav`)
 
-5탭: 홈 / 설문 / 제보·제안 / 진단 / 나의 활동.
+5탭 (순서·구성 확정 — 절대 바꾸지 말 것): **홈 / 설문 / 제보·제안 / 진단 / 나의 활동**
+- Figma 확정 노드: `TCuOzEqNhoLKjhF0reBDks` 파일, node `22:6021`
+- 설문 탭 → `mSurveyList` (가상시민 아님), 아이콘: `nav_survey.svg` / `nav_survey_active.svg`
 - 제보·제안은 chooser dropdown (제보하기 → `mReportMap`, 제안하기 → `mProposalMap`)
-- active 컬러: 홈/설문/제보·제안/나의활동=`#5B2EAB`(보라), 진단=`#06AB69`(녹색)
+- active 컬러: 홈/설문/제보·제안/나의활동=`#5B2EAB`(보라), 진단=`#23bdbb`(청록)
 - PC에선 hidden (`@media (min-width: 1024px) { display: none }`)
 
 ## 핵심 페이지 (제보·제안) — Figma 노드 매핑
