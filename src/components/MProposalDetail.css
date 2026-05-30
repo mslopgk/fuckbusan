@@ -4,14 +4,15 @@
     padding-bottom: 80px;
 }
 
+/* WDC Figma 0:12032: no border on topbar, category tag inside content area */
 .m-detail-topbar {
     height: 48px;
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 0 12px;
-    border-bottom: 1px solid #ececec;
     background: #fff;
+    /* no border-bottom per WDC spec */
 }
 
 .m-detail-back {
@@ -21,40 +22,44 @@
     cursor: pointer;
 }
 
+/* Category tag in topbar row but part of content flow — below back arrow */
 .m-detail-cat-tag {
     display: inline-flex;
     align-items: center;
-    height: 22px;
+    height: 24px;
     padding: 0 12px;
-    border-radius: 11px;
-    font-size: 12px;
+    border-radius: 15px;
+    font-size: 14px;
     font-weight: 700;
+    letter-spacing: -0.04em;
 }
 
 .m-detail-content {
-    padding: 16px;
+    padding: 0 20px 16px;
 }
 
 .m-detail-title {
     font-size: 18px;
-    font-weight: 800;
-    color: #1a1a1b;
+    font-weight: 500;
+    color: #111;
     margin: 0 0 6px;
     line-height: 1.4;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
 }
 
 .m-detail-author {
-    font-size: 12px;
-    color: #888;
+    font-size: 14px;
+    color: #737373;
     margin: 0 0 18px;
 }
 
 .m-detail-body {
-    font-size: 13px;
-    color: #1a1a1b;
-    line-height: 1.7;
+    font-size: 16px;
+    font-weight: 500;
+    color: #242424;
+    line-height: 1.4;
     margin-bottom: 16px;
+    letter-spacing: -0.04em;
 }
 
 .m-detail-body p { margin: 0 0 6px; }
@@ -75,8 +80,8 @@
 
 .m-detail-image {
     width: 100%;
-    height: 200px;
-    border-radius: 8px;
+    height: 199px;
+    border-radius: 10px;
     background-color: #f4f4f4;
     background-size: cover;
     background-position: center;
@@ -91,10 +96,11 @@
 
 .m-detail-map {
     width: 100%;
-    height: 160px;
-    border-radius: 8px;
+    height: 80px;
+    border-radius: 15px;
     overflow: hidden;
     margin-bottom: 14px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .m-detail-coord-text {
@@ -105,12 +111,19 @@
 
 .m-detail-attachment {
     display: flex;
+    flex-direction: column;
     gap: 6px;
-    align-items: center;
     font-size: 12px;
     color: #555;
-    padding: 8px 0;
+    padding: 8px 0 12px;
     border-bottom: 1px solid #ececec;
+    margin-bottom: 8px;
+}
+
+.m-detail-attachment-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .m-detail-meta-row {
@@ -198,16 +211,18 @@
 
 .m-comment-input {
     flex: 1;
-    height: 38px;
-    border: 1px solid #d8d8d8;
-    border-radius: 19px;
-    padding: 0 14px;
-    font-size: 13px;
+    height: 41px;
+    border: 1px solid #dadada;
+    border-radius: 15px;
+    padding: 0 16px;
+    font-size: 16px;
     font-family: inherit;
     outline: none;
+    color: #737373;
+    letter-spacing: -0.04em;
 }
 
-.m-comment-input:focus { border-color: #E6235A; }
+.m-comment-input:focus { border-color: #E6235A; outline: none; }
 
 .m-comment-send {
     width: 38px;
@@ -222,33 +237,36 @@
     justify-content: center;
 }
 
-/* Footer 투표하기 */
+/* Footer 투표하기 — WDC: shadow on top, no border */
 .m-detail-footer {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     background: #fff;
-    border-top: 1px solid #ececec;
-    padding: 12px 16px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    padding: 18px 20px;
     z-index: 50;
 }
 
+/* WDC Figma 0:12067: outlined button — border 2px #f74e7e, white bg */
 .m-vote-cta {
     width: 100%;
-    height: 50px;
-    border-radius: 25px;
-    background: #E6235A;
-    color: #fff;
-    border: none;
-    font-size: 15px;
+    height: 59px;
+    border-radius: 15px;
+    background: #fff;
+    color: #E6235A;
+    border: 2px solid #E6235A;
+    font-size: 18px;
     font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.25);
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
     font-family: inherit;
+    letter-spacing: -0.04em;
 }
 
 .m-vote-cta.on {
-    background: #16B5B0;
-    box-shadow: 0 4px 12px rgba(22, 181, 176, 0.25);
+    background: #E6235A;
+    color: #fff;
+    border-color: #E6235A;
 }

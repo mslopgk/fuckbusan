@@ -64,6 +64,15 @@
     letter-spacing: -0.02em;
 }
 
+/* Figma: panel handle has no text label — hide it for report list */
+.m-report-list-page .m-prop-panel-handle-label {
+    display: none;
+}
+
+.m-report-list-page .m-prop-panel-handle {
+    height: 24px;
+}
+
 .m-report-sub-tag {
     background: #FCDAE3;
     color: #C2456A;

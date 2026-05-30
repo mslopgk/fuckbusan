@@ -92,6 +92,7 @@ function RadarSection({ title, radarData, avg, count }) {
 export default function MDiagnosisResult({ onNavigate, address = '부산 부산진구 초연로 6', date = null, activeCategory = 'traffic', photo = null, district = null, resultId = null, big = null, mid = null }) {
     const [stats, setStats] = useState({ avg: FALLBACK_TOTAL_AVG, count: FALLBACK_RESPONSES });
     const [resultDetail, setResultDetail] = useState(null);
+    const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
 
     // Fetch individual result for radar data and date
     useEffect(() => {
@@ -162,6 +163,18 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
             .catch(() => {});
     }, []);
 
+    useEffect(() => {
+        if (!photoZoomOpen) return;
+        const onKey = (e) => { if (e.key === 'Escape') setPhotoZoomOpen(false); };
+        document.addEventListener('keydown', onKey);
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.removeEventListener('keydown', onKey);
+            document.body.style.overflow = prevOverflow;
+        };
+    }, [photoZoomOpen]);
+
     return (
         <div className="m-diagres-page">
             <header className="m-diagres-topbar">
@@ -175,6 +188,7 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         <polyline points="15 18 9 12 15 6"/>
                     </svg>
                 </button>
+                <span className="m-diagres-topbar-title">시민 진단 결과</span>
                 <button
                     type="button"
                     className="m-diagres-iconbtn"
@@ -200,7 +214,14 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         <div className="m-diagres-table-value">
                             <div className="m-diagres-thumb">
                                 {displayPhoto ? (
-                                    <img src={displayPhoto} alt="진단 사진" />
+                                    <button
+                                        type="button"
+                                        className="m-diagres-thumb-btn"
+                                        onClick={() => setPhotoZoomOpen(true)}
+                                        aria-label="사진 확대해서 보기"
+                                    >
+                                        <img src={displayPhoto} alt="진단 사진" />
+                                    </button>
                                 ) : (
                                     <div className="m-diagres-thumb-placeholder">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#cccccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -322,6 +343,33 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                     </div>
                 </div>
             </main>
+
+            {photoZoomOpen && displayPhoto && (
+                <div
+                    className="m-diagres-photo-modal"
+                    role="dialog"
+                    aria-label="진단 사진 확대"
+                    onClick={() => setPhotoZoomOpen(false)}
+                >
+                    <button
+                        type="button"
+                        className="m-diagres-photo-close"
+                        onClick={(e) => { e.stopPropagation(); setPhotoZoomOpen(false); }}
+                        aria-label="닫기"
+                    >
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                    <img
+                        src={displayPhoto}
+                        alt="진단 사진 확대"
+                        className="m-diagres-photo-zoom"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
         </div>
     );
 }

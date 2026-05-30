@@ -7,7 +7,7 @@ import { copyToClipboard } from '../utils/clipboard';
 const GENDERS = ['남자', '여자'];
 const AGES = ['20대 미만', '20대', '30대', '40대', '50대 이상'];
 const DEVICES = ['PC', '모바일', '태블릿', '기타'];
-const JOBS = ['학생(초중고생)', '대학교대학원생', '회사원', '전문직', '개인사업자', '기타'];
+const JOBS = ['학생(초중고생)', '대학/대학원생', '회사원', '전문직', '개인사업자', '기타'];
 
 function birthToAgeGroup(birthDate) {
     if (!birthDate) return null;

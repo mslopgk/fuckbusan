@@ -1,6 +1,6 @@
 .m-prop-list-page {
     height: 100vh;
-    background: #ebe5d4;
+    background: #fff;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -94,17 +94,27 @@
 
 /* Handle bar at top of panel */
 .m-prop-panel-handle {
-    height: 52px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     background: #fff;
     border-radius: 16px 16px 0 0;
-    border-bottom: 1px solid #ececec;
     cursor: pointer;
     flex-shrink: 0;
     user-select: none;
+    padding-top: 8px;
+    padding-bottom: 4px;
+    /* No border when fully open — matches Figma's clean list appearance */
+}
+
+/* When collapsed: show border and label */
+.m-prop-list-panel.collapsed .m-prop-panel-handle {
+    height: 52px;
+    border-bottom: 1px solid #ececec;
+    padding-top: 10px;
+    padding-bottom: 0;
 }
 
 .m-prop-handle-bar {
@@ -165,12 +175,17 @@
     background: #e6e6e6;
     border: none;
     border-radius: 20px;
-    padding: 7px 14px;
-    font-size: 14px;
+    padding: 0 14px;
+    height: 33px;
+    font-size: 16px;
     color: #242424;
     cursor: pointer;
     font-family: inherit;
     font-weight: 400;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
 }
 
 .m-cat-chip.on {
@@ -188,7 +203,7 @@
 .m-sort-btn {
     background: none;
     border: none;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     color: #242424;
     display: inline-flex;
@@ -196,6 +211,7 @@
     gap: 4px;
     cursor: pointer;
     font-family: inherit;
+    letter-spacing: -0.04em;
 }
 
 /* Shared tag/author-row classes used by ProposalListCard */

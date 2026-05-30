@@ -2,22 +2,34 @@ import './MProposalDone.css';
 
 function DoneIllustration() {
     return (
-        <svg width="92" height="104" viewBox="0 0 92 104" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect x="8" y="4" width="76" height="96" rx="10" fill="#fff" stroke="#1a1a1b" strokeWidth="4.5"/>
-            <rect x="4" y="4" width="84" height="14" rx="7" fill="#f0f0f0" stroke="#1a1a1b" strokeWidth="4"/>
-            <rect x="4" y="86" width="84" height="14" rx="7" fill="#f0f0f0" stroke="#1a1a1b" strokeWidth="4"/>
-            <circle cx="46" cy="52" r="22" fill="#E6235A"/>
-            <path d="M36 52 L44 60 L57 39" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <div className="m-prop-done-illus" aria-hidden="true">
+            {/* Scroll/document icon — Figma node 0:14117 */}
+            <svg className="m-prop-done-scroll" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clipPath="url(#clip-scroll)">
+                    <path d="M116.999 131.983L37.1785 132C28.5379 132 21.9899 124.764 21.9899 116.305L22.0064 39.5857L4.15236 39.5692C1.79532 39.5692 0.0715925 37.3978 0 35.2044L0.0165213 15.3317C0.0275356 7.07618 6.70766 -0.0165042 15.1611 2.88461e-05L96.1322 0.16536C103.704 0.181893 109.922 7.50053 109.927 14.7971L109.994 92.4199H127.583C130.073 92.4199 131.912 94.3763 131.994 96.7901L131.972 116.652C131.961 124.737 125.463 131.989 116.993 131.989L116.999 131.983ZM22.0064 30.7736V15.0727C21.7972 11.3693 18.8123 8.69642 15.2602 8.77909C11.7852 8.86175 8.81138 11.6503 8.81138 15.3482V30.7846L22.0064 30.7681V30.7736ZM48.5672 92.4144H101.199V15.6844C101.199 11.7826 98.5002 8.85624 94.5516 8.77358H29.397C30.1184 10.7686 30.8013 12.6148 30.8013 14.8688L30.8178 116.845C30.8178 120.587 34.1661 123.276 37.5255 123.221C40.8297 123.166 43.9578 120.465 43.9633 116.889L44.0018 96.8011C44.0844 94.3212 45.8357 92.4144 48.5617 92.4144H48.5672ZM116.977 123.226C120.606 122.896 123.178 120.096 123.183 116.608L123.2 101.215H52.8077V116.608C52.8077 118.906 52.1854 120.995 51.3483 123.226H116.977Z" fill="#1a1a1b"/>
+                </g>
+                <defs>
+                    <clipPath id="clip-scroll"><rect width="132" height="132" fill="white"/></clipPath>
+                </defs>
+            </svg>
+            {/* Pink check circle — Figma node 0:14119, positioned at bottom-right of scroll */}
+            <svg className="m-prop-done-check" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clipPath="url(#clip-check)">
+                    <path d="M53.134 20.1287C50.4345 9.63996 41.5619 1.92707 30.9331 0.31229C21.3349 -1.14638 11.5769 2.57591 5.64091 10.3181C2.11896 14.9136 0.0241737 20.6653 -1.54903e-05 26.8708C-0.0290425 34.3641 2.96558 41.2135 7.85664 46.1896C13.8556 52.2975 22.4911 54.9758 30.9186 53.6878H30.9331C40.6185 52.2048 48.9396 45.6774 52.3309 36.4082C53.4291 33.408 54.0097 30.1882 53.9951 26.8708C53.9855 24.5633 53.6904 22.2996 53.1292 20.1287H53.134ZM29.027 46.3701C18.4999 47.4629 9.01772 39.7207 7.86148 29.1246C6.7004 18.4944 14.2523 8.73256 25.1277 7.62515C35.8871 6.52748 45.2096 14.4794 46.2788 24.9877C47.3673 35.6862 39.6026 45.2724 29.0319 46.3701H29.027Z" fill="#E6235A"/>
+                    <path d="M16.1439 29.8173C14.5716 28.2318 14.6393 25.8023 16.0713 24.3241C17.5033 22.846 19.9755 22.7142 21.5478 24.2656L24.3198 26.9976L32.5974 18.6749C34.0874 17.1772 36.5112 17.304 37.9045 18.6261C39.4526 20.0945 39.6026 22.6167 38.0303 24.1973L26.8258 35.4764C25.3938 36.9155 22.9991 36.7106 21.6639 35.3642L16.1439 29.8124V29.8173Z" fill="#E6235A"/>
+                </g>
+                <defs>
+                    <clipPath id="clip-check"><rect width="54" height="54" fill="white"/></clipPath>
+                </defs>
+            </svg>
+        </div>
     );
 }
 
 export default function MProposalDone({ onNavigate }) {
     return (
         <div className="m-prop-done-page">
-            <div className="m-prop-done-icon" aria-hidden="true">
-                <DoneIllustration />
-            </div>
+            <DoneIllustration />
 
             <h1 className="m-prop-done-title">제안 제출을<br/>완료 하였습니다</h1>
 

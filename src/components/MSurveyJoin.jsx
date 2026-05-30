@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyJoin.css';
 import { API_URL } from '../utils/api';
@@ -105,9 +105,21 @@ export default function MSurveyJoin({ onNavigate, survey }) {
     return (
         <div className="m-survey-join-page">
             <header className="m-join-topbar">
-                <h1 className="m-join-title">설문조사</h1>
-                <div className="m-join-progress">
-                    <div className="m-join-progress-fill" style={{ width: `${progress}%` }} />
+                <div className="m-join-topbar-row">
+                    <button
+                        className="m-join-back"
+                        onClick={() => onNavigate && onNavigate('mSurveyDetail2', survey)}
+                        aria-label="뒤로"
+                        type="button"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                    </button>
+                    <h1 className="m-join-title">설문조사</h1>
+                    <div className="m-join-progress">
+                        <div className="m-join-progress-fill" style={{ width: `${progress}%` }} />
+                    </div>
                 </div>
             </header>
 
@@ -116,7 +128,9 @@ export default function MSurveyJoin({ onNavigate, survey }) {
                     <div style={{ textAlign: 'center', padding: '60px 0', color: '#aaa' }}>불러오는 중...</div>
                 )}
                 {qs.map((q, idx) => (
-                    <section key={q.id} className="m-q-block">
+                    <Fragment key={q.id}>
+                    {idx > 0 && <div className="m-q-divider" />}
+                    <section className="m-q-block">
                         <h3 className="m-q-title">Q{idx + 1}. {q.text}</h3>
 
                         {(q.qtype === 'single' || q.qtype === 'agree') && (
@@ -197,6 +211,7 @@ export default function MSurveyJoin({ onNavigate, survey }) {
                             </div>
                         )}
                     </section>
+                    </Fragment>
                 ))}
             </main>
 

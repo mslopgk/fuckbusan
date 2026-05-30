@@ -100,12 +100,13 @@ export default function MProposalDetail({ onNavigate, proposal }) {
         <div className="m-prop-detail-page">
             <header className="m-detail-topbar">
                 <button className="m-detail-back" onClick={() => onNavigate && onNavigate('mProposalList')}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    <svg width="6.5" height="13" viewBox="0 0 6.5 13" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 1 0.5 6.5 6 12"/></svg>
                 </button>
-                <span className="m-detail-cat-tag" style={{ background: style.bg, color: style.color }}>{data.cat}</span>
             </header>
 
             <div className="m-detail-content">
+                {/* WDC: category tag appears inside content area above title */}
+                <span className="m-detail-cat-tag" style={{ background: style.bg, color: style.color, display: 'inline-flex', marginBottom: 10 }}>{data.cat}</span>
                 <h1 className="m-detail-title">{data.title}</h1>
                 <p className="m-detail-author">{data.author}</p>
 
@@ -134,24 +135,32 @@ export default function MProposalDetail({ onNavigate, proposal }) {
                         accentColor="#E6235A"
                     />
                 </div>
-                <p className="m-detail-coord-text">📍 위도 {(data.lat ?? 0).toFixed(4)}, 경도 {(data.lng ?? 0).toFixed(4)}</p>
-
                 {(proposal?.files?.length > 0) && (
                     <div className="m-detail-attachment">
-                        {proposal.files.map((f, i) => (
-                            <div key={i}>
-                                <span>📎</span>
-                                <span>{typeof f === 'string' ? f : (f.name || f.url || f)}</span>
-                            </div>
-                        ))}
+                        {proposal.files.map((f, i) => {
+                            const name = typeof f === 'string' ? f.split('/').pop() : (f.name || f.url || String(f));
+                            return (
+                                <div key={i} className="m-detail-attachment-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                                    <span>{name}</span>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
 
                 <div className="m-detail-meta-row">
                     <span className="m-detail-meta-left">{data.date} · 조회수 {views}</span>
                     <span className="m-detail-meta-icons">
-                        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg> {votes}</span>
-                        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> {comments.length}</span>
+                        {/* WDC: heart icon for votes */}
+                        <span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#bfbfbf" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            {votes}
+                        </span>
+                        <span>
+                            <svg width="14" height="12" viewBox="0 0 24 20" fill="none" stroke="#bfbfbf" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            {comments.length}
+                        </span>
                     </span>
                 </div>
 

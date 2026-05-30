@@ -126,32 +126,7 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
             </header>
 
             <main className="m-diagform-body">
-                <p className="m-diagform-subtitle">우리동네 개선 아이디어를 진단해보세요.</p>
-
-                {/* 위치 정보 */}
-                <section className="m-diagform-section">
-                    <h2 className="m-diagform-label">진단 위치</h2>
-                    {location ? (
-                        <div className="m-diagform-location-badge">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06AB69" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 13 8 13s8-7.75 8-13a8 8 0 0 0-8-8z"/>
-                            </svg>
-                            <span>
-                                {location.address || (location.district ? `${location.district}` : '선택된 위치')}
-                            </span>
-                            <button
-                                type="button"
-                                className="m-diagform-location-change"
-                                onClick={() => onNavigate?.('mDiagnosisList')}
-                            >변경</button>
-                        </div>
-                    ) : (
-                        <div className="m-diagform-location-empty">
-                            위치가 선택되지 않았습니다.
-                            <button type="button" className="m-diagform-location-change" onClick={() => onNavigate?.('mDiagnosisList')}>지도에서 선택</button>
-                        </div>
-                    )}
-                </section>
+                <p className="m-diagform-subtitle">우리동네 개선 아이디어를<br />진단해보세요.</p>
 
                 {/* 사진 등록 */}
                 <section className="m-diagform-section">

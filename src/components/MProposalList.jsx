@@ -33,14 +33,15 @@ function ProposalListCard({ it, onNavigate }) {
                 <div className="m-report-author-stat-row">
                     <p className="m-prop-author">{author}</p>
                     <div className="m-prop-stats">
+                        {/* WDC 0:11429: heart icon for votes */}
                         <span>
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
-                                <polyline points="20 6 9 17 4 12"/>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                             </svg>
                             {it.likes_count ?? 0}
                         </span>
                         <span>
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
+                            <svg width="14" height="12" viewBox="0 0 24 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                             </svg>
                             {it.comments_count ?? 0}
@@ -176,9 +177,9 @@ export default function MProposalList({ onNavigate }) {
             <div className={`m-prop-list-panel${listOpen ? '' : ' collapsed'}`}>
                 <div className="m-prop-panel-handle" onClick={() => setListOpen(!listOpen)}>
                     <div className="m-prop-handle-bar" />
-                    <span className="m-prop-panel-handle-label">
-                        {listOpen ? '지도만 보기' : '목록 보기'}
-                    </span>
+                    {!listOpen && (
+                        <span className="m-prop-panel-handle-label">목록 보기</span>
+                    )}
                 </div>
 
                 <div className="m-prop-list-content" onScroll={handleScroll}>

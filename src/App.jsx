@@ -519,6 +519,13 @@ function App() {
                 return;
             }
             setView('myActivityHub');
+        } else if (target === 'mMyActivity') {
+            if (!localStorage.getItem('access_token')) {
+                alert('로그인이 필요한 서비스입니다.');
+                setView('login');
+                return;
+            }
+            setView('mMyActivity');
         } else if (target === 'myReportList' || target === 'myReports') {
             if (!localStorage.getItem('access_token')) {
                 alert('로그인이 필요한 서비스입니다.');
@@ -615,6 +622,11 @@ function App() {
         } else if (target === 'mDiagnosisList') {
             setView('mDiagnosisList');
         } else if (target === 'mDiagnosisForm') {
+            if (!localStorage.getItem('access_token')) {
+                alert('로그인이 필요한 서비스입니다.');
+                setView('login');
+                return;
+            }
             if (data) setSelectedReport(data);
             setView('mDiagnosisForm');
         } else if (target === 'mDiagnosisDetail') {
@@ -1089,9 +1101,18 @@ function App() {
                     <MyPage onBack={() => setView('home')} />
                 )}
                 {view === 'myActivityHub' && (
-                    <MyActivityHub 
-                        onBack={() => setView('home')} 
+                    <MyActivityHub
+                        onBack={() => setView('home')}
                         onNavigate={onNavigate}
+                    />
+                )}
+                {view === 'mMyActivity' && (
+                    <MyActivity
+                        onBack={() => setView('myActivityHub')}
+                        onEdit={(item) => {
+                            setEditData(item);
+                            setView('mDiagnosisList');
+                        }}
                     />
                 )}
                 {view === 'myReportList' && (

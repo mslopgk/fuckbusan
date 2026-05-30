@@ -1,7 +1,9 @@
 import { useState, useRef } from 'react';
 
-export function useSwipeSheet(initialExpanded = false) {
-    const [expanded, setExpanded] = useState(initialExpanded);
+const SNAPS = ['collapsed', 'mid', 'full'];
+
+export function useSwipeSheet(initial = 'mid') {
+    const [snap, setSnap] = useState(initial);
     const startYRef = useRef(0);
     const startTRef = useRef(0);
 
@@ -15,13 +17,13 @@ export function useSwipeSheet(initialExpanded = false) {
         const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
         const dy = y - startYRef.current;
         const dt = Date.now() - startTRef.current;
-        if (Math.abs(dy) < 24 && dt < 250) {
-            setExpanded((v) => !v);
-            return;
-        }
-        if (dy < -40) setExpanded(true);
-        else if (dy > 40) setExpanded(false);
+        const idx = SNAPS.indexOf(snap);
+
+        if (Math.abs(dy) < 20 && dt < 250) return;
+
+        if (dy < -50) setSnap(SNAPS[Math.min(idx + 1, SNAPS.length - 1)]);
+        else if (dy > 50) setSnap(SNAPS[Math.max(idx - 1, 0)]);
     };
 
-    return { expanded, setExpanded, onTouchStart, onTouchEnd };
+    return { snap, setSnap, onTouchStart, onTouchEnd };
 }

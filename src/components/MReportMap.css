@@ -62,13 +62,17 @@
     border-color: #E6235A;
 }
 
-/* Expanded state: hide standalone FAB (sheet's own FAB takes over) */
-.m-rmap-page.expanded .m-rmap-fab {
-    display: none;
-}
+/* 3-state sheet heights */
+.m-rmap-page.sheet-peek .m-map-sheet { height: 80px; overflow: hidden; }
+.m-rmap-page.sheet-half .m-map-sheet { height: 48vh; }
+.m-rmap-page.sheet-full .m-map-sheet { height: calc(100vh - 76px); border-radius: 0; }
 
-/* When sheet is expanded, show FAB inside sheet context */
-.m-rmap-page.expanded .m-map-sheet.expanded .m-prop-fab {
+/* Full mode: hide search bar + standalone FAB */
+.m-rmap-page.sheet-full .m-map-search-bar { display: none; }
+.m-rmap-page.sheet-full .m-rmap-fab { display: none; }
+
+/* Full mode: FAB inside sheet context */
+.m-rmap-page.sheet-full .m-map-sheet .m-prop-fab {
     display: flex;
     position: fixed;
     right: 16px;
@@ -77,3 +81,25 @@
     background: #E6235A;
     box-shadow: 0 4px 16px rgba(230, 35, 90, 0.25);
 }
+
+/* 내 위치 FAB — 시트 바로 위 지도 영역 우하단 */
+.m-locate-fab {
+    position: fixed;
+    right: 16px;
+    z-index: 40;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #ececec;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: bottom 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+    color: #333;
+}
+
+.m-rmap-page.sheet-peek .m-locate-fab { bottom: 172px; }
+.m-rmap-page.sheet-half .m-locate-fab { bottom: calc(48vh + 92px); }

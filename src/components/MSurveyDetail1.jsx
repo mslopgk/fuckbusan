@@ -18,9 +18,17 @@ export default function MSurveyDetail1({ onNavigate, survey }) {
     }, [survey?.id]);
 
     const enriched = { ...(survey || {}), ...(fullSurvey || {}) };
+
+    // Format period to show ~end_date (Figma: "~2026-05-30")
+    const formatPeriodEnd = (period) => {
+        if (!period) return '';
+        const parts = period.split('~');
+        return parts.length >= 2 ? `~${parts[1].trim()}` : period;
+    };
+
     const data = {
         title: enriched.title || '',
-        period: enriched.period || enriched.end_date || '',
+        period: formatPeriodEnd(enriched.period || enriched.end_date || ''),
         minutes: enriched.minutes || 10,
         intro: enriched.description || enriched.intro || '',
     };

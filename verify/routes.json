@@ -1,7 +1,10 @@
 {
   "baseUrl": "http://localhost:8501",
   "apiUrl": "http://localhost:8000",
-  "viewport": { "width": 390, "height": 844 },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
   "views": [
     {
       "id": "home",
@@ -38,7 +41,10 @@
       "path": "/",
       "auth": false,
       "waitFor": "body",
-      "viewport": { "width": 1280, "height": 800 }
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "proposalList",
@@ -46,7 +52,10 @@
       "path": "/",
       "auth": false,
       "waitFor": "body",
-      "viewport": { "width": 1280, "height": 800 }
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "myPage",
@@ -54,7 +63,10 @@
       "path": "/",
       "auth": true,
       "waitFor": "body",
-      "viewport": { "width": 1280, "height": 800 }
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "diagnosis",
@@ -97,7 +109,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-survey-list-page",
-      "viewport": { "width": 1280, "height": 800 }
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "pcSurveyDetail",
@@ -105,9 +120,18 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-survey-detail-page",
-      "viewport": { "width": 1280, "height": 900 },
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
       "sessionSeed": {
-        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
       }
     },
     {
@@ -116,9 +140,18 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-survey-consent-page",
-      "viewport": { "width": 1280, "height": 1000 },
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
       "sessionSeed": {
-        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
       }
     },
     {
@@ -127,9 +160,18 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-survey-join-page",
-      "viewport": { "width": 1280, "height": 1000 },
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
       "sessionSeed": {
-        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
       }
     },
     {
@@ -138,9 +180,18 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-survey-done-page",
-      "viewport": { "width": 1280, "height": 800 },
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
       "sessionSeed": {
-        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
       }
     },
     {
@@ -149,9 +200,19 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-survey-results-page",
-      "viewport": { "width": 1280, "height": 1000 },
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
       "sessionSeed": {
-        "selectedSurvey": { "id": 3, "title": "공공디자인 만족도 조사", "minutes": 10, "period": "2026-05-01 ~ 2026-05-18", "status": "result", "response_count": 79 }
+        "selectedSurvey": {
+          "id": 3,
+          "title": "공공디자인 만족도 조사",
+          "minutes": 10,
+          "period": "2026-05-01 ~ 2026-05-18",
+          "status": "result",
+          "response_count": 79
+        }
       }
     },
     {
@@ -160,7 +221,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-diag-page",
-      "viewport": { "width": 1280, "height": 800 }
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "pcReportMap",
@@ -168,7 +232,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-map3-page",
-      "viewport": { "width": 1280, "height": 800 }
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "pcProposeMap",
@@ -176,7 +243,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-map3-page",
-      "viewport": { "width": 1280, "height": 800 }
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "pcDiagnosisForm",
@@ -253,7 +323,26 @@
       "view": "mReportDetail",
       "path": "/",
       "auth": false,
-      "waitFor": ".m-report-detail-page"
+      "waitFor": ".m-report-detail-page",
+      "sessionSeed": {
+        "selectedReport": {
+          "id": 1,
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "content": "골목쓰레기통 주변 안전 관리가 필요합니다.",
+          "category": "주거",
+          "sub_category": "골목쓰레기통",
+          "region": "동래구",
+          "author": "동래구 우리디자이너",
+          "authorRegion": "동래구 수안동",
+          "created_at": "2026.03.13",
+          "views": 333,
+          "likes": 12,
+          "comments": 12,
+          "lat": 35.197,
+          "lng": 129.063,
+          "progress_step": 2
+        }
+      }
     },
     {
       "id": "mReportDone",
@@ -304,7 +393,13 @@
       "auth": false,
       "waitFor": ".m-survey-join-page",
       "sessionSeed": {
-        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
       }
     },
     {
@@ -314,7 +409,13 @@
       "auth": false,
       "waitFor": ".m-survey-done-page",
       "sessionSeed": {
-        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
       }
     },
     {
@@ -324,7 +425,13 @@
       "auth": false,
       "waitFor": ".m-survey-detail-page",
       "sessionSeed": {
-        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
       }
     },
     {
@@ -334,7 +441,13 @@
       "auth": false,
       "waitFor": ".m-survey-detail-page",
       "sessionSeed": {
-        "selectedSurvey": { "id": 1, "title": "사직구장 일대 보행환경 현황 조사", "minutes": 10, "period": "2026-04-24 ~ 2026-05-24", "status": "active" }
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
       }
     },
     {
@@ -344,7 +457,14 @@
       "auth": false,
       "waitFor": ".m-survey-results-page",
       "sessionSeed": {
-        "selectedSurvey": { "id": 3, "title": "공공디자인 만족도 조사", "minutes": 10, "period": "2026-05-01 ~ 2026-05-18", "status": "result", "response_count": 79 }
+        "selectedSurvey": {
+          "id": 3,
+          "title": "공공디자인 만족도 조사",
+          "minutes": 10,
+          "period": "2026-05-01 ~ 2026-05-18",
+          "status": "result",
+          "response_count": 79
+        }
       }
     },
     {
@@ -423,7 +543,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pc-ai-citizen",
-      "viewport": { "width": 1280, "height": 800 }
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "mAICitizen",
@@ -434,49 +557,372 @@
     }
   ],
   "apiChecks": [
-    { "id": "health-root", "method": "GET", "path": "/", "expectStatus": [200, 404] },
-    { "id": "auth-login-options", "method": "OPTIONS", "path": "/auth/login", "expectStatus": [200, 405] },
-    { "id": "dashboard-summary", "method": "GET", "path": "/dashboard/summary", "expectStatus": [200, 401, 422] },
-    { "id": "checklist-categories", "method": "GET", "path": "/checklist/categories", "expectStatus": [200, 401, 404] },
-
-    { "id": "home-stats", "method": "GET", "path": "/api/home/stats", "expectStatus": [200], "expectBody": { "minLength": 30 } },
-    { "id": "home-citizens", "method": "GET", "path": "/api/home/citizens", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
-    { "id": "home-archives", "method": "GET", "path": "/api/home/archives", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
-
-    { "id": "reports-full", "method": "GET", "path": "/api/reports/full", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
-    { "id": "reports-clusters", "method": "GET", "path": "/api/reports/clusters", "expectStatus": [200], "expectBody": { "isArray": true } },
-    { "id": "reports-list", "method": "GET", "path": "/api/reports/list", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
-    { "id": "proposals-list", "method": "GET", "path": "/api/reports/proposals", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
-
-    { "id": "surveys-list", "method": "GET", "path": "/api/surveys/list", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
-    { "id": "surveys-list-active", "method": "GET", "path": "/api/surveys/list?tab=active", "expectStatus": [200], "expectBody": { "isArray": true } },
-    { "id": "surveys-list-result", "method": "GET", "path": "/api/surveys/list?tab=result", "expectStatus": [200], "expectBody": { "isArray": true } },
-    { "id": "survey-detail", "method": "GET", "path": "/api/surveys/1", "expectStatus": [200, 404] },
-
-    { "id": "checklist-list", "method": "GET", "path": "/checklist/list", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } },
-    { "id": "checklist-clusters", "method": "GET", "path": "/checklist/clusters", "expectStatus": [200], "expectBody": { "isArray": true } },
-    { "id": "checklist-aggregate", "method": "GET", "path": "/checklist/aggregate", "expectStatus": [200], "expectBody": { "isArray": true } },
-
-    { "id": "admin-stats", "method": "GET", "path": "/api/admin/stats", "expectStatus": [401, 403] },
-    { "id": "admin-recent", "method": "GET", "path": "/api/admin/recent-activity", "expectStatus": [401, 403] },
-    { "id": "admin-trends", "method": "GET", "path": "/api/admin/trends?metric=reports&period=month", "expectStatus": [401, 403] },
-    { "id": "admin-category-distribution", "method": "GET", "path": "/api/admin/category-distribution?target=reports", "expectStatus": [401, 403] },
-    { "id": "admin-leaderboard", "method": "GET", "path": "/api/admin/district-leaderboard", "expectStatus": [401, 403] },
-    { "id": "admin-users", "method": "GET", "path": "/api/admin/users", "expectStatus": [401, 403] },
-    { "id": "admin-proposals", "method": "GET", "path": "/api/admin/proposals", "expectStatus": [401, 403] },
-    { "id": "admin-activity-logs", "method": "GET", "path": "/api/admin/activity-logs", "expectStatus": [401, 403] },
-
-    { "id": "notifications-list", "method": "GET", "path": "/api/notifications", "expectStatus": [401, 403] },
-    { "id": "notifications-unread", "method": "GET", "path": "/api/notifications/unread-count", "expectStatus": [401, 403] },
-
-    { "id": "search-empty", "method": "GET", "path": "/api/search?q=", "expectStatus": [200], "expectBody": { "isArray": true } },
-    { "id": "search-keyword", "method": "GET", "path": "/api/search?q=%EB%B6%80%EC%82%B0", "expectStatus": [200], "expectBody": { "isArray": true } },
-    { "id": "search-suggest", "method": "GET", "path": "/api/search/suggest?q=%EA%B0%9C%EC%84%A0", "expectStatus": [200], "expectBody": { "isArray": true } },
-
-    { "id": "checklist-summary", "method": "GET", "path": "/checklist/summary", "expectStatus": [200], "expectBody": { "isArray": true } },
-    { "id": "checklist-recommendations", "method": "GET", "path": "/checklist/recommendations", "expectStatus": [200] },
-    { "id": "checklist-template-general", "method": "GET", "path": "/checklist/templates?mode=general", "expectStatus": [200] },
-    { "id": "checklist-template-expert", "method": "GET", "path": "/checklist/templates?mode=expert", "expectStatus": [200] },
-    { "id": "comprehensive-survey", "method": "GET", "path": "/checklist/comprehensive-survey", "expectStatus": [200], "expectBody": { "isArray": true, "minItems": 1 } }
+    {
+      "id": "health-root",
+      "method": "GET",
+      "path": "/",
+      "expectStatus": [
+        200,
+        404
+      ]
+    },
+    {
+      "id": "auth-login-options",
+      "method": "OPTIONS",
+      "path": "/auth/login",
+      "expectStatus": [
+        200,
+        405
+      ]
+    },
+    {
+      "id": "dashboard-summary",
+      "method": "GET",
+      "path": "/dashboard/summary",
+      "expectStatus": [
+        200,
+        401,
+        422
+      ]
+    },
+    {
+      "id": "checklist-categories",
+      "method": "GET",
+      "path": "/checklist/categories",
+      "expectStatus": [
+        200,
+        401,
+        404
+      ]
+    },
+    {
+      "id": "home-stats",
+      "method": "GET",
+      "path": "/api/home/stats",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "minLength": 30
+      }
+    },
+    {
+      "id": "home-citizens",
+      "method": "GET",
+      "path": "/api/home/citizens",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "home-archives",
+      "method": "GET",
+      "path": "/api/home/archives",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "reports-full",
+      "method": "GET",
+      "path": "/api/reports/full",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "reports-clusters",
+      "method": "GET",
+      "path": "/api/reports/clusters",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "reports-list",
+      "method": "GET",
+      "path": "/api/reports/list",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "proposals-list",
+      "method": "GET",
+      "path": "/api/reports/proposals",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "surveys-list",
+      "method": "GET",
+      "path": "/api/surveys/list",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "surveys-list-active",
+      "method": "GET",
+      "path": "/api/surveys/list?tab=active",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "surveys-list-result",
+      "method": "GET",
+      "path": "/api/surveys/list?tab=result",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "survey-detail",
+      "method": "GET",
+      "path": "/api/surveys/1",
+      "expectStatus": [
+        200,
+        404
+      ]
+    },
+    {
+      "id": "checklist-list",
+      "method": "GET",
+      "path": "/checklist/list",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "checklist-clusters",
+      "method": "GET",
+      "path": "/checklist/clusters",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "checklist-aggregate",
+      "method": "GET",
+      "path": "/checklist/aggregate",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "admin-stats",
+      "method": "GET",
+      "path": "/api/admin/stats",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-recent",
+      "method": "GET",
+      "path": "/api/admin/recent-activity",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-trends",
+      "method": "GET",
+      "path": "/api/admin/trends?metric=reports&period=month",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-category-distribution",
+      "method": "GET",
+      "path": "/api/admin/category-distribution?target=reports",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-leaderboard",
+      "method": "GET",
+      "path": "/api/admin/district-leaderboard",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-users",
+      "method": "GET",
+      "path": "/api/admin/users",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-proposals",
+      "method": "GET",
+      "path": "/api/admin/proposals",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-activity-logs",
+      "method": "GET",
+      "path": "/api/admin/activity-logs",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "notifications-list",
+      "method": "GET",
+      "path": "/api/notifications",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "notifications-unread",
+      "method": "GET",
+      "path": "/api/notifications/unread-count",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "search-empty",
+      "method": "GET",
+      "path": "/api/search?q=",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "search-keyword",
+      "method": "GET",
+      "path": "/api/search?q=%EB%B6%80%EC%82%B0",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "search-suggest",
+      "method": "GET",
+      "path": "/api/search/suggest?q=%EA%B0%9C%EC%84%A0",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "checklist-summary",
+      "method": "GET",
+      "path": "/checklist/summary",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "checklist-recommendations",
+      "method": "GET",
+      "path": "/checklist/recommendations",
+      "expectStatus": [
+        200
+      ]
+    },
+    {
+      "id": "checklist-template-general",
+      "method": "GET",
+      "path": "/checklist/templates?mode=general",
+      "expectStatus": [
+        200
+      ]
+    },
+    {
+      "id": "checklist-template-expert",
+      "method": "GET",
+      "path": "/checklist/templates?mode=expert",
+      "expectStatus": [
+        200
+      ]
+    },
+    {
+      "id": "comprehensive-survey",
+      "method": "GET",
+      "path": "/checklist/comprehensive-survey",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    }
   ]
 }

@@ -5,7 +5,7 @@ import { API_URL } from '../utils/api';
 
 const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, userCreatedReports, updatedReportsMap }) => {
     const [activeTab, setActiveTab] = useState('mine'); // 'mine' | 'likes'
-    const [statusFilter, setStatusFilter] = useState('검토중');
+    const [statusFilter, setStatusFilter] = useState('접수');
     const [serverReports, setServerReports] = useState([]);
     const [myServerReports, setMyServerReports] = useState([]);
 
@@ -51,8 +51,12 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
         // 1. Tab filter
         if (activeTab === 'likes') return likedIds && likedIds.has(report.id);
         
-        // 2. Status filter
-        return report.status === statusFilter || (statusFilter === '검토완료' && report.progress_step >= 3);
+        // 2. Status filter — map by progress_step (backend default: progress_step=1, status='개선예정')
+        const step = report.progress_step ?? 1;
+        if (statusFilter === '접수') return step === 1;
+        if (statusFilter === '검토중') return step === 2;
+        if (statusFilter === '검토완료') return step >= 3;
+        return true;
     });
 
     return (

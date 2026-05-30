@@ -9,47 +9,63 @@
     text-align: center;
 }
 
-.m-prop-done-icon {
+/* Illustration container — scroll + check circle layered */
+.m-prop-done-illus {
+    position: relative;
     width: 132px;
     height: 132px;
     margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Scroll document SVG fills the container */
+.m-prop-done-scroll {
+    width: 132px;
+    height: 132px;
+    display: block;
+}
+
+/* Pink check circle — WDC Figma 0:14119: left=40px, top=26px within 132px scroll container */
+.m-prop-done-check {
+    position: absolute;
+    width: 54px;
+    height: 54px;
+    left: 40px;
+    top: 26px;
 }
 
 .m-prop-done-title {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 800;
-    color: #1a1a1b;
+    color: #242424;
     margin: 0 0 36px;
     line-height: 1.4;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
+    text-align: center;
 }
 
 .m-prop-done-actions {
-    width: 100%;
-    max-width: 320px;
+    width: 291px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .m-prop-done-primary,
 .m-prop-done-secondary {
-    height: 52px;
-    border-radius: 26px;
+    height: 59px;
+    border-radius: 15px;
     border: none;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 800;
     cursor: pointer;
     font-family: inherit;
+    letter-spacing: -0.04em;
 }
 
 .m-prop-done-primary {
     background: #E6235A;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.3);
 }
 
 .m-prop-done-secondary {

@@ -58,7 +58,7 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
                     {/* My Diagnosis Button */}
                     <button
                         className="ma-hub-card diagnosis"
-                        onClick={() => onNavigate('myActivity')}
+                        onClick={() => onNavigate('mMyActivity')}
                     >
                         <div className="ma-hub-card-icon">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

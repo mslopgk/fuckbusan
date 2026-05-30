@@ -178,8 +178,8 @@ export default function MProposalForm({ onNavigate }) {
         <div className="m-prop-form-page">
             <header className="m-form-topbar">
                 <button className="m-form-back" onClick={() => onNavigate && onNavigate('mProposalList')}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                    <span>목록으로</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span>홈으로</span>
                 </button>
             </header>
 
@@ -231,7 +231,7 @@ export default function MProposalForm({ onNavigate }) {
                             {location || '지도로 위치 설정하기'}
                         </span>
                         <span className="m-form-loc-pin">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="4" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="20"/><line x1="4" y1="12" x2="2" y2="12"/><line x1="22" y1="12" x2="20" y2="12"/><circle cx="12" cy="12" r="2"/></svg>
                         </span>
                     </button>
                 </section>

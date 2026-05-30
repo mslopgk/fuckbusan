@@ -15,7 +15,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 12px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #e6e6e6;
 }
 
 .m-diagres-iconbtn {
@@ -28,6 +28,16 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+}
+
+.m-diagres-topbar-title {
+    flex: 1;
+    text-align: left;
+    font-size: 20px;
+    font-weight: 700;
+    color: #23BDBB;
+    letter-spacing: -0.04em;
+    line-height: 1.4;
 }
 
 /* ───── 본문 ───── */
@@ -45,7 +55,7 @@
     display: flex;
     align-items: center;
     min-height: 32px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #e6e6e6;
 }
 
 .m-diagres-table-row--photo {
@@ -57,25 +67,27 @@
     flex-shrink: 0;
     width: 100px;
     padding: 8px 12px;
-    font-size: 14px;
-    color: #888;
-    font-weight: 400;
-    line-height: 1.5;
+    font-size: 12px;
+    color: #242424;
+    font-weight: 600;
+    line-height: 1.35;
     letter-spacing: -0.02em;
     align-self: stretch;
     display: flex;
     align-items: center;
-    border-right: 1px solid #f0f0f0;
-    background: #fafafa;
+    justify-content: center;
+    text-align: center;
+    border-right: 1px solid #f2f2f2;
+    background: #e6e6e6;
 }
 
 .m-diagres-table-value {
     flex: 1;
     padding: 8px 16px;
-    font-size: 14px;
-    color: #242424;
+    font-size: 12px;
+    color: #737373;
     font-weight: 400;
-    line-height: 1.5;
+    line-height: 1.35;
     letter-spacing: -0.02em;
 }
 
@@ -83,7 +95,7 @@
 .m-diagres-thumb {
     width: 83px;
     height: 90px;
-    border-radius: 4px;
+    border-radius: 8px;
     overflow: hidden;
     background: #f1f2f4;
 }
@@ -92,6 +104,21 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
+}
+
+.m-diagres-thumb-btn {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: zoom-in;
+    display: block;
+}
+
+.m-diagres-thumb-btn:active {
+    opacity: 0.85;
 }
 
 .m-diagres-thumb-placeholder {
@@ -102,11 +129,59 @@
     justify-content: center;
 }
 
+/* ───── 사진 확대 모달 ───── */
+.m-diagres-photo-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+    animation: m-diagres-fade-in 0.18s ease-out;
+}
+
+@keyframes m-diagres-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.m-diagres-photo-zoom {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.m-diagres-photo-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.m-diagres-photo-close:active {
+    background: rgba(0, 0, 0, 0.75);
+}
+
 /* ───── 섹션 행 (레이더차트 포함 행) ───── */
 .m-diagres-section-row {
     display: flex;
     align-items: flex-start;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #e6e6e6;
     min-height: 290px;
 }
 
@@ -114,16 +189,18 @@
     flex-shrink: 0;
     width: 100px;
     padding: 12px;
-    font-size: 14px;
-    color: #888;
-    font-weight: 400;
-    line-height: 1.5;
+    font-size: 12px;
+    color: #242424;
+    font-weight: 600;
+    line-height: 1.35;
     letter-spacing: -0.02em;
-    border-right: 1px solid #f0f0f0;
-    background: #fafafa;
+    border-right: 1px solid #f2f2f2;
+    background: #e6e6e6;
     align-self: stretch;
     display: flex;
     align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .m-diagres-section-content {

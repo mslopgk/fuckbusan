@@ -150,6 +150,7 @@ export default function MReportDetail({ onNavigate, report }) {
                     )}
                 </div>
 
+                <div className="m-rdetail-divider" />
                 <h1 className="m-detail-title">{data.title}</h1>
 
                 {data.body && <p className="m-rdetail-body">{data.body}</p>}
@@ -210,7 +211,6 @@ export default function MReportDetail({ onNavigate, report }) {
                                 <strong>{c.author || '익명'}</strong>
                             </div>
                             <p className="m-rdetail-comment-content">{c.content}</p>
-                            <button type="button" className="m-comment-reply">답글쓰기</button>
                         </li>
                     ))}
                 </ul>
@@ -218,21 +218,17 @@ export default function MReportDetail({ onNavigate, report }) {
 
             <footer className="m-rdetail-stage-bar">
                 <div className="m-rstage-pills-row">
+                    {/* Figma: continuous connector line behind pills */}
+                    <div className="m-rstage-connector" aria-hidden="true" />
                     {STAGES.map((s, i) => (
-                        <div key={s.key} className="m-rstage-step">
-                            <button
-                                type="button"
-                                className={`m-rstage-pill ${i === stageIdx ? 'active' : ''} ${i < stageIdx ? 'done' : ''}`}
-                                onClick={() => handleStageClick(s.key)}
-                            >
-                                {s.label}
-                            </button>
-                            {i < STAGES.length - 1 && (
-                                <span className="m-rstage-sep" aria-hidden="true">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                                </span>
-                            )}
-                        </div>
+                        <button
+                            key={s.key}
+                            type="button"
+                            className={`m-rstage-pill ${i === stageIdx ? 'active' : ''} ${i < stageIdx ? 'done' : ''}`}
+                            onClick={() => handleStageClick(s.key)}
+                        >
+                            {s.label}
+                        </button>
                     ))}
                 </div>
                 {(data.currentStage === 'notice' || report?.improvement_status === '개선완료') && (

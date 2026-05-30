@@ -24,6 +24,8 @@ def push_notification(
     try:
         if user_id is None:
             return None
+        if actor_id is not None and actor_id >= 999990:
+            return None  # admin/system 계정은 알림 발송 주체가 될 수 없음 (FK 없음)
         if actor_id is not None and actor_id == user_id:
             return None
         n = models.Notification(

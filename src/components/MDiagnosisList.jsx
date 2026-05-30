@@ -197,7 +197,7 @@ export default function MDiagnosisList({ onNavigate }) {
 
     return (
         <div className="m-diag-list-page">
-            {/* 헤더 — 흰 배경, 뒤로가기 + 모드명 + 구 드롭다운 */}
+            {/* 헤더 — Figma 22:6281 기준: 뒤로가기 + 모드탭 행 + 구 드롭다운 */}
             <div className="m-diag-header">
                 <div className="m-diag-header-top">
                     <button
@@ -210,9 +210,19 @@ export default function MDiagnosisList({ onNavigate }) {
                             <polyline points="15 18 9 12 15 6"/>
                         </svg>
                     </button>
-                    <span className="m-diag-header-title">
-                        {mode === 'expert' ? '전문가 진단' : '일반 진단'}
-                    </span>
+                </div>
+                {/* 시민/전문가 모드탭 — 헤더 내 타이틀 역할 */}
+                <div className="m-diag-mode-tabs-header">
+                    <button
+                        type="button"
+                        className={`m-diag-mode-tab-header${mode === 'citizen' ? ' active' : ''}`}
+                        onClick={() => setMode('citizen')}
+                    >시민 진단</button>
+                    <button
+                        type="button"
+                        className={`m-diag-mode-tab-header${mode === 'expert' ? ' active' : ''}`}
+                        onClick={() => setMode('expert')}
+                    >전문가 진단</button>
                 </div>
                 <div className="m-diag-district-row">
                     <select
@@ -311,9 +321,9 @@ export default function MDiagnosisList({ onNavigate }) {
                 {kakaoReady && !selectedPin && (
                     <div className="m-diag-crosshair" aria-hidden="true">
                         <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                            <line x1="14" y1="3" x2="14" y2="25" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
-                            <line x1="3" y1="14" x2="25" y2="14" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
-                            <circle cx="14" cy="14" r="3" stroke="#06AB69" strokeWidth="2" fill="none"/>
+                            <line x1="14" y1="3" x2="14" y2="25" stroke="#23BDBB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
+                            <line x1="3" y1="14" x2="25" y2="14" stroke="#23BDBB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
+                            <circle cx="14" cy="14" r="3" stroke="#23BDBB" strokeWidth="2" fill="none"/>
                         </svg>
                     </div>
                 )}
@@ -322,7 +332,7 @@ export default function MDiagnosisList({ onNavigate }) {
                 {kakaoReady && selectedPin && (
                     <div className="m-diag-selected-marker" aria-hidden="true">
                         <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
-                            <path d="M14 0C6.268 0 0 6.268 0 14c0 9.625 14 36 14 36s14-26.375 14-36C28 6.268 21.732 0 14 0z" fill="#06AB69"/>
+                            <path d="M14 0C6.268 0 0 6.268 0 14c0 9.625 14 36 14 36s14-26.375 14-36C28 6.268 21.732 0 14 0z" fill="#23BDBB"/>
                             <circle cx="14" cy="14" r="6" fill="#fff"/>
                         </svg>
                     </div>
@@ -360,20 +370,6 @@ export default function MDiagnosisList({ onNavigate }) {
             {/* 하단 시트 */}
             <div className="m-diag-sheet">
                 <div className="m-diag-sheet-handle" />
-
-                {/* 시민 / 전문가 탭 */}
-                <div className="m-diag-mode-tabs">
-                    <button
-                        type="button"
-                        className={`m-diag-mode-tab${mode === 'citizen' ? ' active' : ''}`}
-                        onClick={() => setMode('citizen')}
-                    >시민 진단</button>
-                    <button
-                        type="button"
-                        className={`m-diag-mode-tab${mode === 'expert' ? ' active' : ''}`}
-                        onClick={() => setMode('expert')}
-                    >전문가 진단</button>
-                </div>
 
                 {/* 카드 리스트 */}
                 <ul className="m-diag-cards" onScroll={handleDiagScroll}>

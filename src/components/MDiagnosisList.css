@@ -46,12 +46,32 @@
     flex-shrink: 0;
 }
 
-.m-diag-header-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #06AB69;
+/* 헤더 내 모드 탭 — Figma 22:6281 기준: 시민 진단(inactive) + 전문가 진단(active bold) */
+.m-diag-mode-tabs-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 0 4px;
+    margin-bottom: 8px;
+}
+
+.m-diag-mode-tab-header {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 16px;
+    font-family: inherit;
+    color: #b0b0b0;
+    cursor: pointer;
     letter-spacing: -0.04em;
     line-height: 1.4;
+}
+
+.m-diag-mode-tab-header.active {
+    font-size: 22px;
+    font-weight: 800;
+    color: #23BDBB;
+    letter-spacing: -0.05em;
 }
 
 .m-diag-district-row {
@@ -115,7 +135,7 @@
 }
 
 .m-diag-cat-chip.active {
-    background: #06AB69;
+    background: #23BDBB;
     color: #fff;
     font-weight: 700;
 }
@@ -154,7 +174,7 @@
     min-width: 42px;
     height: 32px;
     padding: 0 12px;
-    background: #06AB69;
+    background: #23BDBB;
     border: none;
     border-radius: 999px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
@@ -173,12 +193,12 @@
     transform: translate(-50%, -2px) rotate(45deg);
     width: 10px;
     height: 10px;
-    background: #06AB69;
+    background: #23BDBB;
     border-bottom-right-radius: 2px;
 }
 
 .m-diag-pin.focus {
-    box-shadow: 0 0 0 6px rgba(6, 171, 105, 0.20);
+    box-shadow: 0 0 0 6px rgba(35, 189, 187, 0.20);
 }
 
 .m-diag-pin-count {
@@ -234,7 +254,7 @@
 .m-diag-mode-tab.active {
     font-size: 20px;
     font-weight: 700;
-    color: #06AB69;
+    color: #23BDBB;
     letter-spacing: -0.05em;
 }
 
@@ -288,7 +308,7 @@
 .m-diag-tag {
     height: 24px;
     padding: 0 12px;
-    background: #E1F6EC;
+    background: #DFF8F8;
     border-radius: 15px;
     font-size: 14px;
     font-weight: 600;
@@ -309,7 +329,7 @@
 .m-diag-card-name {
     font-size: 20px;
     font-weight: 700;
-    color: #06AB69;
+    color: #23BDBB;
     letter-spacing: -0.05em;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -356,7 +376,7 @@
     padding: 0 16px;
     border: none;
     border-radius: 20px;
-    background: #06AB69;
+    background: #23BDBB;
     color: #fff;
     font-size: 14px;
     font-weight: 700;
@@ -365,7 +385,7 @@
     align-items: center;
     gap: 6px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(6, 171, 105, 0.4);
+    box-shadow: 0 4px 12px rgba(35, 189, 187, 0.4);
     z-index: 5;
     letter-spacing: -0.03em;
 }
@@ -415,7 +435,7 @@
     transform: translate(-50%, -100%);
     z-index: 7;
     pointer-events: none;
-    filter: drop-shadow(0 2px 6px rgba(6,171,105,0.45));
+    filter: drop-shadow(0 2px 6px rgba(35,189,187,0.45));
 }
 
 /* 선택된 주소 표시 */
@@ -425,7 +445,7 @@
     bottom: 118px;
     font-size: 11px;
     color: #fff;
-    background: #06AB69;
+    background: #23BDBB;
     border-radius: 8px;
     padding: 4px 10px;
     z-index: 5;
@@ -433,7 +453,7 @@
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
-    box-shadow: 0 2px 6px rgba(6,171,105,0.3);
+    box-shadow: 0 2px 6px rgba(35,189,187,0.3);
 }
 
 /* 선택된 위치 핀 */
@@ -450,9 +470,9 @@
     height: 18px;
     border-radius: 50% 50% 50% 0;
     transform: rotate(-45deg);
-    background: #06AB69;
+    background: #23BDBB;
     border: 3px solid #fff;
-    box-shadow: 0 2px 8px rgba(6,171,105,0.5);
+    box-shadow: 0 2px 8px rgba(35,189,187,0.5);
 }
 
 /* 빈 상태 */

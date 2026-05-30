@@ -5,14 +5,16 @@
 }
 
 .m-survey-hero {
-    background: #5B2EAB;
-    padding: 0 16px 56px;
+    background: #542AA3;
+    padding: 0 16px 64px;
     color: #fff;
+    min-height: 230px;
 }
 
-/* Detail1/2: 카드가 hero 밖에 있어 응답시간 행까지만 보라영역 */
+/* Detail2: 개인정보 동의 카드 오버랩용 — 더 많은 padding */
 .m-survey-hero.hero-shrunk {
     padding-bottom: 100px;
+    min-height: 230px;
 }
 
 .m-hero-topbar {
@@ -48,11 +50,11 @@
 
 .m-hero-title {
     font-size: 22px;
-    font-weight: 800;
+    font-weight: 600;
     line-height: 1.4;
     text-align: center;
-    margin: 18px 24px 24px;
-    letter-spacing: -0.02em;
+    margin: 32px 24px 24px;
+    letter-spacing: -0.04em;
 }
 
 .m-hero-card {
@@ -62,9 +64,9 @@
     color: #1a1a1b;
 }
 
-/* hero 박스 밖에서 보라/흰 경계를 가로지르는 카드 — 타이틀 아래 작은 overlap */
+/* hero 박스 밖에서 보라/흰 경계를 가로지르는 카드 — Figma: 카드가 hero 영역 안쪽 약 80px부터 시작 */
 .m-hero-card-overlap {
-    margin: -40px 16px 0;
+    margin: -64px 16px 0;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
     position: relative;
     z-index: 2;
@@ -72,73 +74,82 @@
 
 .m-hero-row {
     display: flex;
-    gap: 18px;
-    font-size: 14px;
-    line-height: 1.6;
-    padding: 8px 0;
+    gap: 16px;
+    font-size: 16px;
+    line-height: 2.1;
+    padding: 0;
 }
 
 .m-hero-key {
     flex-shrink: 0;
-    width: 64px;
-    font-weight: 800;
-    color: #1a1a1b;
+    width: 72px;
+    font-weight: 700;
+    color: #111;
+    letter-spacing: -0.04em;
 }
 
 .m-hero-val {
     flex: 1;
-    color: #555;
+    color: #111;
     word-break: keep-all;
+    letter-spacing: -0.04em;
+    font-weight: 500;
 }
 
 /* Body (lead + bullets + cta) */
 .m-survey-body {
-    padding: 24px 20px 40px;
+    padding: 28px 20px 40px;
 }
 
 .m-body-lead {
-    font-size: 13px;
-    color: #1a1a1b;
-    line-height: 1.6;
+    font-size: 16px;
+    color: #111;
+    line-height: 1.4;
     margin: 0 0 18px;
+    letter-spacing: -0.04em;
 }
 
 .m-body-bullets {
     list-style: none;
     margin: 0 0 24px;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
 }
 
 .m-body-bullets li {
     position: relative;
-    padding-left: 18px;
-    font-size: 13px;
-    color: #555;
-    line-height: 1.6;
-    margin-bottom: 10px;
+    padding-left: 22px;
+    font-size: 16px;
+    color: #111;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
 }
 
+/* Figma: small chevron-right bullet */
 .m-body-bullets li::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 8px;
+    top: 6px;
     width: 8px;
-    height: 4px;
-    border-left: 2px solid #5B2EAB;
+    height: 8px;
+    border-right: 2px solid #5B2EAB;
     border-bottom: 2px solid #5B2EAB;
     transform: rotate(-45deg);
 }
 
 .m-body-terms {
     text-align: center;
-    font-size: 12px;
-    color: #777;
+    font-size: 14px;
+    color: #111;
     margin: 0 0 24px;
+    letter-spacing: -0.04em;
 }
 
 .m-body-terms .link {
-    color: #5B2EAB;
+    color: #111;
     text-decoration: underline;
     cursor: pointer;
 }
@@ -146,18 +157,18 @@
 .m-survey-cta {
     display: block;
     margin: 8px auto 0;
-    min-width: 160px;
-    width: 55%;
-    height: 52px;
+    width: 152px;
+    height: 50px;
     border: none;
-    border-radius: 26px;
-    background: #5B2EAB;
+    border-radius: 30px;
+    background: #542AA3;
     color: #fff;
-    font-size: 15px;
-    font-weight: 800;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(91, 46, 171, 0.25);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
     font-family: inherit;
+    letter-spacing: -0.04em;
 }
 
 .m-survey-cta:disabled {
@@ -171,7 +182,7 @@
     font-size: 14px;
     font-weight: 800;
     margin: 0 0 12px;
-    color: #5B2EAB;
+    color: #542AA3;
 }
 
 .m-consent-section {
@@ -234,8 +245,8 @@
 }
 
 .m-consent-radios input[type="radio"]:checked {
-    background: #5B2EAB;
-    border-color: #5B2EAB;
+    background: #542AA3;
+    border-color: #542AA3;
 }
 
 .m-consent-radios input[type="radio"]:checked::after {
@@ -267,7 +278,7 @@
 }
 
 .m-form-radios input[type="radio"]:checked {
-    border-color: #5B2EAB;
+    border-color: #542AA3;
 }
 
 .m-form-radios input[type="radio"]:checked::after {
@@ -278,7 +289,7 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #5B2EAB;
+    background: #542AA3;
 }
 
 /* Form rows */
@@ -286,7 +297,7 @@
     font-size: 16px;
     font-weight: 800;
     color: #1a1a1b;
-    margin: 0 0 18px;
+    margin: 0 0 16px;
     letter-spacing: -0.02em;
 }
 
@@ -296,10 +307,11 @@
 
 .m-form-label {
     display: block;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 700;
     color: #1a1a1b;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
 }
 
 .m-form-label .req { color: #E6235A; }
@@ -314,25 +326,24 @@
 .m-form-radios-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px 16px;
+    gap: 10px 16px;
 }
 
 .m-form-radios-col {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .m-form-radios label {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
+    gap: 8px;
+    font-size: 16px;
     color: #1a1a1b;
     cursor: pointer;
+    letter-spacing: -0.02em;
 }
-
-/* 라디오 스타일은 위쪽 자체개발 블록에서 처리 */
 
 .m-form-input {
     width: 100%;
@@ -340,12 +351,13 @@
     border: 1px solid #d8d8d8;
     border-radius: 8px;
     padding: 0 12px;
-    font-size: 13px;
+    font-size: 14px;
     font-family: inherit;
     outline: none;
+    box-sizing: border-box;
 }
 
-.m-form-input:focus { border-color: #5B2EAB; }
+.m-form-input:focus { border-color: #542AA3; }
 .m-form-input-error { border-color: #E6235A !important; }
 .m-form-error {
     margin: 4px 0 0;

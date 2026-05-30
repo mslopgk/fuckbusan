@@ -1,9 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import MobileBottomNav from './MobileBottomNav';
 import { CAT_STYLES } from './catStyles';
 import { REGIONS, SORTS, REPORT_STAGES as STAGES } from '../constants/mapConstants';
-import { useSwipeSheet } from '../hooks/useSwipeSheet';
 import { RegionSheet, SortSheet, MMapSearchBar } from './MFilterSheets';
 import { API_URL } from '../utils/api';
 import { useLazyImage } from '../hooks/useLazyImage';
@@ -55,6 +54,9 @@ function ReportCard({ it, onNavigate }) {
 // All categories including 교육 (matches Figma 848:19015)
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 
+// 3-state bottom sheet: 'peek' (map-only) | 'half' (default) | 'full' (list-only)
+const SHEET_MODES = ['peek', 'half', 'full'];
+
 export default function MReportMap({ onNavigate }) {
     const [region, setRegion] = useState('부산전체');
     const [regionOpen, setRegionOpen] = useState(false);
@@ -68,7 +70,22 @@ export default function MReportMap({ onNavigate }) {
     const [items, setItems] = useState([]);
     const [mapPins, setMapPins] = useState([]);
     const [selectedPinId, setSelectedPinId] = useState(null);
-    const { expanded, setExpanded, onTouchStart, onTouchEnd } = useSwipeSheet();
+    const [sheetMode, setSheetMode] = useState('half');
+    const mapRef = useRef(null);
+    const touchStartY = useRef(0);
+
+    const expanded = sheetMode === 'full';
+
+    const onTouchStart = (e) => {
+        touchStartY.current = e.touches?.[0]?.clientY ?? e.clientY;
+    };
+    const onTouchEnd = (e) => {
+        const endY = e.changedTouches?.[0]?.clientY ?? e.clientY;
+        const dy = touchStartY.current - endY;
+        const idx = SHEET_MODES.indexOf(sheetMode);
+        if (dy > 40 && idx < SHEET_MODES.length - 1) setSheetMode(SHEET_MODES[idx + 1]);
+        else if (dy < -40 && idx > 0) setSheetMode(SHEET_MODES[idx - 1]);
+    };
 
     // Lightweight pins for map — fetch once on mount, independent of list filters
     useEffect(() => {
@@ -139,7 +156,7 @@ export default function MReportMap({ onNavigate }) {
     const confirmSort = () => { setSort(sortDraft); setSortOpen(false); };
 
     return (
-        <div className={`m-prop-map-page m-rmap-page ${expanded ? 'expanded' : ''}`}>
+        <div className={`m-prop-map-page m-rmap-page sheet-${sheetMode}${expanded ? ' expanded' : ''}`}>
             {/* Top floating search bar — hidden when sheet is fully expanded */}
             <MMapSearchBar
                 value={search}
@@ -150,17 +167,35 @@ export default function MReportMap({ onNavigate }) {
             {/* Full-screen Kakao map */}
             <div className="m-map-canvas">
                 <PCMapCanvas
+                    ref={mapRef}
                     pins={FILTERED_PINS}
                     accentColor="#E6235A"
                     initialCenter={{ lat: 35.1796, lng: 129.0756 }}
                     onPinClick={(pin) => {
                         setSelectedPinId(String(pin.id));
-                        setExpanded(false);
+                        setSheetMode('half');
                     }}
-                    showLocateBtn
                     selectedDistrict={region !== '부산전체' ? region : null}
                 />
             </div>
+
+            {/* 내 위치 FAB — above bottom sheet, outside map canvas z-order */}
+            {sheetMode !== 'full' && (
+                <button
+                    className="m-locate-fab"
+                    onClick={() => mapRef.current?.locateMe?.()}
+                    aria-label="내 위치"
+                    title="내 위치"
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="3"/>
+                        <line x1="12" y1="2" x2="12" y2="5"/>
+                        <line x1="12" y1="19" x2="12" y2="22"/>
+                        <line x1="2" y1="12" x2="5" y2="12"/>
+                        <line x1="19" y1="12" x2="22" y2="12"/>
+                    </svg>
+                </button>
+            )}
 
             {/* Bottom swipeable sheet */}
             <div className={`m-map-sheet ${expanded ? 'expanded' : ''}`}>
@@ -183,8 +218,8 @@ export default function MReportMap({ onNavigate }) {
                             </svg>
                         </span>
                     </button>
-                    {!expanded ? (
-                        <button className="m-sheet-list-btn" onClick={() => setExpanded(true)} aria-label="목록 펼치기">
+                    {sheetMode !== 'full' ? (
+                        <button className="m-sheet-list-btn" onClick={() => setSheetMode('full')} aria-label="목록 펼치기">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="8" y1="6" x2="21" y2="6"/>
                                 <line x1="8" y1="12" x2="21" y2="12"/>
@@ -195,7 +230,7 @@ export default function MReportMap({ onNavigate }) {
                             </svg>
                         </button>
                     ) : (
-                        <button className="m-sheet-list-btn" onClick={() => setExpanded(false)} aria-label="지도보기">
+                        <button className="m-sheet-list-btn" onClick={() => setSheetMode('half')} aria-label="지도보기">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                                 <circle cx="12" cy="10" r="3"/>
@@ -215,8 +250,8 @@ export default function MReportMap({ onNavigate }) {
                     ))}
                 </div>
 
-                {/* Sort + stage chips (expanded only) */}
-                {expanded && (
+                {/* Sort + stage chips (full mode only) */}
+                {sheetMode === 'full' && (
                     <>
                         <div className="m-sort-row">
                             <button className="m-sort-btn" onClick={openSort} type="button">

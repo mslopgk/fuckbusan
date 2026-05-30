@@ -82,18 +82,15 @@
 }
 
 .m-rcat-chips .m-cat-chip {
-    padding: 6px 14px;
+    /* inherits base m-cat-chip: #e6e6e6 bg, no border, border-radius 20px */
+    padding: 7px 14px;
     font-size: 14px;
-    background: #fff;
-    border: 1px solid #d0d0d0;
-    color: #555;
 }
 
 .m-rcat-chips .m-cat-chip.on {
     background: #E6235A;
-    border-color: #E6235A;
     color: #fff;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .m-row-with-suffix {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import { formatDraftDate } from '../utils/format';
 import { API_URL } from '../utils/api';
@@ -24,12 +24,17 @@ export default function MReportForm({ onNavigate }) {
     const [pickedLng, setPickedLng] = useState(129.063);
     const [pickedAddress, setPickedAddress] = useState('');
     const [restoreOpen, setRestoreOpen] = useState(false);
+    const [leaveOpen, setLeaveOpen] = useState(false);
     const [draftMeta, setDraftMeta] = useState(null);
     const [toast, setToast] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [photoUrl, setPhotoUrl] = useState('');
     const [uploading, setUploading] = useState(false);
     const [detailAddr, setDetailAddr] = useState('');
+
+    // ref for use inside popstate handler without stale closure
+    const formStateRef = useRef({});
+    formStateRef.current = { cat, body, location, photoUrl, locationPickerOpen };
 
     useEffect(() => {
         try {
@@ -44,6 +49,41 @@ export default function MReportForm({ onNavigate }) {
             // ignore
         }
     }, []);
+
+    // Mobile hardware back button intercept
+    useEffect(() => {
+        window.history.pushState(null, '');
+        const handlePop = () => {
+            const { cat, body, location, photoUrl, locationPickerOpen } = formStateRef.current;
+            if (locationPickerOpen) {
+                setLocationPickerOpen(false);
+                window.history.pushState(null, '');
+                return;
+            }
+            const hasContent = !!(cat || body.trim() || location || photoUrl);
+            if (hasContent) {
+                setLeaveOpen(true);
+                window.history.pushState(null, '');
+            } else {
+                onNavigate?.('mReportList');
+            }
+        };
+        window.addEventListener('popstate', handlePop);
+        return () => window.removeEventListener('popstate', handlePop);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Auto reverse-geocode when picker opens with no address yet
+    useEffect(() => {
+        if (!locationPickerOpen || pickedAddress) return;
+        if (!window.kakao?.maps?.services) return;
+        const geocoder = new window.kakao.maps.services.Geocoder();
+        geocoder.coord2Address(pickedLng, pickedLat, (result, status) => {
+            if (status === window.kakao.maps.services.Status.OK) {
+                const addr = result[0]?.road_address?.address_name || result[0]?.address?.address_name || '';
+                setPickedAddress(addr);
+            }
+        });
+    }, [locationPickerOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const canSubmit = cat && position && issue && body.trim() && !submitting && !uploading;
 
@@ -73,13 +113,7 @@ export default function MReportForm({ onNavigate }) {
 
     const handleSaveDraft = () => {
         const draft = {
-            cat,
-            position,
-            issue,
-            body,
-            location,
-            pickedLat,
-            pickedLng,
+            cat, position, issue, body, location, pickedLat, pickedLng,
             savedAt: new Date().toISOString(),
         };
         try {
@@ -90,6 +124,14 @@ export default function MReportForm({ onNavigate }) {
             setToast('저장에 실패했습니다');
             setTimeout(() => setToast(''), 1800);
         }
+    };
+
+    const saveDraftSilent = () => {
+        const draft = {
+            cat, position, issue, body, location, pickedLat, pickedLng,
+            savedAt: new Date().toISOString(),
+        };
+        try { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch { /* ignore */ }
     };
 
     const handleRestore = () => {
@@ -149,17 +191,26 @@ export default function MReportForm({ onNavigate }) {
         }
     };
 
+    const handleBackClick = () => {
+        const hasContent = !!(cat || body.trim() || location || photoUrl);
+        if (hasContent) {
+            setLeaveOpen(true);
+        } else {
+            onNavigate?.('mReportList');
+        }
+    };
+
     return (
         <div className="m-prop-form-page m-report-form-page">
             <header className="m-form-topbar">
-                <button className="m-form-back" onClick={() => onNavigate && onNavigate('mReportList')}>
+                <button className="m-form-back" onClick={handleBackClick}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                    <span>목록으로</span>
+                    <span>홈으로</span>
                 </button>
             </header>
 
             <div className="m-form-body">
-                <h1 className="m-form-title">문제 상황이 잘 보이도록<br/>사진을 등록해 주세요</h1>
+                <h1 className="m-form-title" style={{ fontWeight: 700 }}>문제 상황이 잘 보이도록<br/>사진을 등록해 주세요</h1>
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">사진 등록</h3>
@@ -229,7 +280,7 @@ export default function MReportForm({ onNavigate }) {
                     <input
                         type="text"
                         className="m-row-input"
-                        placeholder="상세설명을 작성해주세요"
+                        placeholder="느끼신 점을 자유롭게 작성해 주세요."
                         value={body}
                         onChange={(e) => setBody(e.target.value)}
                     />
@@ -271,6 +322,7 @@ export default function MReportForm({ onNavigate }) {
                             onMapClick={({ lat, lng }) => {
                                 setPickedLat(lat);
                                 setPickedLng(lng);
+                                setPickedAddress('');
                                 if (window.kakao?.maps?.services) {
                                     const geocoder = new window.kakao.maps.services.Geocoder();
                                     geocoder.coord2Address(lng, lat, (result, status) => {
@@ -283,12 +335,15 @@ export default function MReportForm({ onNavigate }) {
                             }}
                         />
                     </div>
-                    <p className="m-loc-picker-help">지도를 클릭하여 위치를 선택해주세요</p>
+                    <p className="m-loc-picker-help">
+                        {pickedAddress ? pickedAddress : '지도를 클릭하여 위치를 선택해주세요'}
+                    </p>
                     <button
                         className="m-loc-picker-confirm"
                         type="button"
+                        disabled={!pickedAddress}
                         onClick={() => {
-                            setLocation(pickedAddress || `위도 ${pickedLat.toFixed(4)}, 경도 ${pickedLng.toFixed(4)}`);
+                            setLocation(pickedAddress);
                             setLocationPickerOpen(false);
                         }}
                     >위치 선택완료</button>
@@ -312,6 +367,38 @@ export default function MReportForm({ onNavigate }) {
                         <div className="m-draft-actions">
                             <button type="button" className="m-draft-btn m-draft-btn-primary" onClick={handleRestore}>불러오기</button>
                             <button type="button" className="m-draft-btn m-draft-btn-ghost" onClick={handleDiscardDraft}>새로 작성하기</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {leaveOpen && (
+                <div className="m-draft-backdrop" onClick={() => setLeaveOpen(false)}>
+                    <div className="m-draft-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="m-draft-icon" aria-hidden="true">
+                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                                <path d="M14 8 H32 L42 18 V46 a2 2 0 0 1 -2 2 H14 a2 2 0 0 1 -2 -2 V10 a2 2 0 0 1 2 -2 z" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="#fff"/>
+                                <path d="M32 8 V18 H42" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="none"/>
+                                <line x1="20" y1="28" x2="34" y2="28" stroke="#E6235A" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="20" y1="34" x2="34" y2="34" stroke="#E6235A" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="20" y1="40" x2="28" y2="40" stroke="#E6235A" strokeWidth="2.5" strokeLinecap="round"/>
+                            </svg>
+                        </div>
+                        <h3 className="m-draft-title">작성중인 제보글을<br/>저장할까요?</h3>
+                        <div className="m-draft-actions">
+                            <button
+                                type="button"
+                                className="m-draft-btn m-draft-btn-primary"
+                                onClick={() => {
+                                    saveDraftSilent();
+                                    onNavigate?.('mReportList');
+                                }}
+                            >저장하기</button>
+                            <button
+                                type="button"
+                                className="m-draft-btn m-draft-btn-ghost"
+                                onClick={() => onNavigate?.('mReportList')}
+                            >저장 안함</button>
                         </div>
                     </div>
                 </div>

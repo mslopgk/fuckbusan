@@ -34,7 +34,7 @@
 
 ## 🟡 P2 — Figma diff 보류
 
-- [ ] **MReportForm 카테고리 4 vs 8개** — Figma `848:18955`는 4개(주거/환경/교통/안전), 코드는 8개. 정책 결정 필요
+- [x] **MReportForm 카테고리 4 vs 8개** — WDC Figma `0:454` 기준 8개 확인. 코드 이미 8개로 일치. (2026-05-30)
 - [x] **MDiagnosisResult 레이아웃** — 테이블 레이아웃 + 레이더차트 4종으로 전면 재작성 완료 (2026-05-28)
 
 ---
@@ -44,11 +44,14 @@
 ### 제보 리스트 (`MReportList.jsx`)
 - [x] 카드 좋아요 토글 인터랙션 (2026-05-06): 하트 클릭 시 active/inactive 아이콘 전환 + 낙관적 카운트 업데이트 + API 호출
 - [x] Figma 전수조사 완료 (2026-05-28): 전체 레이아웃·카드 구조 일치 확인
+- [x] 패널 핸들 텍스트 레이블 숨김 — Figma 기준 핸들바만 표시 (2026-05-30)
 
 ### 제보 폼 (`MReportForm.jsx`)
 - [x] 사진 등록: MReportForm은 이미 구현되어 있었음 확인 (2026-05-21)
 - [x] 임시저장에 location/pickedLat/pickedLng 누락 → 추가 완료 (2026-05-21)
-- [x] back 버튼 → `mReportList` (목록으로) 수정 (2026-05-28)
+- [x] back 버튼 텍스트 "목록으로"→"홈으로" — WDC 0:454 기준 (2026-05-30)
+- [x] 타이틀 font-weight 800→700 수정 (Figma font-bold 기준) (2026-05-30)
+- [x] 텍스트 입력 placeholder "상세설명을 작성해주세요"→"느끼신 점을 자유롭게 작성해 주세요." — WDC 0:496 기준 (2026-05-30)
 
 ### 제보 폼 PC (`PCReportForm.jsx`)
 - [x] 사진 업로드 API 연결 완료 — POST /api/reports/upload 호출 + image_url payload 포함 (2026-05-21)
@@ -61,29 +64,80 @@
 - [ ] cat 태그 색상: Figma 상세화면 노랑, 리스트화면 청록 — 일관성 미정, **정책 결정 대기**
 - [x] 이미지 hero: `report.image` → `background-image` 적용 (없으면 그라데이션 fallback 유지)
 - [ ] 단계바: "결과안내" 외 단계 클릭 가능 여부 미정
+- [x] sub-tag 색상 (상세 topbar): #FCDAE3→#ffc9c9, #C2456A→#242424 — WDC 0:1365 기준 (2026-05-30)
+- [x] cat-tag 폰트: detail topbar에서 12px→14px bold — WDC 0:1364 기준 (2026-05-30)
+- [x] 단계바 연결자: chevron arrow→horizontal line connector — WDC 0:1372 기준 (2026-05-30)
+- [x] 결과 모달 border-radius 16→30px, padding 조정, 제목 20px bold centered — WDC 0:1493/1494 기준 (2026-05-30)
+- [x] 결과 이미지 height 130→95px, radius 12→15px — WDC 0:1496 기준 (2026-05-30)
+- [x] 담당자 코멘트 레이블 13→18px bold, 날짜 11→16px #737373 — WDC 0:1498/1499 기준 (2026-05-30)
+- [x] 결과 본문 텍스트 12→16px — WDC 0:1500 기준 (2026-05-30)
 - [x] 답글쓰기 dead button 제거 (2026-05-21)
 - [x] author 섹션 2-line 레이아웃으로 수정 — Figma 848:19789 기준 (2026-05-28)
 - [x] `created_at` snake_case 필드 매핑 추가 (2026-05-28)
+- [x] author 이름 18px medium, sub 14px gray #737373 (Figma 기준) (2026-05-30)
+- [x] 작성자-제목 사이 divider line 추가 (Figma 기준) (2026-05-30)
+- [x] 지도 미니맵 높이 160px→80px, border-radius 15px, box-shadow 적용 (Figma 848:19789 기준) (2026-05-30)
+
+### 제보 완료 (`MReportDone.jsx`)
+- [x] 일러스트 체크 원 위치: 두루마리 상단 overlay → 두루마리 내부 중앙 centered (Figma 848:20468 기준) (2026-05-30)
+- [x] 타이틀 font-weight 800→700 (Figma 기준) (2026-05-30)
+- [x] 버튼 max-width 291px (Figma 기준) (2026-05-30)
+- [x] secondary 버튼 텍스트 색상 #E6235A→#f74e7e (Figma 기준) (2026-05-30)
+- [x] 두루마리+체크 일러스트 — WDC Figma 0:647 실제 SVG path로 교체 (2026-05-30)
+- [x] primary 버튼 색상 #E6235A→#f74e7e — WDC 0:651 기준 (2026-05-30)
+- [x] secondary 버튼 font-size 18→16px semibold — WDC 0:654 기준 (2026-05-30)
 
 ### 나의 제보 상세 (`MMyReportDetail.jsx`)
 - [x] 댓글 작성 UI 추가 — input + 전송 버튼 + POST /api/reports/{id}/comments (2026-05-21)
 - [x] 답글쓰기 dead button 제거 (2026-05-21)
 
 ### 제안 상세 (`MProposalDetail.jsx`)
-- [ ] cat 태그 색상: Figma `제안상세1~4` variant마다 다름 — 현재 catStyles.js 매핑 검증 필요
+- [ ] cat 태그 색상: Figma `제안상세1~4` variant마다 다름 — 현재 catStyles.js 매핑 검증 필요 (정책 결정 대기)
 - [x] 이미지 hero: `proposal.image` → `background-image` 적용 (없으면 그라데이션 fallback)
-- [ ] 댓글 더 보기 페이지네이션 없음 (Figma `848:18075` long variant)
+- [ ] 댓글 더 보기 페이지네이션 없음 (Figma `848:18075` long variant) (정책 결정 대기)
 - [x] 이미지 표시 수정 — files[0] fallback 추가 (2026-05-21)
 - [x] 답글쓰기 dead button 제거 (2026-05-21)
+- [x] title font-size → 18px medium (WDC 0:12046) (2026-05-30)
+- [x] 첨부파일 표시 스타일 개선 — 이모지 제거, attachment icon + filename (2026-05-30)
+- [x] 좌표 텍스트 "📍 위도..." 제거 — Figma에 없는 요소 (2026-05-30)
+- [x] 투표 버튼 solid→outlined (border 2px #E6235A, white bg) — WDC 0:12067 기준 (2026-05-30)
+- [x] 지도 height 160→80px, border-radius 8→15px, box-shadow 추가 — WDC 0:12062 기준 (2026-05-30)
+- [x] cat 태그 topbar 제거 → content 영역 상단(title 위)으로 이동 — WDC 0:12047 기준 (2026-05-30)
+- [x] body text 13→16px font-weight 500 — WDC 0:12051 기준 (2026-05-30)
+- [x] 투표/댓글 아이콘 checkmark→heart icon + Union comment bubble — WDC 기준 (2026-05-30)
+- [x] 댓글 input height 38→41px, border-radius 19→15px — WDC 0:12039 기준 (2026-05-30)
+- [x] footer topbar border→box-shadow, padding 조정 — WDC 0:12066 기준 (2026-05-30)
 
 ### 제안 폼 (`MProposalForm.jsx`)
 - [x] 사진 업로드 API 연결 — POST /api/reports/upload 호출 + files/image_url payload (2026-05-21)
-- [x] back 버튼 → `mProposalList` (목록으로) 수정 (2026-05-28)
+- [x] back 버튼 텍스트 "목록으로"→"홈으로" — WDC 0:11948 기준 (2026-05-30)
+- [x] 위치정보 아이콘 맵핀 → 크로스헤어 타깃 (Figma TCuOzEqNhoLKjhF0reBDks:0:11900 기준) (2026-05-30)
+- [x] 섹션 타이틀 15px→18px semibold — WDC 0:11903/11921/11923 기준 (2026-05-30)
+- [x] input/textarea border-radius 10→15px, height 46→55px — WDC 0:11926/11927 기준 (2026-05-30)
+- [x] input/textarea font-size 13→16px — WDC 기준 (2026-05-30)
+- [x] placeholder 색상 #b0b0b0→#a6a6a6 — WDC 기준 (2026-05-30)
+- [x] 임시저장 버튼 width 103px, 작성완료 flex:1 — WDC 0:11944/11945 기준 (2026-05-30)
+- [x] 버튼 height 48→59px, border-radius 24→15px — WDC 기준 (2026-05-30)
+- [x] 카테고리 레이블 "산업·일자리"→"산업 및 고용", "문화·여가"→"문화 및 레저", "보건·복지"→"보건 및 복지" — WDC 0:11914/11918/11920 기준 (2026-05-30)
+
+### 제안 완료 (`MProposalDone.jsx`)
+- [x] 일러스트 체크 원 위치: 우하단(-10,-10)→두루마리 위에 오버레이(left=40,top=26) — WDC 0:14119 기준 (2026-05-30)
+- [x] 두루마리 일러스트 실제 Figma SVG 경로 데이터로 교체 (TCuOzEqNhoLKjhF0reBDks:0:14117/14119) (2026-05-30)
+- [x] title 22→24px, buttons height 52→59px, border-radius 26→15px — WDC 0:14112/14113 기준 (2026-05-30)
+- [x] buttons width 291px, gap 10px — WDC 0:14113/14114 기준 (2026-05-30)
+
+### 제안 리스트 (`MProposalList.jsx`)
+- [x] 페이지 배경색 #ebe5d4 → #fff (Figma 기준 흰 배경) (2026-05-30)
+- [x] 패널 핸들 — 리스트 열림 시 레이블 숨김, 핸들바만 최소 노출 (2026-05-30)
+- [x] 카테고리 칩 14→16px, height 33px — WDC 0:11500 기준 (2026-05-30)
+- [x] 정렬 버튼 14→16px — WDC 0:11471 기준 (2026-05-30)
+- [x] 투표 아이콘 checkmark→heart — WDC 기준 (2026-05-30)
 
 ### 제안 지도 (`MProposalMap.jsx`)
 - [x] 정렬(최신/조회/투표) 실제 반영 — useMemo에 sort 로직 추가 (2026-05-21)
 - [x] 카드 이미지 빈 div → backgroundImage 설정 (2026-05-21)
 - [x] back 버튼 → `mProposalList` 수정 (2026-05-28)
+- [x] 카드 투표 아이콘 checkmark→heart — WDC 기준 (2026-05-30)
 
 ### 나의 제안 (`MyProposals.jsx`)
 - [x] 클릭 시 구버전 ProposalDetail → 기기별 pcMyProposalDetail/mProposalDetail 분기 (2026-05-21)
@@ -110,27 +164,62 @@
 - [x] `MDiagnosisForm` CTA 버튼 green→pink #E6235A, height 56px, font-size 18px (2026-05-28)
 - [x] `MDiagnosisDone`/`CheckDone` 아이콘 60px→40px, 타이틀 24px→28px, 설명 16px→14px (2026-05-28)
 - [x] `MDiagnosisResult` 테이블 레이아웃 + 4개 레이더차트 구조로 전면 재작성 (2026-05-28)
+- [x] `MDiagnosisList` 헤더 모드탭 — 시트 내 탭 제거, 헤더에 시민/전문가 탭 이동 (Figma 22:6281 기준) (2026-05-30)
+- [x] `MDiagnosisList` 카드 box-shadow → border 1px solid #f0f0f0 교체 (2026-05-30) — ⚠️ 재검증 후 Figma 기준 shadow 복원 (2026-05-30)
+- [x] `MDiagnosisForm` 진단위치 섹션 제거 — Figma에 없는 요소 (2026-05-30)
+- [x] `MDiagnosisForm` 서브타이틀 font-size 22px→24px (Figma 22:6734 기준) (2026-05-30)
+- [x] `MDiagnosisResult` 헤더 타이틀 "시민 진단 결과" 추가 (Figma 22:6387 기준) (2026-05-30)
+- [x] `MDiagnosisDone` 컬러 #06AB69(green) → #23BDBB(teal) + 네비 mDiagnosisList로 수정 (Figma 22:7205 기준) (2026-05-30)
+- [x] 진단 전체 컬러 토큰 green(#06AB69) → teal(#23BDBB) 전면 교체 — MDiagnosisList/Form/Result 모든 accent 컬러 (Figma 22:6281/6387/6734/7205 기준) (2026-05-30)
+- [x] `MDiagnosisList` 카드 border → box-shadow 0 0 10px rgba(0,0,0,0.1) 복원 (Figma 22:6281) (2026-05-30)
+- [x] `MDiagnosisList` 카드 태그 배경 #E1F6EC → #DFF8F8 (teal-tinted, Figma 기준) (2026-05-30)
+- [x] `MDiagnosisForm` CTA 버튼 pink→teal #23BDBB (Figma 22:6734 기준) (2026-05-30)
+- [x] `MDiagnosisForm` 섹션 라벨 font-size 20px→18px, font-weight 800→600 (Figma 22:6734 기준) (2026-05-30)
+- [x] `MDiagnosisForm` 사진박스 110px→80px, dashed→solid border, border-radius 8px→15px (Figma 22:6734 기준) (2026-05-30)
+- [x] `MDiagnosisForm` 입력창 h-44px→52px, border-radius 8px→15px (Figma 22:6734 기준) (2026-05-30)
+- [x] `MDiagnosisForm` 칩 h-30px→33px, font-size 13px→16px, border-radius→16.5px (Figma 22:6734 기준) (2026-05-30)
+- [x] `MDiagnosisForm` Q-num 원 색상 green→black #242424 (Figma 22:6734 기준) (2026-05-30)
+- [x] `MDiagnosisResult` 테이블 라벨 배경 #fafafa→#e6e6e6, 색상 #888→#242424, font-size 14px→12px, weight 400→600, 가운데 정렬 (Figma 22:6387 기준) (2026-05-30)
+- [x] `MDiagnosisResult` 테이블 값 color #242424→#737373, font-size 14px→12px (Figma 22:6387 기준) (2026-05-30)
+- [x] `MDiagnosisResult` 테이블 border-color #f0f0f0→#e6e6e6 (Figma 22:6387 기준) (2026-05-30)
+- [x] `MDiagnosisResult` 사진 썸네일 border-radius 4px→8px (Figma 22:6387 기준) (2026-05-30)
+- [x] `MDiagnosisResult` 헤더 타이틀 text-align center→left (Figma 22:6387 기준, left-aligned next to back btn) (2026-05-30)
+- [x] `CheckDone` footer padding 0 24px→0 16px (343px button width, Figma 22:7205 기준) (2026-05-30)
+- [ ] `MDiagnosisResult` 좋아요/댓글 섹션 (Figma 22:6387 하단): 백엔드 미연결 — **결정 대기**
 - [ ] `MDiagnosisResult` "관련 시민 제안" 섹션: Figma에 없는 코드 전용 섹션. keep/remove **결정 대기**
 - [ ] 모바일 전문가 진단 전용 플로우 — 현재 mode 전달만, 전용 화면 없음
 - [?] PC 셸 (A안 통합) Figma `941:10538`/`12315`/`12749` 재검증
+- [ ] `MDiagnosisList` 지도 없는 순수 리스트 뷰 (Figma 22:6281 최신 버전) — 현재 map+sheet 구조. 아키텍처 변경 필요, **결정 대기**
 
 ---
 
 ## 🟨 설문 — Figma diff 보류
 
-- [ ] `MSurveyJoin` 진행 표시: Figma=보라 dot indicator, 코드=linear fill bar — 스타일 통일 **정책 결정 대기** (`TCuOzEqNhoLKjhF0reBDks:0:11000`)
+- [x] `MSurveyJoin` 진행 표시: Figma 확인 결과 linear fill bar (dot indicator 아님) — 코드 일치. 색상 #542AA3, height 10px, 헤더 inline-right 160px 배치 (2026-05-30)
 - [x] `MSurveyDone` MobileBottomNav 추가 + 홈 버튼 인라인 스타일 → CSS 클래스 (2026-05-21)
 - [x] `MSurveyDone` 하단 여백 과다 수정 — padding 160px → 0, actions padding 조정 (2026-05-28)
+- [x] `MSurveyDone` padding-bottom 76px 추가 — MobileBottomNav 아래 버튼 가려짐 수정 (2026-05-30)
+- [x] `MSurveyDone` 픽셀 재일치 — check circle 56→40px, 제목 22→28px, 부제목 15→20px, 설명 12→14px #737373, 버튼 pill→8px radius/56px (2026-05-30)
 - [x] `MSurveyJoin` 필수 응답 검증 추가 — 미응답 시 제출 차단 (2026-05-21)
 - [x] `MSurveyJoin` submitting 중복제출 방지 + localStorage 이어하기 저장 (2026-05-21)
+- [x] `MSurveyJoin` 상단 뒤로가기 버튼 추가 — Figma `<` 아이콘 + 헤더 레이아웃 (2026-05-30)
+- [x] `MSurveyJoin` 픽셀 재일치 — 제목 24px #542AA3, option 16px/8px-radius/e6e6e6, 버튼 56px/8px-radius/130px, 섹션 5px #f4f4f4 divider (2026-05-30)
 - [x] `MSurveyDetail2` demographics(성별/연령/기기/직업) MSurveyJoin으로 전달 → 백엔드 저장 (2026-05-21)
 - [x] `MSurveyDetail2` 동의 입력 스타일 circle radio → square checkbox (Figma 스펙) (2026-05-28)
 - [x] `MSurveyDetail2` 직업(소속) 2-column grid → 1-column (Figma 스펙) (2026-05-28)
+- [x] `MSurveyDetail2` 폼 레이블 font-size 16px, 블록 레이아웃으로 변경 (Figma 스펙) (2026-05-30)
+- [x] `MSurveyDetail2` 동의 체크박스/라디오 색상 #5B2EAB→#542AA3 수정 (2026-05-30)
+- [x] `MSurveyDetail1` 히어로 min-height 230px, 카드 overlap -64px, 제목 margin-top 32px (Figma 스펙) (2026-05-30)
+- [x] 설문 전 도메인 primary color #5B2EAB→#542AA3 통일 (Figma TCuOzEqNhoLKjhF0reBDks 실측값) (2026-05-30)
 - [x] 백엔드 SurveyResponse.demographics JSON 컬럼 추가 (2026-05-21)
 - [x] `MSurveyResults` "자세히보기" alert → disabled 처리 (2026-05-21)
 - [x] `MSurveyResults` 히어로 타이틀 raw title → "YYYY년,\n[title] 결과는?" 형식 (Figma 스펙) (2026-05-28)
+- [x] `MSurveyResults` 히어로 min-height 211px, pill margin-bottom -27px, 제목 margin-top 32px (2026-05-30)
 - [x] `PCSurveyResults` open toggle → 실제 콘텐츠 show/hide 구현 (2026-05-21)
 - [x] `MSurveyDetail1` 이용약관/개인정보처리방침 span → onClick alert + cursor:pointer (2026-05-21)
+- [x] `MSurveyDetail1` 조사기간 ~종료일 포맷, 본문 16px, 불릿 chevron, CTA 152px pill (Figma 스펙) (2026-05-30)
+- [x] `MSurveyList` 카드 font-size 18px/16px, border-radius 15px, 탭 height 43px/border-radius 10px (Figma 스펙) (2026-05-30)
+- [x] `MSurveyList` 탭 active/arrow/respondents 색상 #542AA3, 뒤로가기 16px #555 (2026-05-30)
 - [x] `PCSurveyJoin` submitting guard → 중복 제출 방지 (2026-05-28)
 - [ ] 중복 응답 방지: 백엔드 unique constraint 미적용 — 추가 필요
 
@@ -230,9 +319,9 @@
 
 | 항목 | 파일 | 내용 |
 |---|---|---|
-| MReportForm 카테고리 수 | `MReportForm.jsx` | Figma=4개(주거/환경/교통/안전), 코드=8개 — 통일 여부 결정 필요 |
-| CAT 종류 통일 | 전체 | 제보 4개 vs 제안 8개 vs 필터 9개 — 명세 확정 필요 |
-| MReportDetail cat 태그 색상 | `MReportDetail.jsx` | Figma=노랑, 리스트=청록 — 상세화면 색 결정 |
+| ~~MReportForm 카테고리 수~~ | ~~`MReportForm.jsx`~~ | ~~해결됨: WDC Figma 기준 8개 확인 (2026-05-30)~~ |
+| CAT 종류 통일 | 전체 | 제보 카테고리 8개 확정, 필터 9개(전체 포함) — 이미 코드 일치 |
+| MReportDetail cat 태그 색상 | `MReportDetail.jsx` | Figma=노랑(#ffef8a), 리스트=청록(CAT_STYLES) — 현재 코드는 리스트 컬러 유지 정책 |
 | MProposalDetail cat 태그 색상 | `MProposalDetail.jsx` | variant마다 다름 — catStyles.js 재검증 |
 | MReportDetail 단계바 클릭 | `MReportDetail.jsx` | "결과안내" 외 단계 클릭 가능 여부 |
 | MProposalDetail 댓글 페이지네이션 | `MProposalDetail.jsx` | Figma long variant 기준 더보기 구현 여부 |

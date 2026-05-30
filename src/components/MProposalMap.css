@@ -5,7 +5,7 @@
     background: #f7f7f8;
 }
 
-/* 검색 바 — 사각 형태 (expanded 상태에서는 숨김) */
+/* 검색바 */
 .m-map-search-bar {
     position: absolute;
     top: 12px;
@@ -20,12 +20,6 @@
     padding: 0 12px;
     gap: 8px;
     z-index: 50;
-    transition: opacity 0.2s ease;
-}
-
-.m-prop-map-page.expanded .m-map-search-bar {
-    opacity: 0;
-    pointer-events: none;
 }
 
 .m-map-back {
@@ -51,13 +45,14 @@
     justify-content: center;
 }
 
+/* 지도 캔버스 */
 .m-map-canvas {
     position: absolute;
     inset: 0;
     z-index: 0;
 }
 
-/* 드래그 가능한 sheet */
+/* ─── 3-snap 바텀시트 ─── */
 .m-map-sheet {
     position: absolute;
     bottom: 76px;
@@ -66,19 +61,72 @@
     background: #fff;
     border-radius: 18px 18px 0 0;
     box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.12);
-    height: 42vh;
-    overflow: auto;
-    padding: 0 0 24px;
     z-index: 30;
-    transition: height 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+    display: flex;
+    flex-direction: column;
+    /* 기본(mid): transition용 */
+    transition: height 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+                border-radius 0.35s ease;
 }
 
-.m-map-sheet.expanded {
+.m-map-sheet[data-snap="collapsed"] {
+    height: 80px;
+    overflow: hidden;
+}
+
+.m-map-sheet[data-snap="mid"] {
+    height: 48vh;
+    overflow: hidden;
+}
+
+.m-map-sheet[data-snap="full"] {
     height: calc(100vh - 76px);
     border-radius: 0;
+    overflow: hidden;
 }
 
+/* ─── full 상태 헤더 (홈으로 / 지도보기) ─── */
+.m-sheet-full-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.m-sheet-back-btn {
+    background: none;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
+    color: #1a1a1b;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 4px 0;
+}
+
+.m-sheet-map-btn {
+    background: #E6235A;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 14px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: inherit;
+}
+
+/* ─── 드래그 핸들 영역 ─── */
 .m-sheet-grab {
+    flex-shrink: 0;
     padding: 10px 0 4px;
     display: flex;
     justify-content: center;
@@ -96,6 +144,15 @@
     border-radius: 2px;
 }
 
+/* ─── 스크롤 콘텐츠 영역 ─── */
+.m-sheet-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 지역 행 */
 .m-sheet-region-row {
     display: flex;
     justify-content: space-between;
@@ -103,27 +160,6 @@
     padding: 4px 16px 8px;
 }
 
-.m-sheet-region {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 18px;
-    font-weight: 800;
-    color: #1a1a1b;
-    letter-spacing: -0.02em;
-}
-
-.m-sheet-region .m-region-arrow {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #E6235A;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Region button in sheet (used by MProposalMap) */
 .m-sheet-region-btn {
     background: none;
     border: none;
@@ -139,22 +175,7 @@
     letter-spacing: -0.02em;
 }
 
-/* Map-view toggle button (shown in expanded sheet) */
-.m-map-toggle-btn {
-    background: #fff;
-    border: 1px solid #ececec;
-    border-radius: 18px;
-    padding: 7px 14px;
-    color: #1a1a1b;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-family: inherit;
-}
-
+/* 목록 펼치기 아이콘 버튼 */
 .m-sheet-list-btn {
     background: #fff;
     border: 1px solid #ececec;
@@ -165,40 +186,66 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
+/* ─── 카테고리 칩 ─── */
 .m-sheet-chips {
-    flex-wrap: wrap;
-    overflow-x: visible;
     padding: 4px 16px 12px;
     background: #fff;
+    display: flex;
+    gap: 6px;
 }
 
-.m-prop-map-page:not(.expanded) .m-sheet-chips {
+/* collapsed: 가로 스크롤 1행 (높이가 작아 wrap은 의미 없음) */
+.m-map-sheet[data-snap="collapsed"] .m-sheet-chips {
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+}
+
+.m-sheet-chips::-webkit-scrollbar { display: none; }
+
+/* mid/full: 2행 wrap */
+.m-map-sheet[data-snap="mid"] .m-sheet-chips,
+.m-map-sheet[data-snap="full"] .m-sheet-chips,
+.m-sheet-chips.full-wrap {
+    flex-wrap: wrap;
+    overflow-x: visible;
 }
 
 .m-sheet-chips .m-cat-chip {
     flex-shrink: 0;
 }
 
-.m-sheet-chips::-webkit-scrollbar { display: none; }
+/* 내 위치 FAB — 시트 바로 위 지도 영역 우하단 */
+.m-locate-fab {
+    position: fixed;
+    right: 16px;
+    z-index: 40;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #ececec;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: bottom 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+    color: #333;
+}
 
+.m-locate-fab[data-snap="collapsed"] { bottom: 172px; }
+.m-locate-fab[data-snap="mid"]       { bottom: calc(48vh + 92px); }
+
+/* 카드 목록 */
 .m-sheet-cards {
     list-style: none;
     margin: 0;
-    padding: 0 16px 8px;
+    padding: 0 16px 80px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-
-/* expanded 모드일 때 fab가 sheet 안에 떠 있게 */
-.m-map-sheet.expanded .m-prop-fab {
-    position: fixed;
-    right: 16px;
-    bottom: 80px;
-    z-index: 60;
 }
