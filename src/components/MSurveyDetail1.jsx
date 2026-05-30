@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyDetail.css';
 import { API_URL } from '../utils/api';
+import { copyToClipboard } from '../utils/clipboard';
 
 export default function MSurveyDetail1({ onNavigate, survey }) {
     const [fullSurvey, setFullSurvey] = useState(null);
@@ -39,18 +40,7 @@ export default function MSurveyDetail1({ onNavigate, survey }) {
                             lines.push(`응답시간: ${data.minutes}분`);
                             if (data.intro) lines.push(`내용: ${data.intro}`);
                             const text = lines.join('\n');
-                            try {
-                                await navigator.clipboard.writeText(text);
-                            } catch {
-                                const ta = document.createElement('textarea');
-                                ta.value = text;
-                                ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0.01;pointer-events:none;';
-                                document.body.appendChild(ta);
-                                ta.focus();
-                                ta.select();
-                                try { document.execCommand('copy'); } catch {}
-                                document.body.removeChild(ta);
-                            }
+                            await copyToClipboard(text);
                             setCopied(true);
                             setTimeout(() => setCopied(false), 2000);
                         }}

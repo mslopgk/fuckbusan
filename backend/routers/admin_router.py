@@ -7,15 +7,13 @@ from sqlalchemy import func, desc, or_
 
 from database import get_db
 import models, schemas
-from .user_router import get_current_user
+from .user_router import get_current_user, require_admin
 from notification_utils import push_notification, log_activity
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 
-def _require_admin(user):
-    if not user or user.ID != "admin":
-        raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
+_require_admin = require_admin
 
 
 @router.get("/stats")

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import UserPCLayout from './UserPCLayout';
 import './PCSurveyJoin.css';
 import { API_URL } from '../utils/api';
+import { copyToClipboard } from '../utils/clipboard';
 
 export default function PCSurveyJoin({ onNavigate, survey }) {
     const data = survey || { title: '설문조사' };
@@ -59,18 +60,7 @@ export default function PCSurveyJoin({ onNavigate, survey }) {
                         className="pc-banner-copy-btn"
                         onClick={async () => {
                             const url = window.location.href;
-                            try {
-                                await navigator.clipboard.writeText(url);
-                            } catch {
-                                const ta = document.createElement('textarea');
-                                ta.value = url;
-                                ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0.01;pointer-events:none;';
-                                document.body.appendChild(ta);
-                                ta.focus();
-                                ta.select();
-                                try { document.execCommand('copy'); } catch {}
-                                document.body.removeChild(ta);
-                            }
+                            await copyToClipboard(url);
                             setCopied(true);
                             setTimeout(() => setCopied(false), 2000);
                         }}

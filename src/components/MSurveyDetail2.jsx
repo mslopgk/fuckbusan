@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyDetail.css';
 import { API_URL } from '../utils/api';
+import { copyToClipboard } from '../utils/clipboard';
 
 const GENDERS = ['남자', '여자'];
 const AGES = ['20대 미만', '20대', '30대', '40대', '50대 이상'];
@@ -99,18 +100,7 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
                     </button>
                     <button className="m-hero-copy" type="button" onClick={async () => {
                         const url = window.location.href;
-                        try {
-                            await navigator.clipboard.writeText(url);
-                        } catch {
-                            const ta = document.createElement('textarea');
-                            ta.value = url;
-                            ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0.01;pointer-events:none;';
-                            document.body.appendChild(ta);
-                            ta.focus();
-                            ta.select();
-                            try { document.execCommand('copy'); } catch {}
-                            document.body.removeChild(ta);
-                        }
+                        await copyToClipboard(url);
                         setCopied(true);
                         setTimeout(() => setCopied(false), 2000);
                     }}>

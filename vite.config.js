@@ -33,6 +33,7 @@ export default defineConfig(() => {
             'vendor-react': ['react', 'react-dom'],
             'vendor-charts': ['recharts'],
             'vendor-kakao': ['react-kakao-maps-sdk'],
+            'vendor-leaflet': ['leaflet', 'react-leaflet'],
           },
         },
       },

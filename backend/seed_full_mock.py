@@ -211,6 +211,8 @@ def seed_proposals(db: Session):
         u = users[i % len(users)]
         cat = CATEGORIES_PROP[i % len(CATEGORIES_PROP)]
         district = districts[i % len(districts)]
+        lat0, lng0 = DISTRICT_CENTERS[district]
+        plat, plng = jitter(lat0, lng0, scale=0.008)
         p = models.NewProposal(
             user_id=u.user_id,
             category=cat,
@@ -225,6 +227,8 @@ def seed_proposals(db: Session):
             ),
             region=district,
             detailed_address=f"{district} 일대",
+            lat=round(plat, 6),
+            lng=round(plng, 6),
             files=json.dumps([]),
             views_count=random.randint(80, 800),
             likes_count=0,

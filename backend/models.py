@@ -78,7 +78,7 @@ class ChecklistResult(Base):
     # 일단 핵심인 id와 user_id 연결만 먼저 정의합니다.
     result_id = Column(Integer, primary_key=True, index=True)
     진단지역 = Column(String(100))
-    user_id = Column(Integer, ForeignKey("users.user_id")) # FK added for relationship
+    user_id = Column(Integer, ForeignKey("users.user_id"), index=True)
     ID = Column(String(50), nullable=True) # User ID string
     created_at = Column(DateTime, default=datetime.now)
     district_code = Column(String(50))
@@ -105,7 +105,7 @@ class Report(Base):
     __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True, index=True)
     author_name = Column(String(100), nullable=True)
     category = Column(String(50), nullable=True)
     sub_category = Column(String(100), nullable=True)
@@ -176,7 +176,7 @@ class NewProposal(Base):
     __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True, index=True)
     category = Column(String(100))
     title = Column(String(255))
     content = Column(Text)  # String(4000)에서 Text로 변경 (더 안전함)
@@ -225,8 +225,8 @@ class ProposalComment(Base):
     __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     id = Column(Integer, primary_key=True, index=True)
-    proposal_id = Column(Integer, ForeignKey("new_proposals.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    proposal_id = Column(Integer, ForeignKey("new_proposals.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True, index=True)
     content = Column(Text, nullable=False)
     parent_comment_id = Column(Integer, ForeignKey("proposal_comments.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.now)

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback, Fragment } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyResults.css';
 import { API_URL } from '../utils/api';
+import { copyToClipboard } from '../utils/clipboard';
 
 // ── InView hook: element가 viewport에 들어오면 true ──────────────────────────
 function useInView(threshold = 0.15) {
@@ -310,18 +311,7 @@ export default function MSurveyResults({ onNavigate, survey }) {
             columnData.forEach(c => lines.push(`  ${c.label}: ${c.value}건`));
         }
         const text = lines.join('\n');
-        try {
-            await navigator.clipboard.writeText(text);
-        } catch {
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0.01;pointer-events:none;';
-            document.body.appendChild(ta);
-            ta.focus();
-            ta.select();
-            try { document.execCommand('copy'); } catch {}
-            document.body.removeChild(ta);
-        }
+        await copyToClipboard(text);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     }, [meta, respondentCount, compositeData, donutSections, multiQTitle, derivedBars, columnData, columnTitle]);

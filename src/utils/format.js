@@ -21,6 +21,12 @@ export function formatDate(dateStr) {
     return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 }
 
+export function extractDistrict(address) {
+    if (!address) return '부산';
+    const m = address.match(/([가-힣]+구)/);
+    return m ? m[1] : '부산';
+}
+
 export function formatDraftDate(dateStr) {
     if (!dateStr) return '';
     try {

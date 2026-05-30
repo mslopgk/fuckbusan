@@ -61,7 +61,7 @@ export default function PCProposeMap({ onNavigate }) {
                 date: p.created_at ? p.created_at.slice(0, 10) : null,
                 views: p.views_count || 0,
                 votes: p.likes_count || 0,
-                image: p.image || null,
+                image: (Array.isArray(p.files) && p.files.length > 0) ? p.files[0] : null,
                 lat,
                 lng,
             };

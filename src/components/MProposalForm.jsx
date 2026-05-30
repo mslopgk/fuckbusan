@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import PCMapCanvas from './PCMapCanvas';
-import { formatDraftDate } from '../utils/format';
+import { formatDraftDate, extractDistrict } from '../utils/format';
 import { API_URL } from '../utils/api';
 import { compressImage } from '../utils/imageCompress';
 import './MProposalForm.css';
@@ -8,11 +8,6 @@ import './MProposalForm.css';
 const TYPES = ['주거', '환경', '교육', '안전', '산업·일자리', '교통', '문화·여가', '보건·복지'];
 const DRAFT_KEY = 'mProposalForm:draft';
 
-function extractDistrict(address) {
-    if (!address) return '부산';
-    const m = address.match(/([가-힣]+구)/);
-    return m ? m[1] : '부산';
-}
 
 
 export default function MProposalForm({ onNavigate }) {

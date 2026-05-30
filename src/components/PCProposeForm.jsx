@@ -3,17 +3,12 @@ import { Map, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk';
 import UserPCLayout from './UserPCLayout';
 import './PCFormShared.css';
 import { API_URL } from '../utils/api';
+import { extractDistrict } from '../utils/format';
 
 
 const TYPES = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 const BUSAN_CENTER = { lat: 35.158, lng: 129.06 };
 const DRAFT_KEY = 'pcProposeForm:draft';
-
-function extractDistrict(address) {
-    if (!address) return '부산';
-    const m = address.match(/([가-힣]+구)/);
-    return m ? m[1] : '부산';
-}
 
 function LocationPickerModal({ title = '제안하고 싶은 장소를 선택해주세요.', onCancel, onConfirm }) {
     const [kakaoLoading] = useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services'] });

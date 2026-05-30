@@ -190,6 +190,13 @@
 
 ---
 
+## 🐛 신규 버그 (2026-05-30)
+
+- [x] **PCProposeMap 제안 이미지 미표시** — `p.image` 참조 버그: `NewProposalRead`에 `image` 필드 없음 → `p.files[0]` 사용으로 수정 (2026-05-30)
+- [x] **seed_full_mock 제안 lat/lng 누락** — 시드된 제안이 `proposal-pins` 엔드포인트에 미반환 → `lat/lng` 추가 (2026-05-30)
+
+---
+
 ## 🐛 신규 버그 (2026-05-21)
 
 - [x] **제안 지도 핀 미표시** — `MProposalForm` lat/lng 미전송 수정, `MProposalMap`/`PCProposeMap` DISTRICT_CENTERS fallback + Busan center fallback 추가, deterministic jitter (2026-05-21)

@@ -72,6 +72,11 @@ def get_current_user_optional(token: Optional[str] = Depends(oauth2_scheme_optio
 
     return db.query(User).filter(User.ID == username).first()
 
+
+def require_admin(user: Optional[User]):
+    if not user or user.ID != "admin":
+        raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
+
 # =============================================================================
 # [API - /api/users] 관리자용 엔드포인트
 # =============================================================================

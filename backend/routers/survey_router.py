@@ -7,12 +7,7 @@ import json
 
 from database import get_db
 import models, schemas
-from .user_router import get_current_user, get_current_user_optional
-
-
-def _require_admin(user: Optional[models.User]):
-    if not user or user.ID != "admin":
-        raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
+from .user_router import get_current_user, get_current_user_optional, require_admin as _require_admin
 
 router = APIRouter(prefix="/api/surveys", tags=["surveys"])
 
