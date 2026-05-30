@@ -457,37 +457,48 @@ def seed_dashboard_data(db: Session):
                 longitude=lng,
                 category=random.choice(["report", "diagnosis", "survey"]),
             ))
-    persona_seeds = [
-        ("김부산", 32, "직장인", "출퇴근 길이 너무 위험해요", ["교통", "안전"]),
-        ("이수영", 27, "디자이너", "공공디자인이 더 일관됐으면 좋겠어요", ["문화", "디자인"]),
-        ("박해운", 45, "학부모", "통학로 안전이 최우선입니다", ["교육", "안전"]),
-        ("최동래", 60, "자영업", "노후 시설 개선이 시급합니다", ["주거", "복지"]),
-        ("정남구", 22, "대학생", "야간 보행 환경이 불안해요", ["안전", "교통"]),
-        ("강사하", 38, "주부", "공원과 녹지가 더 필요해요", ["환경", "문화"]),
-        ("윤기장", 50, "농업인", "지역 균형 발전이 필요합니다", ["복지", "산업"]),
-        ("한북구", 30, "프리랜서", "공공 와이파이가 부족해요", ["문화", "산업"]),
-    ]
-    districts = list(DISTRICT_CENTERS.keys())
-    for i, (name, age, job, quote, tags) in enumerate(persona_seeds):
+    # 가상시민(Persona) 시드: ai_citizens 모듈의 MOCK_CITIZENS / MOCK_DETAILS 사용.
+    # 추후 RAG 자동 생성이 도입되면 이 시드는 fallback이 되거나 제거됨.
+    from routers.ai_citizens import MOCK_CITIZENS, MOCK_DETAILS
+    for c in MOCK_CITIZENS:
+        d = MOCK_DETAILS.get(c["id"], {})
+        # MOCK_DETAILS의 풍부한 필드는 detail JSON에 그대로 보관
+        detail_payload = {
+            k: v for k, v in d.items()
+            if k not in ("job",)  # job은 별도 컬럼
+        }
+        # MOCK엔 없지만 화면에서 쓰는 보조 필드도 detail에 포함되도록 유지
         db.add(models.Persona(
-            district_code=districts[i % len(districts)],
+            id=c["id"],
+            district_code=c["district"],
             year="2026",
-            name=name,
-            age=age,
-            gender=random.choice(["남", "여"]),
-            job=job,
+            name=c["name"],
+            age=c["age"],
+            gender=c.get("gender"),
+            job=d.get("job", ""),
             image_emoji="👤",
             image_url=None,
-            quote=quote,
-            full_quote=f"{quote} 관련해서, 지역 정책에 시민 의견이 더 반영되었으면 합니다.",
-            tags=tags,
-            pain_points=[f"{tags[0]} 문제", f"{tags[1]} 문제"],
-            suggestions=["정책 강화", "예산 확대"],
-            expected_effects=["만족도 상승", "안전 개선"],
-            stats={"satisfaction": random.randint(40, 90)},
+            quote=c["quote"],
+            full_quote=d.get("body_language") or c["quote"],
+            tags=c.get("tags", []),
+            pain_points=d.get("top_issues", []),
+            suggestions=d.get("policy_signals", {}),
+            expected_effects=[],
+            stats={
+                "participation": d.get("participation", {}),
+                "category_scores": d.get("category_scores", {}),
+                "similar_ratio": d.get("similar_ratio"),
+                "similar_desc": d.get("similar_desc"),
+            },
+            categories=c.get("categories", []),
+            avatar_initial=c.get("avatar_initial") or (c["name"][:1] if c.get("name") else ""),
+            importance=c.get("importance", 100),
+            detail=detail_payload,
+            generation_source="seed",
+            evidence=None,
         ))
     db.commit()
-    print(f"  district_analysis/insights/personas: 시드 완료")
+    print(f"  district_analysis/insights/personas: 시드 완료 ({len(MOCK_CITIZENS)} personas)")
 
 
 def seed_checklist_templates(db: Session):

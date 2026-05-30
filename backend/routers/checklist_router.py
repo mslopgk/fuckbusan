@@ -185,6 +185,117 @@ def get_checklist_summary(
     ]
 
 
+@router.get("/breakdown")
+def get_diagnosis_breakdown(
+    result_id: Optional[int] = None,
+    db: Session = Depends(get_db),
+):
+    """진단 결과 페이지의 3축 비교 데이터 (시설물별 / 구역별 / 인원별).
+
+    - 시설물별(facility): 같은 대분류 그룹 안에서 중분류별 평균 점수
+    - 구역별(zone): 같은 district_code 그룹 안에서 대분류별 평균 점수
+    - 인원별(person): 같은 진단대상 그룹 안에서 대분류별 평균 점수
+
+    result_id가 없거나 해당 컨텍스트가 부족하면 부산 전체 fallback.
+    """
+    from sqlalchemy import func
+
+    ctx_big = ctx_district = ctx_target = None
+    if result_id:
+        r = db.query(ChecklistResult).filter(ChecklistResult.result_id == result_id).first()
+        if r:
+            ctx_big = r.대분류
+            ctx_district = r.district_code or r.진단지역
+            ctx_target = r.진단대상
+
+    def _radar_rows(rows, max_axes=8):
+        items = [
+            {"subject": r.k, "A": round(float(r.avg or 0), 2)}
+            for r in rows if r.k
+        ]
+        # 가독성 위해 상한 자르기
+        return items[:max_axes]
+
+    # 시설물별: scope=대분류, group by 중분류
+    facility_scope = ctx_big or "전체"
+    if ctx_big:
+        q = (
+            db.query(
+                ChecklistResult.중분류.label("k"),
+                func.avg(ChecklistResult.점수).label("avg"),
+                func.count(ChecklistResult.result_id).label("c"),
+            )
+            .filter(ChecklistResult.대분류 == ctx_big)
+            .group_by(ChecklistResult.중분류)
+        )
+        rows = q.all()
+        facility_radar = _radar_rows(rows)
+        facility_count = sum(int(r.c or 0) for r in rows)
+    else:
+        q = (
+            db.query(
+                ChecklistResult.대분류.label("k"),
+                func.avg(ChecklistResult.점수).label("avg"),
+                func.count(ChecklistResult.result_id).label("c"),
+            )
+            .group_by(ChecklistResult.대분류)
+        )
+        rows = q.all()
+        facility_radar = _radar_rows(rows)
+        facility_count = sum(int(r.c or 0) for r in rows)
+
+    # 구역별: scope=district_code, group by 대분류
+    zone_scope = ctx_district or "전체"
+    zone_q = db.query(
+        ChecklistResult.대분류.label("k"),
+        func.avg(ChecklistResult.점수).label("avg"),
+        func.count(ChecklistResult.result_id).label("c"),
+    )
+    if ctx_district:
+        zone_q = zone_q.filter(ChecklistResult.district_code == ctx_district)
+    zone_rows = zone_q.group_by(ChecklistResult.대분류).all()
+    zone_radar = _radar_rows(zone_rows)
+    zone_count = sum(int(r.c or 0) for r in zone_rows)
+    if not zone_radar and ctx_district:
+        # 해당 구역에 데이터가 없으면 전체로 fallback
+        zone_scope = "전체"
+        zone_rows = db.query(
+            ChecklistResult.대분류.label("k"),
+            func.avg(ChecklistResult.점수).label("avg"),
+            func.count(ChecklistResult.result_id).label("c"),
+        ).group_by(ChecklistResult.대분류).all()
+        zone_radar = _radar_rows(zone_rows)
+        zone_count = sum(int(r.c or 0) for r in zone_rows)
+
+    # 인원별: scope=진단대상, group by 대분류
+    person_scope = ctx_target or "전체"
+    person_q = db.query(
+        ChecklistResult.대분류.label("k"),
+        func.avg(ChecklistResult.점수).label("avg"),
+        func.count(ChecklistResult.result_id).label("c"),
+    )
+    if ctx_target:
+        person_q = person_q.filter(ChecklistResult.진단대상 == ctx_target)
+    person_rows = person_q.group_by(ChecklistResult.대분류).all()
+    person_radar = _radar_rows(person_rows)
+    person_count = sum(int(r.c or 0) for r in person_rows)
+    if not person_radar and ctx_target:
+        person_scope = "전체"
+        person_rows = db.query(
+            ChecklistResult.대분류.label("k"),
+            func.avg(ChecklistResult.점수).label("avg"),
+            func.count(ChecklistResult.result_id).label("c"),
+        ).group_by(ChecklistResult.대분류).all()
+        person_radar = _radar_rows(person_rows)
+        person_count = sum(int(r.c or 0) for r in person_rows)
+
+    return {
+        "facility": {"label": facility_scope, "count": facility_count, "radar": facility_radar},
+        "zone": {"label": zone_scope, "count": zone_count, "radar": zone_radar},
+        "person": {"label": person_scope, "count": person_count, "radar": person_radar},
+    }
+
+
 @router.get("/templates")
 def get_checklist_templates(
     mode: Optional[str] = "general",

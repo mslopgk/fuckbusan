@@ -232,8 +232,13 @@ export default function MSurveyJoin({ onNavigate, survey }) {
 }
 
 function normalizeQ(q) {
+    const options = q.options?.map((o) => (typeof o === 'string' ? { label: o } : o)) ?? [];
+    // 선택지 기반 질문인데 옵션이 비어있으면 text로 폴백 — 그렇지 않으면 사용자가 응답 불가
+    const choiceLike = q.qtype === 'single' || q.qtype === 'multi' || q.qtype === 'agree';
+    const fallback = choiceLike && options.length === 0;
     return {
         ...q,
-        options: q.options?.map((o) => (typeof o === 'string' ? { label: o } : o)) ?? [],
+        qtype: fallback ? 'text' : q.qtype,
+        options,
     };
 }

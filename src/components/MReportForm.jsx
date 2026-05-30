@@ -52,18 +52,18 @@ export default function MReportForm({ onNavigate }) {
 
     // Mobile hardware back button intercept
     useEffect(() => {
-        window.history.pushState(null, '');
+        window.history.pushState({ formGuard: true, view: 'mReportForm' }, '');
         const handlePop = () => {
             const { cat, body, location, photoUrl, locationPickerOpen } = formStateRef.current;
             if (locationPickerOpen) {
                 setLocationPickerOpen(false);
-                window.history.pushState(null, '');
+                window.history.pushState({ formGuard: true, view: 'mReportForm' }, '');
                 return;
             }
             const hasContent = !!(cat || body.trim() || location || photoUrl);
             if (hasContent) {
                 setLeaveOpen(true);
-                window.history.pushState(null, '');
+                window.history.pushState({ formGuard: true, view: 'mReportForm' }, '');
             } else {
                 onNavigate?.('mReportList');
             }
@@ -91,10 +91,10 @@ export default function MReportForm({ onNavigate }) {
         const file = e.target.files?.[0];
         if (!file) return;
         setUploading(true);
-        const compressed = await compressImage(file);
-        const form = new FormData();
-        form.append('file', compressed);
         try {
+            const compressed = await compressImage(file);
+            const form = new FormData();
+            form.append('file', compressed);
             const res = await fetch(`${API_URL}/api/reports/upload`, { method: 'POST', body: form });
             if (res.ok) {
                 const j = await res.json();
@@ -103,9 +103,9 @@ export default function MReportForm({ onNavigate }) {
                 setToast('사진 업로드에 실패했습니다.');
                 setTimeout(() => setToast(''), 2000);
             }
-        } catch {
-            setToast('사진 업로드 중 오류가 발생했습니다.');
-            setTimeout(() => setToast(''), 2000);
+        } catch (err) {
+            setToast(err?.message || '사진 업로드 중 오류가 발생했습니다.');
+            setTimeout(() => setToast(''), 2500);
         } finally {
             setUploading(false);
         }

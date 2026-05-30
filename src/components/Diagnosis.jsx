@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './Diagnosis.css';
 import { Map, MapMarker, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
 
@@ -154,11 +154,17 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
         }
     };
 
-    const pinImage = (isSelected, color) => ({
-        src: buildPinDataUrl(isSelected ? color : '#888888'),
+    const pinImageSelected = useMemo(() => ({
+        src: buildPinDataUrl(primaryColor),
         size: { width: 40, height: 40 },
         options: { offset: { x: 20, y: 40 } },
-    });
+    }), [primaryColor]);
+    const pinImageDefault = useMemo(() => ({
+        src: buildPinDataUrl('#888888'),
+        size: { width: 40, height: 40 },
+        options: { offset: { x: 20, y: 40 } },
+    }), []);
+    const pinImage = (isSelected) => (isSelected ? pinImageSelected : pinImageDefault);
 
     return (
         <div className={`diagnosis-container ${diagnosisType}`}>
@@ -234,7 +240,7 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
                             <MapMarker
                                 key={pin.id}
                                 position={{ lat: pin.lat, lng: pin.lng }}
-                                image={pinImage(selectedPin == pin.id, primaryColor)}
+                                image={pinImage(selectedPin == pin.id)}
                                 onClick={() => handlePinClick(pin.id)}
                             />
                         ))}
@@ -254,7 +260,7 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
                     {customPin && (
                         <MapMarker
                             position={customPin}
-                            image={pinImage(selectedPin === 'custom', primaryColor)}
+                            image={pinImage(selectedPin === 'custom')}
                             onClick={() => handlePinClick('custom')}
                         />
                     )}

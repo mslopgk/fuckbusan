@@ -50,13 +50,13 @@
     z-index: 1;
 }
 
-/* Map section — padding-top reserves space for absolute search bar (top:17 + height:55 + gap:10) */
+/* Map section — padding-top reserves space for search bar + quote bubble (search 82 + bubble 86 + gap 8) */
 .m-ai-map-section {
     position: relative;
     flex-shrink: 0;
-    height: 45vh;
-    min-height: 260px;
-    padding-top: 82px;
+    height: 50vh;
+    min-height: 340px;
+    padding-top: 176px;
     box-sizing: border-box;
 }
 

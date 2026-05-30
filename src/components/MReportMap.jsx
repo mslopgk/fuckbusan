@@ -2,8 +2,9 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import MobileBottomNav from './MobileBottomNav';
 import { CAT_STYLES } from './catStyles';
-import { REGIONS, SORTS, REPORT_STAGES as STAGES } from '../constants/mapConstants';
-import { RegionSheet, SortSheet, MMapSearchBar } from './MFilterSheets';
+import { REGIONS, REPORT_STAGES as STAGES, DISTRICT_CENTERS } from '../constants/mapConstants';
+import { matchDistrict, nearestDistrict } from '../utils/format';
+import { RegionSheet, MMapSearchBar } from './MFilterSheets';
 import { API_URL } from '../utils/api';
 import { useLazyImage } from '../hooks/useLazyImage';
 import './MProposalList.css';
@@ -54,8 +55,8 @@ function ReportCard({ it, onNavigate }) {
 // All categories including 교육 (matches Figma 848:19015)
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 
-// 3-state bottom sheet: 'peek' (map-only) | 'half' (default) | 'full' (list-only)
-const SHEET_MODES = ['peek', 'half', 'full'];
+// 2-state bottom sheet: 'peek' (map-only) | 'half' (default). full은 별도 list 페이지로 navigate.
+const SHEET_MODES = ['peek', 'half'];
 
 export default function MReportMap({ onNavigate }) {
     const [region, setRegion] = useState('부산전체');
@@ -63,9 +64,6 @@ export default function MReportMap({ onNavigate }) {
     const [regionDraft, setRegionDraft] = useState('부산전체');
     const [cat, setCat] = useState('전체');
     const [stage, setStage] = useState('inProgress');
-    const [sort, setSort] = useState('최신순');
-    const [sortDraft, setSortDraft] = useState('최신순');
-    const [sortOpen, setSortOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [items, setItems] = useState([]);
     const [mapPins, setMapPins] = useState([]);
@@ -74,7 +72,7 @@ export default function MReportMap({ onNavigate }) {
     const mapRef = useRef(null);
     const touchStartY = useRef(0);
 
-    const expanded = sheetMode === 'full';
+    const goToList = () => onNavigate?.('mReportList');
 
     const onTouchStart = (e) => {
         touchStartY.current = e.touches?.[0]?.clientY ?? e.clientY;
@@ -83,8 +81,13 @@ export default function MReportMap({ onNavigate }) {
         const endY = e.changedTouches?.[0]?.clientY ?? e.clientY;
         const dy = touchStartY.current - endY;
         const idx = SHEET_MODES.indexOf(sheetMode);
-        if (dy > 40 && idx < SHEET_MODES.length - 1) setSheetMode(SHEET_MODES[idx + 1]);
-        else if (dy < -40 && idx > 0) setSheetMode(SHEET_MODES[idx - 1]);
+        if (dy > 40) {
+            // 위로 스와이프
+            if (idx < SHEET_MODES.length - 1) setSheetMode(SHEET_MODES[idx + 1]);
+            else goToList();
+        } else if (dy < -40 && idx > 0) {
+            setSheetMode(SHEET_MODES[idx - 1]);
+        }
     };
 
     // Lightweight pins for map — fetch once on mount, independent of list filters
@@ -104,10 +107,9 @@ export default function MReportMap({ onNavigate }) {
             .catch(() => {});
     }, []);
 
-    // Full list — re-fetches on filter change
+    // Full list — region은 클라이언트에서 정규화 매칭(아래 ITEMS 필터)으로 처리, 백엔드에는 cat/stage만 전달
     useEffect(() => {
         const params = new URLSearchParams();
-        if (region && region !== '부산전체') params.set('region', region);
         if (cat && cat !== '전체') params.set('category', cat);
         const stageDef = STAGES.find((s) => s.key === stage);
         if (stageDef) params.set('status', stageDef.apiValue);
@@ -118,10 +120,11 @@ export default function MReportMap({ onNavigate }) {
                 setItems(Array.isArray(list) ? list : []);
             })
             .catch(() => setItems([]));
-    }, [region, cat, stage]);
+    }, [cat, stage]);
 
     const ITEMS = useMemo(() => {
         const q = search.trim().toLowerCase();
+        const regionFilter = region && region !== '부산전체' ? region : null;
         return items
             .map((it) => ({
                 id: it.id,
@@ -141,8 +144,14 @@ export default function MReportMap({ onNavigate }) {
                 progress_step: it.progress_step,
                 status: it.status,
             }))
-            .filter((it) => !q || it.title?.toLowerCase().includes(q) || it.region?.toLowerCase().includes(q));
-    }, [items, search]);
+            .filter((it) => {
+                if (!regionFilter) return true;
+                if (matchDistrict(it.region, regionFilter)) return true;
+                const approx = nearestDistrict(it.lat, it.lng, DISTRICT_CENTERS);
+                return matchDistrict(approx, regionFilter);
+            })
+            .filter((it) => !q || it.title?.toLowerCase().includes(q) || it.region?.toLowerCase().includes(q) || it.content?.toLowerCase().includes(q));
+    }, [items, region, search]);
 
     // Filtered pins to match current category/region selection
     const FILTERED_PINS = useMemo(() => {
@@ -151,20 +160,16 @@ export default function MReportMap({ onNavigate }) {
     }, [mapPins, cat]);
 
     const openRegion = () => { setRegionDraft(region); setRegionOpen(true); };
-    const openSort = () => { setSortDraft(sort); setSortOpen(true); };
     const confirmRegion = () => { setRegion(regionDraft); setRegionOpen(false); };
-    const confirmSort = () => { setSort(sortDraft); setSortOpen(false); };
 
     return (
-        <div className={`m-prop-map-page m-rmap-page sheet-${sheetMode}${expanded ? ' expanded' : ''}`}>
-            {/* Top floating search bar — hidden when sheet is fully expanded */}
+        <div className={`m-prop-map-page m-rmap-page sheet-${sheetMode}`}>
             <MMapSearchBar
                 value={search}
                 onChange={setSearch}
-                onBack={() => onNavigate?.('mReportList')}
+                onBack={() => onNavigate?.('home')}
             />
 
-            {/* Full-screen Kakao map */}
             <div className="m-map-canvas">
                 <PCMapCanvas
                     ref={mapRef}
@@ -179,26 +184,24 @@ export default function MReportMap({ onNavigate }) {
                 />
             </div>
 
-            {/* 내 위치 FAB — above bottom sheet, outside map canvas z-order */}
-            {sheetMode !== 'full' && (
-                <button
-                    className="m-locate-fab"
-                    onClick={() => mapRef.current?.locateMe?.()}
-                    aria-label="내 위치"
-                    title="내 위치"
-                >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="3"/>
-                        <line x1="12" y1="2" x2="12" y2="5"/>
-                        <line x1="12" y1="19" x2="12" y2="22"/>
-                        <line x1="2" y1="12" x2="5" y2="12"/>
-                        <line x1="19" y1="12" x2="22" y2="12"/>
-                    </svg>
-                </button>
-            )}
+            {/* 내 위치 FAB */}
+            <button
+                className="m-locate-fab"
+                onClick={() => mapRef.current?.locateMe?.()}
+                aria-label="내 위치"
+                title="내 위치"
+            >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                    <line x1="12" y1="2" x2="12" y2="5"/>
+                    <line x1="12" y1="19" x2="12" y2="22"/>
+                    <line x1="2" y1="12" x2="5" y2="12"/>
+                    <line x1="19" y1="12" x2="22" y2="12"/>
+                </svg>
+            </button>
 
-            {/* Bottom swipeable sheet */}
-            <div className={`m-map-sheet ${expanded ? 'expanded' : ''}`}>
+            {/* 바텀시트 — 2-state (peek/half). 목록 전체는 별도 list 페이지 */}
+            <div className="m-map-sheet">
                 <div
                     className="m-sheet-grab"
                     onTouchStart={onTouchStart}
@@ -218,28 +221,18 @@ export default function MReportMap({ onNavigate }) {
                             </svg>
                         </span>
                     </button>
-                    {sheetMode !== 'full' ? (
-                        <button className="m-sheet-list-btn" onClick={() => setSheetMode('full')} aria-label="목록 펼치기">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="8" y1="6" x2="21" y2="6"/>
-                                <line x1="8" y1="12" x2="21" y2="12"/>
-                                <line x1="8" y1="18" x2="21" y2="18"/>
-                                <line x1="3" y1="6" x2="3.01" y2="6"/>
-                                <line x1="3" y1="12" x2="3.01" y2="12"/>
-                                <line x1="3" y1="18" x2="3.01" y2="18"/>
-                            </svg>
-                        </button>
-                    ) : (
-                        <button className="m-sheet-list-btn" onClick={() => setSheetMode('half')} aria-label="지도보기">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                                <circle cx="12" cy="10" r="3"/>
-                            </svg>
-                        </button>
-                    )}
+                    <button className="m-sheet-list-btn" onClick={goToList} aria-label="목록 보기">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="8" y1="6" x2="21" y2="6"/>
+                            <line x1="8" y1="12" x2="21" y2="12"/>
+                            <line x1="8" y1="18" x2="21" y2="18"/>
+                            <line x1="3" y1="6" x2="3.01" y2="6"/>
+                            <line x1="3" y1="12" x2="3.01" y2="12"/>
+                            <line x1="3" y1="18" x2="3.01" y2="18"/>
+                        </svg>
+                    </button>
                 </div>
 
-                {/* Category filter chips */}
                 <div className="m-cat-chips m-sheet-chips">
                     {CATEGORIES.map((c) => (
                         <button
@@ -250,33 +243,9 @@ export default function MReportMap({ onNavigate }) {
                     ))}
                 </div>
 
-                {/* Sort + stage chips (full mode only) */}
-                {sheetMode === 'full' && (
-                    <>
-                        <div className="m-sort-row">
-                            <button className="m-sort-btn" onClick={openSort} type="button">
-                                <span>{sort}</span>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="6 9 12 15 18 9"/>
-                                </svg>
-                            </button>
-                        </div>
-                        <div className="m-stage-chips">
-                            {STAGES.map((s) => (
-                                <button
-                                    key={s.key}
-                                    className={`m-stage-chip ${stage === s.key ? 'on' : ''}`}
-                                    onClick={() => setStage(s.key)}
-                                >{s.label}</button>
-                            ))}
-                        </div>
-                    </>
-                )}
-
-                {/* Card list — shows selected pin's card when a pin is tapped, otherwise all */}
                 <ul className="m-sheet-cards">
                     {(() => {
-                        const displayed = !expanded && selectedPinId
+                        const displayed = selectedPinId
                             ? ITEMS.filter((it) => String(it.id) === selectedPinId)
                             : ITEMS;
                         if (displayed.length === 0) {
@@ -293,7 +262,6 @@ export default function MReportMap({ onNavigate }) {
                 </ul>
             </div>
 
-            {/* "+ 제보하기" FAB — always visible, pink brand color */}
             <button
                 className="m-prop-fab m-rmap-fab"
                 onClick={() => onNavigate && onNavigate('mReportForm')}
@@ -312,15 +280,6 @@ export default function MReportMap({ onNavigate }) {
                     onSelect={setRegionDraft}
                     onConfirm={confirmRegion}
                     onClose={() => setRegionOpen(false)}
-                />
-            )}
-            {sortOpen && (
-                <SortSheet
-                    sorts={SORTS}
-                    draft={sortDraft}
-                    onSelect={setSortDraft}
-                    onConfirm={confirmSort}
-                    onClose={() => setSortOpen(false)}
                 />
             )}
 

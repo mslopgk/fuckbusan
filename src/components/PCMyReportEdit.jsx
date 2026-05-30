@@ -34,10 +34,10 @@ export default function PCMyReportEdit({ onNavigate, report, onComplete }) {
         if (!file) return;
         setUploading(true);
         setError('');
-        const compressed = await compressImage(file);
-        const form = new FormData();
-        form.append('file', compressed);
         try {
+            const compressed = await compressImage(file);
+            const form = new FormData();
+            form.append('file', compressed);
             const res = await fetch(`${API_URL}/api/reports/upload`, { method: 'POST', body: form });
             if (res.ok) {
                 const j = await res.json();
@@ -45,8 +45,8 @@ export default function PCMyReportEdit({ onNavigate, report, onComplete }) {
             } else {
                 setError('사진 업로드에 실패했습니다.');
             }
-        } catch {
-            setError('사진 업로드 중 오류가 발생했습니다.');
+        } catch (err) {
+            setError(err?.message || '사진 업로드 중 오류가 발생했습니다.');
         } finally {
             setUploading(false);
             e.target.value = '';

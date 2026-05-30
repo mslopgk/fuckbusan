@@ -109,6 +109,13 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
 
             {/* List Content (ReportList Card style) */}
             <div className="mr-list">
+                {filteredReports.length === 0 && (
+                    <div className="mr-empty">
+                        {activeTab === 'likes'
+                            ? '아직 좋아요한 제보가 없습니다.'
+                            : `${statusFilter} 단계의 제보가 없습니다.`}
+                    </div>
+                )}
                 {filteredReports.map(report => (
                     <div key={report.id} className="mr-card" onClick={() => handleCardClick(report)}>
                         <div className="mr-card-left">

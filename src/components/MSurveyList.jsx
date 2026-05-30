@@ -41,6 +41,10 @@ export default function MSurveyList({ onNavigate }) {
                     className={`m-stab ${tab === 'result' ? 'on' : ''}`}
                     onClick={() => setTab('result')}
                 >설문결과</button>
+                <button
+                    className={`m-stab ${tab === 'closed' ? 'on' : ''}`}
+                    onClick={() => setTab('closed')}
+                >마감</button>
             </div>
 
             <ul className="m-survey-cards">
@@ -56,6 +60,7 @@ export default function MSurveyList({ onNavigate }) {
                             if (tab === 'active') {
                                 onNavigate && onNavigate('mSurveyDetail1', it);
                             } else {
+                                // 'result' or 'closed' → 결과 페이지
                                 onNavigate && onNavigate('mSurveyResults', it);
                             }
                         }}
@@ -64,7 +69,7 @@ export default function MSurveyList({ onNavigate }) {
                             <h3 className="m-card-title">{it.title}</h3>
                             <p className="m-card-meta">응답시간 : {it.minutes}분</p>
                             <p className="m-card-meta">조사기간 : {formatEndDate(it.period)}</p>
-                            {tab === 'result' && (
+                            {(tab === 'result' || tab === 'closed') && (
                                 <p className="m-card-meta m-card-respondents">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: 4 }}>
                                         <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>

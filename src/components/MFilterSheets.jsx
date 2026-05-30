@@ -1,18 +1,17 @@
 // 공유 모바일 지도 UI: 서치바 + 위치/정렬 바텀시트 (MProposalMap/MReportMap/MProposalList/MReportList 공용)
 
-export function MMapSearchBar({ value, onChange, onBack }) {
+export function MMapSearchBar({ value, onChange, onBack, placeholder = '제목·내용으로 검색', showBack = true }) {
     return (
         <div className="m-map-search-bar">
-            <button className="m-map-back" onClick={onBack}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <span className="m-map-search-icon" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </span>
+            {showBack && (
+                <button className="m-map-back" onClick={onBack}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+            )}
             <input
                 type="text"
                 className="m-map-search"
-                placeholder="검색"
+                placeholder={placeholder}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
             />

@@ -62,25 +62,23 @@
     border-color: #E6235A;
 }
 
-/* 3-state sheet heights */
+/* 2-state sheet heights (peek/half). full은 별도 list 페이지로 navigate */
 .m-rmap-page.sheet-peek .m-map-sheet { height: 80px; overflow: hidden; }
-.m-rmap-page.sheet-half .m-map-sheet { height: 48vh; }
-.m-rmap-page.sheet-full .m-map-sheet { height: calc(100vh - 76px); border-radius: 0; }
+.m-rmap-page.sheet-half .m-map-sheet { height: 48vh; overflow: hidden; }
 
-/* Full mode: hide search bar + standalone FAB */
-.m-rmap-page.sheet-full .m-map-search-bar { display: none; }
-.m-rmap-page.sheet-full .m-rmap-fab { display: none; }
-
-/* Full mode: FAB inside sheet context */
-.m-rmap-page.sheet-full .m-map-sheet .m-prop-fab {
-    display: flex;
-    position: fixed;
-    right: 16px;
-    bottom: 88px;
-    z-index: 60;
-    background: #E6235A;
-    box-shadow: 0 4px 16px rgba(230, 35, 90, 0.25);
+/* peek: 칩 1행 가로 스크롤 */
+.m-rmap-page.sheet-peek .m-sheet-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
+
+/* half: 칩 2행 wrap */
+.m-rmap-page.sheet-half .m-sheet-chips {
+    flex-wrap: wrap;
+    overflow-x: visible;
+}
+
 
 /* 내 위치 FAB — 시트 바로 위 지도 영역 우하단 */
 .m-locate-fab {

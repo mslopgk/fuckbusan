@@ -184,13 +184,17 @@ export default function MSurveyResults({ onNavigate, survey }) {
     const [radarExpanded, setRadarExpanded] = useState(false);
     const [copied, setCopied]               = useState(false);
 
+    const [resultsLoading, setResultsLoading] = useState(true);
+
     useEffect(() => {
         const id = survey?.id;
-        if (!id) return;
+        if (!id) { setResultsLoading(false); return; }
+        setResultsLoading(true);
         fetch(`${API_URL}/api/surveys/${id}/results`)
             .then((r) => (r.ok ? r.json() : null))
             .then((d) => { if (d) setResultsData(d); })
-            .catch(() => {});
+            .catch(() => {})
+            .finally(() => setResultsLoading(false));
     }, [survey?.id]);
 
     const respondentCount = resultsData?.response_count ?? meta.respondents;
@@ -346,6 +350,18 @@ export default function MSurveyResults({ onNavigate, survey }) {
 
             {/* ── 콘텐츠 ── */}
             <div className="m-results-content">
+
+                {resultsLoading && !resultsData && (
+                    <div style={{ padding: '40px 16px', textAlign: 'center', color: '#888', fontSize: 14 }}>
+                        결과를 불러오는 중입니다…
+                    </div>
+                )}
+
+                {!resultsLoading && !resultsData && (
+                    <div style={{ padding: '40px 16px', textAlign: 'center', color: '#888', fontSize: 14 }}>
+                        설문 결과 데이터가 아직 없습니다.
+                    </div>
+                )}
 
                 {/* 종합결과 */}
                 {compositeData.length > 0 && (

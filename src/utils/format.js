@@ -27,6 +27,27 @@ export function extractDistrict(address) {
     return m ? m[1] : '부산';
 }
 
+// region 필드와 필터 region(예: '동래구') 매칭. "부산 진구"/"부산진구"/null 등 표기 차이 흡수.
+export function matchDistrict(itemRegion, filter) {
+    if (!filter || filter === '부산전체') return true;
+    if (!itemRegion) return false;
+    const a = String(itemRegion).replace(/\s+/g, '');
+    const b = String(filter).replace(/\s+/g, '');
+    if (a === b) return true;
+    return a.includes(b) || b.includes(a);
+}
+
+// 가장 가까운 부산 구 추정 — 데이터에 region 정보가 없을 때 lat/lng로 fallback.
+export function nearestDistrict(lat, lng, centers) {
+    if (typeof lat !== 'number' || typeof lng !== 'number' || !centers) return null;
+    let best = null, bestDist = Infinity;
+    for (const [name, [clat, clng]] of Object.entries(centers)) {
+        const d = (lat - clat) ** 2 + (lng - clng) ** 2;
+        if (d < bestDist) { bestDist = d; best = name; }
+    }
+    return best;
+}
+
 export function formatDraftDate(dateStr) {
     if (!dateStr) return '';
     try {

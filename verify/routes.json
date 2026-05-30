@@ -80,7 +80,7 @@
       "view": "mDiagnosisList",
       "path": "/",
       "auth": false,
-      "waitFor": ".m-diag-list-page"
+      "waitFor": ".m-diag-list-only-page"
     },
     {
       "id": "mDiagnosisForm",
@@ -296,6 +296,20 @@
       "path": "/",
       "auth": false,
       "waitFor": ".m-prop-done-page"
+    },
+    {
+      "id": "mNotifications",
+      "view": "mNotifications",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-notif-page"
+    },
+    {
+      "id": "mDiagnosisMap",
+      "view": "mDiagnosisMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-diag-list-page"
     },
     {
       "id": "mReportList",

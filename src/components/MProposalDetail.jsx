@@ -88,9 +88,19 @@ export default function MProposalDetail({ onNavigate, proposal }) {
                 const j = await res.json();
                 setVoted(!!j.has_voted);
                 if (j.likes_count != null) setVotes(j.likes_count);
+            } else if (res.status === 403) {
+                let msg = '투표할 수 없습니다.';
+                try {
+                    const j = await res.json();
+                    if (j?.detail) msg = j.detail;
+                } catch { /* ignore */ }
+                alert(msg);
+            } else {
+                alert('투표 처리에 실패했습니다. 잠시 후 다시 시도해주세요.');
             }
         } catch (e) {
             console.error(e);
+            alert('네트워크 오류가 발생했습니다.');
         }
     };
 

@@ -47,14 +47,23 @@ class Persona(Base):
     gender = Column(String(10))
     job = Column(String(100))
     image_emoji = Column(String(50))
-    image_url = Column(String(500)) # Added for avatar images
+    image_url = Column(String(500))
     quote = Column(String(500))
-    full_quote = Column(String(1000))
-    tags = Column(JSON) # Changed to JSON
+    full_quote = Column(Text)
+    tags = Column(JSON)
     pain_points = Column(JSON)
     suggestions = Column(JSON)
     expected_effects = Column(JSON)
     stats = Column(JSON)
+    # 가상시민 카드/상세 표시 + RAG 자동 생성 대비
+    categories = Column(JSON)
+    avatar_initial = Column(String(10))
+    importance = Column(Integer, default=100, index=True)
+    detail = Column(JSON)
+    # RAG 메타데이터: 시드/자동생성 구분, 근거 데이터 추적
+    generation_source = Column(String(20), default="seed", index=True)
+    generated_at = Column(DateTime, default=datetime.now)
+    evidence = Column(JSON)  # RAG: [{type:"report", id:123}, {type:"proposal", id:45}, ...]
 
 class User(Base):
     __tablename__ = "users"
@@ -133,7 +142,7 @@ class ReportImage(Base):
     __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     id = Column(Integer, primary_key=True, index=True)
-    report_id = Column(Integer, ForeignKey("reports.id"), nullable=False)
+    report_id = Column(Integer, ForeignKey("reports.id"), nullable=False, index=True)
     image_url = Column(String(500), nullable=False)
 
 
@@ -142,8 +151,8 @@ class ReportLike(Base):
     __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    report_id = Column(Integer, ForeignKey("reports.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False, index=True)
+    report_id = Column(Integer, ForeignKey("reports.id"), nullable=False, index=True)
     created_at = Column(DateTime, default=datetime.now)
 
 
@@ -152,7 +161,7 @@ class ReportComment(Base):
     __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     id = Column(Integer, primary_key=True, index=True)
-    report_id = Column(Integer, ForeignKey("reports.id"), nullable=False)
+    report_id = Column(Integer, ForeignKey("reports.id"), nullable=False, index=True)
     user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
     author_name = Column(String(100), nullable=True)  # for seeded comments without real user
     content = Column(Text, nullable=False)
@@ -197,8 +206,8 @@ class ProposalLike(Base):
     __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    proposal_id = Column(Integer, ForeignKey("new_proposals.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False, index=True)
+    proposal_id = Column(Integer, ForeignKey("new_proposals.id"), nullable=False, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
@@ -213,8 +222,8 @@ class ProposalView(Base):
     )
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    proposal_id = Column(Integer, ForeignKey("new_proposals.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False, index=True)
+    proposal_id = Column(Integer, ForeignKey("new_proposals.id"), nullable=False, index=True)
     viewed_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", backref="viewed_proposals")
@@ -257,7 +266,7 @@ class SurveyQuestion(Base):
     __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     id = Column(Integer, primary_key=True, index=True)
-    survey_id = Column(Integer, ForeignKey("surveys.id"), nullable=False)
+    survey_id = Column(Integer, ForeignKey("surveys.id"), nullable=False, index=True)
     order_no = Column(Integer, default=0)
     qtype = Column(String(20), default="single")  # single / multi / text / agree
     text = Column(String(500), nullable=False)
@@ -269,8 +278,8 @@ class SurveyResponse(Base):
     __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     id = Column(Integer, primary_key=True, index=True)
-    survey_id = Column(Integer, ForeignKey("surveys.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    survey_id = Column(Integer, ForeignKey("surveys.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True, index=True)
     demographics = Column(JSON, nullable=True)
     submitted_at = Column(DateTime, default=datetime.now)
 
@@ -280,8 +289,8 @@ class SurveyAnswer(Base):
     __table_args__ = {'mysql_charset': 'utf8mb4'}
 
     id = Column(Integer, primary_key=True, index=True)
-    response_id = Column(Integer, ForeignKey("survey_responses.id"), nullable=False)
-    question_id = Column(Integer, ForeignKey("survey_questions.id"), nullable=False)
+    response_id = Column(Integer, ForeignKey("survey_responses.id"), nullable=False, index=True)
+    question_id = Column(Integer, ForeignKey("survey_questions.id"), nullable=False, index=True)
     value = Column(Text, nullable=True)
 
 

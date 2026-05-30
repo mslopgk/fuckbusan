@@ -1,0 +1,60 @@
+/* MDiagnosisMap 전용 보강 — 베이스는 MDiagnosisList.css 사용 */
+
+/* 검색바 — Figma 진단 목록1: 흰 라운드 박스 */
+.m-diag-search-wrap {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    right: 16px;
+    height: 55px;
+    z-index: 30;
+}
+
+.m-diag-search-select {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    padding: 0 18px;
+    font-size: 16px;
+    color: #242424;
+    font-family: inherit;
+    letter-spacing: -0.025em;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    outline: none;
+}
+
+/* 카테고리 칩 바 위치 — 검색바 아래로 (검색바 55 + top 12 + gap 8 = 75) */
+.m-diag-list-page .m-diag-cats-bar {
+    top: 75px;
+}
+
+
+.m-diag-mode-tabs-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.m-diag-mode-tabs-row .m-diag-mode-tabs {
+    margin-bottom: 0;
+}
+
+.m-diag-list-btn {
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}

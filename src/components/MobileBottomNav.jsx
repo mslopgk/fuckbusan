@@ -12,7 +12,7 @@ const ITEMS = [
 const SURVEY_VIEWS    = ['mSurveyList', 'mSurveyDetail1', 'mSurveyDetail2', 'mSurveyJoin', 'mSurveyDone', 'mSurveyResults', 'survey', 'surveyDone'];
 const REPORT_VIEWS    = ['mReportList', 'mReportMap', 'mReportForm', 'mReportDetail', 'mReportDone', 'reportList', 'reportForm', 'reportDetail', 'reportDone', 'report'];
 const PROPOSE_VIEWS   = ['mProposalList', 'mProposalMap', 'mProposalForm', 'mProposalDetail', 'mProposalDone', 'proposalList', 'proposalForm', 'proposalDetail', 'proposalDone'];
-const DIAG_VIEWS      = ['mDiagnosisList', 'mDiagnosisForm', 'mDiagnosisResult', 'mDiagnosisDone', 'mDiagnosisDetail', 'diagnosis', 'diagnosisStep1', 'bigCategory', 'checkList', 'satisfaction', 'review', 'checkDone', 'diagnosisResult', 'diagnosisList', 'diagnosisEdit', 'expertDiagnosisResult'];
+const DIAG_VIEWS      = ['mDiagnosisList', 'mDiagnosisMap', 'mDiagnosisForm', 'mDiagnosisResult', 'mDiagnosisDone', 'mDiagnosisDetail', 'diagnosis', 'diagnosisStep1', 'bigCategory', 'checkList', 'satisfaction', 'review', 'checkDone', 'diagnosisResult', 'diagnosisList', 'diagnosisEdit', 'expertDiagnosisResult'];
 const ACTIVITY_VIEWS  = ['myPage', 'myActivity', 'myActivityHub', 'myProposals', 'myReportList', 'myReports', 'mMyReportDetail', 'mMyReportEdit'];
 
 const NAV_ICONS = {
@@ -46,7 +46,7 @@ export default function MobileBottomNav({ currentView, onNavigate }) {
         if (key === 'home')               onNavigate?.('home');
         else if (key === 'survey')        onNavigate?.('mSurveyList');
         else if (key === 'reportPropose') setChooserOpen(true);
-        else if (key === 'diagnosis')     onNavigate?.('mDiagnosisList');
+        else if (key === 'diagnosis')     onNavigate?.('mDiagnosisMap');
         else if (key === 'activity')      onNavigate?.('myActivityHub');
     };
 

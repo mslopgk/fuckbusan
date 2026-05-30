@@ -3,14 +3,37 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 const PAGE_SIZE = 25;
 const SORT_API = { '최신순': 'latest', '조회수': 'views', '투표순': 'votes' };
 import MobileBottomNav from './MobileBottomNav';
-import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
-import { REGIONS, SORTS } from '../constants/mapConstants';
+import { REGIONS, SORTS, DISTRICT_CENTERS } from '../constants/mapConstants';
 import { RegionSheet, SortSheet } from './MFilterSheets';
 import { API_URL } from '../utils/api';
 import { useLazyImage } from '../hooks/useLazyImage';
-import { thumbUrl } from '../utils/format';
+import { thumbUrl, matchDistrict, nearestDistrict } from '../utils/format';
 import './MProposalList.css';
+
+function HeartIcon() {
+    return (
+        <img
+            src="/figma-assets/icons/icon_heart.svg"
+            alt=""
+            width="13"
+            height="11"
+            style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}
+        />
+    );
+}
+
+function CommentIcon() {
+    return (
+        <img
+            src="/figma-assets/icons/icon_comment.svg"
+            alt=""
+            width="13"
+            height="11"
+            style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}
+        />
+    );
+}
 
 function ProposalListCard({ it, onNavigate }) {
     const style = CAT_STYLES[it.category] || { bg: '#eee', color: '#555' };
@@ -33,19 +56,8 @@ function ProposalListCard({ it, onNavigate }) {
                 <div className="m-report-author-stat-row">
                     <p className="m-prop-author">{author}</p>
                     <div className="m-prop-stats">
-                        {/* WDC 0:11429: heart icon for votes */}
-                        <span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                            </svg>
-                            {it.likes_count ?? 0}
-                        </span>
-                        <span>
-                            <svg width="14" height="12" viewBox="0 0 24 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                            </svg>
-                            {it.comments_count ?? 0}
-                        </span>
+                        <span><HeartIcon />{it.likes_count ?? 0}</span>
+                        <span><CommentIcon />{it.comments_count ?? 0}</span>
                     </div>
                 </div>
             </div>
@@ -68,31 +80,14 @@ export default function MProposalList({ onNavigate }) {
     const [hasMore, setHasMore] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [listOpen, setListOpen] = useState(true);
-    const [mapPins, setMapPins] = useState([]);
     const fetchGenRef = useRef(0);
 
-    // 지도 핀: 전체 좌표만 별도 1회 로드
-    useEffect(() => {
-        const token = localStorage.getItem('access_token');
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        fetch(`${API_URL}/api/reports/proposal-pins`, { headers })
-            .then((r) => (r.ok ? r.json() : []))
-            .then((rows) => setMapPins(
-                (Array.isArray(rows) ? rows : []).map((r) => ({
-                    id: String(r.id), lat: r.lat, lng: r.lng, color: '#E6235A', title: r.category || ''
-                }))
-            ))
-            .catch(() => {});
-    }, []);
-
-    // 목록: 필터/정렬 변경 시 page 1부터 재로드 (서버사이드 필터+정렬)
+    // 목록: 필터/정렬 변경 시 page 1부터 재로드
     useEffect(() => {
         const gen = ++fetchGenRef.current;
         const token = localStorage.getItem('access_token');
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
         const params = new URLSearchParams({ skip: 0, limit: PAGE_SIZE, sort: SORT_API[sort] || 'latest' });
-        if (region && region !== '부산전체') params.set('region', region);
         if (cat && cat !== '전체') params.set('category', cat);
         setLoading(true);
         setItems([]);
@@ -106,7 +101,7 @@ export default function MProposalList({ onNavigate }) {
             })
             .catch(() => setItems([]))
             .finally(() => { if (gen === fetchGenRef.current) setLoading(false); });
-    }, [region, cat, sort]);
+    }, [cat, sort]);
 
     const loadMore = useCallback(() => {
         if (!hasMore || loadingMore) return;
@@ -115,7 +110,6 @@ export default function MProposalList({ onNavigate }) {
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
         setItems((prev) => {
             const params = new URLSearchParams({ skip: prev.length, limit: PAGE_SIZE, sort: SORT_API[sort] || 'latest' });
-            if (region && region !== '부산전체') params.set('region', region);
             if (cat && cat !== '전체') params.set('category', cat);
             fetch(`${API_URL}/api/reports/proposals?${params.toString()}`, { headers })
                 .then((r) => (r.ok ? r.json() : { items: [] }))
@@ -127,7 +121,7 @@ export default function MProposalList({ onNavigate }) {
                 .finally(() => setLoadingMore(false));
             return prev;
         });
-    }, [hasMore, loadingMore, region, cat, sort]);
+    }, [hasMore, loadingMore, cat, sort]);
 
     const handleScroll = useCallback((e) => {
         const el = e.currentTarget;
@@ -139,82 +133,76 @@ export default function MProposalList({ onNavigate }) {
     const confirmRegion = () => { setRegion(regionDraft); setRegionOpen(false); };
     const confirmSort = () => { setSort(sortDraft); setSortOpen(false); };
 
+    const regionFilter = region && region !== '부산전체' ? region : null;
+    const filtered = !regionFilter ? items : items.filter((it) => {
+        if (matchDistrict(it.region, regionFilter)) return true;
+        const approx = nearestDistrict(it.lat, it.lng, DISTRICT_CENTERS);
+        return matchDistrict(approx, regionFilter);
+    });
+
     return (
         <div className="m-prop-list-page">
+            {/* 상단 topbar: < 홈으로 + 지도보기 pill */}
             <header className="m-prop-topbar">
                 <button type="button" className="m-prop-back" onClick={() => onNavigate && onNavigate('home')}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    <svg width="7" height="13" viewBox="0 0 7 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 1L1 6.5L6 12" stroke="#555555" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                     <span>홈으로</span>
                 </button>
                 <button type="button" className="m-map-btn" onClick={() => onNavigate && onNavigate('mProposalMap')}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <img src="/figma-assets/icons/icon_location_pin.svg" alt="" width="17" height="23" />
                     <span>지도보기</span>
                 </button>
             </header>
 
+            {/* 지역 선택 행 */}
             <div className="m-region-row">
                 <button type="button" className="m-region-btn" onClick={openRegion}>
                     <span>{region}</span>
                     <span className="m-region-arrow">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        <svg width="5" height="9" viewBox="0 0 5 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1L4.5 4.5L1 8" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
                     </span>
                 </button>
             </div>
 
-            <div className="m-prop-page-body">
-            {/* Map layer — always rendered, visible when list is collapsed */}
-            <div className="m-prop-map-layer">
-                <PCMapCanvas
-                    pins={mapPins}
-                    accentColor="#E6235A"
-                    initialCenter={{ lat: 35.1631, lng: 129.1638 }}
-                    initialLevel={8}
-                    showLocateBtn
-                />
+            {/* 카테고리 칩 */}
+            <div className="m-cat-chips">
+                {CATEGORIES.map((c) => (
+                    <button
+                        key={c}
+                        type="button"
+                        className={`m-cat-chip ${cat === c ? 'on' : ''}`}
+                        onClick={() => setCat(c)}
+                    >{c}</button>
+                ))}
             </div>
 
-            {/* Sliding list panel */}
-            <div className={`m-prop-list-panel${listOpen ? '' : ' collapsed'}`}>
-                <div className="m-prop-panel-handle" onClick={() => setListOpen(!listOpen)}>
-                    <div className="m-prop-handle-bar" />
-                    {!listOpen && (
-                        <span className="m-prop-panel-handle-label">목록 보기</span>
+            {/* 정렬 */}
+            <div className="m-sort-row">
+                <button type="button" className="m-sort-btn" onClick={openSort}>
+                    <span>{sort}</span>
+                    <img src="/figma-assets/icons/icon_sort_chevron.svg" alt="" width="9" height="5" />
+                </button>
+            </div>
+
+            {/* 카드 목록 */}
+            <div className="m-prop-list-scroll" onScroll={handleScroll}>
+                <ul className="m-prop-cards">
+                    {loading && <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>불러오는 중...</li>}
+                    {!loading && filtered.length === 0 && (
+                        <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>조건에 맞는 제안이 없습니다.</li>
                     )}
-                </div>
-
-                <div className="m-prop-list-content" onScroll={handleScroll}>
-                    <div className="m-cat-chips">
-                        {CATEGORIES.map((c) => (
-                            <button
-                                key={c}
-                                type="button"
-                                className={`m-cat-chip ${cat === c ? 'on' : ''}`}
-                                onClick={() => setCat(c)}
-                            >{c}</button>
-                        ))}
-                    </div>
-
-                    <div className="m-sort-row">
-                        <button type="button" className="m-sort-btn" onClick={openSort}>
-                            <span>{sort}</span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                        </button>
-                    </div>
-
-                    <ul className="m-prop-cards">
-                        {loading && <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>불러오는 중...</li>}
-                        {!loading && items.length === 0 && (
-                            <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>조건에 맞는 제안이 없습니다.</li>
-                        )}
-                        {items.map((it) => (
-                            <ProposalListCard key={it.id} it={it} onNavigate={onNavigate} />
-                        ))}
-                        {loadingMore && <li style={{ padding: '12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>불러오는 중...</li>}
-                    </ul>
-                </div>
+                    {filtered.map((it) => (
+                        <ProposalListCard key={it.id} it={it} onNavigate={onNavigate} />
+                    ))}
+                    {loadingMore && <li style={{ padding: '12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>불러오는 중...</li>}
+                </ul>
             </div>
-            </div>{/* end m-prop-page-body */}
 
+            {/* FAB */}
             <button type="button" className="m-prop-fab" onClick={() => onNavigate && onNavigate('mProposalForm')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 <span>제안하기</span>

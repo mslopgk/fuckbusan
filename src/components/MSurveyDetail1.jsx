@@ -4,9 +4,74 @@ import './MSurveyDetail.css';
 import { API_URL } from '../utils/api';
 import { copyToClipboard } from '../utils/clipboard';
 
+const TERMS_TEXT = `[부산 공공디자인 진단 플랫폼 이용약관]
+
+제1조 (목적)
+본 약관은 부산 공공디자인 진단 플랫폼(이하 "플랫폼")이 제공하는 시민참여형 공공디자인 진단·제보·제안·설문 서비스 이용에 관한 사항을 규정함을 목적으로 합니다.
+
+제2조 (서비스의 내용)
+1. 시민이 참여하는 공공디자인 진단
+2. 거리/시설의 불편사항 제보 및 개선 제안
+3. 공공디자인 관련 설문 참여
+4. 가상시민 페르소나 기반 공공정책 인사이트 제공
+
+제3조 (이용자의 의무)
+- 타인의 명예를 훼손하거나 권리를 침해하는 내용을 게시하지 않습니다.
+- 허위 정보 또는 욕설·차별·혐오 표현을 사용하지 않습니다.
+- 본 서비스를 영리·상업적 목적으로 이용하지 않습니다.
+
+제4조 (게시물의 관리)
+운영자는 신고 또는 자체 모니터링을 통해 약관에 위배되는 게시물을 사전 통지 없이 비공개 처리할 수 있습니다.
+
+제5조 (책임의 제한)
+플랫폼은 시민 의견 수렴을 위한 도구이며, 게시된 내용은 작성자 본인의 책임입니다.
+
+본 약관은 2026년 1월 1일부터 시행됩니다.`;
+
+const PRIVACY_TEXT = `[개인정보처리방침]
+
+1. 수집하는 개인정보 항목
+- 필수: 이름, 이메일, 휴대전화번호, 비밀번호, 닉네임
+- 선택: 거주 지역(구 단위), 연령대, 성별
+- 자동수집: 접속 IP, 쿠키, 서비스 이용기록
+
+2. 개인정보의 수집·이용 목적
+- 회원 식별 및 부정 이용 방지
+- 공공디자인 진단 결과 집계 및 통계
+- 설문 응답 분석 및 정책 자료 활용
+
+3. 보유 및 이용기간
+- 회원 탈퇴 시까지 보관, 탈퇴 후 즉시 파기 (관계 법령에 따라 일정 기간 보관할 수 있음)
+- 설문 응답은 통계 목적으로 비식별화 후 영구 보관 가능
+
+4. 제3자 제공
+원칙적으로 외부에 제공하지 않습니다. 다만 법령에 근거한 경우 예외로 합니다.
+
+5. 정보주체의 권리
+이용자는 언제든 개인정보 열람·정정·삭제·처리정지를 요청할 수 있습니다.
+
+6. 개인정보 보호책임자
+부산광역시 공공디자인 진단 플랫폼 운영팀
+이메일: privacy@busan-pddp.kr
+
+본 방침은 2026년 1월 1일부터 시행됩니다.`;
+
 export default function MSurveyDetail1({ onNavigate, survey }) {
     const [fullSurvey, setFullSurvey] = useState(null);
     const [copied, setCopied] = useState(false);
+    const [policyOpen, setPolicyOpen] = useState(null); // 'terms' | 'privacy' | null
+
+    useEffect(() => {
+        if (!policyOpen) return;
+        const onKey = (e) => { if (e.key === 'Escape') setPolicyOpen(null); };
+        document.addEventListener('keydown', onKey);
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.removeEventListener('keydown', onKey);
+            document.body.style.overflow = prev;
+        };
+    }, [policyOpen]);
 
     useEffect(() => {
         const id = survey?.id;
@@ -79,25 +144,48 @@ export default function MSurveyDetail1({ onNavigate, survey }) {
                 </ul>
 
                 <p className="m-body-terms">
-                    <span
-                        className="link"
-                        style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                        onClick={() => alert('이용약관 내용입니다. (준비 중)')}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => e.key === 'Enter' && alert('이용약관 내용입니다. (준비 중)')}
-                    >이용약관</span> 및 <span
-                        className="link"
-                        style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                        onClick={() => alert('개인정보처리방침 내용입니다. (준비 중)')}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => e.key === 'Enter' && alert('개인정보처리방침 내용입니다. (준비 중)')}
-                    >개인정보처리방침</span>
+                    <button
+                        type="button"
+                        className="m-policy-link"
+                        onClick={() => setPolicyOpen('terms')}
+                    >이용약관</button> 및 <button
+                        type="button"
+                        className="m-policy-link"
+                        onClick={() => setPolicyOpen('privacy')}
+                    >개인정보처리방침</button>
                 </p>
 
                 <button className="m-survey-cta" onClick={() => onNavigate && onNavigate('mSurveyDetail2', fullSurvey || survey)}>참여하기</button>
             </div>
+
+            {policyOpen && (
+                <div
+                    className="m-policy-modal"
+                    role="dialog"
+                    aria-label={policyOpen === 'terms' ? '이용약관' : '개인정보처리방침'}
+                    onClick={() => setPolicyOpen(null)}
+                >
+                    <div className="m-policy-sheet" onClick={(e) => e.stopPropagation()}>
+                        <header className="m-policy-header">
+                            <h2 className="m-policy-title">
+                                {policyOpen === 'terms' ? '이용약관' : '개인정보처리방침'}
+                            </h2>
+                            <button
+                                type="button"
+                                className="m-policy-close"
+                                onClick={() => setPolicyOpen(null)}
+                                aria-label="닫기"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                            </button>
+                        </header>
+                        <pre className="m-policy-body">{policyOpen === 'terms' ? TERMS_TEXT : PRIVACY_TEXT}</pre>
+                    </div>
+                </div>
+            )}
 
             <MobileBottomNav currentView="mSurveyDetail1" onNavigate={onNavigate} />
         </div>

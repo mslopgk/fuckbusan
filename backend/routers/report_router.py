@@ -59,14 +59,33 @@ def _make_thumbnail(img_bytes: bytes, size: int = 400, quality: int = 55) -> byt
         return None
 
 
+_ALLOWED_IMAGE_TYPES = {'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif'}
+_ALLOWED_IMAGE_EXTS = {'.jpg', '.jpeg', '.png', '.webp', '.gif', '.heic', '.heif'}
+_MAX_UPLOAD_BYTES = 15 * 1024 * 1024  # 15MB
+
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    file_extension = os.path.splitext(file.filename)[1]
+    file_extension = os.path.splitext(file.filename or '')[1].lower()
+    content_type = (file.content_type or '').lower()
+
+    # MIME + 확장자 양쪽 화이트리스트
+    if content_type not in _ALLOWED_IMAGE_TYPES and file_extension not in _ALLOWED_IMAGE_EXTS:
+        raise HTTPException(status_code=400, detail="이미지 파일만 업로드할 수 있습니다.")
+
     unique_filename = f"{uuid.uuid4()}{file_extension}"
     contents = await file.read()
 
-    content_type = file.content_type or ''
-    is_image = content_type.startswith('image/')
+    if len(contents) > _MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=400, detail="파일 크기는 15MB를 초과할 수 없습니다.")
+
+    # PIL로 디코딩 검증 — 실제 이미지가 아니면 거부
+    if _PIL_AVAILABLE:
+        try:
+            PilImage.open(io.BytesIO(contents)).verify()
+        except Exception:
+            raise HTTPException(status_code=400, detail="유효한 이미지 파일이 아닙니다.")
+
+    is_image = content_type.startswith('image/') or file_extension in _ALLOWED_IMAGE_EXTS
     thumb_contents: bytes | None = None
 
     if _PIL_AVAILABLE and is_image:
@@ -462,6 +481,33 @@ def get_voted_proposals(
     return voted_proposals
 
 # --- [추가] 제안 조회수 증가 API (본인 글 제외, 중복 방지) ---
+@router.post("/{report_id}/view")
+def increment_report_view(
+    report_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[models.User] = Depends(get_current_user_optional)
+):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+
+    # 비로그인은 카운트 안 함 (가벼운 정책 — ReportView 모델 없이 중복 방지를 위해)
+    if not current_user:
+        return {"views": r.views or 0, "counted": False}
+
+    # 관리자 또는 본인 글이면 조회수 증가 안 함
+    if current_user.user_id >= 999990 or r.user_id == current_user.user_id:
+        return {"views": r.views or 0, "counted": False}
+
+    try:
+        r.views = (r.views or 0) + 1
+        db.commit()
+        return {"views": r.views, "counted": True}
+    except Exception:
+        db.rollback()
+        return {"views": r.views or 0, "counted": False}
+
+
 @router.post("/proposals/{proposal_id}/view")
 def increment_proposal_view(
     proposal_id: int,

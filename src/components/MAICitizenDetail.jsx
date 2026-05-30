@@ -177,10 +177,13 @@ export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }
     }, [initialCitizen?.id]);
 
     if (!citizen) return (
-        <div style={{ padding: '24px', textAlign: 'center' }}>
-            <p style={{ color: '#888', marginBottom: 16 }}>시민 정보를 찾을 수 없습니다.</p>
-            <button onClick={() => onNavigate?.('mAICitizen')} style={{ padding: '8px 20px', background: '#5B2EAB', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit' }}>목록으로</button>
-        </div>
+        <>
+            <div style={{ padding: '24px', textAlign: 'center', minHeight: 'calc(100vh - 76px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <p style={{ color: '#888', marginBottom: 16 }}>시민 정보를 찾을 수 없습니다.</p>
+                <button onClick={() => onNavigate?.('mAICitizen')} style={{ padding: '8px 20px', background: '#5B2EAB', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit' }}>목록으로</button>
+            </div>
+            <MobileBottomNav currentView="mAICitizenDetail" onNavigate={onNavigate} />
+        </>
     );
 
     const d = detail || {};

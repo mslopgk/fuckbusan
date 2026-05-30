@@ -56,6 +56,15 @@ export default function MReportDetail({ onNavigate, report }) {
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => setComments(Array.isArray(rows) ? rows : []))
             .catch(() => setComments([]));
+
+        // 조회수 +1 (본인/관리자/비로그인은 백엔드가 무시)
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            fetch(`${API_URL}/api/reports/${report.id}/view`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+            }).catch(() => {});
+        }
     }, [report?.id]);
 
     const toggleLike = async () => {

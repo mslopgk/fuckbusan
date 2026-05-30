@@ -162,10 +162,10 @@ export default function PCReportForm({ onNavigate }) {
         // Upload to server
         setUploading(true);
         setUploadedUrl('');
-        const compressed = await compressImage(f);
-        const form = new FormData();
-        form.append('file', compressed);
         try {
+            const compressed = await compressImage(f);
+            const form = new FormData();
+            form.append('file', compressed);
             const res = await fetch(`${API_URL}/api/reports/upload`, { method: 'POST', body: form });
             if (res.ok) {
                 const j = await res.json();
@@ -174,9 +174,9 @@ export default function PCReportForm({ onNavigate }) {
                 setSubmitError('사진 업로드에 실패했습니다.');
                 setTimeout(() => setSubmitError(''), 2000);
             }
-        } catch {
-            setSubmitError('사진 업로드 중 오류가 발생했습니다.');
-            setTimeout(() => setSubmitError(''), 2000);
+        } catch (err) {
+            setSubmitError(err?.message || '사진 업로드 중 오류가 발생했습니다.');
+            setTimeout(() => setSubmitError(''), 2500);
         } finally {
             setUploading(false);
         }

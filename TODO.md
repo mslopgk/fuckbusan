@@ -45,6 +45,14 @@
 - [x] 카드 좋아요 토글 인터랙션 (2026-05-06): 하트 클릭 시 active/inactive 아이콘 전환 + 낙관적 카운트 업데이트 + API 호출
 - [x] Figma 전수조사 완료 (2026-05-28): 전체 레이아웃·카드 구조 일치 확인
 - [x] 패널 핸들 텍스트 레이블 숨김 — Figma 기준 핸들바만 표시 (2026-05-30)
+- [x] List/Map 분리 후 단독 목록 페이지로 재구조화 — PCMapCanvas·슬라이딩 패널 제거, 단순 scroll 레이아웃 (2026-05-30)
+- [x] sub-tag 색상 #FCDAE3→#FFC9C9, 텍스트 #C2456A→#242424, font-size 11→14px — Figma 848:19157 기준 (2026-05-30)
+- [x] m-map-btn (지도보기 pill) 상단 헤더에 추가 — 오른쪽에서 mReportMap으로 navigate (2026-05-30)
+
+### 제보 지도 (`MReportMap.jsx`)
+- [x] 2-snap 바텀시트 (peek/half) 정밀 일치화 — sheet border-radius 18→30px, chip wrap 로직 분기 (2026-05-30)
+- [x] 검색바 h44→55px, border-radius 8→15px, shadow 일치화 — Figma 848:19015 기준 (2026-05-30)
+- [x] peek/half 모드별 칩 flex-wrap 분기 — peek: nowrap 스크롤, half: wrap 2행 (2026-05-30)
 
 ### 제보 폼 (`MReportForm.jsx`)
 - [x] 사진 등록: MReportForm은 이미 구현되어 있었음 확인 (2026-05-21)
@@ -132,12 +140,23 @@
 - [x] 카테고리 칩 14→16px, height 33px — WDC 0:11500 기준 (2026-05-30)
 - [x] 정렬 버튼 14→16px — WDC 0:11471 기준 (2026-05-30)
 - [x] 투표 아이콘 checkmark→heart — WDC 기준 (2026-05-30)
+- [x] map layer + 슬라이딩 패널 제거 → 단독 standalone 목록 페이지로 재구성 (WDC 0:11429 기준) (2026-05-30)
+- [x] cat tag font-size 12→14px, 카드 heart/comment icon → figma-assets/icons 사용 (2026-05-30)
+- [x] 지도보기 pill height 36px, font-size 14px, pin icon 사용 (2026-05-30)
+- [x] 지역 화살표 circle 22→24px (2026-05-30)
+- [x] 정렬 icon → icon_sort_chevron.svg (2026-05-30)
 
 ### 제안 지도 (`MProposalMap.jsx`)
 - [x] 정렬(최신/조회/투표) 실제 반영 — useMemo에 sort 로직 추가 (2026-05-21)
 - [x] 카드 이미지 빈 div → backgroundImage 설정 (2026-05-21)
 - [x] back 버튼 → `mProposalList` 수정 (2026-05-28)
 - [x] 카드 투표 아이콘 checkmark→heart — WDC 기준 (2026-05-30)
+- [x] 검색바 height 44→55px, border-radius 8→15px, shadow 0 0 10px rgba(0,0,0,0.25) — WDC 0:11857 기준 (2026-05-30)
+- [x] 검색바 placeholder "검색", back 버튼 제거 (WDC 0:11858 기준) (2026-05-30)
+- [x] 시트 border-radius 18→30px — WDC 0:11786 기준 (2026-05-30)
+- [x] 시트 region 버튼 font-size 18→22px bold — WDC 0:11860 기준 (2026-05-30)
+- [x] 카드 heart/comment icon → figma-assets/icons 사용 (2026-05-30)
+- [x] 카드 구조 m-report-tags + m-report-author-stat-row 일치화 (2026-05-30)
 
 ### 나의 제안 (`MyProposals.jsx`)
 - [x] 클릭 시 구버전 ProposalDetail → 기기별 pcMyProposalDetail/mProposalDetail 분기 (2026-05-21)
@@ -185,7 +204,9 @@
 - [x] `MDiagnosisResult` 사진 썸네일 border-radius 4px→8px (Figma 22:6387 기준) (2026-05-30)
 - [x] `MDiagnosisResult` 헤더 타이틀 text-align center→left (Figma 22:6387 기준, left-aligned next to back btn) (2026-05-30)
 - [x] `CheckDone` footer padding 0 24px→0 16px (343px button width, Figma 22:7205 기준) (2026-05-30)
-- [ ] `MDiagnosisResult` 좋아요/댓글 섹션 (Figma 22:6387 하단): 백엔드 미연결 — **결정 대기**
+- [x] `MDiagnosisResult` 레이더 차트 fill/stroke #E6235A(pink) → #23BDBB(teal) — Figma 22:6387 기준 (2026-05-30)
+- [x] `MDiagnosisResult` 좋아요/댓글 섹션 추가 — Figma 22:6387 하단, 정적 mock (백엔드 미연결 보류) (2026-05-30)
+- [x] `MDiagnosisList` 헤더 back+모드탭 같은 행, district compact badge 스타일 — Figma 22:6281 기준 (2026-05-30)
 - [ ] `MDiagnosisResult` "관련 시민 제안" 섹션: Figma에 없는 코드 전용 섹션. keep/remove **결정 대기**
 - [ ] 모바일 전문가 진단 전용 플로우 — 현재 mode 전달만, 전용 화면 없음
 - [?] PC 셸 (A안 통합) Figma `941:10538`/`12315`/`12749` 재검증

@@ -65,6 +65,21 @@ const Signup = ({ onBack, onNavigate }) => {
                 throw new Error(errData.detail || '회원가입에 실패했습니다.');
             }
 
+            // 자동 로그인: 가입 성공 직후 같은 자격증명으로 로그인 → 토큰 저장
+            try {
+                const loginRes = await fetch(`${API_URL}/users/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ID: payload.ID, PW: payload.PW }),
+                });
+                if (loginRes.ok) {
+                    const ld = await loginRes.json();
+                    if (ld.access_token) localStorage.setItem('access_token', ld.access_token);
+                    if (ld.user_name) localStorage.setItem('user_name', ld.user_name);
+                    if (ld.district_code) localStorage.setItem('district_code', ld.district_code);
+                }
+            } catch { /* 자동 로그인 실패해도 signupDone으로 진행 */ }
+
             // Success
             if (onNavigate) {
                 onNavigate('signupDone');

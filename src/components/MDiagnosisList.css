@@ -22,15 +22,15 @@
 .m-diag-header {
     flex-shrink: 0;
     background: #fff;
-    padding: 0 16px 12px;
+    padding: 0 16px 10px;
     z-index: 20;
 }
 
 .m-diag-header-top {
     display: flex;
     align-items: center;
-    gap: 8px;
-    height: 48px;
+    gap: 4px;
+    height: 44px;
 }
 
 .m-diag-back-btn {
@@ -40,63 +40,49 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
     flex-shrink: 0;
 }
 
-/* 헤더 내 모드 탭 — Figma 22:6281 기준: 시민 진단(inactive) + 전문가 진단(active bold) */
-.m-diag-mode-tabs-header {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    padding: 0 4px;
-    margin-bottom: 8px;
-}
+/* (deprecated) 헤더 내 모드 탭 — 시트로 이동됨. m-diag-mode-tabs 사용 */
 
-.m-diag-mode-tab-header {
-    background: none;
-    border: none;
-    padding: 0;
-    font-size: 16px;
-    font-family: inherit;
-    color: #b0b0b0;
-    cursor: pointer;
-    letter-spacing: -0.04em;
-    line-height: 1.4;
-}
-
-.m-diag-mode-tab-header.active {
-    font-size: 22px;
-    font-weight: 800;
-    color: #23BDBB;
-    letter-spacing: -0.05em;
-}
-
+/* 지역 배지 — Figma: compact inline badge with right chevron */
 .m-diag-district-row {
-    margin-top: 4px;
+    margin-top: 2px;
+    padding-left: 32px;
 }
 
-.m-diag-district-select {
-    height: 46px;
-    width: 100%;
-    border: 1.5px solid #242424;
-    border-radius: 8px;
-    padding: 0 12px;
-    font-size: 16px;
+.m-diag-district-badge-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.m-diag-district-badge {
+    height: 32px;
+    min-width: 90px;
+    border: none;
+    border-radius: 6px;
+    padding: 0 28px 0 10px;
+    font-size: 15px;
+    font-weight: 600;
     font-family: inherit;
     color: #242424;
-    background: #fff;
+    background: transparent;
     appearance: none;
     -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L12 15L18 9' stroke='%23242424' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    padding-right: 36px;
     cursor: pointer;
     outline: none;
     box-sizing: border-box;
+    letter-spacing: -0.03em;
+}
+
+.m-diag-district-chevron {
+    position: absolute;
+    right: 4px;
+    pointer-events: none;
 }
 
 /* 카테고리 칩 바 (지도 위 플로팅, 수평 스크롤) */
@@ -112,6 +98,9 @@
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    /* 우측 스크롤 가능 힌트 — 흰색→투명 그라데이션으로 fade-out */
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
 }
 
 .m-diag-cats-bar::-webkit-scrollbar {
@@ -497,4 +486,155 @@
 
 @media (min-width: 1024px) {
     .m-diag-list-page { display: none; }
+}
+
+/* ─── 단독 목록 페이지 (Figma 진단 목록3/4) ─── */
+.m-diag-list-only-page {
+    min-height: 100vh;
+    background: #fff;
+    padding-bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+}
+
+.m-diag-list-topbar {
+    height: 56px;
+    padding: 0 16px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.m-diag-list-back {
+    background: none;
+    border: none;
+    padding: 8px 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-diag-list-mode-tabs {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.m-diag-list-mode-tab {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 16px;
+    font-family: inherit;
+    color: #777;
+    cursor: pointer;
+    letter-spacing: -0.04em;
+}
+
+.m-diag-list-mode-tab.active {
+    font-size: 20px;
+    font-weight: 700;
+    color: #23BDBB;
+    letter-spacing: -0.05em;
+}
+
+.m-diag-list-district-row {
+    padding: 12px 16px 6px;
+}
+
+.m-diag-list-district-btn {
+    background: none;
+    border: none;
+    padding: 4px 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a1b;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.02em;
+}
+
+.m-diag-list-district-arrow {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #23BDBB;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-diag-list-cats {
+    padding: 8px 16px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.m-diag-list-cat-chip {
+    background: #e6e6e6;
+    border: none;
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-size: 14px;
+    color: #242424;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-diag-list-cat-chip.active {
+    background: #23BDBB;
+    color: #fff;
+    font-weight: 600;
+}
+
+.m-diag-list-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.m-diag-list-empty {
+    padding: 56px 16px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+}
+
+.m-diag-list-fab {
+    position: fixed;
+    right: 16px;
+    bottom: 88px;
+    background: #23BDBB;
+    color: #fff;
+    border: none;
+    border-radius: 26px;
+    height: 48px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 6px 18px rgba(35, 189, 187, 0.35);
+    font-family: inherit;
+    z-index: 60;
+}
+
+@media (min-width: 1024px) {
+    .m-diag-list-only-page { display: none; }
 }

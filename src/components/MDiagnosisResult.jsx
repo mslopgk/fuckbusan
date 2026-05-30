@@ -55,6 +55,47 @@ function CustomTick({ payload, x, y, textAnchor, radarData }) {
     );
 }
 
+function BreakdownSection({ label, title, data, count, empty }) {
+    const avg = data && data.length
+        ? (data.reduce((s, d) => s + (d.A || 0), 0) / data.length).toFixed(2)
+        : '0.00';
+    return (
+        <div className="m-diagres-section-row">
+            <div className="m-diagres-section-label">{label}</div>
+            <div className="m-diagres-section-content">
+                <div className={`m-diagres-radar-card ${empty ? 'm-diagres-radar-card--disabled' : ''}`}>
+                    <p className="m-diagres-radar-card-title">{title}</p>
+                    {!empty && (
+                        <p className="m-diagres-card-head" style={{ fontSize: 13, color: '#777' }}>
+                            <span className="m-diagres-avg">{avg}</span>
+                            {count ? ` 평균 (${count})` : ' 평균'}
+                        </p>
+                    )}
+                    <div className="m-diagres-chart">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <RadarChart cx="50%" cy="50%" outerRadius="65%" data={data}>
+                                <PolarGrid stroke="#dadde2" />
+                                <PolarAngleAxis
+                                    dataKey="subject"
+                                    tick={(props) => <CustomTick {...props} radarData={data} />}
+                                />
+                                <Radar
+                                    name="Score"
+                                    dataKey="A"
+                                    stroke="#23BDBB"
+                                    strokeWidth={2}
+                                    fill="#23BDBB"
+                                    fillOpacity={empty ? 0.15 : 0.25}
+                                />
+                            </RadarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function RadarSection({ title, radarData, avg, count }) {
     return (
         <div className="m-diagres-section-row">
@@ -75,9 +116,9 @@ function RadarSection({ title, radarData, avg, count }) {
                                 <Radar
                                     name="Score"
                                     dataKey="A"
-                                    stroke="#E6235A"
+                                    stroke="#23BDBB"
                                     strokeWidth={2}
-                                    fill="#E6235A"
+                                    fill="#23BDBB"
                                     fillOpacity={0.25}
                                 />
                             </RadarChart>
@@ -93,6 +134,18 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
     const [stats, setStats] = useState({ avg: FALLBACK_TOTAL_AVG, count: FALLBACK_RESPONSES });
     const [resultDetail, setResultDetail] = useState(null);
     const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
+    const [breakdown, setBreakdown] = useState(null);
+
+    // Fetch 3-axis breakdown (facility/zone/person) — depends on resultId for scope
+    useEffect(() => {
+        const url = resultId
+            ? `${API_URL}/checklist/breakdown?result_id=${resultId}`
+            : `${API_URL}/checklist/breakdown`;
+        fetch(url)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((data) => { if (data) setBreakdown(data); })
+            .catch(() => {});
+    }, [resultId]);
 
     // Fetch individual result for radar data and date
     useEffect(() => {
@@ -256,91 +309,65 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                     />
 
                     {/* 시설물별 세부 정보 */}
-                    <div className="m-diagres-section-row">
-                        <div className="m-diagres-section-label">시설물별</div>
-                        <div className="m-diagres-section-content">
-                            <div className="m-diagres-radar-card m-diagres-radar-card--disabled">
-                                <p className="m-diagres-radar-card-title">시설물별 전체(All) 세부 정보</p>
-                                <div className="m-diagres-chart">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <RadarChart cx="50%" cy="50%" outerRadius="65%" data={FALLBACK_RADAR_DATA}>
-                                            <PolarGrid stroke="#dadde2" />
-                                            <PolarAngleAxis
-                                                dataKey="subject"
-                                                tick={(props) => <CustomTick {...props} radarData={FALLBACK_RADAR_DATA} />}
-                                            />
-                                            <Radar
-                                                name="Score"
-                                                dataKey="A"
-                                                stroke="#E6235A"
-                                                strokeWidth={2}
-                                                fill="#E6235A"
-                                                fillOpacity={0.15}
-                                            />
-                                        </RadarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <BreakdownSection
+                        label="시설물별"
+                        title={`시설물별 ${breakdown?.facility?.label || '전체'} 세부 정보`}
+                        data={(breakdown?.facility?.radar?.length ? breakdown.facility.radar : FALLBACK_RADAR_DATA)}
+                        count={breakdown?.facility?.count}
+                        empty={!breakdown}
+                    />
 
                     {/* 구역별 세부 정보 */}
-                    <div className="m-diagres-section-row">
-                        <div className="m-diagres-section-label">구역별</div>
-                        <div className="m-diagres-section-content">
-                            <div className="m-diagres-radar-card m-diagres-radar-card--disabled">
-                                <p className="m-diagres-radar-card-title">구역별 전체(All) 세부 정보</p>
-                                <div className="m-diagres-chart">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <RadarChart cx="50%" cy="50%" outerRadius="65%" data={FALLBACK_RADAR_DATA}>
-                                            <PolarGrid stroke="#dadde2" />
-                                            <PolarAngleAxis
-                                                dataKey="subject"
-                                                tick={(props) => <CustomTick {...props} radarData={FALLBACK_RADAR_DATA} />}
-                                            />
-                                            <Radar
-                                                name="Score"
-                                                dataKey="A"
-                                                stroke="#E6235A"
-                                                strokeWidth={2}
-                                                fill="#E6235A"
-                                                fillOpacity={0.15}
-                                            />
-                                        </RadarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <BreakdownSection
+                        label="구역별"
+                        title={`구역별 ${breakdown?.zone?.label || '전체'} 세부 정보`}
+                        data={(breakdown?.zone?.radar?.length ? breakdown.zone.radar : FALLBACK_RADAR_DATA)}
+                        count={breakdown?.zone?.count}
+                        empty={!breakdown}
+                    />
 
                     {/* 인원별 세부 정보 */}
-                    <div className="m-diagres-section-row">
-                        <div className="m-diagres-section-label">인원별</div>
-                        <div className="m-diagres-section-content">
-                            <div className="m-diagres-radar-card m-diagres-radar-card--disabled">
-                                <p className="m-diagres-radar-card-title">인원별 전체(All) 세부 정보</p>
-                                <div className="m-diagres-chart">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <RadarChart cx="50%" cy="50%" outerRadius="65%" data={FALLBACK_RADAR_DATA}>
-                                            <PolarGrid stroke="#dadde2" />
-                                            <PolarAngleAxis
-                                                dataKey="subject"
-                                                tick={(props) => <CustomTick {...props} radarData={FALLBACK_RADAR_DATA} />}
-                                            />
-                                            <Radar
-                                                name="Score"
-                                                dataKey="A"
-                                                stroke="#E6235A"
-                                                strokeWidth={2}
-                                                fill="#E6235A"
-                                                fillOpacity={0.15}
-                                            />
-                                        </RadarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-                        </div>
+                    <BreakdownSection
+                        label="인원별"
+                        title={`인원별 ${breakdown?.person?.label || '전체'} 세부 정보`}
+                        data={(breakdown?.person?.radar?.length ? breakdown.person.radar : FALLBACK_RADAR_DATA)}
+                        count={breakdown?.person?.count}
+                        empty={!breakdown}
+                    />
+                </div>
+
+                {/* 좋아요·댓글 섹션 — Figma 22:6387 */}
+                <div className="m-diagres-reactions">
+                    <div className="m-diagres-reaction-bar">
+                        <span className="m-diagres-reaction-item">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                            <span>13</span>
+                        </span>
+                        <span className="m-diagres-reaction-item">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            <span>2</span>
+                        </span>
                     </div>
+                    <ul className="m-diagres-comments">
+                        <li className="m-diagres-comment">
+                            <div className="m-diagres-comment-head">
+                                <span className="m-diagres-comment-user">citizen1024</span>
+                                <span className="m-diagres-comment-date">2025.01.15</span>
+                            </div>
+                            <p className="m-diagres-comment-text">횡단보도 주변에 불법 주정차 차량이 많아 보행 시 시야 확보가 어렵습니다. 특히 출퇴근 시간대에 위험하다고 느낍니다.</p>
+                        </li>
+                        <li className="m-diagres-comment">
+                            <div className="m-diagres-comment-head">
+                                <span className="m-diagres-comment-user">busan_walk</span>
+                                <span className="m-diagres-comment-date">2025.01.15</span>
+                            </div>
+                            <p className="m-diagres-comment-text">야간에 가로등 밝기가 부족해 보행 안전이 우려됩니다. 조명 추가 설치나 점검이 필요해 보입니다.</p>
+                        </li>
+                    </ul>
                 </div>
             </main>
 

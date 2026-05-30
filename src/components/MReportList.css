@@ -1,8 +1,55 @@
+/* MReportList — 제보 단독 목록 페이지 (Figma 848:19157) */
+
+/* Page root */
+.m-report-list-page {
+    height: 100vh;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Topbar: reuse .m-prop-topbar from MProposalList.css */
+
+/* Region row — tighter padding than proposal list */
+.m-rlist-region-row {
+    padding: 10px 16px 6px;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+/* Scrollable content area */
+.m-rlist-scroll {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    background: #f7f7f8;
+    padding-bottom: 80px; /* space for FAB + nav */
+}
+
+/* Category chips area — white bg, 2-row wrap */
+.m-rlist-cats {
+    background: #fff;
+    padding: 12px 16px 16px;
+    flex-wrap: wrap;
+    display: flex;
+    gap: 6px;
+}
+
+/* Sort row — white bg */
+.m-report-list-page .m-sort-row {
+    background: #fff;
+    padding: 4px 16px 8px;
+    justify-content: flex-end;
+    display: flex;
+}
+
+/* Stage chips — base layout */
 .m-stage-chips {
     display: flex;
     gap: 8px;
     padding: 0 16px 12px;
-    background: #f7f7f8;
+    background: #fff;
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -35,6 +82,35 @@
     font-weight: 700;
 }
 
+/* Stage chips — white bg for report list context */
+.m-report-list-page .m-stage-chips {
+    background: #fff;
+    padding: 0 16px 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Stage chip active: report pink */
+.m-report-list-page .m-stage-chip.on {
+    background: #E6235A;
+    border-color: #E6235A;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* Cat chip active: report pink */
+.m-report-list-page .m-cat-chip.on {
+    background: #E6235A;
+    color: #fff;
+    border-color: #E6235A;
+}
+
+/* Card list */
+.m-rlist-cards {
+    padding: 12px 16px 92px;
+    background: #f7f7f8;
+}
+
+/* Report tags: cat + sub tag in a row */
 .m-report-tags {
     display: flex;
     gap: 6px;
@@ -43,11 +119,21 @@
     margin-bottom: 6px;
 }
 
-/* In report list/map cards, cat-tag should not have its own bottom margin */
 .m-report-tags .m-prop-cat-tag {
     margin-bottom: 0;
 }
 
+/* Sub tag — Figma: #FFC9C9 bg, #242424 text (시설물... tag) */
+.m-report-sub-tag {
+    background: #FFC9C9;
+    color: #242424;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Author + stats on same row */
 .m-report-author-stat-row {
     display: flex;
     align-items: center;
@@ -58,26 +144,19 @@
     margin: 0;
 }
 
+/* Title size in list context */
 .m-report-list-page .m-prop-title {
     font-size: 16px;
     font-weight: 500;
     letter-spacing: -0.02em;
 }
 
-/* Figma: panel handle has no text label — hide it for report list */
-.m-report-list-page .m-prop-panel-handle-label {
-    display: none;
+/* FAB positioned above bottom nav */
+.m-rlist-fab {
+    bottom: 80px;
 }
 
-.m-report-list-page .m-prop-panel-handle {
-    height: 24px;
-}
-
-.m-report-sub-tag {
-    background: #FCDAE3;
-    color: #C2456A;
-    padding: 3px 10px;
-    border-radius: 11px;
-    font-size: 11px;
-    font-weight: 600;
+/* Region arrow circle — report pink */
+.m-report-list-page .m-region-arrow {
+    background: #E6235A;
 }

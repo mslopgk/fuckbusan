@@ -51,10 +51,16 @@ class PersonaBase(BaseModel):
     quote: str
     full_quote: str
     tags: List[str] = []
-    pain_points: List[str] = []
-    suggestions: List[str] = []
-    expected_effects: List[str] = []
+    pain_points: List[Any] = []
+    suggestions: Any = []  # list or dict (e.g. policy_signals: {high, medium, low})
+    expected_effects: List[Any] = []
     stats: Dict[str, Any] = {}
+    categories: List[str] = []
+    avatar_initial: Optional[str] = None
+    importance: Optional[int] = 100
+    detail: Optional[Dict[str, Any]] = None
+    generation_source: Optional[str] = "seed"
+    evidence: Optional[List[Dict[str, Any]]] = None
 
 class Persona(PersonaBase):
     id: int

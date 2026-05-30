@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './Home.css';
 import InteractiveMap from './InteractiveMap';
 import MobileBottomNav from './MobileBottomNav';
@@ -25,7 +25,7 @@ const Home = ({ onNavigate }) => {
     const goReport   = () => onNavigate && onNavigate(isPC ? 'pcReportMap'    : 'mReportMap');
     const goPropose  = () => onNavigate && onNavigate(isPC ? 'pcProposeMap'   : 'mProposalMap');
     const goSurvey   = () => onNavigate && onNavigate(isPC ? 'pcSurveyList'   : 'mSurveyList');
-    const goDiagnose = () => onNavigate && onNavigate(isPC ? 'pcDiagnosisMap' : 'mDiagnosisList');
+    const goDiagnose = () => onNavigate && onNavigate(isPC ? 'pcDiagnosisMap' : 'mDiagnosisMap');
 
     const handleLogout = () => {
         localStorage.removeItem('access_token');
@@ -51,7 +51,7 @@ const Home = ({ onNavigate }) => {
                     ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
-                            <button className="btn-header" style={{ padding: '8px', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => alert('알림')}>
+                            <button className="btn-header" style={{ padding: '8px', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => onNavigate && onNavigate('mNotifications')}>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -85,7 +85,7 @@ const Home = ({ onNavigate }) => {
                         ) : (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
-                                <button className="btn-header" style={{ padding: '8px', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => alert('알림')}>
+                                <button className="btn-header" style={{ padding: '8px', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => onNavigate && onNavigate('mNotifications')}>
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                                         <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -353,10 +353,10 @@ const CitizenCards = () => {
             .catch(() => setCitizens([]));
     }, []);
 
-    if (citizens.length === 0) return null;
-
     // Double data for simple 50% scroll loop
-    const displayCitizens = [...citizens, ...citizens];
+    const displayCitizens = useMemo(() => [...citizens, ...citizens], [citizens]);
+
+    if (citizens.length === 0) return null;
 
     return (
         <div className="citizen-card-section">
@@ -585,10 +585,10 @@ const ArchiveCards = () => {
             .catch(() => setArchives([]));
     }, []);
 
-    if (archives.length === 0) return null;
-
     // Double data for simple 50% scroll loop
-    const displayArchives = [...archives, ...archives];
+    const displayArchives = useMemo(() => [...archives, ...archives], [archives]);
+
+    if (archives.length === 0) return null;
 
     return (
         <div className="archive-section">

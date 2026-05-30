@@ -27,6 +27,7 @@ const ProposalList = lazy(() => import('./components/ProposalList'));
 const ChangePassword = lazy(() => import('./components/ChangePassword'));
 const MyPage = lazy(() => import('./components/MyPage'));
 const MyActivityHub = lazy(() => import('./components/MyActivityHub'));
+const MNotifications = lazy(() => import('./components/MNotifications'));
 const ReportPostForm = lazy(() => import('./components/ReportPostForm'));
 const ReportDone = lazy(() => import('./components/ReportDone'));
 const ReportList = lazy(() => import('./components/ReportList'));
@@ -84,6 +85,7 @@ const MReportDone = lazy(() => import('./components/MReportDone'));
 
 // USER:MOBILE 진단(Diagnosis) pages (Figma node 941:5782 — 04/23 업데이트)
 const MDiagnosisList = lazy(() => import('./components/MDiagnosisList'));
+const MDiagnosisMap = lazy(() => import('./components/MDiagnosisMap'));
 const MDiagnosisForm = lazy(() => import('./components/MDiagnosisForm'));
 const MDiagnosisResult = lazy(() => import('./components/MDiagnosisResult'));
 const MDiagnosisDone = lazy(() => import('./components/MDiagnosisDone'));
@@ -123,6 +125,19 @@ function App() {
         if (path === '/' && isAdminView) return 'home';
 
         if (['adminLogin', 'adminSignup', 'adminDashboard'].includes(stored)) return 'home';
+
+        // Auth guard for protected views: if no token, redirect stored auth-required view to home
+        const AUTH_REQUIRED_VIEWS = [
+            'mDiagnosisForm', 'diagnosisStep1', 'diagnosisStep2', 'diagnosisStep3', 'diagnosisEdit',
+            'myActivity', 'mMyActivity', 'myActivityHub', 'myReportList', 'myReports',
+            'myProposals', 'mMyReportDetail', 'mMyReportEdit',
+            'mProposalForm', 'mReportForm',
+            'mPage', 'myPage', 'changePassword',
+        ];
+        if (stored && AUTH_REQUIRED_VIEWS.includes(stored) && !localStorage.getItem('access_token')) {
+            return 'home';
+        }
+
         return stored || 'home';
     });
 
@@ -271,8 +286,8 @@ function App() {
                         }
                     }
                 }
-            } catch (error) {
-                console.error("Failed to fetch user pins:", error);
+            } catch {
+                // backend unreachable or aborted — keep existing pins, no console noise
             }
         };
 
@@ -284,6 +299,11 @@ function App() {
     // Sync state with browser history for back button support
     useEffect(() => {
         const handlePopState = (event) => {
+            // 폼 페이지가 자체적으로 popstate를 가로채려고 pushState(null,'')로 트랩을 설치한 경우
+            // App.jsx가 먼저 'home'으로 보내버리면 폼의 leave-confirm 모달이 영영 안 뜸 → skip
+            if (event.state && event.state.formGuard) {
+                return;
+            }
             if (event.state && event.state.view) {
                 setView(event.state.view);
             } else {
@@ -512,6 +532,8 @@ function App() {
                 setSelectedReport(null);
             }
             setView('reportDetail');
+        } else if (target === 'mNotifications') {
+            setView('mNotifications');
         } else if (target === 'myActivityHub') {
             if (!localStorage.getItem('access_token')) {
                 alert('로그인이 필요한 서비스입니다.');
@@ -621,6 +643,8 @@ function App() {
             setView('mReportDone');
         } else if (target === 'mDiagnosisList') {
             setView('mDiagnosisList');
+        } else if (target === 'mDiagnosisMap') {
+            setView('mDiagnosisMap');
         } else if (target === 'mDiagnosisForm') {
             if (!localStorage.getItem('access_token')) {
                 alert('로그인이 필요한 서비스입니다.');
@@ -713,6 +737,8 @@ function App() {
                         onBack={() => {
                             if (sessionStorage.getItem('pw_change_required') === '1') {
                                 setView('changePassword');
+                            } else if (localStorage.getItem('district_code') === 'admin') {
+                                setView('adminMain');
                             } else {
                                 setView('home');
                             }
@@ -1100,6 +1126,9 @@ function App() {
                 {view === 'myPage' && (
                     <MyPage onBack={() => setView('home')} />
                 )}
+                {view === 'mNotifications' && (
+                    <MNotifications onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
                 {view === 'myActivityHub' && (
                     <MyActivityHub
                         onBack={() => setView('home')}
@@ -1365,6 +1394,9 @@ function App() {
                 )}
                 {view === 'mDiagnosisList' && (
                     <MDiagnosisList onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mDiagnosisMap' && (
+                    <MDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'mDiagnosisForm' && (
                     <MDiagnosisForm onNavigate={(target, data) => onNavigate(target, data)} location={selectedReport} />

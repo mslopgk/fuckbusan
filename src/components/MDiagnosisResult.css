@@ -3,7 +3,7 @@
 .m-diagres-page {
     min-height: 100vh;
     background: #fff;
-    padding-bottom: 40px;
+    padding-bottom: 92px;
     color: #242424;
     font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
 }
@@ -255,4 +255,73 @@
     font-size: 11px;
     font-weight: 700;
     font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+}
+
+/* ───── 좋아요·댓글 섹션 — Figma 22:6387 ───── */
+.m-diagres-reactions {
+    padding: 16px 16px 32px;
+    border-top: 1px solid #e6e6e6;
+}
+
+.m-diagres-reaction-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.m-diagres-reaction-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+}
+
+.m-diagres-comments {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.m-diagres-comment {
+    padding: 14px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.m-diagres-comment:last-child {
+    border-bottom: none;
+}
+
+.m-diagres-comment-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.m-diagres-comment-user {
+    font-size: 13px;
+    font-weight: 600;
+    color: #242424;
+    letter-spacing: -0.02em;
+}
+
+.m-diagres-comment-date {
+    font-size: 12px;
+    color: #aaa;
+    letter-spacing: -0.01em;
+}
+
+.m-diagres-comment-text {
+    margin: 0;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.55;
+    letter-spacing: -0.02em;
 }

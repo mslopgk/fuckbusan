@@ -1,15 +1,14 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 const PAGE_SIZE = 25;
 const SORT_API = { '최신순': 'latest', '조회수': 'views', '투표순': 'votes' };
 import MobileBottomNav from './MobileBottomNav';
-import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
-import { REGIONS, SORTS, REPORT_STAGES as STAGES } from '../constants/mapConstants';
+import { REGIONS, SORTS, REPORT_STAGES as STAGES, DISTRICT_CENTERS } from '../constants/mapConstants';
 import { RegionSheet, SortSheet } from './MFilterSheets';
 import { API_URL } from '../utils/api';
 import { useLazyImage } from '../hooks/useLazyImage';
-import { thumbUrl } from '../utils/format';
+import { thumbUrl, matchDistrict, nearestDistrict } from '../utils/format';
 import './MProposalList.css';
 import './MReportList.css';
 
@@ -64,7 +63,6 @@ export default function MReportList({ onNavigate }) {
     const [sort, setSort] = useState('최신순');
     const [sortDraft, setSortDraft] = useState('최신순');
     const [sortOpen, setSortOpen] = useState(false);
-    const [listOpen, setListOpen] = useState(true);
     const [items, setItems] = useState([]);
     const [hasMore, setHasMore] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -72,27 +70,13 @@ export default function MReportList({ onNavigate }) {
         try { return new Set(JSON.parse(localStorage.getItem('likedReportIds') || '[]')); } catch { return new Set(); }
     });
     const [loading, setLoading] = useState(true);
-    const [mapPins, setMapPins] = useState([]);
     const fetchGenRef = useRef(0);
 
-    // 지도 핀: 전체 좌표만 별도 1회 로드
-    useEffect(() => {
-        fetch(`${API_URL}/api/reports/pins`)
-            .then((r) => (r.ok ? r.json() : []))
-            .then((rows) => setMapPins(
-                (Array.isArray(rows) ? rows : []).map((r) => ({
-                    id: String(r.id), lat: r.lat, lng: r.lng, color: '#E6235A', title: r.category || ''
-                }))
-            ))
-            .catch(() => {});
-    }, []);
-
-    // 목록: 필터/정렬 변경 시 page 1부터 재로드
+    // 목록: 필터/정렬 변경 시 page 1부터 재로드. region은 클라이언트에서 매칭 (DB region 일관성 부족).
     useEffect(() => {
         const gen = ++fetchGenRef.current;
         const stageDef = STAGES.find((s) => s.key === stage);
         const params = new URLSearchParams({ page: 1, size: PAGE_SIZE, sort: SORT_API[sort] || 'latest' });
-        if (region && region !== '부산전체') params.set('region', region);
         if (cat && cat !== '전체') params.set('category', cat);
         if (stageDef) params.set('status', stageDef.apiValue);
         setLoading(true);
@@ -108,7 +92,7 @@ export default function MReportList({ onNavigate }) {
             })
             .catch(() => setItems([]))
             .finally(() => { if (gen === fetchGenRef.current) setLoading(false); });
-    }, [region, cat, stage, sort]);
+    }, [cat, stage, sort]);
 
     const loadMore = useCallback(() => {
         if (!hasMore || loadingMore) return;
@@ -117,7 +101,6 @@ export default function MReportList({ onNavigate }) {
             const nextPage = Math.floor(prev.length / PAGE_SIZE) + 1;
             const stageDef = STAGES.find((s) => s.key === stage);
             const params = new URLSearchParams({ page: nextPage, size: PAGE_SIZE, sort: SORT_API[sort] || 'latest' });
-            if (region && region !== '부산전체') params.set('region', region);
             if (cat && cat !== '전체') params.set('category', cat);
             if (stageDef) params.set('status', stageDef.apiValue);
             fetch(`${API_URL}/api/reports/full?${params.toString()}`)
@@ -130,7 +113,7 @@ export default function MReportList({ onNavigate }) {
                 .finally(() => setLoadingMore(false));
             return prev;
         });
-    }, [hasMore, loadingMore, region, cat, stage, sort]);
+    }, [hasMore, loadingMore, cat, stage, sort]);
 
     const handleScroll = useCallback((e) => {
         const el = e.currentTarget;
@@ -159,7 +142,7 @@ export default function MReportList({ onNavigate }) {
     };
 
     return (
-        <div className="m-prop-list-page m-report-list-page">
+        <div className="m-report-list-page">
             <header className="m-prop-topbar">
                 <button className="m-prop-back" onClick={() => onNavigate && onNavigate('home')}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -171,7 +154,7 @@ export default function MReportList({ onNavigate }) {
                 </button>
             </header>
 
-            <div className="m-region-row">
+            <div className="m-rlist-region-row">
                 <button className="m-region-btn" onClick={openRegion}>
                     <span>{region}</span>
                     <span className="m-region-arrow">
@@ -180,76 +163,65 @@ export default function MReportList({ onNavigate }) {
                 </button>
             </div>
 
-            <div className="m-prop-page-body">
-            {/* Map layer — always rendered, visible when list is collapsed */}
-            <div className="m-prop-map-layer">
-                <PCMapCanvas
-                    pins={mapPins}
-                    accentColor="#E6235A"
-                    initialCenter={{ lat: 35.1631, lng: 129.1638 }}
-                    initialLevel={8}
-                    showLocateBtn
-                />
-            </div>
-
-            {/* Sliding list panel */}
-            <div className={`m-prop-list-panel${listOpen ? '' : ' collapsed'}`}>
-                <div className="m-prop-panel-handle" onClick={() => setListOpen(!listOpen)}>
-                    <div className="m-prop-handle-bar" />
-                    <span className="m-prop-panel-handle-label">
-                        {listOpen ? '지도만 보기' : '목록 보기'}
-                    </span>
+            <div className="m-rlist-scroll" onScroll={handleScroll}>
+                <div className="m-cat-chips m-rlist-cats">
+                    {CATEGORIES.map((c) => (
+                        <button
+                            key={c}
+                            className={`m-cat-chip ${cat === c ? 'on' : ''}`}
+                            onClick={() => setCat(c)}
+                        >{c}</button>
+                    ))}
                 </div>
 
-                <div className="m-prop-list-content" onScroll={handleScroll}>
-                    <div className="m-cat-chips">
-                        {CATEGORIES.map((c) => (
-                            <button
-                                key={c}
-                                className={`m-cat-chip ${cat === c ? 'on' : ''}`}
-                                onClick={() => setCat(c)}
-                            >{c}</button>
-                        ))}
-                    </div>
-
-                    <div className="m-sort-row">
-                        <button className="m-sort-btn" onClick={openSort}>
-                            <span>{sort}</span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                        </button>
-                    </div>
-
-                    <div className="m-stage-chips">
-                        {STAGES.map((s) => (
-                            <button
-                                key={s.key}
-                                className={`m-stage-chip ${stage === s.key ? 'on' : ''}`}
-                                onClick={() => setStage(s.key)}
-                            >{s.label}</button>
-                        ))}
-                    </div>
-
-                    <ul className="m-prop-cards">
-                        {loading && <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>불러오는 중...</li>}
-                        {!loading && items.length === 0 && (
-                            <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>조건에 맞는 제보가 없습니다.</li>
-                        )}
-                        {items.map((it) => (
-                            <ReportListCard
-                                key={it.id}
-                                it={it}
-                                likedIds={likedIds}
-                                onNavigate={onNavigate}
-                                onToggleLike={toggleLike}
-                            />
-                        ))}
-                        {loadingMore && <li style={{ padding: '12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>불러오는 중...</li>}
-                    </ul>
+                <div className="m-sort-row">
+                    <button className="m-sort-btn" onClick={openSort}>
+                        <span>{sort}</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
                 </div>
-            </div>
-            </div>{/* end m-prop-page-body */}
 
-            <button className="m-prop-fab" onClick={() => onNavigate && onNavigate('mReportForm')}>
+                <div className="m-stage-chips">
+                    {STAGES.map((s) => (
+                        <button
+                            key={s.key}
+                            className={`m-stage-chip ${stage === s.key ? 'on' : ''}`}
+                            onClick={() => setStage(s.key)}
+                        >{s.label}</button>
+                    ))}
+                </div>
+
+                <ul className="m-prop-cards m-rlist-cards">
+                    {(() => {
+                        const regionFilter = region && region !== '부산전체' ? region : null;
+                        const filtered = !regionFilter ? items : items.filter((it) => {
+                            if (matchDistrict(it.region, regionFilter)) return true;
+                            const approx = nearestDistrict(it.lat, it.lng, DISTRICT_CENTERS);
+                            return matchDistrict(approx, regionFilter);
+                        });
+                        return (
+                            <>
+                                {loading && <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>불러오는 중...</li>}
+                                {!loading && filtered.length === 0 && (
+                                    <li style={{ padding: '20px', textAlign: 'center', color: '#999' }}>조건에 맞는 제보가 없습니다.</li>
+                                )}
+                                {filtered.map((it) => (
+                                    <ReportListCard
+                                        key={it.id}
+                                        it={it}
+                                        likedIds={likedIds}
+                                        onNavigate={onNavigate}
+                                        onToggleLike={toggleLike}
+                                    />
+                                ))}
+                                {loadingMore && <li style={{ padding: '12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>불러오는 중...</li>}
+                            </>
+                        );
+                    })()}
+                </ul>
+            </div>
+
+            <button className="m-prop-fab m-rlist-fab" onClick={() => onNavigate && onNavigate('mReportForm')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 <span>제보하기</span>
             </button>

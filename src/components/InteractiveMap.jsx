@@ -112,7 +112,7 @@ const InteractiveMap = () => {
             width: '100%',
             height: '100%',
             borderRadius: '20px',
-            overflow: 'visible'
+            overflow: 'hidden'
         }}>
             <style>
                 {`

@@ -55,7 +55,7 @@
 .m-survey-cards {
     list-style: none;
     margin: 0;
-    padding: 4px 20px 16px;
+    padding: 4px 20px 92px;
     display: flex;
     flex-direction: column;
     gap: 12px;
