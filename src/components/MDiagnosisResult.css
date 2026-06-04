@@ -35,7 +35,7 @@
     text-align: left;
     font-size: 20px;
     font-weight: 700;
-    color: #23BDBB;
+    color: #06AB69;
     letter-spacing: -0.04em;
     line-height: 1.4;
 }
@@ -91,10 +91,10 @@
     letter-spacing: -0.02em;
 }
 
-/* ───── 썸네일 사진 ───── */
+/* ───── 썸네일 사진 (Figma 22:8368 — 200x215px) ───── */
 .m-diagres-thumb {
-    width: 83px;
-    height: 90px;
+    width: 200px;
+    height: 215px;
     border-radius: 8px;
     overflow: hidden;
     background: #f1f2f4;

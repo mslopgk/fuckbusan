@@ -4,7 +4,7 @@ import { CAT_STYLES } from './catStyles';
 import './MProposalDetail.css';
 import { API_URL } from '../utils/api';
 
-export default function MProposalDetail({ onNavigate, proposal }) {
+export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
     const data = {
         title: proposal?.title || '',
         cat: proposal?.cat || proposal?.category || '',
@@ -19,6 +19,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
     const [comment, setComment] = useState('');
     const [commenting, setCommenting] = useState(false);
     const [voted, setVoted] = useState(!!proposal?.has_voted);
+    const [voting, setVoting] = useState(false);
     const [comments, setComments] = useState([]);
     const [views, setViews] = useState(proposal?.views ?? proposal?.views_count ?? 0);
     const [votes, setVotes] = useState(proposal?.likes_count ?? proposal?.votes ?? 0);
@@ -70,6 +71,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
     };
 
     const toggleVote = async () => {
+        if (voting) return;
         if (!proposal?.id) {
             setVoted((v) => !v);
             return;
@@ -79,6 +81,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
             alert('로그인이 필요합니다.');
             return;
         }
+        setVoting(true);
         try {
             const res = await fetch(`${API_URL}/api/reports/proposals/${proposal.id}/vote`, {
                 method: 'POST',
@@ -101,6 +104,8 @@ export default function MProposalDetail({ onNavigate, proposal }) {
         } catch (e) {
             console.error(e);
             alert('네트워크 오류가 발생했습니다.');
+        } finally {
+            setVoting(false);
         }
     };
 
@@ -109,7 +114,7 @@ export default function MProposalDetail({ onNavigate, proposal }) {
     return (
         <div className="m-prop-detail-page">
             <header className="m-detail-topbar">
-                <button className="m-detail-back" onClick={() => onNavigate && onNavigate('mProposalList')}>
+                <button className="m-detail-back" onClick={() => onNavigate && onNavigate(sourceView || 'mProposalList')}>
                     <svg width="6.5" height="13" viewBox="0 0 6.5 13" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 1 0.5 6.5 6 12"/></svg>
                 </button>
             </header>
@@ -194,10 +199,12 @@ export default function MProposalDetail({ onNavigate, proposal }) {
                             placeholder="댓글을 입력해주세요"
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === 'Enter') submitComment(); }}
+                            onKeyDown={(e) => { if (e.key === 'Enter' && !commenting) submitComment(); }}
+                            onFocus={(e) => { setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300); }}
                             className="m-comment-input"
+                            disabled={commenting}
                         />
-                        <button className="m-comment-send" onClick={submitComment} aria-label="등록">
+                        <button className="m-comment-send" onClick={submitComment} aria-label="등록" disabled={!comment.trim() || commenting} style={{ opacity: (!comment.trim() || commenting) ? 0.45 : 1 }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
                         </button>
                     </div>
@@ -209,8 +216,10 @@ export default function MProposalDetail({ onNavigate, proposal }) {
                     className={`m-vote-cta ${voted ? 'on' : ''}`}
                     type="button"
                     onClick={toggleVote}
+                    disabled={voting}
+                    style={{ opacity: voting ? 0.7 : 1 }}
                 >
-                    {voted ? '투표 완료' : '투표하기'}
+                    {voting ? '처리 중...' : voted ? '투표 완료' : '투표하기'}
                 </button>
             </footer>
         </div>

@@ -73,11 +73,12 @@
     font-family: inherit;
     white-space: nowrap;
     flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .m-stage-chip.on {
-    background: #E6235A;
-    border-color: #E6235A;
+    background: #f74e7e;
+    border-color: #f74e7e;
     color: #fff;
     font-weight: 700;
 }
@@ -89,19 +90,19 @@
     border-bottom: 1px solid #f0f0f0;
 }
 
-/* Stage chip active: report pink */
+/* Stage chip active: report pink (WDC #f74e7e) */
 .m-report-list-page .m-stage-chip.on {
-    background: #E6235A;
-    border-color: #E6235A;
+    background: #f74e7e;
+    border-color: #f74e7e;
     color: #fff;
     font-weight: 700;
 }
 
-/* Cat chip active: report pink */
+/* Cat chip active: report pink (WDC #f74e7e) */
 .m-report-list-page .m-cat-chip.on {
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
-    border-color: #E6235A;
+    border-color: #f74e7e;
 }
 
 /* Card list */
@@ -156,7 +157,18 @@
     bottom: 80px;
 }
 
-/* Region arrow circle — report pink */
+/* Region arrow circle — WDC report pink #f74e7e */
 .m-report-list-page .m-region-arrow {
-    background: #E6235A;
+    background: #f74e7e;
+}
+
+/* 지도보기 button override — WDC #f74e7e */
+.m-report-list-page .m-map-btn {
+    background: #f74e7e;
+}
+
+/* FAB override — WDC #f74e7e */
+.m-report-list-page .m-prop-fab {
+    background: #f74e7e;
+    box-shadow: 0 6px 18px rgba(247, 78, 126, 0.35);
 }

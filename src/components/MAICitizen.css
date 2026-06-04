@@ -7,10 +7,68 @@
     overflow: hidden;
 }
 
+/* 헤더 — Figma 22:7438 */
+.m-ai-header {
+    position: relative;
+    z-index: 30;
+    height: 56px;
+    padding: 0 16px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.m-ai-header-back {
+    background: none;
+    border: none;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.m-ai-header-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+}
+
+.m-ai-header-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #242424;
+    letter-spacing: -0.04em;
+    line-height: 1.4;
+}
+
+.m-ai-district-badge {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #242424;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: -0.04em;
+    font-family: inherit;
+}
+
+.m-ai-district-badge-arrow {
+    font-size: 10px;
+    color: #23bdbb;
+}
+
 /* Search bar */
 .m-ai-search-wrap {
     position: absolute;
-    top: 17px;
+    top: 73px;
     left: 18px;
     right: 18px;
     z-index: 30;
@@ -50,20 +108,20 @@
     z-index: 1;
 }
 
-/* Map section — padding-top reserves space for search bar + quote bubble (search 82 + bubble 86 + gap 8) */
+/* Map section — padding-top reserves space for search bar + quote bubble */
 .m-ai-map-section {
     position: relative;
     flex-shrink: 0;
     height: 50vh;
     min-height: 340px;
-    padding-top: 176px;
+    padding-top: 168px;
     box-sizing: border-box;
 }
 
 /* Quote bubble over map */
 .m-ai-quote-bubble {
     position: absolute;
-    top: 88px;
+    top: 80px;
     left: 18px;
     right: 18px;
     z-index: 20;

@@ -31,16 +31,18 @@ function ReportListCard({ it, likedIds, onNavigate, onToggleLike }) {
                     <div className="m-prop-stats">
                         <span
                             onClick={(e) => onToggleLike(e, it.id)}
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', color: likedIds.has(it.id) ? '#f74e7e' : '#bfbfbf' }}
                         >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill={likedIds.has(it.id) ? '#E6235A' : 'none'} stroke={likedIds.has(it.id) ? '#E6235A' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            {/* Figma heart icon (Union path) */}
+                            <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
+                                <path d="M9.0568 1.0811C10.4983 -0.360439 12.8359 -0.360292 14.2775 1.0811C15.7191 2.52272 15.7191 4.86019 14.2775 6.30181L8.78141 11.7989C8.47833 12.102 8.07586 12.2441 7.67887 12.2286C7.2822 12.2438 6.88013 12.1017 6.57731 11.7989L1.08121 6.30181C-0.360404 4.86019 -0.360404 2.52272 1.08121 1.0811C2.52285 -0.360296 4.86037 -0.36044 6.30192 1.0811L7.67887 2.45806L9.0568 1.0811Z"/>
                             </svg>
                             {it.likes ?? 0}
                         </span>
                         <span>
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            {/* Figma comment bubble icon (Union path) */}
+                            <svg width="14" height="12" viewBox="0 0 14 11.8457" fill="currentColor" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
+                                <path d="M9.1543 0C11.8305 0.000244114 14 2.1694 14 4.8457C14 7.52201 11.8305 9.69116 9.1543 9.69141H6.5127L3.23047 11.8457V9.41406C1.34871 8.74853 4.44368e-08 6.95541 0 4.8457C0 2.1694 2.16945 0.000244114 4.8457 0H9.1543Z"/>
                             </svg>
                             {it.comments ?? 0}
                         </span>

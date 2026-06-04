@@ -82,9 +82,9 @@ function BreakdownSection({ label, title, data, count, empty }) {
                                 <Radar
                                     name="Score"
                                     dataKey="A"
-                                    stroke="#23BDBB"
+                                    stroke="#06AB69"
                                     strokeWidth={2}
-                                    fill="#23BDBB"
+                                    fill="#06AB69"
                                     fillOpacity={empty ? 0.15 : 0.25}
                                 />
                             </RadarChart>
@@ -116,9 +116,9 @@ function RadarSection({ title, radarData, avg, count }) {
                                 <Radar
                                     name="Score"
                                     dataKey="A"
-                                    stroke="#23BDBB"
+                                    stroke="#06AB69"
                                     strokeWidth={2}
-                                    fill="#23BDBB"
+                                    fill="#06AB69"
                                     fillOpacity={0.25}
                                 />
                             </RadarChart>
@@ -241,7 +241,7 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         <polyline points="15 18 9 12 15 6"/>
                     </svg>
                 </button>
-                <span className="m-diagres-topbar-title">시민 진단 결과</span>
+                <span className="m-diagres-topbar-title">일반 진단 결과</span>
                 <button
                     type="button"
                     className="m-diagres-iconbtn"

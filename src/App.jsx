@@ -627,6 +627,7 @@ function App() {
             setView('mProposalForm');
         } else if (target === 'mProposalDetail') {
             setSelectedProposal(data);
+            setPreviousView(view);
             setView('mProposalDetail');
         } else if (target === 'mProposalDone') {
             setView('mProposalDone');
@@ -1372,7 +1373,7 @@ function App() {
                     <MProposalForm onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'mProposalDetail' && (
-                    <MProposalDetail onNavigate={(target, data) => onNavigate(target, data)} proposal={selectedProposal} />
+                    <MProposalDetail onNavigate={(target, data) => onNavigate(target, data)} proposal={selectedProposal} sourceView={previousView} />
                 )}
                 {view === 'mProposalDone' && (
                     <MProposalDone onNavigate={(target, data) => onNavigate(target, data)} />

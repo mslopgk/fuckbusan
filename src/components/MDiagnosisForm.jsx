@@ -113,12 +113,12 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
                 <button
                     type="button"
                     className="m-diagform-back"
-                    onClick={() => onNavigate?.('mDiagnosisList')}
+                    onClick={() => onNavigate?.('mDiagnosisMap')}
                 >
                     <svg width="7" height="13" viewBox="0 0 7 13" fill="none">
                         <path d="M6.5 1L1 6.5L6.5 12" stroke="#242424" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                    <span>홈으로</span>
+                    <span>뒤로</span>
                 </button>
                 {mode === 'expert' && (
                     <span className="m-diagform-mode-badge">전문가 진단</span>

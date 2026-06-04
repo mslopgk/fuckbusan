@@ -1,5 +1,5 @@
 /* MReportMap — 제보 지도 뷰 (Figma 848:19015) */
-/* Brand: #E6235A (pink), shadows match 제보·제안 계열 */
+/* Brand: #f74e7e (pink), shadows match 제보·제안 계열 */
 
 /* Page container override for report brand */
 .m-rmap-page {
@@ -26,7 +26,7 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #E6235A;
+    background: #f74e7e;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -38,33 +38,44 @@
     right: 16px;
     bottom: 88px; /* above MobileBottomNav (≈76px) + gap */
     z-index: 60;
-    background: #E6235A;
-    box-shadow: 0 4px 16px rgba(230, 35, 90, 0.25);
+    background: #f74e7e;
+    box-shadow: 0 4px 16px rgba(247, 78, 126, 0.25);
     /* m-prop-fab base styles handle the rest */
 }
 
 /* Override chip active color to report pink */
 .m-rmap-page .m-cat-chip.on {
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
-    border-color: #E6235A;
+    border-color: #f74e7e;
 }
 
 /* Region pill arrow circle: report pink */
 .m-rmap-page .m-sheet-region-btn .m-region-arrow {
-    background: #E6235A;
+    background: #f74e7e;
 }
 
 /* Stage chip active: report pink (solid, matches MReportList) */
 .m-rmap-page .m-stage-chip.on {
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
-    border-color: #E6235A;
+    border-color: #f74e7e;
 }
 
 /* 2-state sheet heights (peek/half). full은 별도 list 페이지로 navigate */
 .m-rmap-page.sheet-peek .m-map-sheet { height: 80px; overflow: hidden; }
 .m-rmap-page.sheet-half .m-map-sheet { height: 48vh; overflow: hidden; }
+
+/* iOS-like spring + GPU 가속 (m-map-sheet 기본 transition은 MProposalMap.css에서 정의) */
+.m-rmap-page .m-map-sheet {
+    transition: height 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+                transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    will-change: height, transform;
+}
+
+.m-rmap-page .m-map-sheet.dragging {
+    transition: none;
+}
 
 /* peek: 칩 1행 가로 스크롤 */
 .m-rmap-page.sheet-peek .m-sheet-chips {

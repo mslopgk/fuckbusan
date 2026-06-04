@@ -454,13 +454,7 @@ export default function MSurveyResults({ onNavigate, survey }) {
                     </>
                 )}
 
-                {/* 로딩 / 빈 상태 */}
-                {!resultsData && (
-                    <section className="m-results-section m-results-empty">
-                        <div className="m-results-spinner" />
-                        결과를 불러오는 중...
-                    </section>
-                )}
+                {/* 빈 상태 — 데이터 있는데 차트 섹션 없을 때만 */}
                 {resultsData && !hasSections && (
                     <section className="m-results-section m-results-empty">
                         아직 집계된 응답 데이터가 없습니다.

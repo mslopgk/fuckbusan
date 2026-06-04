@@ -192,7 +192,7 @@ export default function MMyReportEdit({ onNavigate, report, onComplete }) {
                     <input
                         type="text"
                         className="m-row-input"
-                        placeholder="상세설명을 작성해주세요"
+                        placeholder="느끼신 점을 자유롭게 작성해 주세요."
                         value={body}
                         onChange={(e) => setBody(e.target.value)}
                     />

@@ -34,14 +34,16 @@ function ReportCard({ it, onNavigate }) {
                 <p className="m-prop-author">{it.author}</p>
                 <div className="m-prop-stats">
                     <span>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}>
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        {/* Figma heart icon */}
+                        <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}>
+                            <path d="M9.0568 1.0811C10.4983 -0.360439 12.8359 -0.360292 14.2775 1.0811C15.7191 2.52272 15.7191 4.86019 14.2775 6.30181L8.78141 11.7989C8.47833 12.102 8.07586 12.2441 7.67887 12.2286C7.2822 12.2438 6.88013 12.1017 6.57731 11.7989L1.08121 6.30181C-0.360404 4.86019 -0.360404 2.52272 1.08121 1.0811C2.52285 -0.360296 4.86037 -0.36044 6.30192 1.0811L7.67887 2.45806L9.0568 1.0811Z"/>
                         </svg>
                         {it.likes ?? 0}
                     </span>
                     <span>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}>
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        {/* Figma comment bubble icon */}
+                        <svg width="14" height="12" viewBox="0 0 14 11.8457" fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}>
+                            <path d="M9.1543 0C11.8305 0.000244114 14 2.1694 14 4.8457C14 7.52201 11.8305 9.69116 9.1543 9.69141H6.5127L3.23047 11.8457V9.41406C1.34871 8.74853 4.44368e-08 6.95541 0 4.8457C0 2.1694 2.16945 0.000244114 4.8457 0H9.1543Z"/>
                         </svg>
                         {it.comments ?? 0}
                     </span>
@@ -71,21 +73,43 @@ export default function MReportMap({ onNavigate }) {
     const [sheetMode, setSheetMode] = useState('half');
     const mapRef = useRef(null);
     const touchStartY = useRef(0);
+    const touchStartT = useRef(0);
+    const [dragY, setDragY] = useState(0);
+    const [dragging, setDragging] = useState(false);
 
     const goToList = () => onNavigate?.('mReportList');
 
     const onTouchStart = (e) => {
         touchStartY.current = e.touches?.[0]?.clientY ?? e.clientY;
+        touchStartT.current = Date.now();
+        setDragging(true);
+    };
+    const onTouchMove = (e) => {
+        if (!dragging) return;
+        const y = e.touches?.[0]?.clientY ?? e.clientY;
+        const dy = y - touchStartY.current;
+        const idx = SHEET_MODES.indexOf(sheetMode);
+        // rubber-band 저항
+        if (dy < 0 && idx === SHEET_MODES.length - 1) setDragY(dy / 3);
+        else if (dy > 0 && idx === 0) setDragY(dy / 3);
+        else setDragY(dy);
     };
     const onTouchEnd = (e) => {
-        const endY = e.changedTouches?.[0]?.clientY ?? e.clientY;
-        const dy = touchStartY.current - endY;
+        if (!dragging) return;
+        const endY = e.changedTouches?.[0]?.clientY ?? e.clientY ?? (touchStartY.current + dragY);
+        const dy = endY - touchStartY.current;
+        const dt = Date.now() - touchStartT.current;
         const idx = SHEET_MODES.indexOf(sheetMode);
-        if (dy > 40) {
-            // 위로 스와이프
+        const velocity = dt > 0 ? Math.abs(dy) / dt : 0;
+        setDragging(false);
+        setDragY(0);
+        if (Math.abs(dy) < 12 && dt < 220) return;
+        const flick = velocity > 0.6;
+        const threshold = flick ? 25 : 40;
+        if (dy < -threshold) {
             if (idx < SHEET_MODES.length - 1) setSheetMode(SHEET_MODES[idx + 1]);
             else goToList();
-        } else if (dy < -40 && idx > 0) {
+        } else if (dy > threshold && idx > 0) {
             setSheetMode(SHEET_MODES[idx - 1]);
         }
     };
@@ -99,7 +123,7 @@ export default function MReportMap({ onNavigate }) {
                     id: String(r.id),
                     lat: r.lat,
                     lng: r.lng,
-                    color: CAT_PIN_COLOR[r.category] || '#E6235A',
+                    color: CAT_PIN_COLOR[r.category] || '#f74e7e',
                     title: r.category || '',
                 }));
                 setMapPins(pins);
@@ -174,7 +198,7 @@ export default function MReportMap({ onNavigate }) {
                 <PCMapCanvas
                     ref={mapRef}
                     pins={FILTERED_PINS}
-                    accentColor="#E6235A"
+                    accentColor="#f74e7e"
                     initialCenter={{ lat: 35.1796, lng: 129.0756 }}
                     onPinClick={(pin) => {
                         setSelectedPinId(String(pin.id));
@@ -201,13 +225,19 @@ export default function MReportMap({ onNavigate }) {
             </button>
 
             {/* 바텀시트 — 2-state (peek/half). 목록 전체는 별도 list 페이지 */}
-            <div className="m-map-sheet">
+            <div
+                className={`m-map-sheet${dragging ? ' dragging' : ''}`}
+                style={dragY ? { transform: `translateY(${dragY}px)` } : undefined}
+            >
                 <div
                     className="m-sheet-grab"
                     onTouchStart={onTouchStart}
+                    onTouchMove={onTouchMove}
                     onTouchEnd={onTouchEnd}
                     onMouseDown={onTouchStart}
+                    onMouseMove={onTouchMove}
                     onMouseUp={onTouchEnd}
+                    onMouseLeave={(e) => dragging && onTouchEnd(e)}
                 >
                     <div className="m-sheet-handle" />
                 </div>

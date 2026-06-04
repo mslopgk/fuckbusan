@@ -52,7 +52,7 @@
 
 /* ─── 지역 선택 행 ─── */
 .m-region-row {
-    padding: 8px 20px 4px;
+    padding: 14px 20px 4px;
     background: #fff;
     flex-shrink: 0;
 }
@@ -62,7 +62,7 @@
     border: none;
     padding: 4px 0;
     font-size: 22px;
-    font-weight: 800;
+    font-weight: 700;
     color: #242424;
     cursor: pointer;
     font-family: inherit;
@@ -109,6 +109,7 @@
     white-space: nowrap;
     display: inline-flex;
     align-items: center;
+    transition: background 0.15s, color 0.15s, font-weight 0.1s;
 }
 
 .m-cat-chip.on {
@@ -194,6 +195,13 @@
     align-items: center;
     gap: 12px;
     cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.m-prop-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.08);
 }
 
 .m-prop-card-text { flex: 1; min-width: 0; }
@@ -293,6 +301,13 @@
     font-family: inherit;
     z-index: 60;
     letter-spacing: -0.02em;
+    transition: transform 0.12s, box-shadow 0.12s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.m-prop-fab:active {
+    transform: scale(0.95);
+    box-shadow: 0 3px 10px rgba(230, 35, 90, 0.25);
 }
 
 /* ─── 바텀시트 모달 (RegionSheet / SortSheet 공용) ─── */
@@ -303,6 +318,12 @@
     z-index: 200;
     display: flex;
     align-items: flex-end;
+    animation: m-modal-fade-in 0.2s ease-out;
+}
+
+@keyframes m-modal-fade-in {
+    from { background: rgba(0, 0, 0, 0); }
+    to   { background: rgba(0, 0, 0, 0.4); }
 }
 
 .m-modal-sheet {
@@ -313,6 +334,12 @@
     max-height: 76vh;
     display: flex;
     flex-direction: column;
+    animation: m-modal-slide-up 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes m-modal-slide-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
 }
 
 .m-modal-head {
@@ -362,6 +389,7 @@
     color: #1a1a1b;
     cursor: pointer;
     letter-spacing: -0.01em;
+    transition: color 0.12s;
 }
 
 .m-region-item .m-modal-chevron,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './UserPCLayout.css';
-import { API_URL } from '../utils/api';
+import { useUnreadNotifications } from '../hooks/useUnreadNotifications';
 
 
 const NAV_ITEMS = [
@@ -21,34 +21,14 @@ const disabledStyle = { color: '#9ca3af', cursor: 'not-allowed', opacity: 0.5 };
 export default function UserPCLayout({ children, currentView, onNavigate }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState('');
-    const [unreadCount, setUnreadCount] = useState(0);
     const [chooserOpen, setChooserOpen] = useState(false);
+    const { count: unreadCount } = useUnreadNotifications();
 
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         const name = localStorage.getItem('user_name') || localStorage.getItem('username') || '';
         setIsLoggedIn(!!token);
         setUserName(name);
-        if (token) {
-            fetch(`${API_URL}/api/notifications/unread-count`, {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-                .then((r) => {
-                    if (r.status === 401) {
-                        localStorage.removeItem('access_token');
-                        localStorage.removeItem('user_name');
-                        localStorage.removeItem('username');
-                        setIsLoggedIn(false);
-                        setUserName('');
-                        return { count: 0 };
-                    }
-                    return r.ok ? r.json() : { count: 0 };
-                })
-                .then((j) => setUnreadCount(j.count ?? 0))
-                .catch(() => setUnreadCount(0));
-        } else {
-            setUnreadCount(0);
-        }
     }, [currentView]);
 
     const handleLogout = () => {
@@ -57,7 +37,6 @@ export default function UserPCLayout({ children, currentView, onNavigate }) {
         localStorage.removeItem('user_name');
         setIsLoggedIn(false);
         setUserName('');
-        setUnreadCount(0);
         onNavigate && onNavigate('home');
     };
 
@@ -115,23 +94,22 @@ export default function UserPCLayout({ children, currentView, onNavigate }) {
                         )}
                         <button
                             className="user-pc-bell"
-                            aria-label="알림"
+                            aria-label={unreadCount > 0 ? `알림 ${unreadCount}개` : '알림'}
                             style={{ position: 'relative' }}
-                            onClick={() => isLoggedIn ? onNavigate && onNavigate('myActivityHub') : onNavigate && onNavigate('login')}
+                            onClick={() => isLoggedIn ? onNavigate && onNavigate('mNotifications') : onNavigate && onNavigate('login')}
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                                 <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                             </svg>
                             {unreadCount > 0 && (
-                                <span style={{
+                                <span aria-hidden="true" style={{
                                     position: 'absolute', top: 2, right: 2,
                                     background: '#E6235A', color: '#fff',
-                                    borderRadius: '50%', width: 14, height: 14,
-                                    fontSize: 9, fontWeight: 700,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    lineHeight: 1,
-                                }}>{unreadCount > 9 ? '9+' : unreadCount}</span>
+                                    borderRadius: 8, minWidth: 16, height: 16, padding: '0 4px',
+                                    fontSize: 10, fontWeight: 700, lineHeight: '16px',
+                                    textAlign: 'center', boxSizing: 'border-box',
+                                }}>{unreadCount > 99 ? '99+' : unreadCount}</span>
                             )}
                         </button>
                     </div>

@@ -44,11 +44,12 @@
 }
 
 .m-rdetail-body {
-    font-size: 14px;
+    font-size: 16px;
     color: #444;
-    line-height: 1.7;
+    line-height: 1.5;
     margin: 8px 0 16px;
     word-break: keep-all;
+    letter-spacing: -0.02em;
 }
 
 .m-rdetail-author-row {
@@ -179,7 +180,7 @@
 .m-rstage-result-btn {
     width: 100%;
     max-width: 320px;
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
     border: none;
     border-radius: 16px;
@@ -194,7 +195,7 @@
 
 .m-rstage-result-btn:hover,
 .m-rstage-result-btn:active {
-    background: #c91e4f;
+    background: #d93a6a;
 }
 
 .m-rstage-step {
@@ -229,7 +230,7 @@
 }
 
 .m-rstage-pill.active {
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
     font-weight: 700;
 }
@@ -283,6 +284,15 @@
     color: #737373;
 }
 
+/* Comment send button: override proposal default to report pink */
+.m-report-detail-page .m-comment-send {
+    background: #f74e7e;
+}
+
+.m-report-detail-page .m-comment-input:focus {
+    border-color: #f74e7e;
+}
+
 /* Like button */
 .m-rdetail-like-btn {
     display: inline-flex;
@@ -298,7 +308,18 @@
     transition: color 0.15s;
 }
 
-.m-rdetail-like-btn.liked { color: #E6235A; }
+.m-rdetail-like-btn.liked { color: #f74e7e; }
+
+/* Shared modal animation keyframes — also defined in MProposalList.css / MProposalForm.css */
+@keyframes m-modal-fade-in {
+    from { background: rgba(0, 0, 0, 0); }
+    to   { background: rgba(0, 0, 0, 0.45); }
+}
+
+@keyframes m-result-modal-appear {
+    from { transform: scale(0.92) translateY(16px); opacity: 0; }
+    to   { transform: scale(1) translateY(0); opacity: 1; }
+}
 
 /* 개선 결과보기 모달 */
 /* Figma: modal positioned at y≈229 on 852px screen — use flex center for responsive */
@@ -311,6 +332,7 @@
     align-items: center;
     justify-content: center;
     padding: 0 45px;
+    animation: m-modal-fade-in 0.2s ease-out;
 }
 
 .m-result-modal {
@@ -321,6 +343,12 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: left;
     position: relative;
+    animation: m-result-modal-appear 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes m-result-modal-appear {
+    from { transform: scale(0.92) translateY(16px); opacity: 0; }
+    to   { transform: scale(1) translateY(0); opacity: 1; }
 }
 
 /* Figma: header has centered title + close button on right */

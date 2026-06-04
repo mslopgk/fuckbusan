@@ -1,7 +1,9 @@
 .m-prop-detail-page {
     min-height: 100vh;
     background: #fff;
-    padding-bottom: 80px;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* WDC Figma 0:12032: no border on topbar, category tag inside content area */
@@ -10,7 +12,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 0 12px;
+    padding: 0 20px;
     background: #fff;
     /* no border-bottom per WDC spec */
 }
@@ -263,6 +265,13 @@
     box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
     font-family: inherit;
     letter-spacing: -0.04em;
+    transition: transform 0.1s, opacity 0.1s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.m-vote-cta:active:not(:disabled) {
+    transform: scale(0.97);
+    opacity: 0.85;
 }
 
 .m-vote-cta.on {

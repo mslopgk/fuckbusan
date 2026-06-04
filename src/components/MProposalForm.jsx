@@ -179,12 +179,12 @@ export default function MProposalForm({ onNavigate }) {
             <header className="m-form-topbar">
                 <button className="m-form-back" onClick={() => onNavigate && onNavigate('mProposalList')}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                    <span>홈으로</span>
+                    <span>뒤로</span>
                 </button>
             </header>
 
             <div className="m-form-body">
-                <h1 className="m-form-title">우리동네 개선 아이디어를<br/>제안해보세요</h1>
+                <h1 className="m-form-title">우리동네 개선 아이디어를<br/>제안해보세요.</h1>
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">제안 유형은 무엇인가요?</h3>

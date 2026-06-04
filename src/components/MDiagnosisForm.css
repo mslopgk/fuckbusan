@@ -139,7 +139,7 @@
 }
 
 .m-diagform-facility-input:focus {
-    border-color: #23BDBB;
+    border-color: var(--diag-green);
 }
 
 .m-diagform-facility-input::placeholder {
@@ -167,8 +167,8 @@
 }
 
 .m-diagform-sub-chip.on {
-    background: #23BDBB;
-    border-color: #23BDBB;
+    background: var(--diag-green);
+    border-color: var(--diag-green);
     color: #fff;
     font-weight: 700;
 }
@@ -265,7 +265,7 @@
 }
 
 .m-diagform-scale-dot.on::before {
-    background: #23BDBB;
+    background: var(--diag-green);
 }
 
 /* 얼굴 레이블 행 — 1·3·5번 위치에만 표시 */
@@ -347,7 +347,7 @@
 }
 
 .m-diagform-cta-primary {
-    background: #23BDBB;
+    background: var(--diag-green);
     color: #fff;
 }
 
@@ -388,7 +388,7 @@
 .m-diagform-location-change {
     background: none;
     border: none;
-    color: #23BDBB;
+    color: var(--diag-green);
     font-size: 12px;
     font-weight: 700;
     padding: 0;

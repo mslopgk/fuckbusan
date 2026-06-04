@@ -60,6 +60,13 @@ function buildClusterPins(rawPins, level, activeDistrict) {
     return result;
 }
 
+// Figma 카테고리별 태그 배경색
+const CAT_TAG_BG = {
+    '주거': '#dff8f8', '환경': '#c0e6c0', '교통': '#c9e0ff',
+    '안전': '#ffefc0', '교육': '#ffc9c9', '산업·일자리': '#ffd9c9',
+    '문화·여가': '#e5c9ff', '보건·복지': '#c9f0d9',
+};
+
 const DiagCard = memo(function DiagCard({ it, onNavigate }) {
     const { ref: thumbRef, bgStyle } = useLazyImage(it.thumb);
     return (
@@ -69,16 +76,27 @@ const DiagCard = memo(function DiagCard({ it, onNavigate }) {
         >
             <div className="m-diag-card-body">
                 <div className="m-diag-card-tags">
-                    <span className="m-diag-tag">{it.big}</span>
-                    {it.mid && <span className="m-diag-tag">{it.mid}</span>}
+                    <span className="m-diag-tag" style={{ background: CAT_TAG_BG[it.big] || '#dff8f8' }}>{it.big}</span>
+                    {it.mid && <span className="m-diag-tag" style={{ background: CAT_TAG_BG[it.big] || '#dff8f8' }}>{it.mid}</span>}
                 </div>
                 <div className="m-diag-card-name-row">
                     <span className="m-diag-card-name">{it.name}</span>
-                    {it.score != null && <span className="m-diag-card-score">{it.score}</span>}
                 </div>
-                {it.reviewText && <p className="m-diag-card-review">{it.reviewText}</p>}
+                <p className="m-diag-card-author">{it.author || it.reviewText || ''}</p>
             </div>
-            <div ref={thumbRef} className="m-diag-card-thumb" style={bgStyle} />
+            <div className="m-diag-card-right">
+                {it.thumb && <div ref={thumbRef} className="m-diag-card-thumb" style={bgStyle} />}
+                <div className="m-diag-card-stats">
+                    <span className="m-diag-stat">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z" fill="#bfbfbf"/></svg>
+                        {it.likes ?? 0}
+                    </span>
+                    <span className="m-diag-stat">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" fill="#bfbfbf"/></svg>
+                        {it.comments ?? 0}
+                    </span>
+                </div>
+            </div>
         </li>
     );
 });
@@ -160,6 +178,9 @@ export default function MDiagnosisMap({ onNavigate }) {
                 name: r.질문기준 || r.대분류 || '진단',
                 score: r.점수 != null ? Number(r.점수).toFixed(1) : null,
                 reviewText: r.리뷰 || '',
+                author: r.작성자 || r.author || '',
+                likes: r.likes ?? r.좋아요 ?? 0,
+                comments: r.comments ?? r.댓글 ?? 0,
                 thumb: r.이미지경로 || null,
             }));
     }, [allRows, district, category, mode]);
@@ -198,18 +219,44 @@ export default function MDiagnosisMap({ onNavigate }) {
 
     return (
         <div className="m-diag-list-page">
-            {/* 검색바 — Figma 진단 목록1: 흰 라운드 큰 박스, "지역검색" placeholder */}
-            <div className="m-diag-search-wrap">
-                <select
-                    className="m-diag-search-select"
-                    value={district}
-                    onChange={(e) => setDistrict(e.target.value)}
+            {/* 헤더 — Figma 22:7914: "← 일반 진단 ⊙" + 지역 드롭다운 */}
+            <header className="m-diag-map-header">
+                <button
+                    type="button"
+                    className="m-diag-map-back"
+                    aria-label="뒤로"
+                    onClick={() => onNavigate?.('home')}
                 >
-                    <option value="">지역검색</option>
-                    {Object.keys(DISTRICT_CENTERS).map((d) => (
-                        <option key={d} value={d}>{d}</option>
-                    ))}
-                </select>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18L9 12L15 6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                </button>
+                <div className="m-diag-map-header-title">
+                    <span className="m-diag-map-header-label">일반 진단</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="#06AB69" strokeWidth="2"/>
+                        <path d="M10 8l4 4-4 4" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                </div>
+            </header>
+
+            {/* 지역 드롭다운 — Figma: 흰 라운드 박스 + 지역명 + 아래 화살표 */}
+            <div className="m-diag-district-row-map">
+                <div className="m-diag-district-select-wrap">
+                    <select
+                        className="m-diag-district-select"
+                        value={district}
+                        onChange={(e) => setDistrict(e.target.value)}
+                    >
+                        <option value="">지역검색</option>
+                        {Object.keys(DISTRICT_CENTERS).map((d) => (
+                            <option key={d} value={d}>{d}</option>
+                        ))}
+                    </select>
+                    <svg className="m-diag-district-chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M6 9l6 6 6-6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                </div>
             </div>
 
             {/* 지도 영역 */}
@@ -295,9 +342,9 @@ export default function MDiagnosisMap({ onNavigate }) {
                 {kakaoReady && !selectedPin && (
                     <div className="m-diag-crosshair" aria-hidden="true">
                         <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                            <line x1="14" y1="3" x2="14" y2="25" stroke="#23BDBB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
-                            <line x1="3" y1="14" x2="25" y2="14" stroke="#23BDBB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
-                            <circle cx="14" cy="14" r="3" stroke="#23BDBB" strokeWidth="2" fill="none"/>
+                            <line x1="14" y1="3" x2="14" y2="25" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
+                            <line x1="3" y1="14" x2="25" y2="14" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
+                            <circle cx="14" cy="14" r="3" stroke="#06AB69" strokeWidth="2" fill="none"/>
                         </svg>
                     </div>
                 )}
@@ -306,7 +353,7 @@ export default function MDiagnosisMap({ onNavigate }) {
                 {kakaoReady && selectedPin && (
                     <div className="m-diag-selected-marker" aria-hidden="true">
                         <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
-                            <path d="M14 0C6.268 0 0 6.268 0 14c0 9.625 14 36 14 36s14-26.375 14-36C28 6.268 21.732 0 14 0z" fill="#23BDBB"/>
+                            <path d="M14 0C6.268 0 0 6.268 0 14c0 9.625 14 36 14 36s14-26.375 14-36C28 6.268 21.732 0 14 0z" fill="#06AB69"/>
                             <circle cx="14" cy="14" r="6" fill="#fff"/>
                         </svg>
                     </div>

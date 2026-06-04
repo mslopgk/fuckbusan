@@ -36,7 +36,7 @@
 
 .m-prop-done-title {
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 700;
     color: #242424;
     margin: 0 0 36px;
     line-height: 1.4;
@@ -51,8 +51,7 @@
     gap: 10px;
 }
 
-.m-prop-done-primary,
-.m-prop-done-secondary {
+.m-prop-done-primary {
     height: 59px;
     border-radius: 15px;
     border: none;
@@ -61,14 +60,19 @@
     cursor: pointer;
     font-family: inherit;
     letter-spacing: -0.04em;
-}
-
-.m-prop-done-primary {
     background: #E6235A;
     color: #fff;
 }
 
 .m-prop-done-secondary {
+    height: 59px;
+    border-radius: 15px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.04em;
     background: #FCDAE3;
     color: #E6235A;
 }

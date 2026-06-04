@@ -9,8 +9,8 @@
 }
 
 .m-myrdetail-status-badge {
-    background: #FCDAE3;
-    color: #E6235A;
+    background: #ffdde7;
+    color: #f74e7e;
     padding: 4px 12px;
     border-radius: 12px;
     font-size: 11px;
@@ -55,12 +55,12 @@
 
 .m-myrdetail-btn.ghost {
     background: #fff;
-    border: 1px solid #E6235A;
-    color: #E6235A;
+    border: 1px solid #f74e7e;
+    color: #f74e7e;
 }
 
 .m-myrdetail-btn.primary {
-    background: #E6235A;
+    background: #f74e7e;
     border: none;
     color: #fff;
 }
@@ -75,6 +75,7 @@
     padding: 28px 22px 22px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
     text-align: center;
+    animation: m-result-modal-appear 0.22s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .m-myrdetail-modal-title {

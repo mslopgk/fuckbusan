@@ -30,7 +30,7 @@
 }
 
 .m-loc-input:focus {
-    border-color: #E6235A;
+    border-color: #f74e7e;
 }
 
 .m-loc-pin {
@@ -64,7 +64,14 @@
 }
 
 .m-report-form-page .m-form-submit:not(:disabled) {
-    background: #E6235A;
+    background: #f74e7e;
+}
+
+/* Disabled state: light pink bg with white text (WDC Figma) */
+.m-report-form-page .m-form-submit:disabled {
+    background: #ffdde7;
+    color: #fff;
+    opacity: 1;
 }
 
 /* Section title override: Figma 848:18955 specifies 18px semi-bold */
@@ -88,7 +95,7 @@
 }
 
 .m-rcat-chips .m-cat-chip.on {
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
     font-weight: 600;
 }
@@ -140,4 +147,4 @@
     box-sizing: border-box;
 }
 
-.m-row-input:focus { border-color: #E6235A; }
+.m-row-input:focus { border-color: #f74e7e; }

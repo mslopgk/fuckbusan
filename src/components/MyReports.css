@@ -76,7 +76,7 @@
 }
 
 .mr-tab-btn.active {
-    background-color: #E6235A; /* Pink */
+    background-color: #f74e7e; /* Pink */
     color: white;
 }
 
@@ -104,9 +104,9 @@
 }
 
 .mr-status-tab.active {
-    background: #E6235A; /* Pink */
+    background: #f74e7e; /* Pink */
     color: #fff;
-    border-color: #E6235A;
+    border-color: #f74e7e;
 }
 
 /* List Content */
@@ -225,7 +225,7 @@
     position: fixed;
     bottom: 80px;
     right: 14px;
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
     border: none;
     border-radius: 25px;
@@ -237,7 +237,7 @@
     gap: 8px;
     z-index: 1000;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.4);
+    box-shadow: 0 4px 12px rgba(247, 78, 126, 0.4);
     font-family: 'GmarketSans', sans-serif;
 }
 

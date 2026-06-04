@@ -159,7 +159,36 @@ export default function MAICitizen({ onNavigate }) {
                 .m-ai-district-label.selected { color: #fff !important; font-weight: 700 !important; }
             `}</style>
 
-            {/* Search bar */}
+            {/* 헤더 — Figma 22:7438: "← 부산진구 ▶ AI 가상시민" */}
+            <header className="m-ai-header">
+                <button
+                    type="button"
+                    className="m-ai-header-back"
+                    aria-label="뒤로"
+                    onClick={() => onNavigate?.('home')}
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18L9 12L15 6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                </button>
+                <div className="m-ai-header-title">
+                    {selectedDistrict && (
+                        <>
+                            <button
+                                type="button"
+                                className="m-ai-district-badge"
+                                onClick={handleClearSearch}
+                            >
+                                <span>{selectedDistrict}</span>
+                                <span className="m-ai-district-badge-arrow">▶</span>
+                            </button>
+                        </>
+                    )}
+                    <span className="m-ai-header-label">AI 가상시민</span>
+                </div>
+            </header>
+
+            {/* 검색바 */}
             <div className="m-ai-search-wrap">
                 <input
                     className="m-ai-search"

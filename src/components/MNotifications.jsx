@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import { API_URL, authHeaders } from '../utils/api';
+import { notifyUnreadChanged } from '../hooks/useUnreadNotifications';
 import './MNotifications.css';
 
 const KIND_LABEL = {
@@ -72,6 +73,7 @@ export default function MNotifications({ onNavigate }) {
                     headers: authHeaders(),
                 });
                 setItems((prev) => prev.map((it) => (it.id === n.id ? { ...it, is_read: true } : it)));
+                notifyUnreadChanged();
             } catch {}
         }
         // 타입별 라우팅 — target_type=report/proposal → 상세로 이동
@@ -89,6 +91,7 @@ export default function MNotifications({ onNavigate }) {
                 headers: authHeaders(),
             });
             setItems((prev) => prev.map((it) => ({ ...it, is_read: true })));
+            notifyUnreadChanged();
         } catch {}
     };
 

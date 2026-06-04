@@ -3,6 +3,33 @@ import './Home.css';
 import InteractiveMap from './InteractiveMap';
 import MobileBottomNav from './MobileBottomNav';
 import { API_URL } from '../utils/api';
+import { useUnreadNotifications } from '../hooks/useUnreadNotifications';
+
+function NotifBellButton({ onClick, count }) {
+    return (
+        <button
+            type="button"
+            className="btn-header"
+            aria-label={count > 0 ? `알림 ${count}개` : '알림'}
+            style={{ position: 'relative', padding: '8px', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer' }}
+            onClick={onClick}
+        >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            {count > 0 && (
+                <span aria-hidden="true" style={{
+                    position: 'absolute', top: 4, right: 4,
+                    minWidth: 16, height: 16, padding: '0 4px',
+                    borderRadius: 8, background: '#E6235A', color: '#fff',
+                    fontSize: 10, fontWeight: 700, lineHeight: '16px',
+                    textAlign: 'center', boxSizing: 'border-box',
+                }}>{count > 99 ? '99+' : count}</span>
+            )}
+        </button>
+    );
+}
 
 
 // citizens, archives 데이터는 /api/home/citizens, /api/home/archives에서 받음.
@@ -11,6 +38,7 @@ const Home = ({ onNavigate }) => {
     const [activeTab, setActiveTab] = useState('home');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isPC, setIsPC] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
+    const { count: unreadCount } = useUnreadNotifications();
 
     useEffect(() => {
         const token = localStorage.getItem('access_token');
@@ -51,12 +79,10 @@ const Home = ({ onNavigate }) => {
                     ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
-                            <button className="btn-header" style={{ padding: '8px', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => onNavigate && onNavigate('mNotifications')}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                                </svg>
-                            </button>
+                            <NotifBellButton
+                                count={unreadCount}
+                                onClick={() => onNavigate && onNavigate('mNotifications')}
+                            />
                         </div>
                     )}
                 </div>
@@ -85,12 +111,10 @@ const Home = ({ onNavigate }) => {
                         ) : (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <button className="btn-header login" onClick={handleLogout}>로그아웃</button>
-                                <button className="btn-header" style={{ padding: '8px', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => onNavigate && onNavigate('mNotifications')}>
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                                    </svg>
-                                </button>
+                                <NotifBellButton
+                                    count={unreadCount}
+                                    onClick={() => onNavigate && onNavigate('mNotifications')}
+                                />
                             </div>
                         )}
                     </div>

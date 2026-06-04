@@ -52,7 +52,7 @@ export default function MProposalMap({ onNavigate }) {
     const [sortOpen, setSortOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [selectedPinId, setSelectedPinId] = useState(null);
-    const { snap, setSnap, onTouchStart, onTouchEnd } = useSwipeSheet('mid');
+    const { snap, setSnap, dragY, dragging, onTouchStart, onTouchMove, onTouchEnd } = useSwipeSheet('mid');
     const mapRef = useRef(null);
 
     const { proposals } = useProposalsData();
@@ -69,8 +69,16 @@ export default function MProposalMap({ onNavigate }) {
             });
         }
         if (cat && cat !== '전체') arr = arr.filter((p) => p.category === cat);
+        if (search.trim()) {
+            const q = search.trim().toLowerCase();
+            arr = arr.filter((p) =>
+                (p.title && p.title.toLowerCase().includes(q)) ||
+                (p.content && p.content.toLowerCase().includes(q)) ||
+                (p.nickname && p.nickname.toLowerCase().includes(q))
+            );
+        }
         return arr;
-    }, [proposals, region, cat]);
+    }, [proposals, region, cat, search]);
 
     const PINS = useMemo(() => filtered.map((p) => {
         if (p.lat && p.lng) return { id: p.id, lat: p.lat, lng: p.lng };
@@ -113,6 +121,7 @@ export default function MProposalMap({ onNavigate }) {
                     pins={PINS.map((p) => ({ ...p, color: '#E6235A' }))}
                     accentColor="#E6235A"
                     onPinClick={(pin) => { setSelectedPinId(pin.id); setSnap('mid'); }}
+                    onMapClick={() => { if (selectedPinId) setSelectedPinId(null); }}
                     selectedDistrict={region !== '부산전체' ? region : null}
                 />
             </div>
@@ -136,13 +145,20 @@ export default function MProposalMap({ onNavigate }) {
             </button>
 
             {/* 바텀시트 — 2-snap (collapsed/mid). 위로 더 펼치려면 List 페이지로 navigate */}
-            <div className="m-map-sheet" data-snap={snap}>
+            <div
+                className={`m-map-sheet${dragging ? ' dragging' : ''}`}
+                data-snap={snap}
+                style={dragY ? { transform: `translateY(${dragY}px)` } : undefined}
+            >
                 <div
                     className="m-sheet-grab"
                     onTouchStart={onTouchStart}
+                    onTouchMove={onTouchMove}
                     onTouchEnd={(e) => onTouchEnd(e, { onSwipeUpAtTop: goToList })}
                     onMouseDown={onTouchStart}
+                    onMouseMove={onTouchMove}
                     onMouseUp={(e) => onTouchEnd(e, { onSwipeUpAtTop: goToList })}
+                    onMouseLeave={(e) => dragging && onTouchEnd(e, { onSwipeUpAtTop: goToList })}
                 >
                     <div className="m-sheet-handle" />
                 </div>

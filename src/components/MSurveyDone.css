@@ -1,10 +1,10 @@
+/* Figma: done page has no MobileBottomNav — full viewport flex layout */
 .m-survey-done-page {
     min-height: 100vh;
     background: #fff;
     display: flex;
     flex-direction: column;
     padding: 0;
-    padding-bottom: 76px; /* MobileBottomNav height */
 }
 
 .m-done-content {
@@ -61,11 +61,12 @@
     margin: 0;
 }
 
+/* Figma: action button is centered at bottom with 16px padding */
 .m-done-actions {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding: 0 20px 16px;
+    padding: 0 16px 16px;
 }
 
 .m-done-cta {

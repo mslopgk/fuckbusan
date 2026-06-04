@@ -20,7 +20,7 @@ const CheckDone = ({ onGoHome, color = '#E6235A', type = 'diagnosis' }) => {
         // Default diagnosis
         title = isExpert ? '전문가 진단 완료' : '일반 진단 완료';
         subtitle = '진단 결과가 제출되었습니다';
-        btnLabel = '진단 홈으로 가기';
+        btnLabel = '홈으로 이동';
         description = '입력하신 진단 내용이 정상적으로 제출되었습니다.';
     }
 

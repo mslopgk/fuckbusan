@@ -46,6 +46,7 @@ export default function MSurveyJoin({ onNavigate, survey }) {
         return a !== undefined && a !== null && a !== '';
     };
     const answeredCount = qs.filter(isAnswered).length;
+    const allAnswered = qs.length > 0 && answeredCount === qs.length;
     const progress = qs.length ? (answeredCount / qs.length) * 100 : 0;
 
     const saveProgress = (newAnswers) => {
@@ -55,18 +56,23 @@ export default function MSurveyJoin({ onNavigate, survey }) {
         } catch (_) {}
     };
 
-    const setSingle = (qid, value) => setAnswers((prev) => {
-        const next = { ...prev, [qid]: value };
-        saveProgress(next);
-        return next;
-    });
-    const toggleMulti = (qid, value) =>
+    const setSingle = (qid, value) => {
+        if (validationError) setValidationError('');
+        setAnswers((prev) => {
+            const next = { ...prev, [qid]: value };
+            saveProgress(next);
+            return next;
+        });
+    };
+    const toggleMulti = (qid, value) => {
+        if (validationError) setValidationError('');
         setAnswers((prev) => {
             const cur = prev[qid] || [];
             const next = { ...prev, [qid]: cur.includes(value) ? cur.filter((v) => v !== value) : [...cur, value] };
             saveProgress(next);
             return next;
         });
+    };
 
     const handleSubmit = async () => {
         if (submitting) return;
@@ -222,7 +228,7 @@ export default function MSurveyJoin({ onNavigate, survey }) {
             <footer className="m-join-footer">
                 <button className="m-join-prev" onClick={() => onNavigate && onNavigate('mSurveyDetail2', survey)} type="button">이전</button>
                 <button className="m-join-next" type="button" onClick={handleSubmit} disabled={submitting}>
-                    {submitting ? '제출 중...' : '다음'}
+                    {submitting ? '제출 중...' : allAnswered ? '제출' : '다음'}
                 </button>
             </footer>
 

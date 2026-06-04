@@ -139,8 +139,8 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
                                         width="14" 
                                         height="14" 
                                         viewBox="0 0 24 24" 
-                                        fill={likedIds && likedIds.has(report.id) ? "#E6235A" : "none"} 
-                                        stroke={likedIds && likedIds.has(report.id) ? "#E6235A" : "#adb5bd"}
+                                        fill={likedIds && likedIds.has(report.id) ? "#f74e7e" : "none"}
+                                        stroke={likedIds && likedIds.has(report.id) ? "#f74e7e" : "#adb5bd"}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             if (onToggleLike) onToggleLike(report.id);

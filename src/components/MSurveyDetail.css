@@ -4,17 +4,17 @@
     padding-bottom: 80px;
 }
 
+/* Figma: hero area is 285px tall, title at ~99px from top, card starts at 180px */
 .m-survey-hero {
     background: #542AA3;
-    padding: 0 16px 64px;
+    padding: 0 16px;
     color: #fff;
-    min-height: 230px;
+    min-height: 285px;
 }
 
-/* Detail2: 개인정보 동의 카드 오버랩용 — 더 많은 padding */
+/* Detail2: 개인정보 동의 카드 오버랩용 — same hero height */
 .m-survey-hero.hero-shrunk {
-    padding-bottom: 100px;
-    min-height: 230px;
+    min-height: 285px;
 }
 
 .m-hero-topbar {
@@ -48,13 +48,17 @@
     font-family: inherit;
 }
 
+/* Figma: title centered in purple hero, word-break at natural Korean boundaries */
 .m-hero-title {
     font-size: 22px;
     font-weight: 600;
     line-height: 1.4;
     text-align: center;
-    margin: 32px 24px 24px;
+    margin: 16px 24px 24px;
     letter-spacing: -0.04em;
+    padding-top: 12px;
+    word-break: keep-all;
+    overflow-wrap: break-word;
 }
 
 .m-hero-card {
@@ -64,9 +68,9 @@
     color: #1a1a1b;
 }
 
-/* hero 박스 밖에서 보라/흰 경계를 가로지르는 카드 — Figma: 카드가 hero 영역 안쪽 약 80px부터 시작 */
+/* Figma: card starts at 180px from top in a 285px hero → overlap = 285-180 = 105px */
 .m-hero-card-overlap {
-    margin: -64px 16px 0;
+    margin: -105px 16px 0;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
     position: relative;
     z-index: 2;
@@ -271,9 +275,9 @@
 /* Consent card content */
 .m-consent-title {
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 700;
     margin: 0 0 12px;
-    color: #542AA3;
+    color: #111;
 }
 
 .m-consent-section {
@@ -318,14 +322,14 @@
     cursor: pointer;
 }
 
-/* 동의 체크박스 스타일 — 정사각형 + 체크마크 (Figma 스펙) */
+/* 동의 체크박스 스타일 — 정사각형 + 체크마크 (Figma: teal #43c1c1 when checked) */
 .m-consent-radios input[type="radio"] {
     appearance: none;
     -webkit-appearance: none;
     width: 20px;
     height: 20px;
-    border: 2px solid #c8c8c8;
-    border-radius: 4px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
     background: #fff;
     cursor: pointer;
     margin: 0;
@@ -336,8 +340,8 @@
 }
 
 .m-consent-radios input[type="radio"]:checked {
-    background: #542AA3;
-    border-color: #542AA3;
+    background: #43c1c1;
+    border-color: #43c1c1;
 }
 
 .m-consent-radios input[type="radio"]:checked::after {
@@ -405,7 +409,8 @@
     letter-spacing: -0.02em;
 }
 
-.m-form-label .req { color: #E6235A; }
+/* Figma: required asterisk in survey form uses teal #23bdbb */
+.m-form-label .req { color: #23bdbb; }
 
 .m-form-radios {
     display: flex;

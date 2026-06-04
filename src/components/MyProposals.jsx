@@ -44,7 +44,7 @@ const MyProposals = ({ onBack, onNavigate }) => {
         };
 
         fetchProposalsData();
-    }, [API_URL, activeTab]);
+    }, [activeTab]);
 
     // 카테고리별 배지 색상 정의
     const getCategoryStyle = (category) => {

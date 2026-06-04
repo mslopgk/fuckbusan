@@ -33,7 +33,7 @@ const ChevronDownIcon = ({ active }) => (
 
 export function RegionSheet({ regions, draft, onSelect, onConfirm, onClose }) {
     return (
-        <div className="m-modal-backdrop" onClick={onClose}>
+        <div className="m-modal-backdrop" onMouseDown={(e) => { e.stopPropagation(); }} onTouchStart={(e) => { e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); onClose(); }}>
             <div className="m-modal-sheet" onClick={(e) => e.stopPropagation()}>
                 <div className="m-modal-head">
                     <h3 className="m-modal-title">위치 설정</h3>
@@ -57,7 +57,7 @@ export function RegionSheet({ regions, draft, onSelect, onConfirm, onClose }) {
 
 export function SortSheet({ sorts, draft, onSelect, onConfirm, onClose }) {
     return (
-        <div className="m-modal-backdrop" onClick={onClose}>
+        <div className="m-modal-backdrop" onMouseDown={(e) => { e.stopPropagation(); }} onTouchStart={(e) => { e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); onClose(); }}>
             <div className="m-modal-sheet" onClick={(e) => e.stopPropagation()}>
                 <div className="m-modal-head">
                     <h3 className="m-modal-title">정렬</h3>

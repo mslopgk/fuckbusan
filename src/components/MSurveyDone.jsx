@@ -1,4 +1,3 @@
-import MobileBottomNav from './MobileBottomNav';
 import './MSurveyDone.css';
 
 function DoneCheckIcon() {
@@ -34,7 +33,6 @@ export default function MSurveyDone({ onNavigate, survey }) {
                     홈으로 이동
                 </button>
             </div>
-            <MobileBottomNav currentView="mSurveyDone" onNavigate={onNavigate} />
         </div>
     );
 }

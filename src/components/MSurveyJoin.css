@@ -124,13 +124,14 @@
     background: #fff;
 }
 
+/* Figma: when option is selected (purple bg), check icon uses white stroke */
 .m-q-check.on {
-    background: #fff;
-    border-color: #fff;
-    color: #542AA3;
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.4);
+    color: #fff;
 }
 
-.m-q-check.on svg { stroke: #542AA3; }
+.m-q-check.on svg { stroke: #fff; }
 
 /* Scale */
 .m-scale {
@@ -281,7 +282,7 @@
 
 .m-join-validation-error {
     position: fixed;
-    bottom: 148px;
+    bottom: 160px;
     left: 20px;
     right: 20px;
     background: #fff0f3;
