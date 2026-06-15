@@ -42,16 +42,16 @@
     font-size: 18px;
 }
 
-/* Figma 0:647: primary = #f74e7e, secondary = #ffdde7 bg with #f74e7e text 16px semibold */
+/* Figma 215:12108: primary = #542aa3, secondary = rgba(84,42,163,0.2) bg with #542aa3 text */
 .m-report-done-page .m-prop-done-primary {
-    background: #f74e7e;
+    background: #542aa3;
     color: #fff;
-    box-shadow: 0 4px 16px rgba(247, 78, 126, 0.3);
+    box-shadow: 0 4px 16px rgba(84, 42, 163, 0.3);
 }
 
 .m-report-done-page .m-prop-done-secondary {
-    background: #ffdde7;
-    color: #f74e7e;
+    background: rgba(84, 42, 163, 0.2);
+    color: #542aa3;
     font-size: 16px;
     font-weight: 600;
 }

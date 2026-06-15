@@ -76,6 +76,8 @@ class User(Base):
     nickname = Column(String(100))
     phone_num = Column(String(20))
     birth_date = Column(String(20)) # Added birth_date
+    address = Column(String(255))           # 회원가입 주소 (도로명/지번)
+    detailed_address = Column(String(255))  # 회원가입 상세주소
     created_at = Column(DateTime, default=datetime.now)
     district_code = Column(String(50))
     is_approved = Column(Boolean, default=True, server_default='1')
@@ -340,3 +342,23 @@ class ChecklistTemplate(Base):
     title = Column(String(200), nullable=True)
     payload = Column(JSON, nullable=False)
     updated_at = Column(DateTime, default=datetime.now)
+
+
+class SurveyChatInterview(Base):
+    """AI 대화형 설문에서 수집된 이슈 1건 (포팅: test4 interviews 테이블).
+
+    한 세션(session_id)에서 여러 이슈가 나올 수 있어 이슈당 1 row.
+    raw_log 에 수집 dict 전체를 JSON 으로 보관.
+    """
+    __tablename__ = "survey_chat_interviews"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(String(40), index=True)
+    issue_text = Column(Text, nullable=True)
+    severity_score = Column(Integer, nullable=True)
+    primary_category = Column(String(50), nullable=True)
+    location_bucket = Column(String(255), nullable=True)
+    evidence_span = Column(Text, nullable=True)
+    raw_log = Column(JSON, nullable=True)
+    created_at = Column(DateTime, default=datetime.now, index=True)

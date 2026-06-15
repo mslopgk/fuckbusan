@@ -1,4 +1,4 @@
-/* MyReports.css */
+/* MyReports.css — 나의제보 모바일 리스트 (Figma 215:14052 / 215:14160) */
 
 .my-reports-container {
     min-height: 100vh;
@@ -8,24 +8,16 @@
     padding-bottom: 140px;
 }
 
-/* Header (ProposalList Style) */
+/* ── 헤더 ── */
 .mr-header {
-    height: 60px;
-    padding: 0 14px;
+    height: 56px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     background-color: #fff;
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 1px solid #f5f5f5;
-}
-
-.mr-header-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 .mr-back-btn {
@@ -35,22 +27,14 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    margin-right: 4px;
 }
 
-.mr-header-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #555;
-    font-family: 'Pretendard Variable', sans-serif;
-}
-
-/* Tabs (MyProposals Style with Pink Active) */
+/* ── 탭 스위처 (나의 제보글 / 좋아요 제보글) ── */
+/* Figma: h=50px, full-width, border 1px #DDD, radius 30px */
 .mr-tabs-container {
-    padding: 24px 14px;
+    padding: 16px 20px 0;
     display: flex;
     justify-content: center;
-    background-color: #fff;
 }
 
 .mr-tab-switcher {
@@ -60,30 +44,41 @@
     border: 1px solid #DDDDDD;
     border-radius: 30px;
     overflow: hidden;
+    position: relative;
 }
 
+/* 활성 탭: Figma 215:14052 active=나의제보글 → bg #542aa3 (보라) */
 .mr-tab-btn {
     flex: 1;
     border: none;
     background: none;
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1rem;
+    font-weight: 600;
     color: #777;
     cursor: pointer;
     border-radius: 30px;
     transition: all 0.2s ease;
-    height: 50px;
+    font-family: 'Pretendard Variable', sans-serif;
+    letter-spacing: -0.02em;
 }
 
 .mr-tab-btn.active {
-    background-color: #f74e7e; /* Pink */
-    color: white;
+    background-color: #542aa3;
+    color: #fff;
+    font-weight: 700;
 }
 
-/* Status Filters (ReportList Style) */
+/* 좋아요 탭 활성 시 오른쪽 pill (Figma 215:14160) */
+.mr-tab-btn.active-right {
+    background-color: #542aa3;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ── 상태 필터 (접수 / 검토중 / 검토완료) ── */
+/* Figma 215:14052: 나의 제보글 탭에만 표시, 3가지 pill */
 .mr-status-container {
-    padding: 0 14px;
-    margin-bottom: 16px;
+    padding: 16px 20px 0;
 }
 
 .mr-status-tabs {
@@ -92,166 +87,188 @@
 }
 
 .mr-status-tab {
-    padding: 8px 16px;
-    border-radius: 12px;
-    border: 1px solid #eee;
+    height: 43px;
+    padding: 0 18px;
+    border-radius: 10px;
+    border: 1px solid #DDDDDD;
     background: #fff;
     font-size: 14px;
-    color: #999;
-    font-weight: 600;
+    color: #777;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    font-family: inherit;
+    transition: all 0.18s ease;
+    letter-spacing: -0.02em;
 }
 
+/* Figma: 검토중 active → bg #542aa3 (보라) */
 .mr-status-tab.active {
-    background: #f74e7e; /* Pink */
+    background: #542aa3;
     color: #fff;
-    border-color: #f74e7e;
+    border-color: #542aa3;
+    font-weight: 700;
 }
 
-/* List Content */
+/* ── 리스트 ── */
 .mr-list {
-    padding: 0 14px;
+    padding: 16px 20px 0;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 0;
 }
 
 .mr-empty {
-    padding: 56px 16px;
+    padding: 60px 16px;
     text-align: center;
     color: #888;
     font-size: 14px;
     line-height: 1.5;
 }
 
-/* Card Design (ReportList Style) */
+/* ── 카드 (Figma: h=117px, radius=15px, shadow, 20px 좌우 패딩) ── */
 .mr-card {
     background-color: #fff;
-    border-radius: 20px;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: 1fr 80px;
-    grid-template-rows: auto auto auto;
-    gap: 4px 16px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-    align-items: center;
+    border-radius: 15px;
+    padding: 14px 14px 14px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.10);
     cursor: pointer;
+    margin-bottom: 13px;
+    transition: transform 0.12s;
 }
 
-.mr-badge-row {
-    grid-column: 1;
-    grid-row: 1;
+.mr-card:active {
+    transform: scale(0.985);
+}
+
+/* 카드 좌측 콘텐츠 */
+.mr-card-left {
+    flex: 1;
+    min-width: 0;
     display: flex;
-    gap: 6px;
+    flex-direction: column;
+}
+
+/* 배지 행 (Figma: 동래구 chip #dff8f8, 주거 chip #ffef8a, 거리 chip #ffc9c9) */
+.mr-badge-row {
+    display: flex;
+    gap: 5px;
     margin-bottom: 8px;
+    flex-wrap: wrap;
 }
 
 .mr-badge {
-    font-size: 0.75rem;
+    font-size: 12px;
     font-weight: 700;
-    padding: 4px 12px;
+    padding: 3px 8px;
     border-radius: 12px;
-    width: fit-content;
+    white-space: nowrap;
+    letter-spacing: -0.03em;
 }
 
-.mr-badge.region { background-color: #E0F2F1; color: #00796B; } /* Mint-like for region */
-.mr-badge.category { background-color: #FFF9C4; color: #F57F17; } /* Yellow-like for general category */
-.mr-badge.sub { background-color: #FCE4EC; color: #C2185B; } /* Pink-like for sub/거리 */
+.mr-badge.region  { background: #dff8f8; color: #242424; }
+.mr-badge.category { background: #ffef8a; color: #242424; }
+.mr-badge.sub     { background: #ffc9c9; color: #242424; }
 
+/* 카드 제목 (Figma: 16px, medium, #111, leading 1.4) */
 .mr-card-title {
-    grid-column: 1;
-    grid-row: 2;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #222;
-    margin: 0 0 6px 0;
-    line-height: 1.3;
+    font-size: 15px;
+    font-weight: 600;
+    color: #111;
+    margin: 0 0 5px;
+    line-height: 1.4;
+    letter-spacing: -0.03em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
+/* 작성자 (Figma: 14px, regular, #1e1e1e, leading 1.35) */
 .mr-card-author {
-    grid-column: 1;
-    grid-row: 3;
-    font-size: 0.9rem;
-    color: #999;
-    margin: 0 0 8px 0;
+    font-size: 13px;
+    color: #1e1e1e;
+    margin: 0 0 6px;
+    font-weight: 400;
+    line-height: 1.35;
 }
 
-.mr-card-right {
-    grid-column: 2;
-    grid-row: 1 / span 3;
+/* 통계 (좋아요/댓글) */
+.mr-card-stats {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.mr-stat {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 13px;
+    color: #bfbfbf;
+    font-weight: 500;
+}
+
+/* 좋아요 아이콘: mine 탭에서는 회색, likes 탭에서는 보라 */
+.mr-stat svg { flex-shrink: 0; }
+
+/* 카드 우측 (썸네일 이미지) */
+.mr-card-right {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    align-self: center;
 }
 
 .mr-card-img-wrapper {
-    width: 80px;
-    height: 80px;
-    border-radius: 16px;
+    width: 55px;
+    height: 55px;
+    border-radius: 15px;
     overflow: hidden;
-    background-color: #f8f9fa;
+    background: #f1f3f5;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.10);
 }
 
 .mr-card-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
-.mr-card-stats {
-    display: flex;
-    justify-content: flex-start;
-    gap: 12px;
-}
-
-.mr-stat {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-    color: #adb5bd;
-    font-weight: 500;
-}
-
-.mr-stat-icon-heart {
-    display: flex;
-    align-items: center;
-}
-
-/* Floating Action Button (Pink) */
+/* ── FAB (+ 제보하기) ── */
+/* Figma: rounded pill, bg #542aa3, 보라 */
 .mr-fab {
     position: fixed;
-    bottom: 80px;
-    right: 14px;
-    background: #f74e7e;
+    bottom: 88px;
+    right: 20px;
+    background: #542aa3;
     color: #fff;
     border: none;
-    border-radius: 25px;
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: bold;
+    border-radius: 20px;
+    padding: 0 20px;
+    height: 36px;
+    font-size: 14px;
+    font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 8px;
-    z-index: 1000;
+    gap: 6px;
+    z-index: 200;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(247, 78, 126, 0.4);
+    box-shadow: 0 4px 12px rgba(84, 42, 163, 0.30);
     font-family: 'GmarketSans', sans-serif;
+    letter-spacing: -0.02em;
+    transition: opacity 0.15s;
 }
 
+.mr-fab:active { opacity: 0.85; }
+
 @media (min-width: 1024px) {
-    .mr-list {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-    .mr-tabs-container {
-        max-width: 480px;
-        margin: 0 auto;
-    }
-    .mr-status-container {
-        max-width: 800px;
-        margin: 0 auto 16px;
-    }
+    .mr-list { max-width: 800px; margin: 0 auto; }
+    .mr-tabs-container { max-width: 480px; margin: 0 auto; }
+    .mr-status-container { max-width: 800px; margin: 0 auto; }
 }

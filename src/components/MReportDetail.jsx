@@ -173,8 +173,8 @@ export default function MReportDetail({ onNavigate, report }) {
 
                 <div className="m-detail-map">
                     <PCMapCanvas
-                        pins={[{ id: 'this', lat: data.lat, lng: data.lng, color: '#f74e7e', title: data.title }]}
-                        accentColor="#f74e7e"
+                        pins={[{ id: 'this', lat: data.lat, lng: data.lng, color: '#542aa3', title: data.title }]}
+                        accentColor="#542aa3"
                     />
                 </div>
 

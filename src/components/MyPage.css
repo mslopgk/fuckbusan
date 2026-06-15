@@ -1,173 +1,216 @@
-/* MyPage.css */
+/* MyPage.css — Figma 215:2136 (마이페이지>내정보관리) */
 
-.mypage-container {
+.mp-container {
     min-height: 100vh;
-    background-color: #fff;
-    display: flex;
-    flex-direction: column;
+    background: #fff;
     font-family: 'Pretendard Variable', sans-serif;
-    max-width: 1280px;
-    margin: 0 auto;
+    color: #242424;
 }
 
-@media (min-width: 1024px) {
-    .mypage-container {
-        width: 1024px;
-        margin: 0 auto;
-    }
-}
-
-/* Header */
-.mypage-header {
-    height: 60px;
-    padding: 0 20px;
+/* 모바일 전용 back 헤더 */
+.mp-mobile-header {
     display: flex;
     align-items: center;
-    background-color: #fff;
+    height: 52px;
+    padding: 0 20px;
+    background: #fff;
     position: sticky;
     top: 0;
     z-index: 10;
 }
 
-.mypage-back-btn {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-}
-
-/* Body */
-.mypage-body {
-    padding: 24px 24px 80px 24px;
-    flex: 1;
-}
-
 @media (min-width: 1024px) {
-    .mypage-body {
-        width: 600px;
-        margin: 0 auto;
-        padding-top: 40px;
+    .mp-mobile-header {
+        display: none;
     }
 }
 
-.mypage-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #242424;
-    margin: 0 0 32px 0;
-    font-family: 'GmarketSans', sans-serif;
-    letter-spacing: -0.02em;
-}
-
-.mypage-welcome-section {
-    margin-bottom: 32px;
-}
-
-.mypage-welcome-text {
-    font-size: 20px;
-    font-weight: 700;
-    color: #222;
-    margin: 0 0 8px 0;
-    letter-spacing: -0.02em;
-}
-
-.mypage-welcome-desc {
-    font-size: 14px;
-    color: #888;
-    margin: 0;
-}
-
-/* Form */
-.mypage-form {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.mypage-input-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.mypage-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #666;
-    margin-bottom: 8px;
+.mp-back-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
+    margin-left: -8px;
 }
 
-.required-dot {
-    color: #FF4D4F;
-    font-size: 8px;
-    margin-left: 4px;
-    position: relative;
-    top: -4px;
+/* 페이지 제목 */
+.mp-page-title-row {
+    text-align: center;
+    padding: 28px 20px 20px;
 }
 
-.mypage-input {
-    height: 52px;
-    border: 1px solid #eee;
+@media (min-width: 1024px) {
+    .mp-page-title-row {
+        padding-top: 48px;
+    }
+}
+
+.mp-page-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #242424;
+    margin: 0;
+    font-family: 'GmarketSans', sans-serif;
+}
+
+/* 카드 래퍼 — PC에서 테두리+둥근 카드 */
+.mp-card {
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 680px;
+}
+
+@media (min-width: 1024px) {
+    .mp-card {
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        padding: 40px 44px;
+        margin-top: 8px;
+        gap: 24px;
+    }
+}
+
+/* 필드 그룹 */
+.mp-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mp-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #1e1e1e;
+    line-height: 1.35;
+}
+
+/* 인풋 공통 */
+.mp-input {
+    height: 48px;
+    border: 1px solid #e6e6e6;
     border-radius: 8px;
-    padding: 0 16px;
+    padding: 0 12px;
     font-size: 16px;
-    color: #222;
+    font-family: 'Pretendard Variable', sans-serif;
+    color: #111;
     outline: none;
-    transition: border-color 0.2s;
-    background-color: #fff;
+    background: #fff;
+    transition: border-color 0.18s;
+    line-height: 1.4;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.mypage-input.readonly {
-    background-color: #f5f5f5;
-    border-color: #f5f5f5;
-    color: #444;
+.mp-input::placeholder {
+    color: #bfbfbf;
 }
 
-.mypage-input:focus {
-    border-color: #5B2EAB;
+.mp-input:focus {
+    border-color: #23bdbb;
 }
 
-.mypage-input.second-pw {
-    margin-top: 12px;
+/* readonly — 아이디/이름/생년월일 */
+.mp-input--readonly {
+    background: #f6f6f6;
+    border-color: #f6f6f6;
+    color: #111;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    user-select: none;
 }
 
-.mypage-hint {
-    font-size: 12px;
-    color: #888;
-    margin: 8px 0 0 0;
+/* 휴대폰 — 약간 다른 배경 (#eee) */
+.mp-input--phone {
+    background: #eee;
+    border-color: #eee;
 }
 
-/* Footer */
-.mypage-footer {
-    margin-top: 60px;
+/* 두번째 비밀번호 입력 */
+.mp-input--second {
+    /* gap으로 처리, 별도 margin 없음 */
 }
 
-.mypage-submit-btn {
+.mp-hint {
+    font-size: 13px;
+    color: #1e1e1e;
+    margin: 0;
+    line-height: 1.35;
+}
+
+/* 주소검색 버튼 */
+.mp-addr-search-btn {
+    height: 48px;
+    width: 100%;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 16px;
+    color: #aaa;
+    font-family: 'Pretendard Variable', sans-serif;
+    cursor: pointer;
+    transition: border-color 0.18s, color 0.18s;
+}
+
+.mp-addr-search-btn:hover {
+    border-color: #23bdbb;
+    color: #23bdbb;
+}
+
+/* 수정하기 버튼 */
+.mp-submit-row {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+    .mp-submit-row {
+        padding: 28px 0 80px;
+    }
+}
+
+.mp-submit-btn {
     width: 100%;
     height: 56px;
-    background-color: #5B2EAB;
+    background: #23bdbb;
     color: #fff;
     border: none;
     border-radius: 8px;
     font-size: 18px;
     font-weight: 700;
+    letter-spacing: -0.72px;
     cursor: pointer;
-    transition: background-color 0.2s;
-    letter-spacing: -0.02em;
+    font-family: 'GmarketSans', sans-serif;
+    transition: background 0.18s;
 }
 
-.mypage-submit-btn:hover {
-    background-color: #491C9C;
+.mp-submit-btn:hover {
+    background: #1aa8a6;
 }
 
-.mypage-loading {
+.mp-submit-btn:disabled {
+    background: #b0e0df;
+    cursor: not-allowed;
+}
+
+/* 로딩 */
+.mp-loading {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     font-size: 16px;
-    color: #666;
+    color: #888;
+    font-family: 'Pretendard Variable', sans-serif;
 }

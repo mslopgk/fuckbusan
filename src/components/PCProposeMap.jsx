@@ -7,6 +7,7 @@ import { useReportsData } from '../hooks/useReportsData';
 import { thumbUrl } from '../utils/format';
 import './PCMapShared.css';
 import './PCMap3.css';
+import './PCProposeMap.css';
 
 
 export default function PCProposeMap({ onNavigate }) {
@@ -108,7 +109,7 @@ export default function PCProposeMap({ onNavigate }) {
 
     return (
         <UserPCLayout currentView="pcProposeMap" onNavigate={onNavigate}>
-            <div className={`pc-map3-page${sidebarOpen ? '' : ' pc-map3-sidebar-closed'}`}>
+            <div className={`pc-map3-page propose${sidebarOpen ? '' : ' pc-map3-sidebar-closed'}`}>
                 {/* LEFT FILTER STACK — 3 separate cards */}
                 <div className="pc-map3-filter-stack">
                     <aside className="pc-map3-filter-card">

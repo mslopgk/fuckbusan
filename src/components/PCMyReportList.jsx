@@ -5,8 +5,9 @@ import './PCFormShared.css';
 import './PCMyReportList.css';
 import { API_URL } from '../utils/api';
 
-
-const REGIONS = ['부산전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'];
+// Figma 215:3065: 2행 지역 필터
+const REGIONS_ROW1 = ['부산전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구'];
+const REGIONS_ROW2 = ['북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'];
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 const STATUSES = ['개선중', '개선예정', '개선완료'];
 
@@ -21,7 +22,7 @@ export default function PCMyReportList({ onNavigate, deletedIds, likedIds, userC
     const [tab, setTab] = useState('mine');
     const [region, setRegion] = useState('부산전체');
     const [category, setCategory] = useState('전체');
-    const [status, setStatus] = useState('');
+    const [status, setStatus] = useState('개선중');
     const [keyword, setKeyword] = useState('');
     const [serverReports, setServerReports] = useState([]);
     const [myServerReports, setMyServerReports] = useState([]);
@@ -72,19 +73,17 @@ export default function PCMyReportList({ onNavigate, deletedIds, likedIds, userC
         if (onNavigate) onNavigate('pcReportDetail', { ...report, showActions: tab === 'mine' });
     };
 
+    // 좋아요 탭에서의 하트/댓글 색 = 보라 #542aa3
+    const isLikesTab = tab === 'likes';
+
     return (
         <UserPCLayout currentView="pcMyReportList" onNavigate={onNavigate}>
             <div className="pc-myrep-page">
                 <div className="pc-myrep-inner">
-                    <h2 className="pc-myrep-title">제보하기</h2>
+                    {/* 페이지 제목 (Figma: "나의제보") */}
+                    <h2 className="pc-myrep-title">나의제보</h2>
 
-                    <div className="pc-form-hero pc-hero-yellow">
-                        <div>
-                            <h3>문제 상황이 잘 보이도록<br/>사진을 등록해 주세요</h3>
-                        </div>
-                        <img className="pc-form-hero-img" src="/figma-assets/propose-hero.png" alt="" />
-                    </div>
-
+                    {/* 검색 바 */}
                     <div className="pc-myrep-search-wrap">
                         <input
                             type="text"
@@ -93,20 +92,37 @@ export default function PCMyReportList({ onNavigate, deletedIds, likedIds, userC
                             value={keyword}
                             onChange={(e) => setKeyword(e.target.value)}
                         />
-                        <svg className="pc-myrep-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                        <svg className="pc-myrep-search-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="7"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
                     </div>
 
-                    <div className="pc-myrep-region-row">
-                        {REGIONS.map((r) => (
-                            <button
-                                key={r}
-                                className={`pc-myrep-region-chip ${region === r ? 'active' : ''}`}
-                                onClick={() => setRegion(r)}
-                                type="button"
-                            >{r}</button>
-                        ))}
+                    {/* 지역 필터 — 2행 grid (Figma: row1=8개, row2=9개) */}
+                    <div className="pc-myrep-region-wrap">
+                        <div className="pc-myrep-region-row">
+                            {REGIONS_ROW1.map((r) => (
+                                <button
+                                    key={r}
+                                    className={`pc-myrep-region-chip ${region === r ? 'active' : ''}`}
+                                    onClick={() => setRegion(r)}
+                                    type="button"
+                                >{r}</button>
+                            ))}
+                        </div>
+                        <div className="pc-myrep-region-row" style={{ gridTemplateColumns: 'repeat(9, 1fr)' }}>
+                            {REGIONS_ROW2.map((r) => (
+                                <button
+                                    key={r}
+                                    className={`pc-myrep-region-chip ${region === r ? 'active' : ''}`}
+                                    onClick={() => setRegion(r)}
+                                    type="button"
+                                >{r}</button>
+                            ))}
+                        </div>
                     </div>
 
+                    {/* 카테고리 필터 */}
                     <div className="pc-myrep-cat-row">
                         {CATEGORIES.map((c) => (
                             <button
@@ -118,6 +134,7 @@ export default function PCMyReportList({ onNavigate, deletedIds, likedIds, userC
                         ))}
                     </div>
 
+                    {/* 탭 스위처 (나의 제보글 | 좋아요 제보글) */}
                     <div className="pc-myrep-tabs">
                         <button
                             type="button"
@@ -131,46 +148,70 @@ export default function PCMyReportList({ onNavigate, deletedIds, likedIds, userC
                         >좋아요 제보글</button>
                     </div>
 
-                    <div className="pc-myrep-status-row">
-                        {STATUSES.map((s) => (
-                            <button
-                                key={s}
-                                type="button"
-                                className={`pc-myrep-status-chip ${status === s ? 'active' : ''}`}
-                                onClick={() => setStatus(s)}
-                            >{s}</button>
-                        ))}
-                    </div>
+                    {/* 상태 필터 (나의 제보글 탭에만) */}
+                    {tab === 'mine' && (
+                        <div className="pc-myrep-status-row">
+                            {STATUSES.map((s) => (
+                                <button
+                                    key={s}
+                                    type="button"
+                                    className={`pc-myrep-status-chip ${status === s ? 'active' : ''}`}
+                                    onClick={() => setStatus(s)}
+                                >{s}</button>
+                            ))}
+                        </div>
+                    )}
 
+                    {/* 카드 그리드 */}
                     <div className="pc-myrep-grid">
                         {filtered.map((r) => {
                             const cat = r.cat || r.category || '';
                             const sub = r.sub || r.sub_category || '';
-                            const style = CAT_STYLES[cat] || { bg: '#E0F4F1', color: '#2C9A8F' };
+                            const catStyle = CAT_STYLES[cat] || { bg: '#ffef8a', color: '#242424' };
+                            const isLiked = likedIds && likedIds.has(r.id);
                             return (
                                 <div key={r.id} className="pc-myrep-card" onClick={() => handleCardClick(r)}>
+                                    {/* 배지 행: 지역 / 카테고리 / 서브 */}
                                     <div className="pc-myrep-card-tags">
-                                        {cat && <span className="pc-myrep-cat" style={{ background: style.bg, color: style.color }}>{cat}</span>}
-                                        {sub && <span className="pc-myrep-sub">{sub}</span>}
+                                        {r.region && (
+                                            <span className="pc-myrep-region-tag">{r.region}</span>
+                                        )}
+                                        {cat && (
+                                            <span className="pc-myrep-cat" style={{ background: catStyle.bg, color: catStyle.color }}>{cat}</span>
+                                        )}
+                                        {sub && (
+                                            <span className="pc-myrep-sub">{sub}</span>
+                                        )}
                                     </div>
                                     <div className="pc-myrep-card-row">
                                         <div className="pc-myrep-card-text">
                                             <h4 className="pc-myrep-card-title">{r.title}</h4>
-                                            <p className="pc-myrep-card-author">{r.author || ''}{r.region ? ` ${r.region}` : ''}</p>
+                                            <p className="pc-myrep-card-author">
+                                                {r.author || ''}{r.region ? ` ${r.region}` : ''}
+                                            </p>
                                         </div>
                                         {r.image && (
                                             <div className="pc-myrep-card-img">
-                                                <img src={r.image} alt={r.title} onError={(e) => { e.currentTarget.parentNode.style.display = 'none'; }} />
+                                                <img src={r.image} alt={r.title}
+                                                    onError={(e) => { e.currentTarget.parentNode.style.display = 'none'; }} />
                                             </div>
                                         )}
                                     </div>
                                     <div className="pc-myrep-card-stats">
-                                        <span className="pc-myrep-stat">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill={likedIds && likedIds.has(r.id) ? '#E6235A' : 'none'} stroke={likedIds && likedIds.has(r.id) ? '#E6235A' : '#adb5bd'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                                            {(r.likes ?? 0) + (likedIds && likedIds.has(r.id) ? 1 : 0)}
+                                        {/* 좋아요 — 좋아요 탭 시 보라, 나의제보 탭 시 회색 */}
+                                        <span className={`pc-myrep-stat ${isLikesTab || isLiked ? 'liked' : ''}`}>
+                                            <svg width="14" height="12" viewBox="0 0 15.36 12.23"
+                                                fill={isLikesTab || isLiked ? '#542aa3' : 'none'}
+                                                stroke={isLikesTab || isLiked ? '#542aa3' : '#bfbfbf'}
+                                                strokeWidth={isLikesTab || isLiked ? 0 : 1}>
+                                                <path d="M9.057 1.081C10.498-0.36 12.836-0.36 14.277 1.081 15.719 2.523 15.719 4.860 14.277 6.302L8.781 11.799C8.478 12.102 8.076 12.244 7.679 12.229 7.282 12.244 6.880 12.102 6.577 11.799L1.081 6.302C-0.360 4.860-0.360 2.523 1.081 1.081 2.523-0.360 4.860-0.360 6.302 1.081L7.679 2.458Z"/>
+                                            </svg>
+                                            {(r.likes ?? 0) + (isLiked ? 1 : 0)}
                                         </span>
                                         <span className="pc-myrep-stat">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#adb5bd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                            <svg width="13" height="12" viewBox="0 0 14 11.85" fill="#bfbfbf">
+                                                <path d="M9.154 0C11.831 0 14 2.169 14 4.846 14 7.522 11.831 9.691 9.154 9.691H6.513L3.230 11.846V9.414C1.349 8.749 0 6.955 0 4.846 0 2.169 2.169 0 4.846 0Z"/>
+                                            </svg>
                                             {r.comments ?? 0}
                                         </span>
                                     </div>

@@ -152,6 +152,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
     let filtered = items;
     if (district) filtered = filtered.filter((it) => it.region === district);
     if (!livingCats.has('all')) filtered = filtered.filter((it) => livingCats.has(it.categoryKey));
+    if (facilityMid) filtered = filtered.filter((it) => it.mid === facilityMid);
     if (target === 'citizen') filtered = filtered.filter((it) => it.targetType === '시민');
     else if (target === 'expert') filtered = filtered.filter((it) => it.targetType === '전문가');
     if (sort === 'views') filtered = [...filtered].sort((a, b) => b.views - a.views);
@@ -244,6 +245,9 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                         <div className="pc-diag-dropdown pc-diag-sub-select">
                             <select value={facilityMid} onChange={(e) => setFacilityMid(e.target.value)}>
                                 <option value="">선택해주세요</option>
+                                {[...new Set(items.map((it) => it.mid).filter(Boolean))].sort().map((m) => (
+                                    <option key={m} value={m}>{m}</option>
+                                ))}
                             </select>
                         </div>
 
@@ -251,14 +255,15 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
 
                         <div className="pc-diag-section-label">소분류</div>
                         <div className="pc-diag-dropdown pc-diag-sub-select">
-                            <select value={facilitySub} onChange={(e) => setFacilitySub(e.target.value)}>
+                            {/* 진단 데이터에 소분류 차원 없음 — 추후 데이터 추가 시 활성화 */}
+                            <select value={facilitySub} onChange={(e) => setFacilitySub(e.target.value)} disabled>
                                 <option value="">선택해주세요</option>
                             </select>
                         </div>
 
                         <div className="pc-diag-filter-actions">
                             <button type="button" className="pc-diag-btn-cancel" onClick={() => { setBigSel(new Set()); setFacilityMid(''); setFacilitySub(''); }}>취소</button>
-                            <button type="button" className="pc-diag-btn-confirm">확인</button>
+                            <button type="button" className="pc-diag-btn-confirm" onClick={() => setRefreshKey((k) => k + 1)}>확인</button>
                         </div>
                     </aside>
 

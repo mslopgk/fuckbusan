@@ -45,7 +45,8 @@ export async function runFrontend({ views, headless = true, token = null, adminT
           ({ view, token, adminToken, sessionSeed }) => {
             sessionStorage.setItem('current_view', view);
             if (token) localStorage.setItem('access_token', token);
-            if (adminToken) localStorage.setItem('admin_token', adminToken);
+            // admin 페이지들은 전부 access_token을 읽음 (admin_token 키는 미사용)
+            if (adminToken) localStorage.setItem('access_token', adminToken);
             if (sessionSeed) {
               for (const [k, v] of Object.entries(sessionSeed)) {
                 sessionStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
@@ -56,8 +57,34 @@ export async function runFrontend({ views, headless = true, token = null, adminT
         );
 
         await page.goto(url, { waitUntil: 'networkidle', timeout: 20000 });
+        // seed가 react mount보다 늦게 읽힌 경우(홈 리다이렉트 등) 1회 재시드 + 리로드
+        const seededView = await page
+          .evaluate(() => sessionStorage.getItem('current_view'))
+          .catch(() => null);
+        if (seededView !== v.view) {
+          // 주의: 이전 페이지 close 시 abort된 fetch가 fetchWithLogout을 타고
+          // 공유 localStorage의 access_token을 지울 수 있음 → 토큰도 함께 복구
+          await page.evaluate(
+            ({ view, token, adminToken, sessionSeed }) => {
+              sessionStorage.setItem('current_view', view);
+              if (token) localStorage.setItem('access_token', token);
+              if (adminToken) localStorage.setItem('access_token', adminToken);
+              if (sessionSeed) {
+                for (const [k, val] of Object.entries(sessionSeed)) {
+                  sessionStorage.setItem(k, typeof val === 'string' ? val : JSON.stringify(val));
+                }
+              }
+            },
+            { view: v.view, token: v.auth ? token : null, adminToken: v.auth === 'admin' ? adminToken : null, sessionSeed: v.sessionSeed || null }
+          );
+          await page.reload({ waitUntil: 'networkidle', timeout: 20000 }).catch(() => {});
+        }
         if (v.waitFor) {
-          await page.waitForSelector(v.waitFor, { timeout: 10000 }).catch(() => {});
+          const found = await page
+            .waitForSelector(v.waitFor, { timeout: 10000 })
+            .then(() => true)
+            .catch(() => false);
+          if (!found) result.waitForTimeout = v.waitFor; // silent-eat 대신 리포트에 기록
         }
         await page.waitForTimeout(500);
 

@@ -217,6 +217,30 @@ export default function MDiagnosisMap({ onNavigate }) {
         }
     }, [districtCenter]);
 
+    // 진입 시(구 미선택) 진단 데이터가 화면에 보이도록 클러스터 가중 중심으로 1회 이동
+    const didAutoCenterRef = useRef(false);
+    useEffect(() => {
+        if (didAutoCenterRef.current || district || !clusters.length) return;
+        const valid = clusters.filter((c) => c.lat && c.lng);
+        if (!valid.length) return;
+        let wLat = 0, wLng = 0, tot = 0;
+        for (const c of valid) {
+            const n = c.count || 1;
+            wLat += parseFloat(c.lat) * n;
+            wLng += parseFloat(c.lng) * n;
+            tot += n;
+        }
+        if (!tot) return;
+        const center = { lat: wLat / tot, lng: wLng / tot };
+        didAutoCenterRef.current = true;
+        setCurrentCenter(center);
+        if (mapRef.current && window.kakao) {
+            isPanningRef.current = true;
+            mapRef.current.panTo(new window.kakao.maps.LatLng(center.lat, center.lng));
+            setTimeout(() => { isPanningRef.current = false; }, 800);
+        }
+    }, [clusters, district]);
+
     return (
         <div className="m-diag-list-page">
             {/* 헤더 — Figma 22:7914: "← 일반 진단 ⊙" + 지역 드롭다운 */}
@@ -234,8 +258,8 @@ export default function MDiagnosisMap({ onNavigate }) {
                 <div className="m-diag-map-header-title">
                     <span className="m-diag-map-header-label">일반 진단</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="#06AB69" strokeWidth="2"/>
-                        <path d="M10 8l4 4-4 4" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="12" cy="12" r="10" stroke="#23BDBB" strokeWidth="2"/>
+                        <path d="M10 8l4 4-4 4" stroke="#23BDBB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                 </div>
             </header>
@@ -342,9 +366,9 @@ export default function MDiagnosisMap({ onNavigate }) {
                 {kakaoReady && !selectedPin && (
                     <div className="m-diag-crosshair" aria-hidden="true">
                         <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                            <line x1="14" y1="3" x2="14" y2="25" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
-                            <line x1="3" y1="14" x2="25" y2="14" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
-                            <circle cx="14" cy="14" r="3" stroke="#06AB69" strokeWidth="2" fill="none"/>
+                            <line x1="14" y1="3" x2="14" y2="25" stroke="#23BDBB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
+                            <line x1="3" y1="14" x2="25" y2="14" stroke="#23BDBB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 3"/>
+                            <circle cx="14" cy="14" r="3" stroke="#23BDBB" strokeWidth="2" fill="none"/>
                         </svg>
                     </div>
                 )}
@@ -353,7 +377,7 @@ export default function MDiagnosisMap({ onNavigate }) {
                 {kakaoReady && selectedPin && (
                     <div className="m-diag-selected-marker" aria-hidden="true">
                         <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
-                            <path d="M14 0C6.268 0 0 6.268 0 14c0 9.625 14 36 14 36s14-26.375 14-36C28 6.268 21.732 0 14 0z" fill="#06AB69"/>
+                            <path d="M14 0C6.268 0 0 6.268 0 14c0 9.625 14 36 14 36s14-26.375 14-36C28 6.268 21.732 0 14 0z" fill="#23BDBB"/>
                             <circle cx="14" cy="14" r="6" fill="#fff"/>
                         </svg>
                     </div>

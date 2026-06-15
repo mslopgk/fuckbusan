@@ -25,13 +25,13 @@ const CloseIcon = () => (
     </svg>
 );
 
-const ChevronDownIcon = ({ active }) => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={active ? '#E6235A' : '#b0b0b0'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+const ChevronDownIcon = ({ active, accent = '#E6235A' }) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={active ? accent : '#b0b0b0'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="6 9 12 15 18 9"/>
     </svg>
 );
 
-export function RegionSheet({ regions, draft, onSelect, onConfirm, onClose }) {
+export function RegionSheet({ regions, draft, onSelect, onConfirm, onClose, accent }) {
     return (
         <div className="m-modal-backdrop" onMouseDown={(e) => { e.stopPropagation(); }} onTouchStart={(e) => { e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); onClose(); }}>
             <div className="m-modal-sheet" onClick={(e) => e.stopPropagation()}>
@@ -44,7 +44,7 @@ export function RegionSheet({ regions, draft, onSelect, onConfirm, onClose }) {
                 <ul className="m-region-list">
                     {regions.map((r) => (
                         <li key={r} className={`m-region-item ${draft === r ? 'on' : ''}`} onClick={() => onSelect(r)}>
-                            <span className="m-modal-chevron"><ChevronDownIcon active={draft === r} /></span>
+                            <span className="m-modal-chevron"><ChevronDownIcon active={draft === r} accent={accent} /></span>
                             <span>{r}</span>
                         </li>
                     ))}
@@ -55,7 +55,7 @@ export function RegionSheet({ regions, draft, onSelect, onConfirm, onClose }) {
     );
 }
 
-export function SortSheet({ sorts, draft, onSelect, onConfirm, onClose }) {
+export function SortSheet({ sorts, draft, onSelect, onConfirm, onClose, accent }) {
     return (
         <div className="m-modal-backdrop" onMouseDown={(e) => { e.stopPropagation(); }} onTouchStart={(e) => { e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); onClose(); }}>
             <div className="m-modal-sheet" onClick={(e) => e.stopPropagation()}>
@@ -68,7 +68,7 @@ export function SortSheet({ sorts, draft, onSelect, onConfirm, onClose }) {
                 <ul className="m-sort-list">
                     {sorts.map((s) => (
                         <li key={s} className={`m-sort-item ${draft === s ? 'on' : ''}`} onClick={() => onSelect(s)}>
-                            <span className="m-modal-chevron"><ChevronDownIcon active={draft === s} /></span>
+                            <span className="m-modal-chevron"><ChevronDownIcon active={draft === s} accent={accent} /></span>
                             <span>{s}</span>
                         </li>
                     ))}

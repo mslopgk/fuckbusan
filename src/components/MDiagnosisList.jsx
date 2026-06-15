@@ -34,21 +34,12 @@ const DiagCard = memo(function DiagCard({ it, onNavigate }) {
                 </div>
                 <div className="m-diag-card-name-row">
                     <span className="m-diag-card-name">{it.name}</span>
+                    {it.score != null && <span className="m-diag-card-score">{it.score}</span>}
                 </div>
-                <p className="m-diag-card-author">{it.author || it.reviewText || ''}</p>
+                <p className="m-diag-card-author">{it.reviewText || it.author || ''}</p>
             </div>
             <div className="m-diag-card-right">
                 {it.thumb && <div ref={thumbRef} className="m-diag-card-thumb" style={bgStyle} />}
-                <div className="m-diag-card-stats">
-                    <span className="m-diag-stat">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z" fill="#bfbfbf"/></svg>
-                        {it.likes ?? 0}
-                    </span>
-                    <span className="m-diag-stat">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" fill="#bfbfbf"/></svg>
-                        {it.comments ?? 0}
-                    </span>
-                </div>
             </div>
         </li>
     );
@@ -124,7 +115,7 @@ export default function MDiagnosisList({ onNavigate }) {
 
     return (
         <div className="m-diag-list-only-page">
-            {/* 헤더: Figma 22:8219 — "← 일반 진단 ⊙" */}
+            {/* 헤더: Figma 22:6281 — back 단독 행 (타이틀은 모드탭이 담당) */}
             <header className="m-diag-list-topbar">
                 <button
                     type="button"
@@ -136,13 +127,6 @@ export default function MDiagnosisList({ onNavigate }) {
                         <path d="M15 18L9 12L15 6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                 </button>
-                <div className="m-diag-list-header-title">
-                    <span className="m-diag-list-header-label">일반 진단</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="#06AB69" strokeWidth="2"/>
-                        <path d="M10 8l4 4-4 4" stroke="#06AB69" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </div>
             </header>
 
             {/* 시민/전문가 모드 탭 */}

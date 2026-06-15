@@ -128,6 +128,19 @@
 
 .pc-form-textarea:focus { border-color: #E6235A; }
 
+/* 인라인 검증 에러 (Figma 오류멘트) */
+.pc-form-input.error,
+.pc-form-textarea.error,
+.pc-photo-btn.error { border-color: #E6235A; }
+
+.pc-form-error-msg {
+    color: #E6235A;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 6px;
+    letter-spacing: -0.02em;
+}
+
 .pc-attach-grid {
     display: flex;
     gap: 10px;

@@ -1,0 +1,239 @@
+/* MySurveys.css — Figma 215:2435(PC) + 215:14747(모바일) */
+
+.ms-container {
+    min-height: 100vh;
+    background: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    color: #242424;
+    padding-bottom: 80px; /* 모바일 BottomNav 여백 */
+}
+
+.ms-container--pc {
+    padding-bottom: 0;
+}
+
+/* ─── 모바일 헤더 ─── */
+.ms-mobile-header {
+    display: flex;
+    align-items: center;
+    height: 52px;
+    padding: 0 20px;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.ms-back-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: -8px;
+}
+
+/* ─── PC 제목 ─── */
+.ms-page-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: #000;
+    margin: 32px 0 24px;
+    padding: 0 40px;
+    font-family: 'GmarketSans', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* ─── 기간 필터 바 ─── */
+.ms-period-bar {
+    display: flex;
+    justify-content: center;
+    padding: 12px 20px 20px;
+}
+
+.ms-period-track {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    overflow: hidden;
+    width: 353px;
+    height: 50px;
+    position: relative;
+}
+
+.ms-period-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-family: 'Pretendard Variable', sans-serif;
+    color: #777;
+    letter-spacing: -0.72px;
+    line-height: 1.4;
+    z-index: 1;
+    position: relative;
+    transition: color 0.18s;
+}
+
+/* 모바일 활성: 보라(#542aa3) */
+.ms-period-btn--active {
+    background: #542aa3;
+    border-radius: 30px;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* PC 활성: teal(#23bdbb) */
+.ms-container--pc .ms-period-btn--active {
+    background: #23bdbb;
+    color: #fff;
+}
+
+/* ─── 카드 목록 ─── */
+.ms-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 20px;
+}
+
+/* PC: 2열 그리드 */
+.ms-list--pc {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 0 40px;
+    max-width: 1040px;
+    margin: 0 auto;
+}
+
+/* ─── 카드 ─── */
+.ms-card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 18px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ms-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* ─── 상태 배지 ─── */
+.ms-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.56px;
+    color: #242424;
+}
+
+/* 완료 — 연녹색 */
+.ms-badge--done {
+    background: #c8f4cb;
+}
+
+/* 스크린아웃 — 연회색 */
+.ms-badge--screenout {
+    background: #e8e8e8;
+}
+
+/* 응답중 — 연노랑 */
+.ms-badge--ongoing {
+    background: #ffedb3;
+}
+
+/* ─── 종합결과보기 버튼 ─── */
+.ms-result-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #111;
+    letter-spacing: -0.56px;
+    padding: 0;
+    font-family: 'Pretendard Variable', sans-serif;
+    transition: opacity 0.15s;
+}
+
+.ms-result-btn:hover {
+    opacity: 0.75;
+}
+
+.ms-result-btn svg {
+    flex: none;
+}
+
+/* ─── 카드 본문 ─── */
+.ms-card-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #111;
+    margin: 0;
+    letter-spacing: -0.64px;
+    line-height: 1.4;
+}
+
+.ms-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-size: 14px;
+    color: #1e1e1e;
+    line-height: 1.35;
+}
+
+.ms-card-date {
+    color: #1e1e1e;
+    font-size: 14px;
+}
+
+/* 세로 구분선 */
+.ms-card-sep {
+    display: inline-block;
+    width: 1px;
+    height: 11px;
+    background: #ddd;
+    margin: 0 8px;
+    flex: none;
+}
+
+.ms-card-approval {
+    color: #1e1e1e;
+    font-size: 14px;
+}
+
+/* ─── 빈 상태 ─── */
+.ms-empty {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 15px;
+    color: #888;
+}
+
+/* ─── PC 여백 보정 ─── */
+@media (min-width: 1024px) {
+    .ms-period-bar {
+        padding-bottom: 28px;
+    }
+
+    .ms-card {
+        padding: 22px 20px 24px;
+    }
+}

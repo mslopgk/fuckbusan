@@ -1,0 +1,97 @@
+/* BusanMap — Figma 215:3631 "지도 Group" 재현 (구별 SVG 조합 + 인터랙션) */
+
+.busanmap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.busanmap-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 750.48 / 572.98;
+    max-height: 100%;
+    overflow: visible;
+}
+
+/* 그림자 (Figma shadow.svg, 흰 구역 뒤로 드리워짐) */
+.busanmap-shadow {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: translate(5px, 13px);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.85;
+    filter: blur(3px);
+}
+
+/* 구역 박스 (클릭은 도형만) */
+.busanmap-district {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+}
+.busanmap-district.selected { z-index: 4; }
+
+.busanmap-shape {
+    position: absolute;
+    inset: 0;
+    display: block;
+}
+.busanmap-shape svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+}
+.busanmap-shape svg path {
+    fill: #ffffff;
+    stroke: #6b6b6b;
+    stroke-width: 1.9px;
+    vector-effect: non-scaling-stroke;
+    stroke-linejoin: round;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: fill 0.15s ease;
+}
+.busanmap-shape svg path:hover { fill: #e6f7f6; }
+.busanmap-district.selected .busanmap-shape svg path {
+    fill: #23bdbb;
+    stroke: #1aa39f;
+}
+
+/* 라벨 */
+.busanmap-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Pretendard Variable', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: -0.3px;
+    color: #3a3a3a;
+    white-space: nowrap;
+    pointer-events: none;
+    text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff;
+    z-index: 3;
+}
+.busanmap-district.selected .busanmap-label {
+    color: #ffffff;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    z-index: 5;
+}
+
+/* 선택 구 캐릭터 */
+.busanmap-char {
+    position: absolute;
+    transform: translate(-50%, -92%);
+    z-index: 6;
+    pointer-events: none;
+    max-width: 180px;
+    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.22));
+}

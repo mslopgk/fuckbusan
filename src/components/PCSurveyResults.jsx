@@ -1,4 +1,14 @@
 import { useState, useEffect } from 'react';
+import {
+    ScatterChart,
+    Scatter,
+    XAxis,
+    YAxis,
+    ZAxis,
+    Cell,
+    LabelList,
+    ResponsiveContainer,
+} from 'recharts';
 import UserPCLayout from './UserPCLayout';
 import './PCSurveyResults.css';
 import { API_URL } from '../utils/api';
@@ -146,6 +156,31 @@ export default function PCSurveyResults({ onNavigate, survey }) {
     const multiQIdx = multiQ ? resultsData.questions.indexOf(multiQ) : -1;
     const multiQTitle = multiQ ? `Q${multiQIdx + 1}. ${multiQ.text}` : null;
 
+    // 가장 개선 필요 항목 — 버블(워드클라우드형) 차트
+    // 다중선택 응답 분포(derivedBarData)를 값 크기 = 버블 크기로 매핑.
+    const bubbleData = (() => {
+        if (!derivedBarData.length) return [];
+        // 흩뿌리기 좌표: 값이 큰 항목을 중앙에, 작은 항목을 외곽에 배치
+        const SLOTS = [
+            { x: 50, y: 52 },
+            { x: 26, y: 64 },
+            { x: 74, y: 62 },
+            { x: 34, y: 32 },
+            { x: 68, y: 30 },
+            { x: 50, y: 78 },
+            { x: 14, y: 40 },
+            { x: 86, y: 44 },
+        ];
+        return derivedBarData.map((d, i) => ({
+            x: SLOTS[i % SLOTS.length].x,
+            y: SLOTS[i % SLOTS.length].y,
+            z: d.value,
+            label: d.label,
+            color: d.color,
+        }));
+    })();
+    const bubbleMax = Math.max(...bubbleData.map(d => d.z), 1);
+
     const colData = (() => {
         const singleQ = (resultsData?.questions || []).find(q => q.qtype === 'single');
         if (!singleQ?.distribution?.length) return [];
@@ -287,6 +322,32 @@ export default function PCSurveyResults({ onNavigate, survey }) {
                                         <span className="pc-bar-pct" style={{ color: d.color }}>{d.value}%</span>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 가장 개선 필요 항목 — 버블(워드클라우드형) 차트 */}
+                    {bubbleData.length > 0 && (
+                        <div className="pc-results-block">
+                            <h4 className="pc-results-q-title">가장 개선 필요 항목</h4>
+                            <div className="pc-bubble-chart">
+                                <ResponsiveContainer width="100%" height={260}>
+                                    <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+                                        <XAxis type="number" dataKey="x" domain={[0, 100]} hide />
+                                        <YAxis type="number" dataKey="y" domain={[0, 100]} hide />
+                                        <ZAxis type="number" dataKey="z" domain={[0, bubbleMax]} range={[600, 6000]} />
+                                        <Scatter data={bubbleData} isAnimationActive={false}>
+                                            {bubbleData.map((d, i) => (
+                                                <Cell key={i} fill={d.color} fillOpacity={0.85} />
+                                            ))}
+                                            <LabelList
+                                                dataKey="label"
+                                                position="center"
+                                                style={{ fill: '#fff', fontSize: 12, fontWeight: 700, pointerEvents: 'none' }}
+                                            />
+                                        </Scatter>
+                                    </ScatterChart>
+                                </ResponsiveContainer>
                             </div>
                         </div>
                     )}

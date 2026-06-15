@@ -33,11 +33,12 @@
     margin-left: -6px;
 }
 
+/* Figma: borderless icon + text, transparent bg */
 .m-hero-copy {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 14px;
-    padding: 5px 10px;
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 5px 4px;
     color: #fff;
     font-size: 12px;
     font-weight: 600;
@@ -54,9 +55,10 @@
     font-weight: 600;
     line-height: 1.4;
     text-align: center;
-    margin: 16px 24px 24px;
+    margin: 0 24px 24px;
     letter-spacing: -0.04em;
-    padding-top: 12px;
+    /* Figma: title sits toward hero center, large gap below back row */
+    padding-top: 44px;
     word-break: keep-all;
     overflow-wrap: break-word;
 }
@@ -80,8 +82,8 @@
     display: flex;
     gap: 16px;
     font-size: 16px;
-    line-height: 2.1;
-    padding: 0;
+    line-height: 1.5;
+    padding: 6px 0;
 }
 
 .m-hero-key {
@@ -131,17 +133,17 @@
     letter-spacing: -0.04em;
 }
 
-/* Figma: small chevron-right bullet */
+/* Figma: small chevron-down bullet (∨, purple) */
 .m-body-bullets li::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 6px;
+    top: 4px;
     width: 8px;
     height: 8px;
     border-right: 2px solid #5B2EAB;
     border-bottom: 2px solid #5B2EAB;
-    transform: rotate(-45deg);
+    transform: rotate(45deg);
 }
 
 .m-body-terms {
@@ -280,6 +282,17 @@
     color: #111;
 }
 
+/* Figma: each consent group wrapped in a rounded bordered box */
+.m-consent-box {
+    border: 1px solid #e2e2e2;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin: 0 0 10px;
+}
+
+.m-consent-box .m-consent-section { margin-top: 0; }
+.m-consent-box .m-consent-bullets { margin-bottom: 0; }
+
 .m-consent-section {
     font-size: 13px;
     font-weight: 700;
@@ -356,7 +369,7 @@
     transform: rotate(-45deg);
 }
 
-/* 자체 라디오 — 설문 테마 보라 (#5B2EAB) */
+/* 자체 라디오 — Figma 우선: 청록(teal #23bdbb) 채움 */
 .m-form-radios input[type="radio"] {
     appearance: none;
     -webkit-appearance: none;
@@ -373,7 +386,7 @@
 }
 
 .m-form-radios input[type="radio"]:checked {
-    border-color: #542AA3;
+    border-color: #23bdbb;
 }
 
 .m-form-radios input[type="radio"]:checked::after {
@@ -384,7 +397,7 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #542AA3;
+    background: #23bdbb;
 }
 
 /* Form rows */
@@ -398,6 +411,53 @@
 
 .m-form-row {
     margin-bottom: 18px;
+}
+
+/* Figma: 작성자 기본정보 — 흰 카드, 라벨 좌측 열 + 옵션 우측, 행 사이 divider */
+.m-form-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 4px 16px;
+    background: #fff;
+}
+
+.m-form-row-inline {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 0;
+    padding: 16px 0;
+    border-bottom: 1px solid #efefef;
+}
+
+.m-form-card .m-form-row-inline:last-child {
+    border-bottom: none;
+}
+
+.m-form-row-inline > .m-form-label {
+    flex: 0 0 88px;
+    margin-bottom: 0;
+    padding-top: 2px;
+}
+
+.m-form-row-inline .m-form-radios-wrap {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 성명/휴대폰: 라벨 좌측 + input 우측 인라인 (input 폭 ~234px) */
+.m-form-row-inline .m-form-field {
+    flex: 1;
+    min-width: 0;
+}
+
+.m-form-row-inline .m-form-field .m-form-input {
+    max-width: 234px;
+}
+
+.m-form-input-other {
+    margin-top: 10px;
+    max-width: 234px;
 }
 
 .m-form-label {

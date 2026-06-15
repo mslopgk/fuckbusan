@@ -4,6 +4,12 @@ import './PCSurveyDetail.css';
 import { API_URL } from '../utils/api';
 import { copyToClipboard } from '../utils/clipboard';
 
+const formatEndDate = (period) => {
+    if (!period) return '';
+    const parts = String(period).split('~');
+    return parts.length >= 2 ? `~${parts[1].trim()}` : `~${period}`;
+};
+
 export default function PCSurveyDetail({ onNavigate, survey }) {
     const [fullSurvey, setFullSurvey] = useState(null);
     const [copied, setCopied] = useState(false);
@@ -28,7 +34,7 @@ export default function PCSurveyDetail({ onNavigate, survey }) {
 
     const handleCopy = async () => {
         const lines = [data.title];
-        if (data.period || data.end_date) lines.push(`조사기간: ${data.period || data.end_date}`);
+        if (data.period || data.end_date) lines.push(`조사기간: ${formatEndDate(data.period || data.end_date)}`);
         if (data.duration || data.minutes) lines.push(`응답시간: ${data.duration || `${data.minutes}분`}`);
         if (data.description) lines.push(`내용: ${data.description}`);
         const text = lines.join('\n');
@@ -53,7 +59,7 @@ export default function PCSurveyDetail({ onNavigate, survey }) {
 
                 <div className="pc-floating-card">
                     <div className="pc-info-row"><span className="pc-info-label">조사명</span><span className="pc-info-value">{data.title}</span></div>
-                    <div className="pc-info-row"><span className="pc-info-label">조사기간</span><span className="pc-info-value">{data.period || data.end_date || '—'}</span></div>
+                    <div className="pc-info-row"><span className="pc-info-label">조사기간</span><span className="pc-info-value">{formatEndDate(data.period || data.end_date) || '—'}</span></div>
                     <div className="pc-info-row"><span className="pc-info-label">응답시간</span><span className="pc-info-value">{data.duration || (data.minutes ? `${data.minutes}분` : '—')}</span></div>
                     <div className="pc-info-row pc-info-row-multiline"><span className="pc-info-label">내용</span><span className="pc-info-value pc-info-multiline">{data.description}</span></div>
                 </div>

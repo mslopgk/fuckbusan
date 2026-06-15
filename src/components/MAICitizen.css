@@ -7,68 +7,10 @@
     overflow: hidden;
 }
 
-/* 헤더 — Figma 22:7438 */
-.m-ai-header {
-    position: relative;
-    z-index: 30;
-    height: 56px;
-    padding: 0 16px;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.m-ai-header-back {
-    background: none;
-    border: none;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-
-.m-ai-header-title {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: 1;
-}
-
-.m-ai-header-label {
-    font-size: 18px;
-    font-weight: 700;
-    color: #242424;
-    letter-spacing: -0.04em;
-    line-height: 1.4;
-}
-
-.m-ai-district-badge {
-    background: none;
-    border: none;
-    padding: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: #242424;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    letter-spacing: -0.04em;
-    font-family: inherit;
-}
-
-.m-ai-district-badge-arrow {
-    font-size: 10px;
-    color: #23bdbb;
-}
-
-/* Search bar */
+/* Search bar — Figma 22:7438: 헤더 행 없이 검색바만 (상단 고정) */
 .m-ai-search-wrap {
     position: absolute;
-    top: 73px;
+    top: 16px;
     left: 18px;
     right: 18px;
     z-index: 30;
@@ -114,29 +56,28 @@
     flex-shrink: 0;
     height: 50vh;
     min-height: 340px;
-    padding-top: 168px;
+    padding-top: 150px;
     box-sizing: border-box;
 }
 
-/* Quote bubble over map */
+/* Quote bubble over map — Figma 최신: 민트(teal) 배경, 아바타 없음 */
 .m-ai-quote-bubble {
     position: absolute;
-    top: 80px;
+    top: 84px;
     left: 18px;
     right: 18px;
     z-index: 20;
-    background: #ffffff;
-    color: #111111;
+    background: #23bdbb;
+    color: #ffffff;
     font-size: 14px;
     font-weight: 700;
     line-height: 1.5;
-    padding: 12px 14px 12px 14px;
+    padding: 12px 16px;
     border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+    box-shadow: 0 4px 16px rgba(35, 189, 187, 0.25);
     pointer-events: none;
     display: flex;
     align-items: center;
-    gap: 10px;
 }
 
 .m-ai-quote-bubble p {
@@ -148,35 +89,19 @@
     overflow: hidden;
     font-size: 14px;
     font-weight: 700;
-    color: #111111;
+    color: #ffffff;
     line-height: 1.5;
-}
-
-.m-ai-quote-bubble__avatar {
-    width: 52px;
-    height: 62px;
-    border-radius: 8px;
-    overflow: hidden;
-    flex-shrink: 0;
-    background: #f0ece6;
-}
-
-.m-ai-quote-bubble__avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 8px;
 }
 
 .m-ai-quote-bubble__tail {
     position: absolute;
-    bottom: -9px;
+    bottom: -8px;
     left: 40px;
     width: 0;
     height: 0;
     border-left: 9px solid transparent;
     border-right: 9px solid transparent;
-    border-top: 9px solid #ffffff;
+    border-top: 9px solid #23bdbb;
 }
 
 /* Bottom sheet */
@@ -257,28 +182,20 @@
     margin-top: 32px;
 }
 
-/* Citizen card */
+/* Citizen card — Figma 최신: 아바타 없음, teal 테두리, 점선 divider */
 .m-ai-card {
     display: flex;
     gap: 12px;
     background: #fff;
-    border: 1px solid #ddd;
+    border: 1px solid #23bdbb;
     border-radius: 10px;
     padding: 14px;
     cursor: pointer;
-    transition: border-color 0.15s;
+    transition: box-shadow 0.15s;
 }
 
 .m-ai-card:hover {
-    border-color: #23bdbb;
-}
-
-.m-ai-card__avatar {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
+    box-shadow: 0 0 0 1px #23bdbb;
 }
 
 .m-ai-card__body {
@@ -336,9 +253,10 @@
 }
 
 .m-ai-card__divider {
-    height: 1px;
-    background: #d9d9d9;
+    height: 0;
+    border-top: 1px dashed #23bdbb;
     margin: 2px 0;
+    opacity: 0.5;
 }
 
 .m-ai-card__quote {

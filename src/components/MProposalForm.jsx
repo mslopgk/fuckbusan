@@ -26,7 +26,20 @@ export default function MProposalForm({ onNavigate }) {
     const [draftMeta, setDraftMeta] = useState(null);
     const [toast, setToast] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [errors, setErrors] = useState({});
     const fileInputRef = useRef(null);
+
+    const clearError = (key) => setErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
+
+    // Figma "오류멘트" 검증: 유형·위치 필수, 제목 5자↑, 내용 20자↑
+    const validate = () => {
+        const e = {};
+        if (!type) e.type = '제안 유형을 선택해주세요.';
+        if (title.trim().length < 5) e.title = '제목을 입력해주세요. (5자 이상)';
+        if (body.trim().length < 20) e.body = '내용을 조금 더 자세히 작성해주세요. (20자 이상)';
+        if (!location) e.location = '어디에서 발생한 문제인지 위치를 선택해 주세요.';
+        return e;
+    };
 
     useEffect(() => {
         try {
@@ -42,7 +55,29 @@ export default function MProposalForm({ onNavigate }) {
         }
     }, []);
 
-    const canSubmit = type && title.trim() && body.trim() && !submitting && !uploading;
+    // Auto reverse-geocode when picker opens with no address yet
+    useEffect(() => {
+        if (!locationPickerOpen || pickedAddress) return;
+        if (!window.kakao?.maps?.services) return;
+        const geocoder = new window.kakao.maps.services.Geocoder();
+        geocoder.coord2Address(pickedLng, pickedLat, (result, status) => {
+            if (status === window.kakao.maps.services.Status.OK) {
+                const addr = result[0]?.road_address?.address_name || result[0]?.address?.address_name || '';
+                setPickedAddress(addr);
+            }
+        });
+    }, [locationPickerOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const canSubmit = type && title.trim().length >= 5 && body.trim().length >= 20 && location && !submitting && !uploading;
+
+    // 비활성 스타일이어도 클릭은 받아 미충족 필드를 인라인으로 안내 (Figma 오류멘트)
+    const onSubmitClick = () => {
+        if (submitting || uploading) return;
+        const e = validate();
+        if (Object.keys(e).length) { setErrors(e); return; }
+        setErrors({});
+        handleSubmit();
+    };
 
     const handleSaveDraft = () => {
         const draft = {
@@ -179,52 +214,55 @@ export default function MProposalForm({ onNavigate }) {
             <header className="m-form-topbar">
                 <button className="m-form-back" onClick={() => onNavigate && onNavigate('mProposalList')}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                    <span>뒤로</span>
+                    <span>홈으로</span>
                 </button>
             </header>
 
             <div className="m-form-body">
-                <h1 className="m-form-title">우리동네 개선 아이디어를<br/>제안해보세요.</h1>
+                <h1 className="m-form-title">우리동네 개선 아이디어를<br/>제안해보세요</h1>
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">제안 유형은 무엇인가요?</h3>
                     <div className="m-form-type-grid">
                         {TYPES.map((t) => (
                             <label key={t} className="m-form-type">
-                                <input type="radio" name="type" checked={type === t} onChange={() => setType(t)} />
+                                <input type="radio" name="type" checked={type === t} onChange={() => { setType(t); clearError('type'); }} />
                                 <span className="m-form-type-dot" />
                                 <span>{t}</span>
                             </label>
                         ))}
                     </div>
+                    {errors.type && <p className="m-form-error-msg">{errors.type}</p>}
                 </section>
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">제목</h3>
                     <input
                         type="text"
-                        className="m-form-input"
+                        className={`m-form-input${errors.title ? ' error' : ''}`}
                         placeholder="제목을 입력해주세요"
                         value={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={(e) => { setTitle(e.target.value); clearError('title'); }}
                     />
+                    {errors.title && <p className="m-form-error-msg">{errors.title}</p>}
                 </section>
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">자세한 설명</h3>
                     <textarea
-                        className="m-form-textarea"
+                        className={`m-form-textarea${errors.body ? ' error' : ''}`}
                         placeholder={"우리동네 개선방안, 기대효과를\n자세히 작성해주세요."}
                         value={body}
-                        onChange={(e) => setBody(e.target.value)}
+                        onChange={(e) => { setBody(e.target.value); clearError('body'); }}
                     />
+                    {errors.body && <p className="m-form-error-msg">{errors.body}</p>}
                 </section>
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">위치정보</h3>
                     <button
                         type="button"
-                        className="m-form-loc-btn"
+                        className={`m-form-loc-btn${errors.location ? ' error' : ''}`}
                         onClick={() => setLocationPickerOpen(true)}
                     >
                         <span className={location ? 'm-form-loc-text' : 'm-form-loc-placeholder'}>
@@ -234,6 +272,7 @@ export default function MProposalForm({ onNavigate }) {
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="4" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="20"/><line x1="4" y1="12" x2="2" y2="12"/><line x1="22" y1="12" x2="20" y2="12"/><circle cx="12" cy="12" r="2"/></svg>
                         </span>
                     </button>
+                    {errors.location && <p className="m-form-error-msg">{errors.location}</p>}
                 </section>
 
                 <section className="m-form-section">
@@ -274,10 +313,9 @@ export default function MProposalForm({ onNavigate }) {
             <footer className="m-form-footer">
                 <button className="m-form-save" type="button" onClick={handleSaveDraft}>임시저장</button>
                 <button
-                    className="m-form-submit"
+                    className={`m-form-submit${canSubmit ? '' : ' disabled'}`}
                     type="button"
-                    disabled={!canSubmit}
-                    onClick={handleSubmit}
+                    onClick={onSubmitClick}
                 >{uploading ? '업로드 중...' : submitting ? '제출 중...' : '작성완료'}</button>
             </footer>
 
@@ -333,6 +371,7 @@ export default function MProposalForm({ onNavigate }) {
                             onMapClick={({ lat, lng }) => {
                                 setPickedLat(lat);
                                 setPickedLng(lng);
+                                setPickedAddress('');
                                 if (window.kakao?.maps?.services) {
                                     const geocoder = new window.kakao.maps.services.Geocoder();
                                     geocoder.coord2Address(lng, lat, (result, status) => {
@@ -345,12 +384,16 @@ export default function MProposalForm({ onNavigate }) {
                             }}
                         />
                     </div>
-                    <p className="m-loc-picker-help">지도를 클릭하여 위치를 선택해주세요</p>
+                    <p className="m-loc-picker-help">
+                        {pickedAddress ? pickedAddress : '지도를 클릭하여 위치를 선택해주세요'}
+                    </p>
                     <button
                         className="m-loc-picker-confirm"
                         type="button"
+                        disabled={!pickedAddress}
                         onClick={() => {
-                            setLocation(pickedAddress || `위도 ${pickedLat.toFixed(4)}, 경도 ${pickedLng.toFixed(4)}`);
+                            setLocation(pickedAddress);
+                            clearError('location');
                             setLocationPickerOpen(false);
                         }}
                     >위치 선택완료</button>

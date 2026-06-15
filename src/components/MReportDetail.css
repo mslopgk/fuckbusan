@@ -137,6 +137,19 @@
     margin: 2px 0 4px;
 }
 
+/* Figma 0:12760 — 각 댓글 하단 "답글쓰기" 링크 */
+.m-comment-reply {
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 2px 0 0;
+    font-family: inherit;
+    font-size: 12px;
+    color: #9a9a9a;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+}
+
 /* Stage tracker bar (fixed bottom) */
 .m-rdetail-stage-bar {
     position: fixed;
@@ -180,7 +193,7 @@
 .m-rstage-result-btn {
     width: 100%;
     max-width: 320px;
-    background: #f74e7e;
+    background: #542aa3;
     color: #fff;
     border: none;
     border-radius: 16px;
@@ -195,7 +208,7 @@
 
 .m-rstage-result-btn:hover,
 .m-rstage-result-btn:active {
-    background: #d93a6a;
+    background: #3d1a7a;
 }
 
 .m-rstage-step {
@@ -230,7 +243,7 @@
 }
 
 .m-rstage-pill.active {
-    background: #f74e7e;
+    background: #542aa3;
     color: #fff;
     font-weight: 700;
 }
@@ -286,11 +299,11 @@
 
 /* Comment send button: override proposal default to report pink */
 .m-report-detail-page .m-comment-send {
-    background: #f74e7e;
+    background: #542aa3;
 }
 
 .m-report-detail-page .m-comment-input:focus {
-    border-color: #f74e7e;
+    border-color: #542aa3;
 }
 
 /* Like button */
@@ -308,7 +321,7 @@
     transition: color 0.15s;
 }
 
-.m-rdetail-like-btn.liked { color: #f74e7e; }
+.m-rdetail-like-btn.liked { color: #542aa3; }
 
 /* Shared modal animation keyframes — also defined in MProposalList.css / MProposalForm.css */
 @keyframes m-modal-fade-in {
@@ -429,11 +442,11 @@
     margin: 0 0 12px;
 }
 
-/* Figma: 담당자 코멘트 label — 18px bold, pink #f74e7e */
+/* Figma: 담당자 코멘트 label — 18px bold, pink #542aa3 */
 .m-result-comment-label {
     font-size: 18px;
     font-weight: 700;
-    color: #f74e7e;
+    color: #542aa3;
     margin: 0 0 4px;
     letter-spacing: -0.02em;
 }

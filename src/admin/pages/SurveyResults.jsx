@@ -107,6 +107,7 @@ function QuestionChart({ q }) {
 export default function SurveyResults({ onNavigate, survey }) {
     const [tab, setTab] = useState('results');
     const [viewMode, setViewMode] = useState('summary');
+    const [scoreDetailOpen, setScoreDetailOpen] = useState(false);
     const [results, setResults] = useState(null);
 
     useEffect(() => {
@@ -141,6 +142,7 @@ export default function SurveyResults({ onNavigate, survey }) {
             return {
                 key: q.id || idx,
                 label: q.text?.length > 12 ? `Q${idx + 1}` : (q.text || `Q${idx + 1}`),
+                fullText: q.text || `Q${idx + 1}`,
                 value: q.distribution.length > 1 ? (weighted / total / q.distribution.length * 5) : 0,
             };
         });
@@ -198,7 +200,23 @@ export default function SurveyResults({ onNavigate, survey }) {
                         <SummaryRadar scores={compositeScores} />
                         {compositeScores.length > 0 && (
                             <div style={{ marginTop: 16, textAlign: 'center' }}>
-                                <button className="btn-outline-new" style={{ fontSize: 13, height: 36, padding: '0 20px' }}>자세히보기 ∨</button>
+                                <button
+                                    className="btn-outline-new"
+                                    style={{ fontSize: 13, height: 36, padding: '0 20px' }}
+                                    onClick={() => setScoreDetailOpen((v) => !v)}
+                                >{scoreDetailOpen ? '접기 ∧' : '자세히보기 ∨'}</button>
+                                {scoreDetailOpen && (
+                                    <table style={{ width: '100%', marginTop: 14, fontSize: 13, borderCollapse: 'collapse', textAlign: 'left' }}>
+                                        <tbody>
+                                            {compositeScores.map((s) => (
+                                                <tr key={s.key} style={{ borderTop: '1px solid #f0f0f0' }}>
+                                                    <td style={{ padding: '8px 4px', color: '#555' }}>{s.fullText}</td>
+                                                    <td style={{ padding: '8px 4px', fontWeight: 700, width: 70, textAlign: 'right' }}>{s.value.toFixed(1)} / 5</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
                             </div>
                         )}
                     </section>

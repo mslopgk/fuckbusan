@@ -17,27 +17,3 @@ export const DISTRICTS = [
     { id: '21020', name: '동구' },
     { id: '21010', name: '중구' }
 ];
-
-export const MENU_ITEMS = [
-    { id: 'sidewalk', label: '보도 (공공공간)', color: 'text-slate-600' },
-    { id: 'bicycle_road', label: '자전거 전용도로', color: 'text-slate-600' },
-    { id: 'car_road', label: '자동차도로', color: 'text-slate-600' },
-    { id: 'underpass', label: '지하보도', color: 'text-slate-600' },
-    { id: 'overpass_under', label: '고가도로하부', color: 'text-slate-600' },
-    { id: 'plaza', label: '광장', color: 'text-slate-600' },
-    { id: 'waterfront', label: '친수공간', color: 'text-slate-600' },
-    { id: 'park_small', label: '소공원', color: 'text-slate-600' },
-    { id: 'indoor_public', label: '공공건축물 실내공간', color: 'text-slate-600' },
-    { id: 'outdoor_public', label: '공공건축물 실외공간', color: 'text-slate-600' },
-    { id: 'public_facility', label: '공공시설', color: 'text-slate-600' },
-    { id: 'public_transport', label: '공공교통시설', color: 'text-slate-600' },
-    { id: 'metro_facility', label: '도시철도시설', color: 'text-slate-600' },
-    { id: 'info_sales', label: '안내/판매시설', color: 'text-slate-600' },
-    { id: 'fire_facility', label: '소방시설', color: 'text-slate-600' },
-    { id: 'rest_facility', label: '휴게시설', color: 'text-slate-600' },
-    { id: 'lighting_security', label: '조명/보안시설', color: 'text-slate-600' },
-    { id: 'sanitary', label: '위생시설', color: 'text-slate-600' },
-    { id: 'greenery', label: '녹지시설', color: 'text-slate-600' },
-    { id: 'traffic_media', label: '교통매체', color: 'text-slate-600' },
-    { id: 'pedestrian_media', label: '보행공간매체', color: 'text-slate-600' }
-];

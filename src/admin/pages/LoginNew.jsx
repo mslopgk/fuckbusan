@@ -20,6 +20,11 @@ export default function LoginNew({ onNavigate }) {
             });
             if (!res.ok) throw new Error(`${res.status}`);
             const data = await res.json();
+            // 관리자 토큰(sub='admin')이 아니면 admin 진입 거부
+            if (data.district_code !== 'admin') {
+                setError('관리자 계정이 아닙니다.');
+                return;
+            }
             localStorage.setItem('access_token', data.access_token);
             localStorage.setItem('user_info', JSON.stringify({ username: data.user_name || '관리자' }));
             if (onNavigate) onNavigate('adminMain');

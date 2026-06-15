@@ -133,22 +133,6 @@ async def upload_file(file: UploadFile = File(...)):
 
     return {"filename": unique_filename, "url": url, "thumb_url": thumb_url}
 
-@router.get("/list")
-def list_reports(db: Session = Depends(get_db)):
-    rows = db.query(models.Report).order_by(models.Report.created_at.desc()).all()
-    return [
-        {
-            "id": r.id,
-            "title": r.title,
-            "type": r.type,
-            "location": r.location,
-            "content": r.content,
-            "author_id": getattr(r, "author_id", None),
-            "created_at": r.created_at.isoformat() if r.created_at else None,
-        }
-        for r in rows
-    ]
-
 
 def _serialize_report(r, comments=None):
     """Convert Report ORM row to the shape the frontend expects."""

@@ -194,7 +194,7 @@
 .m-form-attach-add {
     width: 80px;
     height: 80px;
-    border: 1px dashed #d8d8d8;
+    border: 1px solid #d8d8d8;
     border-radius: 10px;
     background: #fff;
     display: flex;
@@ -363,18 +363,27 @@
     cursor: pointer;
     font-family: inherit;
     letter-spacing: -0.04em;
-    background: #ffdde7;
+    background: #E6235A;
     color: #fff;
     border: none;
     flex: 1;
 }
 
-.m-form-submit:not(:disabled) {
-    background: #E6235A;
-    color: #fff;
-}
+/* 미충족 상태: 비활성 '스타일'만 — 클릭은 받아 인라인 에러를 노출 */
+.m-form-submit.disabled { background: #ffdde7; }
 
-.m-form-submit:disabled { cursor: not-allowed; color: #fff; }
+/* 인라인 검증 에러 (Figma 오류멘트) */
+.m-form-error-msg {
+    margin: 6px 2px 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: #E6235A;
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+}
+.m-form-input.error,
+.m-form-textarea.error,
+.m-form-loc-btn.error { border-color: #E6235A; }
 
 .m-form-toast {
     position: fixed;

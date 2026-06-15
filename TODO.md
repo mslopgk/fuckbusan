@@ -1,10 +1,32 @@
 # 부산 BDP — 미완료 항목
 
-> **갱신**: 2026-05-28 (13차 — TODO 최신화)
-> **Figma 파일**: `jWpcqQv2jhb2mkzjEs1fuI`
+> **갱신**: 2026-06-10 (14차 — 모바일 전수 Figma diff 재조사)
+> **Figma 파일**: 모바일 기준은 **WDC `TCuOzEqNhoLKjhF0reBDks` page 0:1** (모바일 전용 큐레이션). 구파일 `jWpcqQv2jhb2mkzjEs1fuI`은 참고용.
 > 완료 항목은 `CHANGES_2026-05-06.md` 참조.
 
 `[ ]` = 미완 / `[?]` = Figma 확인 필요 / 정책결정 대기
+
+---
+
+## 🔴 NEW (2026-06-10) — 모바일 전수 Figma diff 재조사 결과
+
+**상세 명세: `FIGMA_DIFF_SPEC.md`** (28개 모바일 view 캡처 vs WDC 최신 프레임 29개 전수 대조). 요약:
+
+- [ ] **P0 회귀**: 진단 teal→green 회귀 (mDiagnosisDone/List/Result), mProposalForm back "뒤로"·카테고리 라벨 3종 회귀, mMyReportEdit 사진박스·crosshair 레이아웃 깨짐, mMyReportDetail 날짜 누락·본문/배지 위치
+- [ ] **P1 구조**: mSurveyDetail2 작성자 기본정보 레이아웃, mDiagnosisList 카드(점수 체계), mSurveyJoin 헤더/Likert/버튼, mProposalDetail 댓글 입력 위치·답글달기·첨부파일 행, mDiagnosisResult 헤더·섹션별 차트 컬러·댓글 버블
+- [?] **P2 디자이너 확인**: 제보 카테고리 4 vs 8 (최신 프레임=4, 5/30 확정=8 충돌), mReportForm placeholder·칩 스타일, mAICitizen 말풍선/아바타 상충, 설문 라디오 teal vs 보라, 지도 단건 핀 모양
+- ✅ 일치 확인: mSurveyList, mSurveyDone, mProposalList(썸네일 숨김 제외), mProposalMap, mProposalDone, mReportList, mReportDone
+- Figma 프레임 부재(비교 불가): home, login, signup, mNotifications, mDiagnosisMap, MyPage/myActivity 허브
+
+## 🔴 NEW (2026-06-10) — PC 전수 Figma diff 조사 결과
+
+**상세 명세: `FIGMA_DIFF_SPEC_PC.md`** (26개 PC view 캡처 vs `hJCPXp7YcYUL60u2NHiYrS` page 0:1 대조). 요약:
+
+- [x] **적용 완료**: 설문 5건(기간 표기/배경/보더박스/Likert 슬라이더/버블차트/완료 단일버튼), 제안 1건(투표 하트 아이콘), 제보 6건(위치 2분할/다중사진/개선완료 배너/결과 모달/수정 버튼/좋아요 스타일) — 빌드+verify 통과
+- [ ] **스코프 결정 대기**: PC home = Figma가 사실상 신규 대시보드 스펙(차트/캐러셀/통계카드/아카이브/소식/다크푸터 등 7+섹션) — 픽셀 diff 아님, 구현 여부 정책 결정 필요
+- [ ] **백엔드 후속**: 제보 다중사진 영속(`ReportCreate`가 `image_url` 단일), 개선완료 status 데이터
+- [ ] **진단/AI가상시민/나의제안 PC 비교 미완**: Figma REST 레이트리밋으로 13프레임 미수신 — 재시도 중
+- [?] **디자이너 확인**: USER PC 로그인 admin 스타일 통일 여부, 지도 정렬 라벨, 카테고리 칩 canonical
 
 ---
 
@@ -49,12 +71,17 @@
 - [x] sub-tag 색상 #FCDAE3→#FFC9C9, 텍스트 #C2456A→#242424, font-size 11→14px — Figma 848:19157 기준 (2026-05-30)
 - [x] m-map-btn (지도보기 pill) 상단 헤더에 추가 — 오른쪽에서 mReportMap으로 navigate (2026-05-30)
 - [x] brand color 전체 #E6235A→#f74e7e (WDC primary) + Figma Union heart/comment SVG icon 적용 (2026-06-04)
+- [x] brand color #f74e7e→#542aa3 (WDC 215:11074 기준 보라) — 카드 좋아요 inline, 지도보기 pill, region 화살표, stage chip, cat chip, FAB, 위치설정/정렬 모달 확인 버튼 (2026-06-13)
 
 ### 제보 지도 (`MReportMap.jsx`)
 - [x] 2-snap 바텀시트 (peek/half) 정밀 일치화 — sheet border-radius 18→30px, chip wrap 로직 분기 (2026-05-30)
 - [x] 검색바 h44→55px, border-radius 8→15px, shadow 일치화 — Figma 848:19015 기준 (2026-05-30)
 - [x] peek/half 모드별 칩 flex-wrap 분기 — peek: nowrap 스크롤, half: wrap 2행 (2026-05-30)
 - [x] brand color 전체 #E6235A→#f74e7e + Figma Union icon 적용 (2026-06-04)
+- [x] 지도 핀 색 통일 — 카테고리별 색 제거 → 전부 #F74E7E (WDC 0:12148 기준) (2026-06-10)
+- [x] 지도 핀/accentColor #f74e7e→#542aa3 (WDC 215:10932 기준 보라) + FAB shadow 업데이트 (2026-06-13)
+- [x] 내위치 버튼 — 흰 원 FAB → 검정 크로스헤어 24px 단독 아이콘 (WDC 0:12150 기준) (2026-06-10)
+- [x] 검색바 placeholder "검색"→"전체" (WDC 0:12251 기준) (2026-06-10)
 
 ### 제보 폼 (`MReportForm.jsx`)
 - [x] 사진 등록: MReportForm은 이미 구현되어 있었음 확인 (2026-05-21)
@@ -63,6 +90,7 @@
 - [x] 타이틀 font-weight 800→700 수정 (Figma font-bold 기준) (2026-05-30)
 - [x] 텍스트 입력 placeholder "상세설명을 작성해주세요"→"느끼신 점을 자유롭게 작성해 주세요." — WDC 0:496 기준 (2026-05-30)
 - [x] brand color #E6235A→#f74e7e 전체, disabled submit = #ffdde7, focus border = #f74e7e (2026-06-04)
+- [x] brand color #f74e7e→#542aa3 (WDC 215:11497, 215:11799 기준) — submit/disabled btn, cat chip active, focus border, error, draft/leave modal btns, loc-picker confirm (2026-06-13)
 
 ### 제보 폼 PC (`PCReportForm.jsx`)
 - [x] 사진 업로드 API 연결 완료 — POST /api/reports/upload 호출 + image_url payload 포함 (2026-05-21)
@@ -90,6 +118,7 @@
 - [x] 지도 미니맵 높이 160px→80px, border-radius 15px, box-shadow 적용 (Figma 848:19789 기준) (2026-05-30)
 - [x] brand color #E6235A→#f74e7e 전체 (stage pill active, result btn, like btn, comment send btn, map pin) (2026-06-04)
 - [x] body text 14px→16px, Figma Union heart/comment icon 적용, comment send btn override #f74e7e (2026-06-04)
+- [x] brand color #f74e7e→#542aa3 전체 (WDC 215:11544 기준) — stage pill active, result btn, like btn active, comment send, map pin, result modal comment label, hover state (2026-06-13)
 
 ### 제보 완료 (`MReportDone.jsx`)
 - [x] 일러스트 체크 원 위치: 두루마리 상단 overlay → 두루마리 내부 중앙 centered (Figma 848:20468 기준) (2026-05-30)
@@ -99,6 +128,7 @@
 - [x] 두루마리+체크 일러스트 — WDC Figma 0:647 실제 SVG path로 교체 (2026-05-30)
 - [x] primary 버튼 색상 #E6235A→#f74e7e — WDC 0:651 기준 (2026-05-30)
 - [x] secondary 버튼 font-size 18→16px semibold — WDC 0:654 기준 (2026-05-30)
+- [x] 체크 일러스트 fill #F74E7E→#542aa3 (WDC 215:12118 기준), primary btn #f74e7e→#542aa3, secondary btn bg #ffdde7→rgba(84,42,163,0.2), shadow 업데이트 (2026-06-13)
 
 ### 나의 제보 상세 (`MMyReportDetail.jsx`)
 - [x] 댓글 작성 UI 추가 — input + 전송 버튼 + POST /api/reports/{id}/comments (2026-05-21)
@@ -122,6 +152,14 @@
 - [x] 투표/댓글 아이콘 checkmark→heart icon + Union comment bubble — WDC 기준 (2026-05-30)
 - [x] 댓글 input height 38→41px, border-radius 19→15px — WDC 0:12039 기준 (2026-05-30)
 - [x] footer topbar border→box-shadow, padding 조정 — WDC 0:12066 기준 (2026-05-30)
+- [x] 투표 플로우 Figma 제안상세1~4 정합화 — 완료 모달("투표가 완료되었습니다", 1.6s 자동닫힘) + 재탭 시 취소 확인 모달("네, 취소할게요"/"아니오, 투표할게요") + 버튼 라벨 "투표하셨습니다" + 투표 시 하트 핑크 (2026-06-10)
+- [x] 투표 상태 stale 버그 수정 — 상세 진입 시 GET /proposals/{id}로 has_voted/likes_count/views 동기화 (리스트 prop 의존 제거) (2026-06-10)
+- [x] 작성자 색상 #737373→#1e1e1e (Figma 215:13179 text-[#1e1e1e]) (2026-06-13)
+- [x] 메타 정보 색상 #888→#1e1e1e, 아이콘 색상 #888→#bfbfbf (Figma 215:13197 기준) (2026-06-13)
+- [x] 댓글 내용 font-size 12→16px, color #444→#242424 (Figma 기준) (2026-06-13)
+- [x] 답글쓰기 버튼 color #888→#1e1e1e, font-size 11→14px (Figma 215:13182) (2026-06-13)
+- [x] 댓글 입력행 margin-left/right -10px (Figma left:10px / w:373px 전체폭 기준) (2026-06-13)
+- [x] VoteBallotIcon SVG — Figma Union path 기반 문서 아이콘으로 정확도 향상 (2026-06-13)
 
 ### 제안 폼 (`MProposalForm.jsx`)
 - [x] 사진 업로드 API 연결 — POST /api/reports/upload 호출 + files/image_url payload (2026-05-21)
@@ -135,6 +173,8 @@
 - [x] 버튼 height 48→59px, border-radius 24→15px — WDC 기준 (2026-05-30)
 - [x] 카테고리 레이블 "산업·일자리"→"산업 및 고용", "문화·여가"→"문화 및 레저", "보건·복지"→"보건 및 복지" — WDC 0:11914/11918/11920 기준 (2026-05-30)
 - [x] 제목 마침표 복원 "제안해보세요"→"제안해보세요." — WDC 0:13562 확인 (2026-06-04)
+- [x] 제목 마침표 재제거 "제안해보세요."→"제안해보세요" — TCuOzEqNhoLKjhF0reBDks 215:13047 최신 프레임에 마침표 없음 (2026-06-13)
+- [x] .m-form-submit 중복 CSS 규칙 제거 — background:#ffdde7 덮어쓰기 버그 수정 (2026-06-13)
 - [x] 섹션 타이틀 font-weight 700→600 (semibold) — WDC 0:13564 기준 (2026-06-04)
 - [x] body padding 8px 24px→20px 20px, topbar padding 16px→20px — WDC offset 기준 (2026-06-04)
 - [x] 첨부자료 thumb/add box 64→80px — WDC 0:13609 기준 (2026-06-04)
@@ -149,6 +189,7 @@
 - [x] buttons width 291px, gap 10px — WDC 0:14113/14114 기준 (2026-05-30)
 - [x] title font-weight 800→700 (bold), secondary button 18px 800→16px 600 — WDC 0:14115/14116 기준 (2026-06-04)
 - [x] 일러스트 inline SVG → external SVG 파일 사용 (proposal-done-scroll.svg, proposal-done-check.svg) (2026-06-04)
+- [x] Done 페이지 레이아웃 justify-content:center→flex-start+padding-top:25vh (Figma 219px 상단 위치) (2026-06-13)
 
 ### 제안 리스트 (`MProposalList.jsx`)
 - [x] 페이지 배경색 #ebe5d4 → #fff (Figma 기준 흰 배경) (2026-05-30)
@@ -172,6 +213,8 @@
 - [x] 검색바 placeholder "검색", back 버튼 제거 (WDC 0:11858 기준) (2026-05-30)
 - [x] 시트 border-radius 18→30px — WDC 0:11786 기준 (2026-05-30)
 - [x] 시트 region 버튼 font-size 18→22px bold — WDC 0:11860 기준 (2026-05-30)
+- [x] 지도 핀 색 제보와 통일 — #E6235A → #F74E7E (제보·제안 동일 핑크) (2026-06-10)
+- [x] 내위치 버튼 — 흰 원 FAB → 검정 크로스헤어 24px 단독 아이콘 (WDC 0:12150 기준) (2026-06-10)
 - [x] 카드 heart/comment icon → figma-assets/icons 사용 (2026-05-30)
 - [x] 카드 구조 m-report-tags + m-report-author-stat-row 일치화 (2026-05-30)
 - [x] 시트 region 버튼 font-weight 800→700 — WDC 0:11860 기준 (2026-06-04)
@@ -277,8 +320,10 @@
 
 ## 🟨 마이활동 — Figma 노드 미식별
 
-- [?] `MyPage.jsx` (계정/프로필 편집) — Figma 노드 미식별
+- [x] `MyPage.jsx` — Figma 215:2136 기준 전면 리뉴얼 (2026-06-13): 필드 추가(닉네임/이메일/주소), PC 카드 레이아웃(border+rounded-20px), teal #23bdbb 수정하기 버튼, 모바일 back 헤더
+- [x] `MySurveys.jsx` (신규) — Figma 215:2435(PC)/215:14747(모바일) 기준 신규 구현 (2026-06-13): 기간 필터(1개월/6개월/1년), PC 2열 그리드, 상태 배지(완료/스크린아웃/응답중), 종합결과보기 버튼, 모바일 보라 #542aa3 / PC teal #23bdbb 기간 선택
 - [x] `MyActivityHub.jsx` — 진단 내역 카드 추가 (2026-05-21)
+- [x] `MyActivityHub.jsx` — Figma 215:13979 기준 전면 리뉴얼 (2026-06-13): 프로필 카드(그림자 카드/이름/마지막접속/인증뱃지), 관심목록·최근본글·자주본글 pill 버튼, 나의활동 카테고리 칩 필터, 2×2 통계 그리드(제보·제안·설문·진단 건수·Figma 색상), PC 분기 및 MobileBottomNav 보존
 - [x] `MyActivity.jsx` — 정렬 로직 구현 + 이메일 API 연동 + 북마크 탭 안내 메시지 + console.log 제거 (2026-05-21)
 - [x] `MyActivity.jsx` + `DiagnosisCard.jsx` Figma 기준 대규모 스타일 수정 (2026-05-28):
   - 타이틀 `나의 활동` pink #E6235A

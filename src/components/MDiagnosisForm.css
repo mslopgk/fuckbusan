@@ -123,6 +123,13 @@
     object-fit: cover;
 }
 
+/* 플레이스홀더 + 아이콘 — Figma: 둥근 박스 안 작은 + (cover 규칙에 덮이지 않게 고정) */
+.m-diagform-photo .m-diagform-photo-add {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
 /* ───── 공공/시설물 입력 ───── */
 .m-diagform-facility-input {
     width: 100%;
@@ -139,7 +146,7 @@
 }
 
 .m-diagform-facility-input:focus {
-    border-color: var(--diag-green);
+    border-color: #23BDBB;
 }
 
 .m-diagform-facility-input::placeholder {
@@ -167,8 +174,8 @@
 }
 
 .m-diagform-sub-chip.on {
-    background: var(--diag-green);
-    border-color: var(--diag-green);
+    background: #23BDBB;
+    border-color: #23BDBB;
     color: #fff;
     font-weight: 700;
 }
@@ -265,7 +272,7 @@
 }
 
 .m-diagform-scale-dot.on::before {
-    background: var(--diag-green);
+    background: #23BDBB;
 }
 
 /* 얼굴 레이블 행 — 1·3·5번 위치에만 표시 */
@@ -347,7 +354,7 @@
 }
 
 .m-diagform-cta-primary {
-    background: var(--diag-green);
+    background: #23BDBB;
     color: #fff;
 }
 
@@ -388,7 +395,7 @@
 .m-diagform-location-change {
     background: none;
     border: none;
-    color: var(--diag-green);
+    color: #23BDBB;
     font-size: 12px;
     font-weight: 700;
     padding: 0;

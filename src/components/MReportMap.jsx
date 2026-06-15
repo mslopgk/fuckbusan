@@ -12,11 +12,6 @@ import './MProposalMap.css';
 import './MReportList.css';
 import './MReportMap.css';
 
-// Category → pin color mapping (falls back to report brand pink)
-const CAT_PIN_COLOR = Object.fromEntries(
-    Object.entries(CAT_STYLES).map(([cat, s]) => [cat, s.color])
-);
-
 function ReportCard({ it, onNavigate }) {
     const style = CAT_STYLES[it.cat] || { bg: '#eee', color: '#555' };
     const { ref: imgRef, bgStyle } = useLazyImage(it.image);
@@ -123,8 +118,11 @@ export default function MReportMap({ onNavigate }) {
                     id: String(r.id),
                     lat: r.lat,
                     lng: r.lng,
-                    color: CAT_PIN_COLOR[r.category] || '#f74e7e',
+                    // Figma 215:10932 WDC — 제보 핀 색 보라 (#542aa3)
+                    color: '#542aa3',
                     title: r.category || '',
+                    // Figma 0:12148 — 단건도 숫자 배지 핀으로 통일 (teardrop 금지)
+                    count: 1,
                 }));
                 setMapPins(pins);
             })
@@ -192,13 +190,15 @@ export default function MReportMap({ onNavigate }) {
                 value={search}
                 onChange={setSearch}
                 onBack={() => onNavigate?.('home')}
+                placeholder="전체"
+                showBack={false}
             />
 
             <div className="m-map-canvas">
                 <PCMapCanvas
                     ref={mapRef}
                     pins={FILTERED_PINS}
-                    accentColor="#f74e7e"
+                    accentColor="#542aa3"
                     initialCenter={{ lat: 35.1796, lng: 129.0756 }}
                     onPinClick={(pin) => {
                         setSelectedPinId(String(pin.id));
@@ -215,12 +215,14 @@ export default function MReportMap({ onNavigate }) {
                 aria-label="내 위치"
                 title="내 위치"
             >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="3"/>
-                    <line x1="12" y1="2" x2="12" y2="5"/>
-                    <line x1="12" y1="19" x2="12" y2="22"/>
-                    <line x1="2" y1="12" x2="5" y2="12"/>
-                    <line x1="19" y1="12" x2="22" y2="12"/>
+                {/* Figma 0:12150 — 검정 크로스헤어 (흰 원 배경 없음) */}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="11" stroke="#000" strokeWidth="2"/>
+                    <circle cx="12" cy="12" r="1.5" fill="#D9D9D9" stroke="#000"/>
+                    <path d="M12 0.5V5.5" stroke="#000" strokeWidth="2"/>
+                    <path d="M12 18V23" stroke="#000" strokeWidth="2"/>
+                    <path d="M23.2549 11.7451H18.2549" stroke="#000" strokeWidth="2"/>
+                    <path d="M5.75488 11.7451H0.754883" stroke="#000" strokeWidth="2"/>
                 </svg>
             </button>
 
@@ -305,6 +307,7 @@ export default function MReportMap({ onNavigate }) {
 
             {regionOpen && (
                 <RegionSheet
+                    accent="#542aa3"
                     regions={REGIONS}
                     draft={regionDraft}
                     onSelect={setRegionDraft}

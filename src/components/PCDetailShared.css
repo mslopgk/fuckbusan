@@ -784,3 +784,165 @@
     margin: 0;
     letter-spacing: -0.8px;
 }
+
+/* 작성자 수정하기 버튼 */
+.pcd-edit-btn {
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    height: 24px;
+    padding: 0 14px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+    transition: background 0.15s;
+}
+.pcd-edit-btn:hover { background: #c61d4d; }
+
+/* 개선완료 결과 배너 */
+.pcd-result-banner {
+    background: #fde7ee;
+    border: 1px solid #f3a4be;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+}
+.pcd-result-banner-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.pcd-result-banner-badge {
+    background: #E6235A;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    height: 24px;
+    padding: 0 12px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    letter-spacing: -0.02em;
+}
+.pcd-result-banner-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1b;
+    letter-spacing: -0.02em;
+}
+.pcd-result-banner-img {
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+    margin-bottom: 14px;
+}
+.pcd-result-banner-text {
+    margin: 0 0 16px;
+    font-size: 15px;
+    color: #242424;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+}
+.pcd-result-banner-btn {
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 28px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+    transition: background 0.15s;
+}
+.pcd-result-banner-btn:hover { background: #c61d4d; }
+
+/* 개선 결과보기 모달 */
+.pcd-result-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+.pcd-result-modal {
+    background: #fff;
+    width: 420px;
+    max-width: 92vw;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+}
+.pcd-result-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+.pcd-result-modal-head h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a1a1b;
+    letter-spacing: -0.02em;
+}
+.pcd-result-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pcd-result-modal-img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    border-radius: 14px;
+    display: block;
+    margin-bottom: 16px;
+}
+.pcd-result-modal-img--empty {
+    background: #eef3f7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #8aa6b8;
+    font-size: 13px;
+}
+.pcd-result-modal-text {
+    margin: 0 0 20px;
+    font-size: 15px;
+    color: #242424;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+}
+.pcd-result-modal-confirm {
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    height: 50px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+    transition: background 0.15s;
+}
+.pcd-result-modal-confirm:hover { background: #c61d4d; }

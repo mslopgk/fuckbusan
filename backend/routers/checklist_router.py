@@ -97,7 +97,12 @@ def get_checklist(
     current_user: User = Depends(get_current_user_optional),
 ):
     """공개 진단 결과 목록. target=expert → 전문가, target=citizen → 시민."""
-    q = db.query(ChecklistResult).order_by(ChecklistResult.result_id.desc())
+    # 대분류/중분류 둘 다 없는 incomplete 레코드는 리스트에서 제외 (가상시민 시드 데이터 품질 이슈)
+    q = (
+        db.query(ChecklistResult)
+        .filter((ChecklistResult.대분류.isnot(None)) | (ChecklistResult.중분류.isnot(None)))
+        .order_by(ChecklistResult.result_id.desc())
+    )
     if target == "expert":
         q = q.filter(ChecklistResult.진단대상 == "전문가")
     elif target == "citizen":

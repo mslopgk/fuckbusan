@@ -36,6 +36,25 @@ export default function ExpertManagement({ onNavigate }) {
         fetchExperts();
     }, []);
 
+    const handleDelete = async (item) => {
+        if (!window.confirm(`"${item.name}" 회원을 삭제하시겠습니까?`)) return;
+        try {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}/admin/users/${item.id}`, {
+                method: 'DELETE',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            if (res.ok) {
+                setExperts((prev) => prev.filter((u) => u.id !== item.id));
+            } else {
+                const err = await res.json().catch(() => ({}));
+                alert(err.detail || '삭제에 실패했습니다.');
+            }
+        } catch {
+            alert('네트워크 오류가 발생했습니다.');
+        }
+    };
+
     const filtered = experts.filter((e) => !search || e.name.includes(search));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
@@ -107,7 +126,7 @@ export default function ExpertManagement({ onNavigate }) {
                                             onClick={() => onNavigate && onNavigate('expertEdit', item)}
                                         >
                                             수정
-                                        </span> | <span className="btn-action-text">삭제</span>
+                                        </span> | <span className="btn-action-text" onClick={() => handleDelete(item)}>삭제</span>
                                     </div>
                                 </td>
                             </tr>

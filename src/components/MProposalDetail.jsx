@@ -3,6 +3,7 @@ import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
 import './MProposalDetail.css';
 import { API_URL } from '../utils/api';
+import { formatDate } from '../utils/format';
 
 export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
     const data = {
@@ -10,7 +11,7 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
         cat: proposal?.cat || proposal?.category || '',
         author: proposal?.author || proposal?.nickname || '익명',
         body: proposal?.body || proposal?.content || '',
-        date: proposal?.date || (proposal?.created_at ? new Date(proposal.created_at).toLocaleDateString('ko-KR') : ''),
+        date: proposal?.created_at ? formatDate(proposal.created_at) : (proposal?.date || ''),
         lat: proposal?.lat || 35.197,
         lng: proposal?.lng || 129.063,
         imageUrl: proposal?.image || (Array.isArray(proposal?.files) && proposal.files.length > 0 ? proposal.files[0] : null) || null,
@@ -18,8 +19,12 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
 
     const [comment, setComment] = useState('');
     const [commenting, setCommenting] = useState(false);
+    const [replyTo, setReplyTo] = useState(null);
+    const commentInputRef = useRef(null);
     const [voted, setVoted] = useState(!!proposal?.has_voted);
     const [voting, setVoting] = useState(false);
+    const [voteDoneOpen, setVoteDoneOpen] = useState(false);
+    const [cancelOpen, setCancelOpen] = useState(false);
     const [comments, setComments] = useState([]);
     const [views, setViews] = useState(proposal?.views ?? proposal?.views_count ?? 0);
     const [votes, setVotes] = useState(proposal?.likes_count ?? proposal?.votes ?? 0);
@@ -32,9 +37,22 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
             .then((rows) => setComments(Array.isArray(rows) ? rows : []))
             .catch(() => setComments([]));
 
+        // 리스트에서 넘어온 prop은 has_voted가 없거나 stale할 수 있음 → 상세 API로 동기화
+        const token = localStorage.getItem('access_token');
+        fetch(`${API_URL}/api/reports/proposals/${proposal.id}`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => {
+                if (!d) return;
+                setVoted(!!d.has_voted);
+                if (d.likes_count != null) setVotes(d.likes_count);
+                if (d.views_count != null) setViews(d.views_count);
+            })
+            .catch(() => {});
+
         if (viewCalled.current) return;
         viewCalled.current = true;
-        const token = localStorage.getItem('access_token');
         fetch(`${API_URL}/api/reports/proposals/${proposal.id}/view`, {
             method: 'POST',
             headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -56,12 +74,19 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
             const res = await fetch(`${API_URL}/api/reports/proposals/${proposal.id}/comments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ content: comment }),
+                body: JSON.stringify({ content: comment, parent_comment_id: replyTo?.id ?? null }),
             });
             if (res.ok) {
                 const c = await res.json();
-                setComments((prev) => [...prev, c]);
+                if (replyTo) {
+                    setComments((prev) => prev.map((p) =>
+                        p.id === replyTo.id ? { ...p, replies: [...(p.replies || []), c] } : p
+                    ));
+                } else {
+                    setComments((prev) => [...prev, c]);
+                }
                 setComment('');
+                setReplyTo(null);
             }
         } catch (e) {
             console.error(e);
@@ -70,16 +95,12 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
         }
     };
 
-    const toggleVote = async () => {
-        if (voting) return;
-        if (!proposal?.id) {
-            setVoted((v) => !v);
-            return;
-        }
+    // 투표 토글 API 호출 → 성공 시 결과(has_voted) 반환, 실패 시 null
+    const requestVoteToggle = async () => {
         const token = localStorage.getItem('access_token');
         if (!token) {
             alert('로그인이 필요합니다.');
-            return;
+            return null;
         }
         setVoting(true);
         try {
@@ -91,7 +112,9 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                 const j = await res.json();
                 setVoted(!!j.has_voted);
                 if (j.likes_count != null) setVotes(j.likes_count);
-            } else if (res.status === 403) {
+                return !!j.has_voted;
+            }
+            if (res.status === 403) {
                 let msg = '투표할 수 없습니다.';
                 try {
                     const j = await res.json();
@@ -107,6 +130,26 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
         } finally {
             setVoting(false);
         }
+        return null;
+    };
+
+    // Figma 제안상세1~4 플로우: 미투표 → 투표 + 완료 모달 / 투표됨 → 취소 확인 모달
+    const handleVoteClick = async () => {
+        if (voting || !proposal?.id) return;
+        if (voted) {
+            setCancelOpen(true);
+            return;
+        }
+        const result = await requestVoteToggle();
+        if (result === true) {
+            setVoteDoneOpen(true);
+            setTimeout(() => setVoteDoneOpen(false), 1600);
+        }
+    };
+
+    const confirmCancelVote = async () => {
+        const result = await requestVoteToggle();
+        if (result !== null) setCancelOpen(false);
     };
 
     const style = CAT_STYLES[data.cat] || { bg: '#eee', color: '#555' };
@@ -135,13 +178,11 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                     )}
                 </div>
 
-                {data.imageUrl ? (
+                {data.imageUrl && (
                     <div
                         className="m-detail-image"
                         style={{ backgroundImage: `url(${data.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                     />
-                ) : (
-                    <div className="m-detail-image m-detail-image-placeholder" />
                 )}
 
                 <div className="m-detail-map">
@@ -167,9 +208,9 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                 <div className="m-detail-meta-row">
                     <span className="m-detail-meta-left">{data.date} · 조회수 {views}</span>
                     <span className="m-detail-meta-icons">
-                        {/* WDC: heart icon for votes */}
-                        <span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#bfbfbf" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        {/* WDC: heart icon for votes — 투표 시 핑크 (Figma 제안상세3) */}
+                        <span style={voted ? { color: '#E6235A' } : undefined}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill={voted ? '#E6235A' : 'none'} stroke={voted ? '#E6235A' : '#bfbfbf'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                             {votes}
                         </span>
                         <span>
@@ -181,22 +222,18 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
 
                 <div className="m-detail-comments">
                     <div className="m-detail-comments-header">댓글 {comments.length}</div>
-                    <ul>
-                        {comments.map((c, i) => (
-                            <li key={c.id ?? i}>
-                                <div className="m-comment-meta">
-                                    <strong>{c.nickname || c.author || '익명'}</strong>
-                                    <span>{c.created_at ? new Date(c.created_at).toLocaleDateString('ko-KR') : (c.date || '')}</span>
-                                </div>
-                                <p>{c.content || c.body}</p>
-                            </li>
-                        ))}
-                    </ul>
 
+                    {replyTo && (
+                        <div className="m-comment-reply-bar">
+                            <span><strong>{replyTo.nickname || '익명'}</strong>님에게 답글 작성 중</span>
+                            <button type="button" aria-label="답글 취소" onClick={() => setReplyTo(null)}>×</button>
+                        </div>
+                    )}
                     <div className="m-comment-input-row">
                         <input
+                            ref={commentInputRef}
                             type="text"
-                            placeholder="댓글을 입력해주세요"
+                            placeholder={replyTo ? '답글을 입력해주세요' : '댓글을 입력해주세요'}
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter' && !commenting) submitComment(); }}
@@ -208,6 +245,36 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
                         </button>
                     </div>
+
+                    <ul>
+                        {comments.map((c, i) => (
+                            <li key={c.id ?? i}>
+                                <div className="m-comment-meta">
+                                    <strong>{c.nickname || c.author || '익명'}</strong>
+                                    <span>{c.created_at ? formatDate(c.created_at) : (c.date || '')}</span>
+                                </div>
+                                <p>{c.content || c.body}</p>
+                                <button
+                                    type="button"
+                                    className="m-comment-reply"
+                                    onClick={() => { setReplyTo(c); commentInputRef.current?.focus(); }}
+                                >답글달기</button>
+                                {(c.replies?.length > 0) && (
+                                    <ul className="m-comment-replies">
+                                        {c.replies.map((r, j) => (
+                                            <li key={r.id ?? j}>
+                                                <div className="m-comment-meta">
+                                                    <strong>{r.nickname || '익명'}</strong>
+                                                    <span>{r.created_at ? formatDate(r.created_at) : ''}</span>
+                                                </div>
+                                                <p>{r.content}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </div>
 
@@ -215,13 +282,52 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                 <button
                     className={`m-vote-cta ${voted ? 'on' : ''}`}
                     type="button"
-                    onClick={toggleVote}
+                    onClick={handleVoteClick}
                     disabled={voting}
                     style={{ opacity: voting ? 0.7 : 1 }}
                 >
-                    {voting ? '처리 중...' : voted ? '투표 완료' : '투표하기'}
+                    {voting ? '처리 중...' : voted ? '투표하셨습니다' : '투표하기'}
                 </button>
             </footer>
+
+            {/* 투표 완료 모달 — Figma 제안상세2 */}
+            {voteDoneOpen && (
+                <div className="m-vote-backdrop" onClick={() => setVoteDoneOpen(false)}>
+                    <div className="m-vote-modal" onClick={(e) => e.stopPropagation()}>
+                        <VoteBallotIcon />
+                        <p className="m-vote-modal-title">투표가<br/>완료되었습니다</p>
+                    </div>
+                </div>
+            )}
+
+            {/* 투표 취소 확인 모달 — Figma 제안상세4 */}
+            {cancelOpen && (
+                <div className="m-vote-backdrop" onClick={() => setCancelOpen(false)}>
+                    <div className="m-vote-modal" onClick={(e) => e.stopPropagation()}>
+                        <VoteBallotIcon />
+                        <p className="m-vote-modal-title">진행한 투표를 취소하시겠습니까?</p>
+                        <div className="m-vote-modal-actions">
+                            <button type="button" className="m-vote-modal-btn primary" onClick={confirmCancelVote} disabled={voting}>네, 취소할게요</button>
+                            <button type="button" className="m-vote-modal-btn ghost" onClick={() => setCancelOpen(false)} disabled={voting}>아니오, 투표할게요</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
+    );
+}
+
+// 문서 + 핑크 체크 박스 아이콘 (Figma 제안상세2/4 모달 공용)
+// Figma node 215:13253 (Union — 문서 형태) + 핑크 체크마크
+function VoteBallotIcon() {
+    return (
+        <svg width="64" height="64" viewBox="0 0 81 81" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+            {/* 문서 형태 (Figma Union path) */}
+            <path d="M77.168 0.367C79.545 0.38 81.115 2.262 81.106 4.537L80.881 53.171C80.875 54.324 80.456 55.296 79.648 56.1L55.831 79.705C54.924 80.603 53.934 80.992 52.662 80.986L4.498 80.746C2.864 80.738 1.736 80.222 0.686 79.095L0 77.417L0.41 3.979C0.422 1.87 2.029 -0.012 4.262 0.0001L77.168 0.367ZM7.961 72.883L48.979 73.1L49.104 52.992C49.117 50.798 50.945 49.199 53.144 49.181L73.027 49.263L73.204 8.228L8.273 7.898L7.961 72.883ZM56.926 67.506L67.428 57.126L56.931 57.075L56.926 67.506Z" fill="#1a1a1b"/>
+            {/* 핑크 체크박스 */}
+            <rect x="33" y="34" width="28" height="28" rx="6" fill="#E6235A"/>
+            {/* 흰 체크마크 */}
+            <path d="M40 48 l5 5 10-12" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
     );
 }

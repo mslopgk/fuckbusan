@@ -8,15 +8,56 @@
     gap: 8px;
 }
 
+/* Author row: name/region-date block on the left, status badge on the right */
+.m-myrdetail-author-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.m-myrdetail-author-row .m-rdetail-author-block {
+    margin-bottom: 0;
+}
+
+/* Status badge — Figma 0:5923: 접수 = mint pill. Other stages tinted variants. */
 .m-myrdetail-status-badge {
-    background: #ffdde7;
-    color: #f74e7e;
+    background: #dff8f8;
+    color: #23bdbb;
     padding: 4px 12px;
     border-radius: 12px;
     font-size: 11px;
     font-weight: 700;
     flex-shrink: 0;
-    margin-left: auto;
+    align-self: center;
+}
+
+.m-myrdetail-status-badge.stage-review {
+    background: #fff3d6;
+    color: #d99a00;
+}
+
+.m-myrdetail-status-badge.stage-inspect {
+    background: #e3f1ff;
+    color: #2b7cd3;
+}
+
+.m-myrdetail-status-badge.stage-notice {
+    background: #ffdde7;
+    color: #f74e7e;
+}
+
+.m-myrdetail-reply-link {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #999;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
 }
 
 .m-myrdetail-body {
@@ -55,12 +96,12 @@
 
 .m-myrdetail-btn.ghost {
     background: #fff;
-    border: 1px solid #f74e7e;
-    color: #f74e7e;
+    border: 1px solid #542aa3;
+    color: #542aa3;
 }
 
 .m-myrdetail-btn.primary {
-    background: #f74e7e;
+    background: #542aa3;
     border: none;
     color: #fff;
 }

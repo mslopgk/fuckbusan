@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
 import './PCDetailShared.css';
+import './PCPropose.css';
 import { API_URL } from '../utils/api';
 
 
@@ -126,7 +127,7 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
 
     return (
         <UserPCLayout currentView="pcProposeDetail" onNavigate={onNavigate}>
-            <div className="pcd-page">
+            <div className="pcd-page pcd-propose">
                 <div className="pcd-inner">
 
                     {/* 태그 행: 지역 + 카테고리 */}
@@ -183,8 +184,8 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                                 onClick={submitVote}
                             >
                                 <span className="pcd-vote-icon">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                        <polyline points="20 6 9 17 4 12" />
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill={voted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z" />
                                     </svg>
                                 </span>
                                 <span className="pcd-vote-count">{likeCount}</span>
@@ -219,6 +220,7 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                                 <li key={c.id || i} className="pcd-comment-item">
                                     <div className="pcd-comment-author">{c.nickname || '익명'}</div>
                                     <p className="pcd-comment-text">{c.content}</p>
+                                    <button className="pcd-comment-reply-btn">답글쓰기</button>
                                 </li>
                             ))}
                         </ul>

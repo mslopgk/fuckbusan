@@ -1,7 +1,6 @@
-import React from 'react';
 import './CheckDone.css';
 
-const CheckDone = ({ onGoHome, color = '#E6235A', type = 'diagnosis' }) => {
+const CheckDone = ({ onGoHome, color = '#E6235A', type = 'diagnosis', btnLabel: btnLabelProp }) => {
     const isExpert = color === '#542AA3';
 
     let title, subtitle, description, btnLabel;
@@ -42,7 +41,7 @@ const CheckDone = ({ onGoHome, color = '#E6235A', type = 'diagnosis' }) => {
 
             <div className="check-done-footer">
                 <button className="btn-home" onClick={onGoHome} style={{ backgroundColor: color, color: '#fff', border: 'none' }}>
-                    {btnLabel}
+                    {btnLabelProp || btnLabel}
                 </button>
             </div>
         </div>

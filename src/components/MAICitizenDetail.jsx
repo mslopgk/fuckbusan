@@ -203,7 +203,9 @@ export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }
 
     const totalMatch = (d.similar_desc || '').match(/약?\s*(\d+)명\s*중/);
     const personTotal = totalMatch ? Math.min(parseInt(totalMatch[1]), 8) : 5;
-    const highlighted = 1;
+    // similar_ratio(예: "18.2%") 비율만큼 아이콘 강조 (최소 1개)
+    const ratioPct = parseFloat(d.similar_ratio || '0') || 0;
+    const highlighted = Math.min(personTotal, Math.max(1, Math.round(personTotal * ratioPct / 100)));
 
     return (
         <div className="m-ai-detail">

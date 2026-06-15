@@ -30,7 +30,7 @@
 }
 
 .m-loc-input:focus {
-    border-color: #f74e7e;
+    border-color: #542aa3;
 }
 
 .m-loc-pin {
@@ -63,13 +63,13 @@
     color: #777;
 }
 
-.m-report-form-page .m-form-submit:not(:disabled) {
-    background: #f74e7e;
+.m-report-form-page .m-form-submit {
+    background: #542aa3;
 }
 
-/* Disabled state: light pink bg with white text (WDC Figma) */
-.m-report-form-page .m-form-submit:disabled {
-    background: #ffdde7;
+/* Disabled-look state (class, not HTML disabled — click still fires to show inline errors) */
+.m-report-form-page .m-form-submit.disabled {
+    background: rgba(84, 42, 163, 0.2);
     color: #fff;
     opacity: 1;
 }
@@ -89,13 +89,15 @@
 }
 
 .m-rcat-chips .m-cat-chip {
-    /* inherits base m-cat-chip: #e6e6e6 bg, no border, border-radius 20px */
+    /* Figma 0:12713 — 회색 채움(#eee), 무테, border-radius 20px */
+    background: #eee;
+    border: none;
     padding: 7px 14px;
     font-size: 14px;
 }
 
 .m-rcat-chips .m-cat-chip.on {
-    background: #f74e7e;
+    background: #542aa3;
     color: #fff;
     font-weight: 600;
 }
@@ -147,4 +149,51 @@
     box-sizing: border-box;
 }
 
-.m-row-input:focus { border-color: #f74e7e; }
+.m-row-input:focus { border-color: #542aa3; }
+
+/* Figma 오류멘트: 미충족 필드 인라인 에러 — 보라 계열 */
+.m-form-error-msg {
+    margin: 6px 2px 0;
+    font-size: 13px;
+    color: #542aa3;
+    line-height: 1.4;
+}
+
+.m-loc-input.error,
+.m-select.error,
+.m-row-input.error {
+    border-color: #542aa3;
+}
+
+/* Draft / leave modal: override proposal pink to report purple (Figma 215:11799) */
+.m-report-form-page .m-draft-btn-primary {
+    background: #542aa3;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(84, 42, 163, 0.25);
+}
+
+.m-report-form-page .m-draft-btn-ghost {
+    background: rgba(84, 42, 163, 0.2);
+    color: #542aa3;
+}
+
+/* Location picker confirm button — report purple */
+.m-loc-picker-confirm {
+    width: calc(100% - 40px);
+    margin: 0 20px 32px;
+    height: 59px;
+    background: #542aa3;
+    color: #fff;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: -0.02em;
+}
+
+.m-loc-picker-confirm:disabled {
+    background: rgba(84, 42, 163, 0.2);
+    color: #fff;
+}

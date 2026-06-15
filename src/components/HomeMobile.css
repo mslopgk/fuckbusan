@@ -1,0 +1,194 @@
+/* HomeMobile — Figma node 215:16807 (Group 685) */
+
+.hmob {
+    --black: #242424;
+    --teal: #23bdbb;
+    --red: #e6235a;
+    --sub: #777;
+    font-family: 'Pretendard Variable', sans-serif;
+    color: var(--black);
+    background: #fff;
+    min-height: 100vh;
+    padding-bottom: 92px; /* 하단 네비 여백 */
+}
+.hmob h1, .hmob h2, .hmob p { margin: 0; }
+
+/* ===== 히어로 (크림 배경) ===== */
+.hmob-hero {
+    background: url('/assets/지도%20배경.png') center top / cover no-repeat;
+    padding-bottom: 8px;
+}
+.hmob-header {
+    height: 60px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.hmob-logo { background: none; border: none; padding: 0; cursor: pointer; display: flex; }
+.hmob-logo img { height: 28px; display: block; }
+.hmob-bell { position: relative; background: none; border: none; padding: 4px; cursor: pointer; display: flex; }
+.hmob-bell-badge {
+    position: absolute; top: 0; right: 0;
+    min-width: 16px; height: 16px; padding: 0 4px;
+    border-radius: 8px; background: var(--red); color: #fff;
+    font-size: 10px; font-weight: 700; line-height: 16px; text-align: center;
+}
+
+.hmob-hero-text { padding: 18px 22px 0; }
+.hmob-hero-text h1 {
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1.4;
+    letter-spacing: -0.96px;
+    color: var(--black);
+}
+.hmob-hero-text h1 .accent { color: var(--teal); }
+.hmob-hero-text p {
+    margin-top: 8px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--sub);
+}
+
+.hmob-map { padding: 8px 22px 0; }
+
+/* ===== 구역별 ===== */
+.hmob-filter {
+    position: relative;
+    margin: 16px 19px 0;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    padding: 16px;
+}
+.hmob-filter-label { display: block; font-size: 14px; color: var(--sub); }
+.hmob-filter-select {
+    margin-top: 8px;
+    height: 46px;
+    border: 1px solid #d4d4d4;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    cursor: pointer;
+    user-select: none;
+}
+.hmob-filter-select.disabled { cursor: default; background: #fafafa; border-color: #e6e6e6; }
+.hmob-filter-select > span { flex: 1; font-size: 16px; color: #000; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hmob-filter-select > span.placeholder { color: #9e9e9e; }
+.hmob-filter-clear { flex: none; cursor: pointer; }
+.hmob-filter-arrow { flex: none; transition: transform 0.18s ease; }
+.hmob-filter-arrow.open { transform: rotate(180deg); }
+.hmob-filter-menu {
+    position: absolute;
+    left: 16px; right: 16px;
+    top: calc(100% - 6px);
+    z-index: 20;
+    margin: 0; padding: 6px;
+    list-style: none;
+    max-height: 240px; overflow-y: auto;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+}
+.hmob-filter-menu li { padding: 10px 12px; font-size: 15px; border-radius: 6px; cursor: pointer; }
+.hmob-filter-menu li:active { background: #f4f4f4; }
+.hmob-filter-menu li.active { background: var(--teal); color: #fff; }
+
+/* ===== 생활정보 칩 ===== */
+.hmob-cats {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 0 19px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.hmob-cats::-webkit-scrollbar { display: none; }
+.hmob-chip {
+    flex: none;
+    height: 33px;
+    padding: 0 16px;
+    border-radius: 20px;
+    border: none;
+    background: #e6e6e6;
+    color: var(--black);
+    font-family: 'Pretendard Variable', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: -0.64px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.hmob-chip.active {
+    background: var(--teal);
+    color: #fff;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 700;
+}
+
+/* ===== 제보 / 제안 카드 ===== */
+.hmob-cards { display: flex; gap: 12px; margin: 20px 19px 0; }
+.hmob-card {
+    position: relative;
+    flex: 1; min-width: 0;
+    height: 140px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+.hmob-card.report { background: var(--black); padding: 20px 15px 14px; }
+.hmob-card.propose { background: var(--teal); padding: 20px 16px 14px; }
+.hmob-card-title { font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.72px; color: #fff; }
+.hmob-card-emoji { position: absolute; top: 14px; right: 12px; width: 40px; height: 40px; object-fit: contain; }
+.hmob-card-emoji.sm { top: 18px; right: 15px; width: 28px; height: 28px; }
+.hmob-card-sub { margin-top: 10px; font-weight: 400; font-size: 12px; line-height: 1.35; color: #fff; }
+.hmob-card-arrow { margin-top: auto; display: flex; }
+
+/* ===== 플랫폼 소식 ===== */
+.hmob-news { margin: 28px 25px 0; }
+.hmob-news-head { display: flex; align-items: center; justify-content: space-between; }
+.hmob-news-head h2 { font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.8px; color: var(--black); }
+.hmob-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    border-radius: 9999px;
+    padding: 8px 14px 8px 20px;
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 500; font-size: 14px; letter-spacing: -0.56px;
+    background: none; cursor: pointer;
+    border: 1px solid #1e1e1e; color: #1e1e1e;
+    white-space: nowrap;
+}
+.hmob-pill.red { border-color: var(--red); color: var(--red); }
+.hmob-news-divider { height: 1px; background: #d9d9d9; margin: 12px 0; }
+.hmob-news-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.hmob-news-list li {
+    font-size: 14px; line-height: 1.4; color: #1e1e1e;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ===== 처음 방문하셨나요 ===== */
+.hmob-guide {
+    margin-top: 28px;
+    background: #fff3f3;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.hmob-guide-body { flex: 1; min-width: 0; }
+.hmob-guide-body h2 { font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.72px; color: var(--red); }
+.hmob-guide-body p { margin: 14px 0 16px; font-size: 13px; line-height: 1.45; color: #1e1e1e; }
+.hmob-guide-char { width: 124px; height: 140px; object-fit: contain; flex: none; }
+
+/* 지도 라벨/캐릭터 모바일 축소 */
+.hmob .busanmap-label { font-size: 9px; text-shadow: 0 0 2px #fff, 0 0 2px #fff, 0 0 2px #fff; }
+.hmob .busanmap-char { max-width: 96px; }

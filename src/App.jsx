@@ -27,7 +27,9 @@ const ProposalList = lazy(() => import('./components/ProposalList'));
 const ChangePassword = lazy(() => import('./components/ChangePassword'));
 const MyPage = lazy(() => import('./components/MyPage'));
 const MyActivityHub = lazy(() => import('./components/MyActivityHub'));
+const MySurveys = lazy(() => import('./components/MySurveys'));
 const MNotifications = lazy(() => import('./components/MNotifications'));
+const MPlatformNews = lazy(() => import('./components/MPlatformNews'));
 const ReportPostForm = lazy(() => import('./components/ReportPostForm'));
 const ReportDone = lazy(() => import('./components/ReportDone'));
 const ReportList = lazy(() => import('./components/ReportList'));
@@ -67,6 +69,7 @@ const PCReportDetail = lazy(() => import('./components/PCReportDetail'));
 
 // USER:MOBILE survey pages (Figma node 848:13553)
 const MSurveyList = lazy(() => import('./components/MSurveyList'));
+const SurveyChat = lazy(() => import('./components/SurveyChat'));
 const MSurveyDetail1 = lazy(() => import('./components/MSurveyDetail1'));
 const MSurveyDetail2 = lazy(() => import('./components/MSurveyDetail2'));
 const MSurveyJoin = lazy(() => import('./components/MSurveyJoin'));
@@ -108,6 +111,16 @@ const PCMyProposalDetail = lazy(() => import('./components/PCMyProposalDetail'))
 import { fetchWithLogout, API_URL } from './utils/api'
 import PCHeader from './components/PCHeader'
 
+// JWT payload의 sub가 'admin'인지 확인 (일반 시민 토큰으로 /admin 진입 차단)
+function isAdminToken(token) {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        return payload?.sub === 'admin';
+    } catch {
+        return false;
+    }
+}
+
 function App() {
     // Initialize view from sessionStorage to support page refresh
     // For adminLogin and adminSignup, force redirect to 'home' on refresh as per user request
@@ -115,7 +128,7 @@ function App() {
         const path = window.location.pathname;
         if (path === '/admin' || path === '/admin/') {
             const token = localStorage.getItem('access_token');
-            if (token) return 'adminMain';
+            if (token && isAdminToken(token)) return 'adminMain';
             return 'adminLoginNew';
         }
 
@@ -132,7 +145,7 @@ function App() {
             'myActivity', 'mMyActivity', 'myActivityHub', 'myReportList', 'myReports',
             'myProposals', 'mMyReportDetail', 'mMyReportEdit',
             'mProposalForm', 'mReportForm',
-            'mPage', 'myPage', 'changePassword',
+            'mPage', 'myPage', 'mySurveys', 'changePassword',
         ];
         if (stored && AUTH_REQUIRED_VIEWS.includes(stored) && !localStorage.getItem('access_token')) {
             return 'home';
@@ -534,6 +547,11 @@ function App() {
             setView('reportDetail');
         } else if (target === 'mNotifications') {
             setView('mNotifications');
+        } else if (target === 'mPlatformNews') {
+            setView('mPlatformNews');
+        } else if (target === 'mySurveys') {
+            if (!localStorage.getItem('access_token')) { alert('로그인이 필요한 서비스입니다.'); setView('login'); return; }
+            setView('mySurveys');
         } else if (target === 'myActivityHub') {
             if (!localStorage.getItem('access_token')) {
                 alert('로그인이 필요한 서비스입니다.');
@@ -708,7 +726,8 @@ function App() {
 
     // 어드민·인증 뷰, UserPCLayout 자체 헤더 보유 PC 뷰에서는 PCHeader 숨김
     const noHeaderViews = [
-        'login', 'signup', 'signupDone', 'changePassword',
+        // login/signup/signupDone는 PC에서 공용 PCHeader 노출 (모바일은 PCHeader가 CSS로 숨김)
+        'changePassword',
         'adminLogin', 'adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList',
         'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor',
         'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit',
@@ -718,6 +737,7 @@ function App() {
         'pcProposeMap', 'pcProposeForm', 'pcProposeDetail',
         'pcReportMap', 'pcReportForm', 'pcReportDetail',
         'pcMyReportList', 'pcMyReportEdit', 'pcMyProposalDetail',
+        'myActivityHub', 'mySurveys',
         'pcAICitizen',
         'pcDiagnosisMap', 'pcDiagnosisForm', 'pcDiagnosisDetail', 'pcDiagnosisDone',
     ];
@@ -1130,6 +1150,12 @@ function App() {
                 {view === 'mNotifications' && (
                     <MNotifications onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
+                {view === 'mPlatformNews' && (
+                    <MPlatformNews onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mySurveys' && (
+                    <MySurveys onBack={() => setView('myActivityHub')} onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
                 {view === 'myActivityHub' && (
                     <MyActivityHub
                         onBack={() => setView('home')}
@@ -1310,7 +1336,7 @@ function App() {
                     />
                 )}
                 {view === 'pcSurveyList' && (
-                    <PCSurveyList onNavigate={(target, data) => onNavigate(target, data)} />
+                    <SurveyChat isPC onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'pcSurveyDetail' && (
                     <PCSurveyDetail onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
@@ -1346,7 +1372,7 @@ function App() {
                     <PCReportDetail onNavigate={(target, data) => onNavigate(target, data)} report={selectedReport} />
                 )}
                 {view === 'mSurveyList' && (
-                    <MSurveyList onNavigate={(target, data) => onNavigate(target, data)} />
+                    <SurveyChat onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'mSurveyDetail1' && (
                     <MSurveyDetail1 onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />

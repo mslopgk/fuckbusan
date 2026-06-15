@@ -147,7 +147,8 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     new_user = User(
         ID=user.ID, PW=hashed_password, name=user.name,
         nickname=user.nickname, phone_num=user.phone_num,
-        district_code=user.district_code, birth_date=user.birth_date
+        district_code=user.district_code, birth_date=user.birth_date,
+        address=user.address, detailed_address=user.detailed_address
     )
     db.add(new_user)
     db.commit()
@@ -173,7 +174,9 @@ def get_me(current_user: User = Depends(get_current_user)):
         "nickname": current_user.nickname,
         "phone_num": current_user.phone_num,
         "district_code": current_user.district_code,
-        "birth_date": current_user.birth_date or ""
+        "birth_date": current_user.birth_date or "",
+        "address": current_user.address or "",
+        "detailed_address": current_user.detailed_address or ""
     }
 
 @router.put("/users/me", response_model=UserOut)
@@ -208,6 +211,15 @@ class FindPwRequest(BaseModel):
     ID: str
     phone_num: str
 
+class VerifyUserRequest(BaseModel):
+    ID: str
+    phone_num: str
+
+class ResetPwByPhoneRequest(BaseModel):
+    ID: str
+    phone_num: str
+    new_pw: str
+
 @router.post("/users/find-id")
 def find_id(req: FindIdRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.name == req.name, User.phone_num == req.phone_num).first()
@@ -225,3 +237,23 @@ def find_pw(req: FindPwRequest, db: Session = Depends(get_db)):
     user.PW = get_password_hash(temp_pw)
     db.commit()
     return {"temp_password": temp_pw}
+
+@router.post("/users/verify-user")
+def verify_user(req: VerifyUserRequest, db: Session = Depends(get_db)):
+    """ID + 휴대폰번호 일치 여부 확인 (비밀번호 재설정 전 본인확인용)"""
+    user = db.query(User).filter(User.ID == req.ID, User.phone_num == req.phone_num).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")
+    return {"verified": True}
+
+@router.post("/users/reset-password-by-phone")
+def reset_password_by_phone(req: ResetPwByPhoneRequest, db: Session = Depends(get_db)):
+    """ID + 휴대폰번호 검증 후 새 비밀번호로 재설정 (로그인 없이, 비번찾기 플로우용)"""
+    user = db.query(User).filter(User.ID == req.ID, User.phone_num == req.phone_num).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")
+    if not req.new_pw or len(req.new_pw) < 6:
+        raise HTTPException(status_code=400, detail="비밀번호는 6자 이상이어야 합니다.")
+    user.PW = get_password_hash(req.new_pw)
+    db.commit()
+    return {"message": "비밀번호가 재설정되었습니다."}

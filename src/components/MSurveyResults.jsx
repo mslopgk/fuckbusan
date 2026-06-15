@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState, useCallback, Fragment } from 'react';
+import { useEffect, useRef, useState, Fragment } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MSurveyResults.css';
 import { API_URL } from '../utils/api';
-import { copyToClipboard } from '../utils/clipboard';
 
 // ── InView hook: element가 viewport에 들어오면 true ──────────────────────────
 function useInView(threshold = 0.15) {
@@ -21,10 +20,13 @@ function useInView(threshold = 0.15) {
     return { ref, inView };
 }
 
-// ── 색상 팔레트 ──────────────────────────────────────────────────────────────
-const DONUT_COLORS  = ['#542AA3', '#F4B400', '#9D7EE4', '#3D1B7A', '#E6235A', '#16B5B0'];
-const BAR_COLORS    = ['#FB9B00', '#680A25', '#0B9583', '#542AA3', '#777777'];
-const BUBBLE_COLORS = ['#0B9583', '#FB9B00', '#542AA3', '#680A25', '#9D7EE4', '#542AA3', '#1A8870'];
+// ── 색상 팔레트 (Figma) ──────────────────────────────────────────────────────
+const SURVEY_PURPLE = '#5B2EAB';
+const DONUT_COLORS  = ['#5B2EAB', '#7A1230', '#E6235A', '#1FA89A', '#9D7EE4', '#F5A623'];
+const BAR_COLORS    = ['#F5A623', '#7A1230', '#1FA89A', '#5B2EAB', '#9AA0A6'];
+const BUBBLE_COLORS = ['#F5A623', '#7A1230', '#1FA89A', '#5B2EAB', '#C9B6E8'];
+// 연한 배경(밝은 버블)에서는 진한 글자, 진한 배경에서는 흰 글자
+const LIGHT_BUBBLE_BG = ['#C9B6E8', '#9D7EE4'];
 
 // ── 레이더 차트 ──────────────────────────────────────────────────────────────
 function RadarHexagon({ data }) {
@@ -41,27 +43,43 @@ function RadarHexagon({ data }) {
 
     return (
         <svg ref={ref} viewBox="0 0 280 280" className={`m-radar-svg ${inView ? 'animated' : ''}`}>
-            {[0.25, 0.5, 0.75, 1].map((rt) => (
-                <polygon key={rt} points={ringPoints(rt)} fill="none" stroke="#e8e8e8" strokeWidth="1" />
+            {/* 동심 육각형 그리드 (연회색 3겹) */}
+            {[0.34, 0.67, 1].map((rt) => (
+                <polygon key={rt} points={ringPoints(rt)} fill="none" stroke="#e4e4e8" strokeWidth="1" />
             ))}
+            {/* 축선 */}
             {angles.map((a, i) => (
-                <line key={i} x1={cx} y1={cy} x2={cx + r * Math.cos(a)} y2={cy + r * Math.sin(a)} stroke="#e8e8e8" strokeWidth="1" />
+                <line key={i} x1={cx} y1={cy} x2={cx + r * Math.cos(a)} y2={cy + r * Math.sin(a)} stroke="#e4e4e8" strokeWidth="1" />
             ))}
+            {/* 데이터 폴리곤: 보라 반투명 채움 + 외곽선 */}
             <polygon
                 className={`m-radar-polygon ${inView ? 'animated' : ''}`}
                 points={valuePoints}
-                fill="rgba(84,42,163,0.13)"
-                stroke="#542AA3"
+                fill="rgba(91,46,171,0.22)"
+                stroke={SURVEY_PURPLE}
                 strokeWidth="2"
+                strokeLinejoin="round"
             />
+            {/* 꼭짓점 점 */}
             {data.map((d, i) => {
                 const a = angles[i];
-                const lx = cx + (r + 24) * Math.cos(a);
-                const ly = cy + (r + 24) * Math.sin(a);
+                const k = d.value / max;
+                const px = cx + r * k * Math.cos(a);
+                const py = cy + r * k * Math.sin(a);
+                return (
+                    <circle key={`pt-${d.key}`} className={`m-radar-dot ${inView ? 'animated' : ''}`}
+                        cx={px} cy={py} r="3" fill={SURVEY_PURPLE} />
+                );
+            })}
+            {/* 축 라벨(회색) + 값(굵은 검정) */}
+            {data.map((d, i) => {
+                const a = angles[i];
+                const lx = cx + (r + 26) * Math.cos(a);
+                const ly = cy + (r + 26) * Math.sin(a);
                 return (
                     <g key={d.key}>
-                        <text x={lx} y={ly - 2}  textAnchor="middle" fontSize="11" fill="#808080">{d.label}</text>
-                        <text x={lx} y={ly + 13} textAnchor="middle" fontSize="12" fontWeight="700" fill="#111">{d.value.toFixed(1)}</text>
+                        <text x={lx} y={ly - 3}  textAnchor="middle" fontSize="13" fill="#9aa0a6" letterSpacing="-0.3">{d.label}</text>
+                        <text x={lx} y={ly + 14} textAnchor="middle" fontSize="16" fontWeight="800" fill="#1a1a1a">{d.value.toFixed(1)}</text>
                     </g>
                 );
             })}
@@ -69,31 +87,45 @@ function RadarHexagon({ data }) {
     );
 }
 
-// ── 도넛 차트 ────────────────────────────────────────────────────────────────
-function Donut({ slices, size = 150 }) {
+// ── 도넛 차트 (두꺼운 링 + 둥근 캡 + gap, 범례 가운데) ───────────────────────
+function Donut({ slices, size = 220 }) {
     const { ref, inView } = useInView(0.1);
-    const r = size / 2 - 18;
+    const stroke = 26;
+    const r = size / 2 - stroke / 2 - 2;
     const cx = size / 2, cy = size / 2;
     const C = 2 * Math.PI * r;
+    const GAP = 3; // 세그먼트 사이 간격(px on circumference)
     let offset = 0;
     return (
-        <svg ref={ref} width={size} height={size} viewBox={`0 0 ${size} ${size}`}
-            className={`m-donut ${inView ? 'animated' : ''}`}>
-            <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f0f0f0" strokeWidth="20" />
-            {slices.map((s, i) => {
-                const len = (s.pct / 100) * C;
-                const dasharray = `${len} ${C - len}`;
-                const dashoffset = -offset;
-                offset += len;
-                return (
-                    <circle key={i} cx={cx} cy={cy} r={r}
-                        fill="none" stroke={s.color} strokeWidth="20"
-                        strokeDasharray={dasharray} strokeDashoffset={dashoffset}
-                        transform={`rotate(-90 ${cx} ${cy})`}
-                    />
-                );
-            })}
-        </svg>
+        <div ref={ref} className={`m-donut-chart ${inView ? 'animated' : ''}`}>
+            <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="m-donut-svg">
+                <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f1f0f5" strokeWidth={stroke} />
+                {slices.map((s, i) => {
+                    const len = Math.max((s.pct / 100) * C - GAP, 0);
+                    const dasharray = `${len} ${C - len}`;
+                    const dashoffset = -offset;
+                    offset += (s.pct / 100) * C;
+                    return (
+                        <circle key={i} cx={cx} cy={cy} r={r}
+                            fill="none" stroke={s.color} strokeWidth={stroke}
+                            strokeLinecap="round"
+                            strokeDasharray={dasharray} strokeDashoffset={dashoffset}
+                            transform={`rotate(-90 ${cx} ${cy})`}
+                        />
+                    );
+                })}
+            </svg>
+            {/* 도넛 가운데 범례 */}
+            <ul className="m-donut-legend">
+                {slices.map((s) => (
+                    <li key={s.label}>
+                        <span className="m-legend-dot" style={{ background: s.color }} />
+                        <span className="m-legend-pct">{s.pct}%</span>
+                        <span className="m-legend-label">{s.label}</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 }
 
@@ -128,46 +160,69 @@ function BubbleCloud({ bubbles }) {
     const { ref, inView } = useInView(0.1);
     return (
         <div ref={ref} className="m-bubble-cloud">
-            {bubbles.map((b, i) => (
-                <div
-                    key={b.label}
-                    className={`m-bubble-item ${inView ? 'animated' : ''}`}
-                    style={{
-                        width: b.size, height: b.size,
-                        background: b.color,
-                        animationDelay: `${i * 0.07}s`,
-                    }}
-                >
-                    <span className="m-bubble-text">{b.label}</span>
-                    <span className="m-bubble-pct">{b.pct}%</span>
-                </div>
-            ))}
+            {bubbles.map((b, i) => {
+                const darkText = LIGHT_BUBBLE_BG.includes(b.color);
+                return (
+                    <div
+                        key={b.label}
+                        className={`m-bubble-item ${darkText ? 'is-light' : ''} ${inView ? 'animated' : ''}`}
+                        style={{
+                            width: b.size, height: b.size,
+                            background: b.color,
+                            animationDelay: `${i * 0.07}s`,
+                        }}
+                    >
+                        <span className="m-bubble-text">{b.label}</span>
+                        <span className="m-bubble-pct">({b.pct})</span>
+                    </div>
+                );
+            })}
         </div>
     );
 }
 
-// ── 세로 바 차트 ────────────────────────────────────────────────────────────
+// ── 세로 바 히스토그램 (Y축 눈금 + 격자 + 값(%) 라벨) ─────────────────────────
 function ColumnChart({ data }) {
     const { ref, inView } = useInView(0.15);
-    const max = Math.max(...data.map((d) => d.value), 1);
+    const total   = data.reduce((s, d) => s + d.value, 0) || 1;
+    const rawMax  = Math.max(...data.map((d) => d.value), 1);
+    // Y축 눈금: 0/20/40/60/80… 20 단위로 rawMax 넘는 첫 배수까지
+    const step    = 20;
+    const axisMax = Math.max(Math.ceil(rawMax / step) * step, step);
+    const ticks   = [];
+    for (let t = axisMax; t >= 0; t -= step) ticks.push(t);
     return (
         <div ref={ref} className="m-col-chart">
-            <div className="m-col-chart-inner">
-                {data.map((c, i) => {
-                    const pct = (c.value / max) * 100;
-                    return (
-                        <div key={i} className="m-col-item">
-                            <div className="m-col-bar-area">
-                                <span className="m-col-val">{c.value.toLocaleString()}</span>
-                                <div
-                                    className={`m-col-bar ${inView ? 'animated' : ''}`}
-                                    style={{ height: `${pct}%`, animationDelay: `${i * 0.09}s` }}
-                                />
-                            </div>
-                            <span className="m-col-x-label">{c.label}</span>
-                        </div>
-                    );
-                })}
+            <div className="m-col-grid">
+                {/* Y축 눈금 + 격자선 */}
+                <div className="m-col-yaxis">
+                    {ticks.map((t) => <span key={t} className="m-col-ytick">{t}</span>)}
+                </div>
+                <div className="m-col-plot">
+                    {ticks.map((t) => (
+                        <div key={t} className="m-col-gridline" style={{ bottom: `${(t / axisMax) * 100}%` }} />
+                    ))}
+                    <div className="m-col-bars">
+                        {data.map((c, i) => {
+                            const h   = (c.value / axisMax) * 100;
+                            const pct = ((c.value / total) * 100).toFixed(1);
+                            return (
+                                <div key={i} className="m-col-item">
+                                    <div className="m-col-bar-area">
+                                        <span className="m-col-val">{c.value.toLocaleString()}({pct}%)</span>
+                                        <div
+                                            className={`m-col-bar ${inView ? 'animated' : ''}`}
+                                            style={{ height: `${h}%`, animationDelay: `${i * 0.09}s` }}
+                                        />
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+            <div className="m-col-xaxis">
+                {data.map((c, i) => <span key={i} className="m-col-x-label">{i + 1}</span>)}
             </div>
         </div>
     );
@@ -182,7 +237,6 @@ export default function MSurveyResults({ onNavigate, survey }) {
     };
     const [resultsData, setResultsData]     = useState(null);
     const [radarExpanded, setRadarExpanded] = useState(false);
-    const [copied, setCopied]               = useState(false);
 
     const [resultsLoading, setResultsLoading] = useState(true);
 
@@ -198,6 +252,16 @@ export default function MSurveyResults({ onNavigate, survey }) {
     }, [survey?.id]);
 
     const respondentCount = resultsData?.response_count ?? meta.respondents;
+
+    // Figma: 기간 포맷 "2026.03.16 - 2026.04.05" (점 표기, 시작-끝)
+    const formatPeriodDots = (period) => {
+        if (!period) return '';
+        const toDots = (s) => s.trim().replace(/-/g, '.');
+        const parts = period.split(/~|–|—/);
+        if (parts.length >= 2) return `${toDots(parts[0])} - ${toDots(parts[1])}`;
+        return toDots(period);
+    };
+    const periodLabel = formatPeriodDots(meta.period);
 
     // Figma 스타일 히어로 타이틀: "YYYY년,\n[제목] 결과는?"
     const heroYear = (() => {
@@ -290,36 +354,6 @@ export default function MSurveyResults({ onNavigate, survey }) {
         derivedBars.length > 0 ||
         columnData.length > 0;
 
-    const handleCopy = useCallback(async () => {
-        const lines = [`${meta.title} - 설문 결과`];
-        if (meta.period) lines.push(`조사기간: ${meta.period}`);
-        lines.push(`총 응답자: ${respondentCount.toLocaleString()}명`);
-        if (compositeData.length > 0) {
-            lines.push('');
-            lines.push('■ 종합결과');
-            compositeData.forEach(d => lines.push(`  ${d.label}: ${d.value}점`));
-        }
-        donutSections.filter(d => d.slices.length > 0).forEach(d => {
-            lines.push('');
-            lines.push(`■ ${d.title}`);
-            d.slices.forEach(s => lines.push(`  ${s.label}: ${s.pct}%`));
-        });
-        if (derivedBars.length > 0) {
-            lines.push('');
-            lines.push(`■ ${multiQTitle}`);
-            derivedBars.forEach(b => lines.push(`  ${b.label}: ${b.pct}%`));
-        }
-        if (columnData.length > 0) {
-            lines.push('');
-            lines.push(`■ ${columnTitle}`);
-            columnData.forEach(c => lines.push(`  ${c.label}: ${c.value}건`));
-        }
-        const text = lines.join('\n');
-        await copyToClipboard(text);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    }, [meta, respondentCount, compositeData, donutSections, multiQTitle, derivedBars, columnData, columnTitle]);
-
     return (
         <div className="m-survey-results-page">
 
@@ -329,18 +363,10 @@ export default function MSurveyResults({ onNavigate, survey }) {
                     <button className="m-hero-back" onClick={() => onNavigate?.('mSurveyList')} aria-label="뒤로">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
-                    <button className="m-hero-copy" onClick={handleCopy}>
-                        {copied
-                            ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                            : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        }
-                        <span>{copied ? '복사됨' : '복사하기'}</span>
-                    </button>
                 </div>
                 <h1 className="m-results-title">{heroTitle}</h1>
                 <div className="m-results-meta-pill">
-                    <span className="m-results-period">{meta.period}</span>
-                    {meta.period && <span className="m-results-sep" />}
+                    <span className="m-results-period">{periodLabel}</span>
                     <span className="m-results-count">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
                         {respondentCount.toLocaleString()}
@@ -406,16 +432,7 @@ export default function MSurveyResults({ onNavigate, survey }) {
                         <section className="m-results-section">
                             <h3 className="m-q-result-title">{d.title}</h3>
                             <div className="m-donut-row">
-                                <Donut slices={d.slices} size={150} />
-                                <ul className="m-legend">
-                                    {d.slices.map((s) => (
-                                        <li key={s.label}>
-                                            <span className="m-legend-dot" style={{ background: s.color }} />
-                                            <span className="m-legend-pct">{s.pct}%</span>
-                                            <span className="m-legend-label">{s.label}</span>
-                                        </li>
-                                    ))}
-                                </ul>
+                                <Donut slices={d.slices} size={220} />
                             </div>
                         </section>
                     </Fragment>

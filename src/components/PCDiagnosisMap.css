@@ -249,10 +249,13 @@
     font-weight: 700;
 }
 
-/* ───── 툴바: Figma 기준 화면 오른쪽 끝 (right panel 위에 오버레이, z-index 6 > 5) ───── */
+/* ───── 툴바: 우측 패널(395px) 왼쪽에 배치. 패널 닫히면 화면 오른쪽 끝으로 ───── */
 .pc-diag-canvas .pc-map3-toolbar {
-    right: 16px;
+    right: 427px;
     top: 16px;
+}
+.pc-diag-sidebar-closed .pc-map3-toolbar {
+    right: 16px;
 }
 
 /* ───── 중앙 지도 ───── */

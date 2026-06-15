@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { MapContainer, GeoJSON, Marker, Tooltip, useMap } from 'react-leaflet';
+import { useState, useEffect } from 'react';
+import { MapContainer, GeoJSON, Marker, Tooltip, CircleMarker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import MobileBottomNav from './MobileBottomNav';
@@ -24,9 +24,10 @@ function BoundsFitter({ data }) {
 }
 
 function MiniMap({ geoData, selectedDistrict, onDistrictClick }) {
+    // Figma 최신: 흰 구획 + 선택 구는 큰 teal 원형 하이라이트
     const districtStyle = (feature) => ({
-        fillColor: feature.properties.name === selectedDistrict ? '#23bdbb' : '#f0fafa',
-        weight: 0.6, opacity: 0.7, color: '#888', fillOpacity: 1,
+        fillColor: '#ffffff',
+        weight: 0.6, opacity: 0.7, color: '#bbb', fillOpacity: 1,
     });
 
     const onEachFeature = (feature, layer) => {
@@ -45,6 +46,11 @@ function MiniMap({ geoData, selectedDistrict, onDistrictClick }) {
 
     if (!geoData) return null;
 
+    const selectedFeature = selectedDistrict
+        ? geoData.features.find(f => f.properties.name === selectedDistrict)
+        : null;
+    const selectedPos = selectedFeature ? getLabelPos(selectedFeature) : null;
+
     return (
         <MapContainer
             center={[35.1795, 129.0756]} zoom={10}
@@ -59,6 +65,19 @@ function MiniMap({ geoData, selectedDistrict, onDistrictClick }) {
                 style={districtStyle}
                 onEachFeature={onEachFeature}
             />
+            {selectedPos && (
+                <CircleMarker
+                    center={selectedPos}
+                    radius={34}
+                    pathOptions={{
+                        color: '#23bdbb',
+                        weight: 2,
+                        fillColor: '#23bdbb',
+                        fillOpacity: 0.85,
+                    }}
+                    eventHandlers={{ click: () => onDistrictClick(selectedDistrict) }}
+                />
+            )}
             {geoData.features.map(f => {
                 const name = f.properties.name;
                 const pos = getLabelPos(f);
@@ -87,21 +106,6 @@ export default function MAICitizen({ onNavigate }) {
     const [sort, setSort] = useState('importance');
     const [quoteCitizen, setQuoteCitizen] = useState(null);
     const [search, setSearch] = useState('');
-    const [avatarUrls, setAvatarUrls] = useState({});
-    const pendingAvatars = useRef(new Set());
-
-    const fetchAvatar = useCallback(async (citizenId) => {
-        if (pendingAvatars.current.has(citizenId)) return;
-        pendingAvatars.current.add(citizenId);
-        setAvatarUrls(prev => ({ ...prev, [citizenId]: 'loading' }));
-        try {
-            const res = await fetch(`${API_URL}/api/ai-citizens/${citizenId}/avatar`);
-            const data = await res.json();
-            setAvatarUrls(prev => ({ ...prev, [citizenId]: data.url || null }));
-        } catch {
-            setAvatarUrls(prev => ({ ...prev, [citizenId]: null }));
-        }
-    }, []);
 
     useEffect(() => {
         fetch('/assets/busan_districts_high.json')
@@ -120,11 +124,10 @@ export default function MAICitizen({ onNavigate }) {
             .then(data => {
                 setCitizens(data);
                 setQuoteCitizen(data[0] || null);
-                data.forEach(c => fetchAvatar(c.id));
             })
             .catch(() => setCitizens([]))
             .finally(() => setLoading(false));
-    }, [selectedDistrict, sort, fetchAvatar]);
+    }, [selectedDistrict, sort]);
 
     const handleDistrictClick = (name) => {
         setSelectedDistrict(prev => {
@@ -159,36 +162,7 @@ export default function MAICitizen({ onNavigate }) {
                 .m-ai-district-label.selected { color: #fff !important; font-weight: 700 !important; }
             `}</style>
 
-            {/* 헤더 — Figma 22:7438: "← 부산진구 ▶ AI 가상시민" */}
-            <header className="m-ai-header">
-                <button
-                    type="button"
-                    className="m-ai-header-back"
-                    aria-label="뒤로"
-                    onClick={() => onNavigate?.('home')}
-                >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M15 18L9 12L15 6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </button>
-                <div className="m-ai-header-title">
-                    {selectedDistrict && (
-                        <>
-                            <button
-                                type="button"
-                                className="m-ai-district-badge"
-                                onClick={handleClearSearch}
-                            >
-                                <span>{selectedDistrict}</span>
-                                <span className="m-ai-district-badge-arrow">▶</span>
-                            </button>
-                        </>
-                    )}
-                    <span className="m-ai-header-label">AI 가상시민</span>
-                </div>
-            </header>
-
-            {/* 검색바 */}
+            {/* 검색바 — Figma 22:7438: 헤더 행 없이 검색바만 */}
             <div className="m-ai-search-wrap">
                 <input
                     className="m-ai-search"
@@ -216,17 +190,6 @@ export default function MAICitizen({ onNavigate }) {
             <div className="m-ai-map-section">
                 {quoteCitizen && (
                     <div className="m-ai-quote-bubble">
-                        <div className="m-ai-quote-bubble__avatar">
-                            {avatarUrls[quoteCitizen.id] && avatarUrls[quoteCitizen.id] !== 'loading' ? (
-                                <img src={`${API_URL}${avatarUrls[quoteCitizen.id]}`} alt="" />
-                            ) : (
-                                <svg viewBox="0 0 75 94" width="100%" height="100%">
-                                    <rect width="75" height="94" fill="#f0ece6"/>
-                                    <ellipse cx="37" cy="32" rx="16" ry="18" fill="#d4aa82"/>
-                                    <path d="M5 94 C5 60 37 52 37 52 C37 52 70 60 70 94 Z" fill="#d4aa82"/>
-                                </svg>
-                            )}
-                        </div>
                         <p>{quoteCitizen.quote.slice(0, 55)}{quoteCitizen.quote.length > 55 ? '…' : ''}</p>
                         <div className="m-ai-quote-bubble__tail" />
                     </div>
@@ -277,24 +240,6 @@ export default function MAICitizen({ onNavigate }) {
                             className="m-ai-card"
                             onClick={() => onNavigate?.('mAICitizenDetail', c)}
                         >
-                            <div className="m-ai-card__avatar">
-                                {avatarUrls[c.id] === 'loading' ? (
-                                    <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#e8f8f8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#23bdbb" strokeWidth="2" strokeLinecap="round">
-                                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                                        </svg>
-                                        <span style={{ fontSize: 8, color: '#23bdbb', marginTop: 2, lineHeight: 1.2, textAlign: 'center' }}>생성중</span>
-                                    </div>
-                                ) : avatarUrls[c.id] ? (
-                                    <img src={`${API_URL}${avatarUrls[c.id]}`} alt="아바타" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
-                                ) : (
-                                    <svg viewBox="0 0 100 100" width="72" height="72" style={{ display: 'block' }}>
-                                        <circle cx="50" cy="50" r="50" fill="#f2dfc8"/>
-                                        <circle cx="50" cy="36" r="17" fill="#d4aa82"/>
-                                        <path d="M18 100 C18 70 50 65 50 65 C50 65 82 70 82 100 Z" fill="#d4aa82"/>
-                                    </svg>
-                                )}
-                            </div>
                             <div className="m-ai-card__body">
                                 <div className="m-ai-card__top-row">
                                     <span className="m-ai-card__name">{c.name}</span>

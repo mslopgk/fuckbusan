@@ -17,13 +17,8 @@ export default function PCSurveyDone({ onNavigate, survey }) {
                     귀하의 의견은 지역 개선을 위한 자료로 활용됩니다.<br/>
                     더 나은 동네를 만들기 위해 지속적으로 노력하겠습니다.
                 </p>
-                <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 8 }}>
-                    {survey?.id && (
-                        <button className="pc-btn-primary pc-done-cta" onClick={() => onNavigate && onNavigate('pcSurveyResults', survey)}>
-                            결과 보기
-                        </button>
-                    )}
-                    <button className="pc-btn-secondary pc-done-cta" onClick={() => onNavigate && onNavigate('home')}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+                    <button className="pc-btn-primary pc-done-cta" onClick={() => onNavigate && onNavigate('home')}>
                         홈으로 이동
                     </button>
                 </div>

@@ -1,5 +1,4 @@
 import { useState, useEffect, Fragment } from 'react';
-import MobileBottomNav from './MobileBottomNav';
 import './MSurveyJoin.css';
 import { API_URL } from '../utils/api';
 
@@ -111,7 +110,7 @@ export default function MSurveyJoin({ onNavigate, survey }) {
     return (
         <div className="m-survey-join-page">
             <header className="m-join-topbar">
-                <div className="m-join-topbar-row">
+                <div className="m-join-back-row">
                     <button
                         className="m-join-back"
                         onClick={() => onNavigate && onNavigate('mSurveyDetail2', survey)}
@@ -122,9 +121,13 @@ export default function MSurveyJoin({ onNavigate, survey }) {
                             <polyline points="15 18 9 12 15 6"/>
                         </svg>
                     </button>
+                </div>
+                <div className="m-join-title-row">
                     <h1 className="m-join-title">설문조사</h1>
                     <div className="m-join-progress">
+                        <div className="m-join-progress-track" />
                         <div className="m-join-progress-fill" style={{ width: `${progress}%` }} />
+                        <div className="m-join-progress-dot" style={{ left: `${progress}%` }} />
                     </div>
                 </div>
             </header>
@@ -219,20 +222,20 @@ export default function MSurveyJoin({ onNavigate, survey }) {
                     </section>
                     </Fragment>
                 ))}
+
+                {validationError && (
+                    <div className="m-join-validation-error">{validationError}</div>
+                )}
+
+                {qs.length > 0 && (
+                    <footer className="m-join-footer">
+                        <button className="m-join-prev" onClick={() => onNavigate && onNavigate('mSurveyDetail2', survey)} type="button">이전</button>
+                        <button className="m-join-next" type="button" onClick={handleSubmit} disabled={submitting}>
+                            {submitting ? '제출 중...' : allAnswered ? '제출' : '다음'}
+                        </button>
+                    </footer>
+                )}
             </main>
-
-            {validationError && (
-                <div className="m-join-validation-error">{validationError}</div>
-            )}
-
-            <footer className="m-join-footer">
-                <button className="m-join-prev" onClick={() => onNavigate && onNavigate('mSurveyDetail2', survey)} type="button">이전</button>
-                <button className="m-join-next" type="button" onClick={handleSubmit} disabled={submitting}>
-                    {submitting ? '제출 중...' : allAnswered ? '제출' : '다음'}
-                </button>
-            </footer>
-
-            <MobileBottomNav currentView="mSurveyJoin" onNavigate={onNavigate} />
         </div>
     );
 }

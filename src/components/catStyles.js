@@ -1,13 +1,14 @@
 // 일반 list/detail 팔레트 (MProposalList/MReportList/MProposalDetail/MReportDetail/Map)
+// Figma WDC 확인값: 배경색은 Figma 팔레트, 텍스트는 #242424 (검정) 통일
 export const CAT_STYLES = {
-    '주거':       { bg: '#E0F4F1', color: '#2C9A8F' },
-    '환경':       { bg: '#E5F3DA', color: '#5B8E2E' },
-    '교통':       { bg: '#E0EAF7', color: '#2D5BA1' },
-    '산업·일자리': { bg: '#FAEEDA', color: '#A07321' },
-    '교육':       { bg: '#FAE2E5', color: '#C24656' },
-    '안전':       { bg: '#FFE0DA', color: '#C2522E' },
-    '문화·여가':   { bg: '#EBE0F7', color: '#6E3FA1' },
-    '보건·복지':   { bg: '#F5DDEC', color: '#A33780' },
+    '주거':       { bg: '#dff8f8', color: '#242424' },
+    '환경':       { bg: '#c0e6c0', color: '#242424' },
+    '교통':       { bg: '#E0EAF7', color: '#242424' },
+    '산업·일자리': { bg: '#FAEEDA', color: '#242424' },
+    '교육':       { bg: '#ffc9c9', color: '#242424' },
+    '안전':       { bg: '#FFE0DA', color: '#242424' },
+    '문화·여가':   { bg: '#EBE0F7', color: '#242424' },
+    '보건·복지':   { bg: '#F5DDEC', color: '#242424' },
 };
 
 // 마이페이지 팔레트 (Figma 830:6934 / 7233 의도) — 주거=노랑, 교통=핑크 등 다른 매핑

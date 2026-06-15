@@ -31,7 +31,7 @@ function ReportListCard({ it, likedIds, onNavigate, onToggleLike }) {
                     <div className="m-prop-stats">
                         <span
                             onClick={(e) => onToggleLike(e, it.id)}
-                            style={{ cursor: 'pointer', color: likedIds.has(it.id) ? '#f74e7e' : '#bfbfbf' }}
+                            style={{ cursor: 'pointer', color: likedIds.has(it.id) ? '#542aa3' : '#bfbfbf' }}
                         >
                             {/* Figma heart icon (Union path) */}
                             <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
@@ -228,8 +228,8 @@ export default function MReportList({ onNavigate }) {
                 <span>제보하기</span>
             </button>
 
-            {regionOpen && <RegionSheet regions={REGIONS} draft={regionDraft} onSelect={setRegionDraft} onConfirm={confirmRegion} onClose={() => setRegionOpen(false)} />}
-            {sortOpen && <SortSheet sorts={SORTS} draft={sortDraft} onSelect={setSortDraft} onConfirm={confirmSort} onClose={() => setSortOpen(false)} />}
+            {regionOpen && <RegionSheet accent="#542aa3" regions={REGIONS} draft={regionDraft} onSelect={setRegionDraft} onConfirm={confirmRegion} onClose={() => setRegionOpen(false)} />}
+            {sortOpen && <SortSheet accent="#542aa3" sorts={SORTS} draft={sortDraft} onSelect={setSortDraft} onConfirm={confirmSort} onClose={() => setSortOpen(false)} />}
 
             <MobileBottomNav currentView="mReportList" onNavigate={onNavigate} />
         </div>

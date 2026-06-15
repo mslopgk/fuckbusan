@@ -1,5 +1,4 @@
 /* ProposalDone.jsx */
-import React from 'react';
 import './ProposalDone.css';
 
 const ProposalDone = ({ onMyProposals, onOthers }) => {

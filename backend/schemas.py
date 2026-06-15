@@ -88,6 +88,8 @@ class UserCreate(BaseModel):
     created_at: Optional[datetime] = None
     district_code: str
     birth_date: Optional[str] = None
+    address: Optional[str] = None
+    detailed_address: Optional[str] = None
 
 class UserOut(BaseModel):
     user_id: int
@@ -98,6 +100,8 @@ class UserOut(BaseModel):
     created_at: Optional[datetime] = None
     district_code: Optional[str] = None
     birth_date: Optional[str] = None
+    address: Optional[str] = None
+    detailed_address: Optional[str] = None
 
     model_config = _orm
 

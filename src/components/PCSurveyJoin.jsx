@@ -111,6 +111,34 @@ export default function PCSurveyJoin({ onNavigate, survey }) {
                                 </div>
                             )}
 
+                            {(q.qtype === 'scale' || q.qtype === 'likert') && (
+                                <div className="pc-scale-row" role="radiogroup" aria-label={q.text}>
+                                    <div className="pc-scale-track">
+                                        {[1, 2, 3, 4, 5].map((val) => {
+                                            const active = answers[q.id] === val;
+                                            return (
+                                                <button
+                                                    key={val}
+                                                    type="button"
+                                                    role="radio"
+                                                    aria-checked={active}
+                                                    aria-label={`${val}점`}
+                                                    className={`pc-scale-dot ${active ? 'active' : ''}`}
+                                                    onClick={() => setSingle(q.id, val)}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+                                    <div className="pc-scale-labels">
+                                        <span>전혀{'\n'}아니다</span>
+                                        <span></span>
+                                        <span>보통</span>
+                                        <span></span>
+                                        <span>매우{'\n'}그렇다</span>
+                                    </div>
+                                </div>
+                            )}
+
                             {q.qtype === 'text' && (
                                 <div className="pc-textarea-wrapper">
                                     <textarea

@@ -7,7 +7,8 @@ import './MProposalForm.css';
 import './MProposalList.css';
 import './MReportForm.css';
 
-const CATS = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
+// Figma 0:12713 (제보하기01 최신) — 카테고리 4개
+const CATS = ['주거', '환경', '교통', '안전'];
 const POSITIONS = ['위치', '도로', '인도', '공원', '주차장'];
 const ISSUES = ['문제사항', '훼손', '오염', '불편', '위험'];
 const DRAFT_KEY = 'mReportForm:draft';
@@ -31,6 +32,20 @@ export default function MReportForm({ onNavigate }) {
     const [photoUrl, setPhotoUrl] = useState('');
     const [uploading, setUploading] = useState(false);
     const [detailAddr, setDetailAddr] = useState('');
+    const [errors, setErrors] = useState({});
+
+    const clearError = (key) => setErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
+
+    // Figma "오류멘트" 검증: 카테고리·위치·시설물·문제사항 필수, 상세설명 20자↑
+    const validate = () => {
+        const e = {};
+        if (!cat) e.cat = '제보 카테고리를 선택해주세요.';
+        if (!location) e.location = '어디에서 발생한 문제인지 위치를 선택해 주세요.';
+        if (!position) e.position = '공공/시설물을 선택해주세요.';
+        if (!issue) e.issue = '문제사항을 선택해주세요.';
+        if (body.trim().length < 20) e.body = '내용을 조금 더 자세히 작성해 주세요. (20자 이상)';
+        return e;
+    };
 
     // ref for use inside popstate handler without stale closure
     const formStateRef = useRef({});
@@ -85,7 +100,16 @@ export default function MReportForm({ onNavigate }) {
         });
     }, [locationPickerOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const canSubmit = cat && position && issue && body.trim() && !submitting && !uploading;
+    const canSubmit = cat && position && issue && location && body.trim().length >= 20 && !submitting && !uploading;
+
+    // 비활성 스타일이어도 클릭은 받아 미충족 필드를 인라인으로 안내 (Figma 오류멘트)
+    const onSubmitClick = () => {
+        if (submitting || uploading) return;
+        const e = validate();
+        if (Object.keys(e).length) { setErrors(e); return; }
+        setErrors({});
+        handleSubmit();
+    };
 
     const handlePhotoChange = async (e) => {
         const file = e.target.files?.[0];
@@ -228,12 +252,13 @@ export default function MReportForm({ onNavigate }) {
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">위치정보</h3>
-                    <button className="m-loc-input" type="button" onClick={() => setLocationPickerOpen(true)}>
+                    <button className={`m-loc-input${errors.location ? ' error' : ''}`} type="button" onClick={() => setLocationPickerOpen(true)}>
                         <span className={location ? 'm-form-loc-text' : ''}>{location || '지도로 위치 설정하기'}</span>
                         <span className="m-loc-pin">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="2.5"/></svg>
                         </span>
                     </button>
+                    {errors.location && <p className="m-form-error-msg">{errors.location}</p>}
                     {location && (
                         <input
                             className="m-loc-input m-loc-detail-input"
@@ -253,48 +278,51 @@ export default function MReportForm({ onNavigate }) {
                             <button
                                 key={c}
                                 className={`m-cat-chip ${cat === c ? 'on' : ''}`}
-                                onClick={() => setCat(c)}
+                                onClick={() => { setCat(c); clearError('cat'); }}
                                 type="button"
                             >{c}</button>
                         ))}
                     </div>
+                    {errors.cat && <p className="m-form-error-msg">{errors.cat}</p>}
 
                     <div className="m-row-with-suffix">
-                        <select className="m-select" value={position} onChange={(e) => setPosition(e.target.value)} required>
+                        <select className={`m-select${errors.position ? ' error' : ''}`} value={position} onChange={(e) => { setPosition(e.target.value); clearError('position'); }} required>
                             {POSITIONS.map((p, i) => (
                                 <option key={p} value={i === 0 ? '' : p}>{p}</option>
                             ))}
                         </select>
                         <span className="m-row-suffix">에</span>
                     </div>
+                    {errors.position && <p className="m-form-error-msg">{errors.position}</p>}
 
                     <div className="m-row-with-suffix">
-                        <select className="m-select" value={issue} onChange={(e) => setIssue(e.target.value)} required>
+                        <select className={`m-select${errors.issue ? ' error' : ''}`} value={issue} onChange={(e) => { setIssue(e.target.value); clearError('issue'); }} required>
                             {ISSUES.map((p, i) => (
                                 <option key={p} value={i === 0 ? '' : p}>{p}</option>
                             ))}
                         </select>
                         <span className="m-row-suffix">불편해요</span>
                     </div>
+                    {errors.issue && <p className="m-form-error-msg">{errors.issue}</p>}
 
                     <input
                         type="text"
-                        className="m-row-input"
-                        placeholder="느끼신 점을 자유롭게 작성해 주세요."
+                        className={`m-row-input${errors.body ? ' error' : ''}`}
+                        placeholder="상세설명을 작성해주세요"
                         value={body}
-                        onChange={(e) => setBody(e.target.value)}
+                        onChange={(e) => { setBody(e.target.value); clearError('body'); }}
                     />
+                    {errors.body && <p className="m-form-error-msg">{errors.body}</p>}
                 </section>
             </div>
 
             <footer className="m-form-footer">
                 <button className="m-form-save" type="button" onClick={handleSaveDraft}>임시저장</button>
                 <button
-                    className="m-form-submit"
+                    className={`m-form-submit${canSubmit ? '' : ' disabled'}`}
                     type="button"
-                    disabled={!canSubmit}
-                    onClick={handleSubmit}
-                >{submitting ? '제출 중...' : '작성완료'}</button>
+                    onClick={onSubmitClick}
+                >{uploading ? '업로드 중...' : submitting ? '제출 중...' : '작성완료'}</button>
             </footer>
 
             {toast && (
@@ -317,7 +345,7 @@ export default function MReportForm({ onNavigate }) {
                     <div className="m-loc-picker-map">
                         <PCMapCanvas
                             pins={[]}
-                            accentColor="#f74e7e"
+                            accentColor="#542aa3"
                             selectedPoint={{ lat: pickedLat, lng: pickedLng }}
                             onMapClick={({ lat, lng }) => {
                                 setPickedLat(lat);
@@ -344,6 +372,7 @@ export default function MReportForm({ onNavigate }) {
                         disabled={!pickedAddress}
                         onClick={() => {
                             setLocation(pickedAddress);
+                            clearError('location');
                             setLocationPickerOpen(false);
                         }}
                     >위치 선택완료</button>
@@ -357,9 +386,9 @@ export default function MReportForm({ onNavigate }) {
                             <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
                                 <path d="M14 8 H32 L42 18 V46 a2 2 0 0 1 -2 2 H14 a2 2 0 0 1 -2 -2 V10 a2 2 0 0 1 2 -2 z" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="#fff"/>
                                 <path d="M32 8 V18 H42" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="none"/>
-                                <line x1="20" y1="28" x2="34" y2="28" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="34" x2="34" y2="34" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="40" x2="28" y2="40" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="20" y1="28" x2="34" y2="28" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="20" y1="34" x2="34" y2="34" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="20" y1="40" x2="28" y2="40" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
                             </svg>
                         </div>
                         <h3 className="m-draft-title">임시 저장된 내용을<br/>불러올까요?</h3>
@@ -379,9 +408,9 @@ export default function MReportForm({ onNavigate }) {
                             <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
                                 <path d="M14 8 H32 L42 18 V46 a2 2 0 0 1 -2 2 H14 a2 2 0 0 1 -2 -2 V10 a2 2 0 0 1 2 -2 z" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="#fff"/>
                                 <path d="M32 8 V18 H42" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="none"/>
-                                <line x1="20" y1="28" x2="34" y2="28" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="34" x2="34" y2="34" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="40" x2="28" y2="40" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="20" y1="28" x2="34" y2="28" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="20" y1="34" x2="34" y2="34" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="20" y1="40" x2="28" y2="40" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
                             </svg>
                         </div>
                         <h3 className="m-draft-title">작성중인 제보글을<br/>저장할까요?</h3>

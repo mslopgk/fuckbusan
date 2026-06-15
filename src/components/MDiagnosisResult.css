@@ -35,7 +35,7 @@
     text-align: left;
     font-size: 20px;
     font-weight: 700;
-    color: #06AB69;
+    color: #23BDBB;
     letter-spacing: -0.04em;
     line-height: 1.4;
 }
@@ -286,36 +286,47 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 10px;
 }
 
+/* Figma 22:6387 — 연회색 둥근 말풍선 카드 */
 .m-diagres-comment {
-    padding: 14px 0;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.m-diagres-comment:last-child {
-    border-bottom: none;
+    background: #f4f4f6;
+    border-radius: 14px;
+    padding: 12px 14px;
 }
 
 .m-diagres-comment-head {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 6px;
 }
 
 .m-diagres-comment-user {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     color: #242424;
     letter-spacing: -0.02em;
 }
 
 .m-diagres-comment-date {
+    margin-left: auto;
     font-size: 12px;
     color: #aaa;
     letter-spacing: -0.01em;
+}
+
+.m-diagres-comment-del {
+    background: none;
+    border: none;
+    padding: 2px;
+    margin-left: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
 }
 
 .m-diagres-comment-text {

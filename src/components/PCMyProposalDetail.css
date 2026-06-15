@@ -1,178 +1,245 @@
-.pc-myprop-detail-page .pc-detail-inner {
-    max-width: 980px;
-    padding: 32px 60px 60px;
+/* PCMyProposalDetail.css — Figma 215:2205 / 215:2829 / 215:2886 / 215:2659
+   제안 테마: #f74e7e (핑크) */
+
+.pcmpd-page {
+    width: 100%;
+    background: #fff;
+}
+
+.pcmpd-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
     position: relative;
 }
 
-.pc-myprop-header-row {
+/* ── 헤더 행 (태그 + 상태 배지) ── */
+.pcmpd-header-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 14px;
+    gap: 12px;
 }
 
-.pc-myprop-header-row .pc-detail-tags {
-    margin-bottom: 0;
+.pcmpd-tags {
+    display: flex;
+    gap: 8px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
-.pc-myprop-region-tag,
-.pc-myprop-cat-tag,
-.pc-myprop-sub-tag {
+.pcmpd-tag {
     display: inline-flex;
     align-items: center;
-    height: 28px;
+    height: 24px;
     padding: 0 12px;
-    border-radius: 14px;
-    font-size: 13px;
+    border-radius: 15px;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: -0.02em;
 }
 
-.pc-myprop-region-tag {
-    background: #DFF8F8;
+.pcmpd-tag--region {
+    background: #dff8f8;
     color: #242424;
 }
 
-.pc-myprop-sub-tag {
-    background: #FFC9C9;
+.pcmpd-tag--sub {
+    background: #ffc9c9;
     color: #242424;
 }
 
-.pc-myprop-status-badge {
+/* cat 태그는 inline style로 배경/색상 적용됨 */
+.pcmpd-tag--cat {
+    /* background & color via inline style */
+}
+
+.pcmpd-status-badge {
     display: inline-flex;
     align-items: center;
     height: 38px;
     padding: 0 18px;
     border-radius: 10px;
-    background: #F74E7E;
+    background: #f74e7e;
     color: #fff;
     font-size: 15px;
     font-weight: 700;
     letter-spacing: -0.02em;
     flex-shrink: 0;
+    white-space: nowrap;
 }
 
-.pc-myprop-meta-row {
+/* ── 제목 ── */
+.pcmpd-title {
+    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 12px;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
+}
+
+/* ── 메타 (작성자 · 날짜 · 조회수) ── */
+.pcmpd-meta-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     font-size: 13px;
+    font-family: 'Pretendard Variable', sans-serif;
 }
 
-.pc-myprop-author {
+.pcmpd-author {
     color: #555;
     font-weight: 500;
 }
 
-.pc-myprop-meta-right {
+.pcmpd-meta-right {
     color: #999;
 }
 
-.pc-myprop-detail-page .pc-detail-image {
+/* ── 이미지 ── */
+.pcmpd-image {
+    display: block;
+    width: 100%;
     height: 360px;
-    background-color: #1f2540;
-    background-size: cover;
-    background-position: center;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-bottom: 20px;
 }
 
-.pc-myprop-detail-page .pc-detail-map {
+.pcmpd-image--empty {
+    background: #1f2540;
+}
+
+/* ── 지도 ── */
+.pcmpd-map {
     height: 240px;
+    border-radius: 12px;
+    overflow: hidden;
     margin-bottom: 28px;
 }
 
-.pc-myprop-detail-page .pc-detail-body-wrap {
+/* ── 본문 + 투표 버튼 ── */
+.pcmpd-body-wrap {
     position: relative;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
-.pc-myprop-detail-page .pc-detail-body {
-    padding-right: 130px;
+.pcmpd-body {
+    padding-right: 110px;
     line-height: 1.7;
     color: #242424;
     font-size: 15px;
+    font-family: 'Pretendard Variable', sans-serif;
+    letter-spacing: -0.01em;
 }
 
-.pc-myprop-like-float {
+.pcmpd-body p {
+    margin: 0 0 4px;
+}
+
+.pcmpd-body li {
+    margin: 0 0 4px;
+    list-style: disc inside;
+}
+
+/* 투표 버튼 — 우측 floating */
+.pcmpd-vote-btn {
     position: absolute;
-    right: 16px;
-    bottom: 8px;
+    right: 0;
+    bottom: 4px;
     width: 86px;
     height: 86px;
     border-radius: 50%;
-    border: 1.5px solid #E6235A;
+    border: 1.5px solid #f74e7e;
     background: #fff;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
     cursor: pointer;
-    color: #E6235A;
+    color: #f74e7e;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: -0.02em;
-    transition: background 0.15s, transform 0.15s;
-    font-family: inherit;
+    transition: background 0.15s, transform 0.12s;
 }
 
-.pc-myprop-like-float:hover {
-    background: #FFF1F4;
+.pcmpd-vote-btn:hover {
+    background: #fff1f5;
     transform: translateY(-1px);
 }
 
-.pc-myprop-like-float.on {
-    background: #FFF1F4;
+.pcmpd-vote-btn.on {
+    background: #fff1f5;
 }
 
-.pc-myprop-actions {
+.pcmpd-vote-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #f74e7e;
+}
+
+/* ── 삭제·수정 버튼 ── */
+.pcmpd-actions {
     display: flex;
     justify-content: center;
     gap: 12px;
-    margin: 28px 0 12px;
+    margin: 24px 0 16px;
 }
 
-.pc-myprop-btn {
-    min-width: 90px;
-    height: 38px;
+.pcmpd-btn {
+    min-width: 100px;
+    height: 42px;
     border-radius: 15px;
-    padding: 0 18px;
+    padding: 0 20px;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: -0.02em;
     cursor: pointer;
-    font-family: inherit;
-    transition: background 0.15s, transform 0.1s;
-}
-
-.pc-myprop-btn.ghost {
-    background: #F4F4F4;
-    color: #333;
+    font-family: 'Pretendard Variable', sans-serif;
+    transition: background 0.15s;
     border: none;
 }
 
-.pc-myprop-btn.ghost:hover {
+.pcmpd-btn--ghost {
+    background: #f4f4f4;
+    color: #333;
+}
+
+.pcmpd-btn--ghost:hover {
     background: #ebebeb;
 }
 
-.pc-myprop-btn.primary {
+.pcmpd-btn--primary {
     background: #fff;
-    color: #E6235A;
-    border: 1.5px solid #E6235A;
+    color: #f74e7e;
+    border: 1.5px solid #f74e7e;
 }
 
-.pc-myprop-btn.primary:hover {
-    background: #FFF1F4;
+.pcmpd-btn--primary:hover {
+    background: #fff1f5;
 }
 
-.pc-myprop-divider {
+/* ── 구분선 ── */
+.pcmpd-divider {
     height: 1px;
     background: #ddd;
-    margin: 24px 0 20px;
+    margin: 20px 0;
 }
 
-.pc-myprop-comment-count {
+/* ── 댓글 ── */
+.pcmpd-comments {
+    /* container */
+}
+
+.pcmpd-comment-count {
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 16px;
     font-weight: 700;
     color: #111;
@@ -180,36 +247,162 @@
     margin: 0 0 14px;
 }
 
-.pc-myprop-comments .pc-comment-list li strong {
-    color: #242424;
-}
-
-/* Delete confirmation modal */
-.pc-myprop-delete-modal {
-    background: #fff;
-    border-radius: 18px;
-    padding: 28px 32px 22px;
-    width: 320px;
-    text-align: center;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+.pcmpd-comment-input-row {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
-.pc-myprop-delete-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: #fff;
+.pcmpd-comment-input {
+    flex: 1;
+    height: 44px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 0 14px;
+    font-size: 14px;
+    font-family: 'Pretendard Variable', sans-serif;
+    color: #242424;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.pcmpd-comment-input:focus {
+    border-color: #f74e7e;
+}
+
+.pcmpd-comment-input::placeholder {
+    color: #aaa;
+}
+
+.pcmpd-comment-send {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border: none;
+    background: #f74e7e;
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
 }
 
-.pc-myprop-delete-title {
+.pcmpd-comment-send:hover {
+    background: #e03a6b;
+}
+
+.pcmpd-comment-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.pcmpd-comment-empty {
+    color: #aaa;
+    font-size: 14px;
+    padding: 8px 0;
+}
+
+.pcmpd-comment-item {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 14px;
+}
+
+.pcmpd-comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.pcmpd-comment-meta strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: #242424;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+.pcmpd-comment-meta span {
+    font-size: 12px;
+    color: #aaa;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+.pcmpd-comment-body {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+    margin: 0;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+/* ── 목록으로 버튼 ── */
+.pcmpd-bottom-nav {
+    margin-top: 40px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.pcmpd-back-to-list {
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 14px;
+    font-family: 'Pretendard Variable', sans-serif;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.15s;
+}
+
+.pcmpd-back-to-list:hover {
+    color: #f74e7e;
+}
+
+/* ── 모달 backdrop ── */
+.pcmpd-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* ── 삭제 확인 모달 ── */
+.pcmpd-delete-modal {
+    background: #fff;
+    border-radius: 18px;
+    padding: 32px 32px 24px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.pcmpd-delete-icon-wrap {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #fff5f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pcmpd-delete-title {
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 16px;
     font-weight: 700;
     color: #1a1a1b;
@@ -217,52 +410,51 @@
     margin: 0;
 }
 
-.pc-myprop-delete-error {
-    color: #E6235A;
+.pcmpd-delete-error {
+    color: #f74e7e;
     font-size: 12px;
     margin: 0;
 }
 
-.pc-myprop-delete-actions {
+.pcmpd-delete-actions {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    margin-top: 4px;
 }
 
-.pc-myprop-delete-btn {
+.pcmpd-delete-btn {
     width: 100%;
-    height: 40px;
+    height: 44px;
     border-radius: 14px;
     border: none;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: -0.02em;
     cursor: pointer;
-    font-family: inherit;
+    font-family: 'Pretendard Variable', sans-serif;
     transition: background 0.15s;
 }
 
-.pc-myprop-delete-btn.yes {
-    background: #E6235A;
+.pcmpd-delete-btn--yes {
+    background: #f74e7e;
     color: #fff;
 }
 
-.pc-myprop-delete-btn.yes:hover:not(:disabled) {
-    background: #d01a4f;
+.pcmpd-delete-btn--yes:hover:not(:disabled) {
+    background: #e03a6b;
 }
 
-.pc-myprop-delete-btn.no {
-    background: #FFE2EA;
-    color: #E6235A;
+.pcmpd-delete-btn--no {
+    background: #ffe2ea;
+    color: #f74e7e;
 }
 
-.pc-myprop-delete-btn.no:hover:not(:disabled) {
-    background: #FFD2DD;
+.pcmpd-delete-btn--no:hover:not(:disabled) {
+    background: #ffd0dc;
 }
 
-.pc-myprop-delete-btn:disabled {
+.pcmpd-delete-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }

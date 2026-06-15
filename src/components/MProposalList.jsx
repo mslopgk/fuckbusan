@@ -61,7 +61,7 @@ function ProposalListCard({ it, onNavigate }) {
                     </div>
                 </div>
             </div>
-            <div ref={hasImage ? imgRef : undefined} className={`m-prop-card-img${hasImage ? ' has-image' : ' no-image'}`} style={hasImage ? bgStyle : undefined} />
+            {hasImage && <div ref={imgRef} className="m-prop-card-img has-image" style={bgStyle} />}
         </li>
     );
 }
@@ -208,8 +208,8 @@ export default function MProposalList({ onNavigate }) {
                 <span>제안하기</span>
             </button>
 
-            {regionOpen && <RegionSheet regions={REGIONS} draft={regionDraft} onSelect={setRegionDraft} onConfirm={confirmRegion} onClose={() => setRegionOpen(false)} />}
-            {sortOpen && <SortSheet sorts={SORTS} draft={sortDraft} onSelect={setSortDraft} onConfirm={confirmSort} onClose={() => setSortOpen(false)} />}
+            {regionOpen && <RegionSheet accent="#f74e7e" regions={REGIONS} draft={regionDraft} onSelect={setRegionDraft} onConfirm={confirmRegion} onClose={() => setRegionOpen(false)} />}
+            {sortOpen && <SortSheet accent="#f74e7e" sorts={SORTS} draft={sortDraft} onSelect={setSortDraft} onConfirm={confirmSort} onClose={() => setSortOpen(false)} />}
 
             <MobileBottomNav currentView="mProposalList" onNavigate={onNavigate} />
         </div>

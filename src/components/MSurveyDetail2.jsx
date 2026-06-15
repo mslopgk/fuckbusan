@@ -36,7 +36,9 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
     const [gender, setGender] = useState('남자');
     const [age, setAge] = useState('20대');
     const [device, setDevice] = useState(() => detectDevice());
+    const [deviceOther, setDeviceOther] = useState('');
     const [job, setJob] = useState('학생(초중고생)');
+    const [jobOther, setJobOther] = useState('');
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [errors, setErrors] = useState({});
@@ -83,8 +85,8 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
             demographics: {
                 gender,
                 ageGroup: age,
-                device,
-                job,
+                device: device === '기타' && deviceOther.trim() ? deviceOther.trim() : device,
+                job: job === '기타' && jobOther.trim() ? jobOther.trim() : job,
                 name,
                 phone,
             },
@@ -116,22 +118,28 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
 
             <div className="m-hero-card m-hero-card-overlap">
                 <h3 className="m-consent-title">개인정보 수집·이용에 관한 안내</h3>
-                    <p className="m-consent-section">수집항목</p>
-                    <ul className="m-consent-bullets">
-                        <li>응답자 개인정보 : 성명, 휴대폰번호</li>
-                    </ul>
-                    <p className="m-consent-section">개인정보 수집·이용 동의서</p>
-                    <ul className="m-consent-bullets">
-                        <li>국가지표체계 응답자의 개인정보보호를 중요시하며, 개인정보보호에 관한 법률을 준수하고 있습니다.</li>
-                        <li>위와 관련, 개인정보보호법 제15조에 근거하여 다음과 같이 응답자의 동의를 받고자 합니다.</li>
-                    </ul>
-                    <p className="m-consent-section">개인정보 수집·이용에 관한 사항</p>
-                    <ul className="m-consent-bullets">
-                        <li><strong>개인정보의 수집 및 이용 목적</strong><br/>· 만족도 조사 작성 및 모바일 주문·취소 발송을 위해 최소한의 개인정보를 이용하고자 합니다.</li>
-                        <li><strong>수집하려는 개인정보의 항목</strong><br/>· 수집 항목명 : 성명, 휴대폰번호</li>
-                        <li><strong>개인정보의 보유 및 이용기간</strong><br/>· 모니터링·고객 시술 및 조사 종료 후 1개월</li>
-                        <li><strong>동의를 거부할 권리 및 불이익</strong><br/>· 정보주체는 개인정보의 수집·이용에 대한 동의를 거부할 권리가 있으며, 동의 거부 시 설문조사 의견 제출률 하실 수 없습니다.</li>
-                    </ul>
+                    <div className="m-consent-box">
+                        <p className="m-consent-section">수집항목</p>
+                        <ul className="m-consent-bullets">
+                            <li>응답자 개인정보 : 성명, 휴대폰번호</li>
+                        </ul>
+                    </div>
+                    <div className="m-consent-box">
+                        <p className="m-consent-section">개인정보 수집·이용 동의서</p>
+                        <ul className="m-consent-bullets">
+                            <li>국가지표체계 응답자의 개인정보보호를 중요시하며, 개인정보보호에 관한 법률을 준수하고 있습니다.</li>
+                            <li>위와 관련, 개인정보보호법 제15조에 근거하여 다음과 같이 응답자의 동의를 받고자 합니다.</li>
+                        </ul>
+                    </div>
+                    <div className="m-consent-box">
+                        <p className="m-consent-section">개인정보 수집·이용에 관한 사항</p>
+                        <ul className="m-consent-bullets">
+                            <li><strong>개인정보의 수집 및 이용 목적</strong><br/>· 만족도 조사 작성 및 모바일 주문·취소 발송을 위해 최소한의 개인정보를 이용하고자 합니다.</li>
+                            <li><strong>수집하려는 개인정보의 항목</strong><br/>· 수집 항목명 : 성명, 휴대폰번호</li>
+                            <li><strong>개인정보의 보유 및 이용기간</strong><br/>· 모니터링·고객 시술 및 조사 종료 후 1개월</li>
+                            <li><strong>동의를 거부할 권리 및 불이익</strong><br/>· 정보주체는 개인정보의 수집·이용에 대한 동의를 거부할 권리가 있으며, 동의 거부 시 설문조사 의견 제출률 하실 수 없습니다.</li>
+                        </ul>
+                    </div>
                     <p className="m-consent-final">위 내용을 확인하여 개인정보 수집·이용에 동의합니다.</p>
                     <div className="m-consent-radios">
                         <label><input type="radio" name="agree" checked={agree === true} onChange={() => setAgree(true)} /><span>동의함</span></label>
@@ -142,65 +150,93 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
             <div className="m-survey-body">
                 <h3 className="m-form-section-title">작성자 기본정보</h3>
 
-                <div className="m-form-row">
-                    <label className="m-form-label">성별 <span className="req">*</span></label>
-                    <div className="m-form-radios">
-                        {GENDERS.map((g) => (
-                            <label key={g}><input type="radio" name="gender" checked={gender === g} onChange={() => setGender(g)} /><span>{g}</span></label>
-                        ))}
+                <div className="m-form-card">
+                    <div className="m-form-row m-form-row-inline">
+                        <label className="m-form-label">성별 <span className="req">*</span></label>
+                        <div className="m-form-radios m-form-radios-grid">
+                            {GENDERS.map((g) => (
+                                <label key={g}><input type="radio" name="gender" checked={gender === g} onChange={() => setGender(g)} /><span>{g}</span></label>
+                            ))}
+                        </div>
                     </div>
-                </div>
 
-                <div className="m-form-row">
-                    <label className="m-form-label">연령 <span className="req">*</span></label>
-                    <div className="m-form-radios m-form-radios-grid">
-                        {AGES.map((a) => (
-                            <label key={a}><input type="radio" name="age" checked={age === a} onChange={() => setAge(a)} /><span>{a}</span></label>
-                        ))}
+                    <div className="m-form-row m-form-row-inline">
+                        <label className="m-form-label">연령 <span className="req">*</span></label>
+                        <div className="m-form-radios m-form-radios-grid">
+                            {AGES.map((a) => (
+                                <label key={a}><input type="radio" name="age" checked={age === a} onChange={() => setAge(a)} /><span>{a}</span></label>
+                            ))}
+                        </div>
                     </div>
-                </div>
 
-                <div className="m-form-row">
-                    <label className="m-form-label">이용 기기 <span className="req">*</span></label>
-                    <div className="m-form-radios m-form-radios-grid">
-                        {DEVICES.map((d) => (
-                            <label key={d}><input type="radio" name="device" checked={device === d} onChange={() => setDevice(d)} /><span>{d}</span></label>
-                        ))}
+                    <div className="m-form-row m-form-row-inline">
+                        <label className="m-form-label">이용 기기 <span className="req">*</span></label>
+                        <div className="m-form-radios-wrap">
+                            <div className="m-form-radios m-form-radios-grid">
+                                {DEVICES.map((d) => (
+                                    <label key={d}><input type="radio" name="device" checked={device === d} onChange={() => setDevice(d)} /><span>{d}</span></label>
+                                ))}
+                            </div>
+                            {device === '기타' && (
+                                <input
+                                    type="text"
+                                    className="m-form-input m-form-input-other"
+                                    value={deviceOther}
+                                    onChange={(e) => setDeviceOther(e.target.value)}
+                                    placeholder="기타 입력"
+                                />
+                            )}
+                        </div>
                     </div>
-                </div>
 
-                <div className="m-form-row">
-                    <label className="m-form-label">직업(소속) <span className="req">*</span></label>
-                    <div className="m-form-radios m-form-radios-col">
-                        {JOBS.map((j) => (
-                            <label key={j}><input type="radio" name="job" checked={job === j} onChange={() => setJob(j)} /><span>{j}</span></label>
-                        ))}
+                    <div className="m-form-row m-form-row-inline">
+                        <label className="m-form-label">직업(소속) <span className="req">*</span></label>
+                        <div className="m-form-radios-wrap">
+                            <div className="m-form-radios m-form-radios-grid">
+                                {JOBS.map((j) => (
+                                    <label key={j}><input type="radio" name="job" checked={job === j} onChange={() => setJob(j)} /><span>{j}</span></label>
+                                ))}
+                            </div>
+                            {job === '기타' && (
+                                <input
+                                    type="text"
+                                    className="m-form-input m-form-input-other"
+                                    value={jobOther}
+                                    onChange={(e) => setJobOther(e.target.value)}
+                                    placeholder="기타 입력"
+                                />
+                            )}
+                        </div>
                     </div>
-                </div>
 
-                <div className="m-form-row">
-                    <label className="m-form-label">성명 <span className="req">*</span></label>
-                    <input
-                        type="text"
-                        className={`m-form-input${errors.name ? ' m-form-input-error' : ''}`}
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="홍길동"
-                    />
-                    {errors.name && <p className="m-form-error">{errors.name}</p>}
-                </div>
+                    <div className="m-form-row m-form-row-inline">
+                        <label className="m-form-label">성명 <span className="req">*</span></label>
+                        <div className="m-form-field">
+                            <input
+                                type="text"
+                                className={`m-form-input${errors.name ? ' m-form-input-error' : ''}`}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="홍길동"
+                            />
+                            {errors.name && <p className="m-form-error">{errors.name}</p>}
+                        </div>
+                    </div>
 
-                <div className="m-form-row">
-                    <label className="m-form-label">휴대폰번호 <span className="req">*</span></label>
-                    <input
-                        type="tel"
-                        className={`m-form-input${errors.phone ? ' m-form-input-error' : ''}`}
-                        value={phone}
-                        onChange={handlePhoneChange}
-                        placeholder="010-0000-0000"
-                        maxLength={13}
-                    />
-                    {errors.phone && <p className="m-form-error">{errors.phone}</p>}
+                    <div className="m-form-row m-form-row-inline">
+                        <label className="m-form-label">휴대폰번호 <span className="req">*</span></label>
+                        <div className="m-form-field">
+                            <input
+                                type="tel"
+                                className={`m-form-input${errors.phone ? ' m-form-input-error' : ''}`}
+                                value={phone}
+                                onChange={handlePhoneChange}
+                                placeholder="010-0000-0000"
+                                maxLength={13}
+                            />
+                            {errors.phone && <p className="m-form-error">{errors.phone}</p>}
+                        </div>
+                    </div>
                 </div>
 
                 <button

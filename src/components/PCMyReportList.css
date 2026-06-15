@@ -1,7 +1,9 @@
+/* PCMyReportList.css — 나의제보 PC 리스트 (Figma 215:3065 / 215:3294) */
+
 .pc-myrep-page {
-    background: #f5f6f7;
+    background: #fff;
     min-height: calc(100vh - 60px);
-    padding: 30px 0 60px;
+    padding: 30px 0 80px;
 }
 
 .pc-myrep-inner {
@@ -10,211 +12,258 @@
     padding: 0 20px;
 }
 
+/* 페이지 제목 (Figma: "나의제보", 30px, bold, #000) */
 .pc-myrep-title {
-    font-size: 22px;
-    font-weight: 800;
-    color: #1a1a1b;
-    margin: 0 0 18px;
-    letter-spacing: -0.02em;
+    font-size: 30px;
+    font-weight: 700;
+    color: #000;
+    margin: 0 0 20px;
+    letter-spacing: -0.04em;
+    font-family: 'GmarketSans', 'Pretendard Variable', sans-serif;
 }
 
+/* ── 검색 바 (Figma: h=47px, radius=100px, border #DDD, w=531px) ── */
 .pc-myrep-search-wrap {
     position: relative;
-    max-width: 360px;
-    margin: 22px auto 14px;
+    max-width: 531px;
+    margin: 0 auto 18px;
 }
 
 .pc-myrep-search {
     width: 100%;
-    height: 38px;
-    border-radius: 19px;
-    border: 1px solid #e0e0e0;
+    height: 47px;
+    border-radius: 100px;
+    border: 1px solid #DDDDDD;
     background: #fff;
-    padding: 0 36px 0 18px;
-    font-size: 13px;
-    color: #1a1a1b;
-    font-family: inherit;
+    padding: 0 42px 0 20px;
+    font-size: 16px;
+    color: #242424;
+    font-family: 'Pretendard Variable', sans-serif;
+    letter-spacing: -0.04em;
+    box-sizing: border-box;
 }
 
 .pc-myrep-search:focus {
     outline: none;
-    border-color: #ddd;
+    border-color: #bbb;
 }
 
 .pc-myrep-search-icon {
     position: absolute;
-    right: 16px;
+    right: 18px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
+    color: #999;
+}
+
+/* ── 지역 필터 (2행 grid, Figma: h=47px, radius 없음 or 작음, border #DDD) ── */
+.pc-myrep-region-wrap {
+    max-width: 960px;
+    margin: 0 auto 10px;
 }
 
 .pc-myrep-region-row {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
-    gap: 8px;
-    max-width: 720px;
-    margin: 0 auto 10px;
+    gap: 6px;
+    margin-bottom: 6px;
 }
 
 .pc-myrep-region-chip {
-    height: 34px;
-    border-radius: 17px;
-    border: 1px solid #e0e0e0;
+    height: 47px;
+    border: 1px solid #DDDDDD;
     background: #fff;
-    font-size: 12px;
-    color: #555;
+    font-size: 16px;
+    color: #242424;
     cursor: pointer;
-    font-family: inherit;
-    font-weight: 500;
-    padding: 0 8px;
+    font-family: 'Pretendard Variable', sans-serif;
+    font-weight: 400;
+    padding: 0 4px;
+    text-align: center;
+    letter-spacing: -0.04em;
     transition: all 0.15s;
+    border-radius: 0;
 }
 
-.pc-myrep-region-chip:hover { border-color: #ccc; }
+.pc-myrep-region-chip:hover { border-color: #bbb; }
 
+/* Figma 215:3065: 부산전체 active → bg #542aa3, white text */
 .pc-myrep-region-chip.active {
-    background: #E6235A;
+    background: #542aa3;
     color: #fff;
-    border-color: #E6235A;
+    border-color: #542aa3;
     font-weight: 700;
 }
 
+/* ── 카테고리 필터 (Figma: h=33px, radius=20px, #e6e6e6 기본, #542aa3 active) ── */
 .pc-myrep-cat-row {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    justify-content: center;
-    max-width: 700px;
-    margin: 14px auto;
+    max-width: 960px;
+    margin: 0 auto 20px;
 }
 
 .pc-myrep-cat-chip {
-    height: 28px;
-    border-radius: 14px;
+    height: 33px;
+    border-radius: 20px;
     border: none;
-    background: #f1f3f5;
-    color: #555;
-    font-size: 12px;
+    background: #e6e6e6;
+    color: #242424;
+    font-size: 16px;
     cursor: pointer;
-    font-family: inherit;
-    padding: 0 14px;
-    font-weight: 500;
+    font-family: 'Pretendard Variable', sans-serif;
+    padding: 0 16px;
+    font-weight: 400;
+    letter-spacing: -0.04em;
     transition: all 0.15s;
 }
 
-.pc-myrep-cat-chip:hover { background: #e6e8ea; }
+.pc-myrep-cat-chip:hover { background: #d8d8d8; }
 
 .pc-myrep-cat-chip.active {
-    background: #E6235A;
+    background: #542aa3;
     color: #fff;
     font-weight: 700;
 }
 
+/* ── 탭 스위처 (나의 제보글 / 좋아요 제보글) ── */
+/* Figma 215:3065: h=50px, border 1px #DDD, radius=30px, w=353px 중앙 */
 .pc-myrep-tabs {
     display: flex;
     gap: 0;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 22px;
-    padding: 3px;
-    width: 280px;
-    margin: 22px auto 18px;
+    border: 1px solid #DDDDDD;
+    border-radius: 30px;
+    overflow: hidden;
+    width: 353px;
+    height: 50px;
+    margin: 0 auto 18px;
 }
 
 .pc-myrep-tab {
     flex: 1;
-    height: 36px;
-    border-radius: 18px;
+    height: 50px;
     border: none;
     background: transparent;
-    font-size: 13px;
-    color: #888;
+    font-size: 18px;
+    color: #777;
     cursor: pointer;
-    font-family: inherit;
-    font-weight: 500;
+    font-family: 'Pretendard Variable', sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.04em;
     transition: all 0.15s;
 }
 
+/* Figma: active tab → bg #542aa3 반원 pill */
 .pc-myrep-tab.active {
-    background: #E6235A;
+    background: #542aa3;
     color: #fff;
-    font-weight: 700;
+    font-weight: 600;
+    border-radius: 30px;
 }
 
+/* ── 상태 필터 탭 (개선중 / 개선예정 / 개선완료) ── */
+/* Figma 215:3065: h=43px, radius=10px, active bg #542aa3 */
 .pc-myrep-status-row {
     display: flex;
     gap: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .pc-myrep-status-chip {
-    height: 30px;
-    border-radius: 15px;
-    border: 1px solid #e0e0e0;
+    height: 43px;
+    border-radius: 10px;
+    border: 1px solid #DDDDDD;
     background: #fff;
-    font-size: 12px;
-    color: #555;
+    font-size: 16px;
+    color: #777;
     cursor: pointer;
-    font-family: inherit;
-    padding: 0 14px;
+    font-family: 'Pretendard Variable', sans-serif;
+    padding: 0 20px;
     font-weight: 500;
+    letter-spacing: -0.04em;
     transition: all 0.15s;
 }
 
-.pc-myrep-status-chip:hover { border-color: #ccc; }
+.pc-myrep-status-chip:hover { border-color: #bbb; }
 
 .pc-myrep-status-chip.active {
-    background: #FCDAE3;
-    color: #E6235A;
-    border-color: #FCDAE3;
+    background: #542aa3;
+    color: #fff;
+    border-color: #542aa3;
     font-weight: 700;
 }
 
+/* ── 카드 그리드 (Figma: 3열, w=306px per card, radius=15px, shadow) ── */
 .pc-myrep-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
+    gap: 16px;
 }
 
+/* 카드 (Figma: h=159px, radius=15px, shadow 0 0 10 rgba(0,0,0,0.1)) */
 .pc-myrep-card {
     background: #fff;
-    border: 1px solid #e8e8e8;
-    border-radius: 12px;
-    padding: 14px 16px;
+    border-radius: 15px;
+    padding: 14px 16px 14px;
     cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.10);
     transition: box-shadow 0.15s, transform 0.15s;
+    min-height: 159px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 .pc-myrep-card:hover {
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-    transform: translateY(-1px);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.13);
+    transform: translateY(-2px);
 }
 
+/* 배지 행 (지역 + 카테고리 + sub chip) */
 .pc-myrep-card-tags {
     display: flex;
-    gap: 6px;
+    gap: 5px;
     margin-bottom: 8px;
+    flex-wrap: wrap;
 }
 
-.pc-myrep-cat,
-.pc-myrep-sub {
-    padding: 3px 10px;
-    border-radius: 11px;
-    font-size: 11px;
+/* 배지 (Figma: h=24px, radius=15px) */
+.pc-myrep-region-tag {
+    background: #dff8f8;
+    color: #242424;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 13px;
     font-weight: 700;
+    letter-spacing: -0.04em;
+}
+
+.pc-myrep-cat {
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
 }
 
 .pc-myrep-sub {
-    background: #FCDAE3;
-    color: #E6235A;
+    background: #ffc9c9;
+    color: #242424;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
 }
 
+/* 카드 본문 행 (제목 + 썸네일) */
 .pc-myrep-card-row {
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    margin-bottom: 8px;
+    flex: 1;
 }
 
 .pc-myrep-card-text {
@@ -222,12 +271,13 @@
     min-width: 0;
 }
 
+/* 제목 (Figma: 18px, medium #111, w=343, leading 1.4) */
 .pc-myrep-card-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #1a1a1b;
-    margin: 0 0 4px;
-    letter-spacing: -0.02em;
+    font-size: 17px;
+    font-weight: 600;
+    color: #111;
+    margin: 0 0 5px;
+    letter-spacing: -0.04em;
     line-height: 1.4;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -236,19 +286,25 @@
     -webkit-box-orient: vertical;
 }
 
+/* 작성자 (Figma: 14px, regular, #1e1e1e, leading 1.35) */
 .pc-myrep-card-author {
-    font-size: 11px;
-    color: #888;
+    font-size: 13px;
+    color: #1e1e1e;
     margin: 0;
+    font-weight: 400;
+    line-height: 1.35;
 }
 
+/* 썸네일 (Figma: size=55px, radius=15px, shadow) */
 .pc-myrep-card-img {
-    width: 56px;
-    height: 56px;
-    border-radius: 8px;
+    width: 55px;
+    height: 55px;
+    border-radius: 15px;
     overflow: hidden;
     flex-shrink: 0;
     background: #f1f3f5;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.10);
+    align-self: center;
 }
 
 .pc-myrep-card-img img {
@@ -258,23 +314,30 @@
     display: block;
 }
 
+/* 통계 행 (좋아요 / 댓글) */
 .pc-myrep-card-stats {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
+    margin-top: 8px;
 }
 
+/* Figma: 나의 제보글 탭 통계 색 = #bfbfbf, 좋아요 탭 = #542aa3 */
 .pc-myrep-stat {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 11px;
-    color: #888;
+    font-size: 13px;
+    color: #bfbfbf;
+    font-weight: 500;
+    letter-spacing: -0.03em;
 }
+
+.pc-myrep-stat.liked { color: #542aa3; }
 
 .pc-myrep-empty {
     text-align: center;
     color: #888;
-    padding: 60px 0;
-    font-size: 13px;
+    padding: 80px 0;
+    font-size: 14px;
 }

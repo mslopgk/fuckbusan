@@ -2,6 +2,7 @@ import { useEffect, useState, useRef} from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
 import './PCDetailShared.css';
+import './PCReportDetail.css';
 import { API_URL } from '../utils/api';
 
 
@@ -28,6 +29,7 @@ export default function PCReportDetail({ onNavigate, report }) {
     const [liked, setLiked] = useState(() => getLikedSet().has(reportId));
     const [likeCount, setLikeCount] = useState(0);
     const [voteDoneType, setVoteDoneType] = useState(null); // 'liked' | 'unliked' | null
+    const [showResult, setShowResult] = useState(false);
     const fetchCalled = useRef(false);
 
     useEffect(() => {
@@ -57,6 +59,16 @@ export default function PCReportDetail({ onNavigate, report }) {
             : '';
     const author = detail?.author || detail?.nickname || '익명';
     const imageSrc = detail?.image_url || detail?.image || null;
+
+    // 개선완료 결과 데이터
+    const isImproved = detail?.status === '개선완료' || detail?.status === '결과안내';
+    const resultDetails = detail?.result_details || null;
+    const resultImage = resultDetails?.image || detail?.result_image || null;
+    const resultText = resultDetails?.content || resultDetails?.title || '';
+
+    // 소유자(작성자) 판별: user_name 일치 (백엔드에 /users/me 호출 없이 경량 비교)
+    const myName = (() => { try { return localStorage.getItem('user_name') || localStorage.getItem('username') || ''; } catch { return ''; } })();
+    const isOwner = !!myName && (author === myName);
 
     const toggleLike = async () => {
         if (!reportId) {
@@ -125,13 +137,31 @@ export default function PCReportDetail({ onNavigate, report }) {
             <div className="pcd-page">
                 <div className="pcd-inner">
 
-                    {/* 태그 행 */}
+                    {/* 태그 행 — Figma: district(teal bg), category(yellow bg), sub-cat(pink bg) */}
                     <div className="pcd-tags">
-                        {detail?.category && <span className="pcd-cat-pill">{detail.category}</span>}
+                        {detail?.region && (
+                            <span className="pcrd-tag pcrd-tag-district">{detail.region}</span>
+                        )}
+                        {detail?.category && (
+                            <span className="pcrd-tag pcrd-tag-category">{detail.category}</span>
+                        )}
+                        {detail?.sub_category && (
+                            <span className="pcrd-tag pcrd-tag-subcat">{detail.sub_category}</span>
+                        )}
                         {detail?.status && (
-                            <span className="pcd-cat-pill" style={{ marginLeft: 'auto', background: '#fef0f5', color: '#E6235A' }}>
+                            <span className="pcrd-tag pcrd-tag-status" style={{ marginLeft: 'auto' }}>
                                 {detail.status}
                             </span>
+                        )}
+                        {isOwner && (
+                            <button
+                                type="button"
+                                className="pcd-edit-btn"
+                                style={detail?.status ? undefined : { marginLeft: 'auto' }}
+                                onClick={() => onNavigate && onNavigate('pcMyReportEdit', detail)}
+                            >
+                                수정하기
+                            </button>
                         )}
                     </div>
 
@@ -177,19 +207,37 @@ export default function PCReportDetail({ onNavigate, report }) {
                                 : <p style={{ color: '#999' }}>본문이 없습니다.</p>
                             }
                         </div>
+                        {/* Vote — Figma: purple #542aa3 circle, "좋아요" label */}
                         <button
-                            className={`pcd-vote-circle${liked ? ' voted' : ''}`}
+                            className={`pcrd-vote-circle${liked ? ' voted' : ''}`}
                             onClick={toggleLike}
                         >
                             <span className="pcd-vote-icon">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <svg width="26" height="26" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
                                 </svg>
                             </span>
                             <span className="pcd-vote-count">{likeCount}</span>
-                            <span className="pcd-vote-label">{liked ? '투표완료' : '투표하기'}</span>
+                            <span className="pcd-vote-label">좋아요</span>
                         </button>
                     </div>
+
+                    {/* 개선완료 결과 배너 — Figma: purple rgba(84,42,163,0.2) bg, no border */}
+                    {isImproved && (
+                        <div className="pcd-result-banner pcrd-improvement-banner">
+                            <div className="pcd-result-banner-head">
+                                <span className="pcd-result-banner-badge">개선완료</span>
+                                <p className="pcd-result-banner-title">답변이 등록되었습니다</p>
+                            </div>
+                            {resultImage && (
+                                <img src={resultImage} alt="개선 결과 사진" className="pcd-result-banner-img" onError={(e) => { e.target.style.display = 'none'; }} />
+                            )}
+                            {resultText && <p className="pcd-result-banner-text">{resultText}</p>}
+                            <button type="button" className="pcd-result-banner-btn" onClick={() => setShowResult(true)}>
+                                결과보기
+                            </button>
+                        </div>
+                    )}
 
                     {/* 댓글 */}
                     <div className="pcd-comment-section">
@@ -228,6 +276,39 @@ export default function PCReportDetail({ onNavigate, report }) {
                     </div>
                 </div>
 
+                {/* 개선 결과보기 모달 */}
+                {showResult && (
+                    <div className="pcd-result-backdrop" onClick={() => setShowResult(false)}>
+                        <div className="pcd-result-modal pcrd-result-modal-override" onClick={(e) => e.stopPropagation()}>
+                            <div className="pcd-result-modal-head">
+                                <h3>개선 결과보기</h3>
+                            </div>
+                            {resultImage ? (
+                                <img src={resultImage} alt="개선 결과 사진" className="pcd-result-modal-img" onError={(e) => { e.target.style.display = 'none'; }} />
+                            ) : (
+                                <div className="pcd-result-modal-img pcd-result-modal-img--empty">
+                                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#a0bdd0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                    <span>결과 사진이 없습니다</span>
+                                </div>
+                            )}
+                            {resultText && <p className="pcd-result-modal-text">{resultText}</p>}
+                            {/* Figma: 담당자 코멘트 block inside modal */}
+                            {resultDetails?.content && (
+                                <div className="pcrd-result-comment-block">
+                                    <p className="pcrd-result-comment-label">담당자 코멘트</p>
+                                    {resultDetails?.date && <p className="pcrd-result-comment-date">{String(resultDetails.date).slice(0, 10).replace(/-/g, '.')}</p>}
+                                    <p className="pcrd-result-comment-text">{resultDetails.content}</p>
+                                </div>
+                            )}
+                            {/* Figma: purple "확인" button + light-purple "닫기" button */}
+                            <div className="pcrd-result-modal-actions">
+                                <button type="button" className="pcrd-result-btn-soft" onClick={() => setShowResult(false)}>닫기</button>
+                                <button type="button" className="pcrd-result-btn-purple" onClick={() => setShowResult(false)}>확인</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* 투표 완료/취소 팝업 */}
                 {voteDoneType && (
                     <div className="pcd-vote-modal-overlay" onClick={() => setVoteDoneType(null)}>
@@ -237,7 +318,7 @@ export default function PCReportDetail({ onNavigate, report }) {
                                     <path d="M10 6 H58 L80 28 V92 Q80 96 76 96 H14 Q10 96 10 92 Z" fill="white" stroke="#1a1a1a" strokeWidth="4.5" strokeLinejoin="round"/>
                                     <path d="M58 6 L80 28 H58 Z" fill="white" stroke="#1a1a1a" strokeWidth="4.5" strokeLinejoin="round"/>
                                     <g transform="translate(45,62) rotate(-5)">
-                                        <path d="M-18 2 L-5 16 L20 -14" stroke="#E6235A" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                                        <path d="M-18 2 L-5 16 L20 -14" stroke="#542aa3" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                                     </g>
                                 </svg>
                             </div>

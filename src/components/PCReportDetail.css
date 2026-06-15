@@ -1,0 +1,169 @@
+/* PCReportDetail — report-specific overrides (purple theme per Figma node 215:1461) */
+
+/* ── Tag pills ──────────────────────────────────────────────── */
+/* Figma: district=teal #dff8f8, category=yellow #ffef8a, sub=pink #ffc9c9 */
+.pcrd-tag {
+    display: inline-flex;
+    align-items: center;
+    height: 31px;
+    padding: 0 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #242424;
+    letter-spacing: -0.56px;
+    white-space: nowrap;
+}
+
+.pcrd-tag-district {
+    background: #dff8f8;
+}
+
+.pcrd-tag-category {
+    background: #ffef8a;
+}
+
+.pcrd-tag-subcat {
+    background: #ffc9c9;
+}
+
+.pcrd-tag-status {
+    background: #fef0f5;
+    color: #E6235A;
+}
+
+/* ── Vote circle — purple (#542aa3) ─────────────────────────── */
+/* Figma node 215:1489: purple ellipse, "좋아요" label */
+.pcrd-vote-circle {
+    flex-shrink: 0;
+    width: 97px;
+    height: 97px;
+    border-radius: 50%;
+    background: rgba(84, 42, 163, 0.1);
+    border: 1.5px solid #542aa3;
+    color: #542aa3;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: inherit;
+    transition: all 0.15s;
+    box-shadow: 0 4px 14px rgba(84, 42, 163, 0.12);
+}
+
+.pcrd-vote-circle:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(84, 42, 163, 0.2);
+}
+
+.pcrd-vote-circle.voted {
+    background: #542aa3;
+    border-color: #542aa3;
+    color: #fff;
+}
+
+/* ── Result modal overrides ─────────────────────────────────── */
+/* Modal: no close X in header per Figma (header only has title) */
+.pcrd-result-modal-override .pcd-result-modal-head {
+    justify-content: center;
+}
+
+/* "담당자 코멘트" block inside result modal */
+.pcrd-result-comment-block {
+    border-top: 1px solid #ddd;
+    padding-top: 16px;
+    margin-top: 12px;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.pcrd-result-comment-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #542aa3;
+    letter-spacing: -0.72px;
+    margin: 0 0 4px;
+}
+
+.pcrd-result-comment-date {
+    font-size: 14px;
+    color: #1e1e1e;
+    margin: 0 0 8px;
+    line-height: 1.35;
+}
+
+.pcrd-result-comment-text {
+    font-size: 16px;
+    color: #242424;
+    line-height: 1.4;
+    letter-spacing: -0.64px;
+    margin: 0;
+}
+
+/* Modal action buttons — Figma: purple "확인" + light-purple "닫기" */
+.pcrd-result-modal-actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.pcrd-result-btn-purple {
+    flex: 1;
+    height: 59px;
+    background: #542aa3;
+    color: #fff;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.72px;
+    transition: background 0.15s;
+}
+.pcrd-result-btn-purple:hover {
+    background: #3e1f8a;
+}
+
+.pcrd-result-btn-soft {
+    flex: 1;
+    height: 59px;
+    background: rgba(84, 42, 163, 0.2);
+    color: #542aa3;
+    border: none;
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.64px;
+    transition: background 0.15s;
+}
+.pcrd-result-btn-soft:hover {
+    background: rgba(84, 42, 163, 0.28);
+}
+
+/* ── In-page 개선완료 result banner — purple theme for report ── */
+/* The shared .pcd-result-banner uses pink — override for report */
+.pcrd-improvement-banner {
+    background: rgba(84, 42, 163, 0.2);
+    border: none;
+    border-radius: 15px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    position: relative;
+}
+
+.pcrd-improvement-banner .pcd-result-banner-badge {
+    background: #542aa3;
+}
+
+.pcrd-improvement-banner .pcd-result-banner-btn {
+    background: #542aa3;
+}
+.pcrd-improvement-banner .pcd-result-banner-btn:hover {
+    background: #3e1f8a;
+}

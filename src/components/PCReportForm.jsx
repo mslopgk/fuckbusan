@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Map, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk';
 import UserPCLayout from './UserPCLayout';
 import './PCFormShared.css';
+import './PCReportForm.css';
 import { API_URL } from '../utils/api';
 import { compressImage } from '../utils/imageCompress';
 
@@ -117,10 +118,10 @@ function LocationPickerModal({ onCancel, onConfirm }) {
 }
 
 export default function PCReportForm({ onNavigate }) {
-    const [photo, setPhoto] = useState(null); // { url, name, type }
-    const [uploadedUrl, setUploadedUrl] = useState(''); // server-side URL after upload
+    const [photos, setPhotos] = useState([]); // [{ url, name, type, serverUrl }]
     const [uploading, setUploading] = useState(false);
     const [location, setLocation] = useState(null); // { lat, lng, address }
+    const [detailAddress, setDetailAddress] = useState(''); // 상세주소 (detailed_address)
     const [type, setType] = useState('');
     const [facility, setFacility] = useState('공공/시설물');
     const [issue, setIssue] = useState('문제사항');
@@ -132,7 +133,22 @@ export default function PCReportForm({ onNavigate }) {
     const [showDone, setShowDone] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
+    const [errors, setErrors] = useState({});
     const fileInputRef = useRef(null);
+
+    const clearError = (key) => setErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
+
+    // Figma "오류멘트" 검증: 미충족 필드별 한국어 메시지 반환
+    const validate = () => {
+        const e = {};
+        if (!photos.length) e.photos = '문제 상황이 보이도록 사진을 등록해 주세요.';
+        if (!type) e.type = '제보 카테고리를 선택해주세요.';
+        if (!location) e.location = '어디에서 발생한 문제인지 위치를 선택해 주세요.';
+        if (facility === '공공/시설물') e.facility = '공공/시설물을 선택해주세요.';
+        if (issue === '문제사항') e.issue = '문제사항을 선택해주세요.';
+        if (description.trim().length < 20) e.description = '내용을 조금 더 자세히 작성해 주세요. (20자 이상)';
+        return e;
+    };
 
     // Load draft on mount
     useEffect(() => {
@@ -145,47 +161,101 @@ export default function PCReportForm({ onNavigate }) {
                 if (saved.facility) setFacility(saved.facility);
                 if (saved.issue) setIssue(saved.issue);
                 if (saved.body) setDescription(saved.body);
+                if (saved.detailAddress) setDetailAddress(saved.detailAddress);
                 if (saved.location) setLocation({ address: saved.location, lat: saved.lat, lng: saved.lng });
             }
         } catch { /* ignore */ }
     }, []);
 
-    const valid = photo && location && type && description.trim() && !submitting && !uploading;
+    const valid = photos.length > 0 && location && type
+        && facility !== '공공/시설물' && issue !== '문제사항'
+        && description.trim().length >= 20 && !submitting && !uploading;
+
+    const handleSubmit = async () => {
+        setSubmitting(true);
+        setSubmitError('');
+        const token = localStorage.getItem('access_token');
+        const title = `${facility}에 ${issue} 불편해요`;
+        const uploadedUrls = photos.map((p) => p.serverUrl).filter(Boolean);
+        const payload = {
+            category: type,
+            sub_category: `${facility} · ${issue}`,
+            title,
+            content: description.trim(),
+            lat: location?.lat,
+            lng: location?.lng,
+            location: location?.address || undefined,
+            detailed_address: detailAddress.trim() || undefined,
+            image_url: uploadedUrls[0] || undefined,
+            image_urls: uploadedUrls.length ? uploadedUrls : undefined,
+        };
+        try {
+            const res = await fetch(`${API_URL}/api/reports/report`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify(payload),
+            });
+            if (res.ok) {
+                setShowDone(true);
+            } else {
+                setSubmitError('제출에 실패했습니다. 다시 시도해주세요.');
+            }
+        } catch {
+            setSubmitError('네트워크 오류가 발생했습니다.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    // 비활성 스타일이어도 클릭은 받아 미충족 필드를 인라인으로 안내 (Figma 오류멘트)
+    const onSubmitClick = () => {
+        if (submitting || uploading) return;
+        const e = validate();
+        if (Object.keys(e).length) { setErrors(e); return; }
+        setErrors({});
+        handleSubmit();
+    };
 
     const handlePhotoChange = async (e) => {
-        const f = e.target.files?.[0];
-        if (!f) return;
-        // Show local preview immediately
-        if (photo?.url) URL.revokeObjectURL(photo.url);
-        setPhoto({ name: f.name, type: f.type, url: URL.createObjectURL(f) });
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
         e.target.value = '';
-        // Upload to server
         setUploading(true);
-        setUploadedUrl('');
         try {
-            const compressed = await compressImage(f);
-            const form = new FormData();
-            form.append('file', compressed);
-            const res = await fetch(`${API_URL}/api/reports/upload`, { method: 'POST', body: form });
-            if (res.ok) {
-                const j = await res.json();
-                setUploadedUrl(j.url || '');
-            } else {
-                setSubmitError('사진 업로드에 실패했습니다.');
-                setTimeout(() => setSubmitError(''), 2000);
+            for (const f of files) {
+                // Show local preview immediately
+                const local = { name: f.name, type: f.type, url: URL.createObjectURL(f), serverUrl: '' };
+                setPhotos((prev) => [...prev, local]);
+                clearError('photos');
+                // Upload to server
+                try {
+                    const compressed = await compressImage(f);
+                    const form = new FormData();
+                    form.append('file', compressed);
+                    const res = await fetch(`${API_URL}/api/reports/upload`, { method: 'POST', body: form });
+                    if (res.ok) {
+                        const j = await res.json();
+                        setPhotos((prev) => prev.map((p) => (p === local ? { ...p, serverUrl: j.url || '' } : p)));
+                    } else {
+                        setSubmitError('사진 업로드에 실패했습니다.');
+                        setTimeout(() => setSubmitError(''), 2000);
+                    }
+                } catch (err) {
+                    setSubmitError(err?.message || '사진 업로드 중 오류가 발생했습니다.');
+                    setTimeout(() => setSubmitError(''), 2500);
+                }
             }
-        } catch (err) {
-            setSubmitError(err?.message || '사진 업로드 중 오류가 발생했습니다.');
-            setTimeout(() => setSubmitError(''), 2500);
         } finally {
             setUploading(false);
         }
     };
 
-    const removePhoto = () => {
-        if (photo?.url) URL.revokeObjectURL(photo.url);
-        setPhoto(null);
-        setUploadedUrl('');
+    const removePhoto = (target) => {
+        if (target?.url) URL.revokeObjectURL(target.url);
+        setPhotos((prev) => prev.filter((p) => p !== target));
     };
 
     const handleSaveDraft = () => {
@@ -195,6 +265,7 @@ export default function PCReportForm({ onNavigate }) {
                 facility,
                 issue,
                 body: description,
+                detailAddress,
                 location: location?.address || '',
                 lat: location?.lat,
                 lng: location?.lng,
@@ -226,33 +297,45 @@ export default function PCReportForm({ onNavigate }) {
                             ref={fileInputRef}
                             type="file"
                             accept="image/*"
+                            multiple
                             style={{ display: 'none' }}
                             onChange={handlePhotoChange}
                         />
                         <div className="pc-attach-grid">
-                            {photo && (
-                                <div className="pc-attach-item-thumb">
-                                    <img src={photo.url} alt={photo.name} className="pc-attach-thumb-img" />
-                                    {uploading && <span style={{ position: 'absolute', bottom: 4, left: 4, fontSize: 10, color: '#fff', background: 'rgba(0,0,0,0.55)', borderRadius: 4, padding: '2px 5px' }}>업로드 중...</span>}
-                                    <button className="pc-attach-remove" onClick={removePhoto} aria-label="삭제">×</button>
+                            {photos.map((p, i) => (
+                                <div key={p.url || i} className="pc-attach-item-thumb">
+                                    <img src={p.url} alt={p.name} className="pc-attach-thumb-img" />
+                                    {!p.serverUrl && <span style={{ position: 'absolute', bottom: 4, left: 4, fontSize: 10, color: '#fff', background: 'rgba(0,0,0,0.55)', borderRadius: 4, padding: '2px 5px' }}>업로드 중...</span>}
+                                    <button className="pc-attach-remove" onClick={() => removePhoto(p)} aria-label="삭제">×</button>
                                 </div>
-                            )}
-                            <button className="pc-photo-btn" onClick={() => fileInputRef.current?.click()} type="button">
-                                {photo ? (
+                            ))}
+                            <button className={`pc-photo-btn${errors.photos ? ' error' : ''}`} onClick={() => fileInputRef.current?.click()} type="button">
+                                {photos.length > 0 ? (
                                     <span style={{ fontSize: '22px' }}>＋</span>
                                 ) : (
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                                 )}
                             </button>
                         </div>
+                        {errors.photos && <p className="pc-form-error-msg">{errors.photos}</p>}
                     </div>
 
                     <div className="pc-form-section">
                         <label className="pc-form-label">위치정보</label>
-                        <button className="pc-form-input pc-form-clickable" onClick={() => setShowMap(true)}>
-                            <span className={location ? '' : 'placeholder'}>{locationLabel}</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="10" r="3"/><path d="M12 22s7-7.5 7-13a7 7 0 0 0-14 0c0 5.5 7 13 7 13z"/></svg>
-                        </button>
+                        <div className="pc-form-loc-row">
+                            <button className={`pc-form-input pc-form-clickable${errors.location ? ' error' : ''}`} onClick={() => setShowMap(true)}>
+                                <span className={location ? '' : 'placeholder'}>{locationLabel}</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="10" r="3"/><path d="M12 22s7-7.5 7-13a7 7 0 0 0-14 0c0 5.5 7 13 7 13z"/></svg>
+                            </button>
+                            <input
+                                type="text"
+                                className="pc-form-input pc-form-loc-detail"
+                                placeholder="예: 1층 오른쪽 표지판 앞"
+                                value={detailAddress}
+                                onChange={(e) => setDetailAddress(e.target.value)}
+                            />
+                        </div>
+                        {errors.location && <p className="pc-form-error-msg">{errors.location}</p>}
                     </div>
 
                     <div className="pc-form-section">
@@ -261,98 +344,69 @@ export default function PCReportForm({ onNavigate }) {
                             {TYPES.map((t) => (
                                 <button
                                     key={t}
-                                    className={`pc-form-chip ${type === t ? 'active' : ''}`}
-                                    onClick={() => setType(t)}
+                                    className={`pc-form-chip pcrf-chip ${type === t ? 'active' : ''}`}
+                                    onClick={() => { setType(t); clearError('type'); }}
                                 >
                                     {t}
                                 </button>
                             ))}
                         </div>
+                        {errors.type && <p className="pc-form-error-msg">{errors.type}</p>}
                     </div>
 
-                    <div className="pc-form-section pc-form-row-flex">
-                        <div className="pc-form-dropdown">
-                            <button className="pc-form-input pc-form-clickable" onClick={() => setShowFacilityDrop(!showFacilityDrop)}>
-                                <span>{facility}</span>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="6 9 12 15 18 9"/></svg>
-                            </button>
-                            {showFacilityDrop && (
-                                <div className="pc-dropdown-list">
-                                    {FACILITIES.map((f) => (
-                                        <div key={f} className="pc-dropdown-item" onClick={() => { setFacility(f); setShowFacilityDrop(false); }}>{f}</div>
-                                    ))}
-                                </div>
-                            )}
+                    <div className="pc-form-section">
+                        <div className="pc-form-row-flex">
+                            <div className="pc-form-dropdown">
+                                <button className={`pc-form-input pc-form-clickable${errors.facility ? ' error' : ''}`} onClick={() => setShowFacilityDrop(!showFacilityDrop)}>
+                                    <span>{facility}</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="6 9 12 15 18 9"/></svg>
+                                </button>
+                                {showFacilityDrop && (
+                                    <div className="pc-dropdown-list">
+                                        {FACILITIES.map((f) => (
+                                            <div key={f} className="pc-dropdown-item" onClick={() => { setFacility(f); setShowFacilityDrop(false); clearError('facility'); }}>{f}</div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <span className="pc-form-conjunction">에</span>
+                            <div className="pc-form-dropdown">
+                                <button className={`pc-form-input pc-form-clickable${errors.issue ? ' error' : ''}`} onClick={() => setShowIssueDrop(!showIssueDrop)}>
+                                    <span>{issue}</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="6 9 12 15 18 9"/></svg>
+                                </button>
+                                {showIssueDrop && (
+                                    <div className="pc-dropdown-list">
+                                        {ISSUES.map((it) => (
+                                            <div key={it} className="pc-dropdown-item" onClick={() => { setIssue(it); setShowIssueDrop(false); clearError('issue'); }}>{it}</div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <span className="pc-form-conjunction">불편해요</span>
                         </div>
-                        <span className="pc-form-conjunction">에</span>
-                        <div className="pc-form-dropdown">
-                            <button className="pc-form-input pc-form-clickable" onClick={() => setShowIssueDrop(!showIssueDrop)}>
-                                <span>{issue}</span>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="6 9 12 15 18 9"/></svg>
-                            </button>
-                            {showIssueDrop && (
-                                <div className="pc-dropdown-list">
-                                    {ISSUES.map((it) => (
-                                        <div key={it} className="pc-dropdown-item" onClick={() => { setIssue(it); setShowIssueDrop(false); }}>{it}</div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                        <span className="pc-form-conjunction">불편해요</span>
+                        {(errors.facility || errors.issue) && <p className="pc-form-error-msg">{errors.facility || errors.issue}</p>}
                     </div>
 
                     <div className="pc-form-section">
                         <input
                             type="text"
-                            className="pc-form-input"
+                            className={`pc-form-input${errors.description ? ' error' : ''}`}
                             placeholder="상세설명을 작성해주세요"
                             value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            onChange={(e) => { setDescription(e.target.value); clearError('description'); }}
                         />
+                        {errors.description && <p className="pc-form-error-msg">{errors.description}</p>}
                     </div>
 
                     <div className="pc-form-actions">
                         <button className="pc-btn-light" type="button" onClick={handleSaveDraft}>임시저장</button>
                         <button
-                            className={`pc-btn-pink ${valid ? '' : 'disabled'}`}
-                            disabled={!valid}
-                            onClick={async () => {
-                                setSubmitting(true);
-                                setSubmitError('');
-                                const token = localStorage.getItem('access_token');
-                                const title = `${facility}에 ${issue} 불편해요`;
-                                const payload = {
-                                    category: type,
-                                    sub_category: `${facility} · ${issue}`,
-                                    title,
-                                    content: description.trim(),
-                                    lat: location?.lat,
-                                    lng: location?.lng,
-                                    location: location?.address || undefined,
-                                    image_url: uploadedUrl || undefined,
-                                };
-                                try {
-                                    const res = await fetch(`${API_URL}/api/reports/report`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                                        },
-                                        body: JSON.stringify(payload),
-                                    });
-                                    if (res.ok) {
-                                        setShowDone(true);
-                                    } else {
-                                        setSubmitError('제출에 실패했습니다. 다시 시도해주세요.');
-                                    }
-                                } catch {
-                                    setSubmitError('네트워크 오류가 발생했습니다.');
-                                } finally {
-                                    setSubmitting(false);
-                                }
-                            }}
+                            className={`pcrf-btn-purple ${valid ? '' : 'disabled'}`}
+                            type="button"
+                            onClick={onSubmitClick}
                         >
-                            {submitting ? '제출 중...' : '작성완료'}
+                            {uploading ? '업로드 중...' : submitting ? '제출 중...' : '작성완료'}
                         </button>
                     </div>
                     {submitError && <p style={{ color: '#E6235A', marginTop: 8, fontSize: 13 }}>{submitError}</p>}
@@ -361,27 +415,30 @@ export default function PCReportForm({ onNavigate }) {
                 {showMap && (
                     <LocationPickerModal
                         onCancel={() => setShowMap(false)}
-                        onConfirm={({ lat, lng, address }) => { setLocation({ lat, lng, address }); setShowMap(false); }}
+                        onConfirm={({ lat, lng, address }) => { setLocation({ lat, lng, address }); clearError('location'); setShowMap(false); }}
                     />
                 )}
 
                 {showDone && (
                     <div className="pc-modal-backdrop">
-                        <div className="pc-modal pc-modal-done" onClick={(e) => e.stopPropagation()}>
-                            <div className="pc-done-illu">
-                                <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
-                                    <rect x="20" y="14" width="80" height="92" rx="8" fill="#FCDAE3" stroke="#E6235A" strokeWidth="2.5"/>
-                                    <rect x="32" y="26" width="56" height="6" rx="3" fill="#E6235A" opacity="0.4"/>
-                                    <rect x="32" y="38" width="40" height="4" rx="2" fill="#E6235A" opacity="0.25"/>
-                                    <circle cx="60" cy="70" r="22" fill="#fff" stroke="#E6235A" strokeWidth="2"/>
-                                    <path d="M48 71l8 8 16-18" stroke="#E6235A" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                                </svg>
+                        <div className="pcrf-done-modal" onClick={(e) => e.stopPropagation()}>
+                            <div className="pcrf-done-icons">
+                                <img
+                                    src="/figma-assets/report_done_scroll.png"
+                                    alt=""
+                                    className="pcrf-done-scroll"
+                                />
+                                <img
+                                    src="/figma-assets/report_done_check.png"
+                                    alt=""
+                                    className="pcrf-done-check"
+                                />
                             </div>
-                            <h3>제보 작성이<br/>완료되었습니다</h3>
-                            <button className="pc-btn-pink" onClick={() => onNavigate && onNavigate('pcReportMap')}>
+                            <h3 className="pcrf-done-title">제보 작성이<br/>완료되었습니다</h3>
+                            <button className="pcrf-btn-purple pcrf-done-cta" onClick={() => onNavigate && onNavigate('pcReportMap')}>
                                 등록하기
                             </button>
-                            <button className="pc-btn-pink-soft" onClick={() => setShowDone(false)}>
+                            <button className="pcrf-btn-purple-soft pcrf-done-sub" onClick={() => setShowDone(false)}>
                                 임시저장
                             </button>
                         </div>

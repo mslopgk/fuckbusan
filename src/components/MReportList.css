@@ -77,8 +77,8 @@
 }
 
 .m-stage-chip.on {
-    background: #f74e7e;
-    border-color: #f74e7e;
+    background: #542aa3;
+    border-color: #542aa3;
     color: #fff;
     font-weight: 700;
 }
@@ -90,19 +90,19 @@
     border-bottom: 1px solid #f0f0f0;
 }
 
-/* Stage chip active: report pink (WDC #f74e7e) */
+/* Stage chip active: report purple (WDC Figma #542aa3) */
 .m-report-list-page .m-stage-chip.on {
-    background: #f74e7e;
-    border-color: #f74e7e;
+    background: #542aa3;
+    border-color: #542aa3;
     color: #fff;
     font-weight: 700;
 }
 
-/* Cat chip active: report pink (WDC #f74e7e) */
+/* Cat chip active: report purple (WDC Figma #542aa3) */
 .m-report-list-page .m-cat-chip.on {
-    background: #f74e7e;
+    background: #542aa3;
     color: #fff;
-    border-color: #f74e7e;
+    border-color: #542aa3;
 }
 
 /* Card list */
@@ -157,18 +157,35 @@
     bottom: 80px;
 }
 
-/* Region arrow circle — WDC report pink #f74e7e */
+/* Region arrow circle — WDC Figma report purple #542aa3 */
 .m-report-list-page .m-region-arrow {
-    background: #f74e7e;
+    background: #542aa3;
 }
 
-/* 지도보기 button override — WDC #f74e7e */
+/* 지도보기 button override — WDC Figma #542aa3 */
 .m-report-list-page .m-map-btn {
-    background: #f74e7e;
+    background: #542aa3;
 }
 
-/* FAB override — WDC #f74e7e */
+/* FAB override — WDC Figma #542aa3 */
 .m-report-list-page .m-prop-fab {
-    background: #f74e7e;
-    box-shadow: 0 6px 18px rgba(247, 78, 126, 0.35);
+    background: #542aa3;
+    box-shadow: 0 6px 18px rgba(84, 42, 163, 0.35);
+}
+
+/* Sort/region modal confirm button — WDC Figma #542aa3 (overrides proposal pink) */
+/* Modal is rendered inside .m-report-list-page as a child with position:fixed */
+.m-report-list-page .m-modal-confirm {
+    background: #542aa3;
+    box-shadow: 0 4px 12px rgba(84, 42, 163, 0.25);
+}
+
+/* Sort item active chevron/text color */
+.m-report-list-page .m-sort-item.on {
+    color: #542aa3;
+}
+
+/* Region item active color */
+.m-report-list-page .m-region-item.on {
+    color: #542aa3;
 }

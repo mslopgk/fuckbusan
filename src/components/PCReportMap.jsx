@@ -6,6 +6,7 @@ import { LIVING_CATS, CAT_TO_KEY, CAT_COLOR, DISTRICTS, CategoryIcon } from '../
 import { useReportsData } from '../hooks/useReportsData';
 import './PCMapShared.css';
 import './PCMap3.css';
+import './PCReportMap.css';
 
 
 export default function PCReportMap({ onNavigate }) {
@@ -63,11 +64,11 @@ export default function PCReportMap({ onNavigate }) {
         propose: proposalsCount,
     };
 
-    const pins = filtered.filter((it) => it.lat && it.lng).map((it) => ({ ...it, color: '#E6235A' }));
+    const pins = filtered.filter((it) => it.lat && it.lng).map((it) => ({ ...it, color: '#542aa3' }));
 
     return (
         <UserPCLayout currentView="pcReportMap" onNavigate={onNavigate}>
-            <div className={`pc-map3-page${sidebarOpen ? '' : ' pc-map3-sidebar-closed'}`}>
+            <div className={`pc-map3-page report${sidebarOpen ? '' : ' pc-map3-sidebar-closed'}`}>
                 <div className="pc-map3-filter-stack">
                     <aside className="pc-map3-filter-card">
                         <div className="pc-map3-section-label">구역별</div>
@@ -122,7 +123,7 @@ export default function PCReportMap({ onNavigate }) {
                         ref={mapRef}
                         pins={pins}
                         onPinClick={(p) => setPolicyItem(p)}
-                        accentColor="#E6235A"
+                        accentColor="#542aa3"
                         selectedDistrict={district}
                     />
 

@@ -22,9 +22,15 @@ const labelOffsets = {
     '해운대구': [-0.015, -0.005]
 };
 
-const InteractiveMap = () => {
+const InteractiveMap = ({ defaultDistrict = null, selectedDistrict: controlledDistrict, onDistrictChange } = {}) => {
     const [geoJsonData, setGeoJsonData] = useState(null);
-    const [selectedDistrict, setSelectedDistrict] = useState(null);
+    const [internalDistrict, setInternalDistrict] = useState(defaultDistrict);
+    const isControlled = controlledDistrict !== undefined;
+    const selectedDistrict = isControlled ? controlledDistrict : internalDistrict;
+    const setSelectedDistrict = (name) => {
+        if (!isControlled) setInternalDistrict(name);
+        if (onDistrictChange) onDistrictChange(name);
+    };
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
     useEffect(() => {
@@ -81,10 +87,16 @@ const InteractiveMap = () => {
     const BoundsFitter = ({ data }) => {
         const map = useMap();
         useEffect(() => {
-            if (data) {
-                const geoJsonLayer = L.geoJSON(data);
-                map.fitBounds(geoJsonLayer.getBounds(), { padding: [5, 5] });
-            }
+            if (!data) return undefined;
+            const bounds = L.geoJSON(data).getBounds();
+            const fit = () => {
+                // flex 컨테이너에서 leaflet이 stale 크기로 초기화되는 문제 보정
+                map.invalidateSize();
+                map.fitBounds(bounds, { padding: [5, 5] });
+            };
+            fit();
+            const t = setTimeout(fit, 200);
+            return () => clearTimeout(t);
         }, [data, map]);
         return null;
     };
@@ -126,7 +138,7 @@ const InteractiveMap = () => {
                         color: #1a1a1a !important;
                         font-family: 'GmarketSans', sans-serif !important;
                         font-weight: 500 !important;
-                        font-size: ${isMobile ? '4px' : '8px'} !important;
+                        font-size: ${isMobile ? '4px' : '13px'} !important;
                         text-shadow: 0px 0px 4px #fff, 0px 0px 4px #fff !important;
                         white-space: nowrap !important;
                         pointer-events: none !important;
@@ -163,6 +175,7 @@ const InteractiveMap = () => {
             <MapContainer
                 center={[35.1795543, 129.0756416]}
                 zoom={11}
+                zoomSnap={0}
                 scrollWheelZoom={false}
                 zoomControl={false}
                 doubleClickZoom={false}

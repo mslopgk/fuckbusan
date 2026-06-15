@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, forwardRef, useImperativeHandle, useRef } from 'react';
 import { Map, Polygon, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
 import { CategoryIcon } from '../constants/mapConstants.jsx';
+import './PCMapCanvas.css';
 
 const toPath = (coords) => coords.map(([lng, lat]) => ({ lat, lng }));
 const featureToPaths = (feature) => {

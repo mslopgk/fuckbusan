@@ -118,8 +118,8 @@ export default function MProposalMap({ onNavigate }) {
             <div className="m-map-canvas">
                 <PCMapCanvas
                     ref={mapRef}
-                    pins={PINS.map((p) => ({ ...p, color: '#E6235A' }))}
-                    accentColor="#E6235A"
+                    pins={PINS.map((p) => ({ ...p, color: '#f74e7e' }))}
+                    accentColor="#f74e7e"
                     onPinClick={(pin) => { setSelectedPinId(pin.id); setSnap('mid'); }}
                     onMapClick={() => { if (selectedPinId) setSelectedPinId(null); }}
                     selectedDistrict={region !== '부산전체' ? region : null}
@@ -135,12 +135,14 @@ export default function MProposalMap({ onNavigate }) {
                 aria-label="내 위치"
                 title="내 위치"
             >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="3"/>
-                    <line x1="12" y1="2" x2="12" y2="5"/>
-                    <line x1="12" y1="19" x2="12" y2="22"/>
-                    <line x1="2" y1="12" x2="5" y2="12"/>
-                    <line x1="19" y1="12" x2="22" y2="12"/>
+                {/* Figma 0:12150 — 검정 크로스헤어 (흰 원 배경 없음) */}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="11" stroke="#000" strokeWidth="2"/>
+                    <circle cx="12" cy="12" r="1.5" fill="#D9D9D9" stroke="#000"/>
+                    <path d="M12 0.5V5.5" stroke="#000" strokeWidth="2"/>
+                    <path d="M12 18V23" stroke="#000" strokeWidth="2"/>
+                    <path d="M23.2549 11.7451H18.2549" stroke="#000" strokeWidth="2"/>
+                    <path d="M5.75488 11.7451H0.754883" stroke="#000" strokeWidth="2"/>
                 </svg>
             </button>
 
@@ -199,8 +201,8 @@ export default function MProposalMap({ onNavigate }) {
                 </div>
             </div>
 
-            {regionOpen && <RegionSheet regions={REGIONS} draft={regionDraft} onSelect={setRegionDraft} onConfirm={confirmRegion} onClose={() => setRegionOpen(false)} />}
-            {sortOpen && <SortSheet sorts={SORTS} draft={sortDraft} onSelect={setSortDraft} onConfirm={() => { setSort(sortDraft); setSortOpen(false); }} onClose={() => setSortOpen(false)} />}
+            {regionOpen && <RegionSheet accent="#f74e7e" regions={REGIONS} draft={regionDraft} onSelect={setRegionDraft} onConfirm={confirmRegion} onClose={() => setRegionOpen(false)} />}
+            {sortOpen && <SortSheet accent="#f74e7e" sorts={SORTS} draft={sortDraft} onSelect={setSortDraft} onConfirm={() => { setSort(sortDraft); setSortOpen(false); }} onClose={() => setSortOpen(false)} />}
 
             <MobileBottomNav currentView="mProposalMap" onNavigate={onNavigate} />
         </div>

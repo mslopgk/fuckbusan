@@ -9,7 +9,7 @@ const QTYPE_MAP = {
     short: 'text',
     radio: 'single',
     checkbox: 'multi',
-    scale: 'single',
+    scale: 'scale',
     number: 'text',
 };
 
@@ -17,6 +17,7 @@ const SERVER_TO_EDITOR = {
     text: 'short',
     single: 'radio',
     multi: 'checkbox',
+    scale: 'scale',
 };
 
 const QUESTION_TYPES = [

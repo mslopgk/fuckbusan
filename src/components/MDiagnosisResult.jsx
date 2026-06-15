@@ -55,22 +55,21 @@ function CustomTick({ payload, x, y, textAnchor, radarData }) {
     );
 }
 
-function BreakdownSection({ label, title, data, count, empty }) {
-    const avg = data && data.length
-        ? (data.reduce((s, d) => s + (d.A || 0), 0) / data.length).toFixed(2)
-        : '0.00';
+// 섹션별 레이더 컬러 — Figma 22:6387: 전체평균 핑크 / 시설물별 보라 / 구역별 파랑 / 인원별 teal
+const RADAR_COLORS = {
+    total:    '#E6235A',
+    facility: '#5B2EAB',
+    zone:     '#3D7DEB',
+    person:   '#23BDBB',
+};
+
+function BreakdownSection({ label, title, data, empty, color = '#23BDBB' }) {
     return (
         <div className="m-diagres-section-row">
             <div className="m-diagres-section-label">{label}</div>
             <div className="m-diagres-section-content">
                 <div className={`m-diagres-radar-card ${empty ? 'm-diagres-radar-card--disabled' : ''}`}>
                     <p className="m-diagres-radar-card-title">{title}</p>
-                    {!empty && (
-                        <p className="m-diagres-card-head" style={{ fontSize: 13, color: '#777' }}>
-                            <span className="m-diagres-avg">{avg}</span>
-                            {count ? ` 평균 (${count})` : ' 평균'}
-                        </p>
-                    )}
                     <div className="m-diagres-chart">
                         <ResponsiveContainer width="100%" height="100%">
                             <RadarChart cx="50%" cy="50%" outerRadius="65%" data={data}>
@@ -82,9 +81,9 @@ function BreakdownSection({ label, title, data, count, empty }) {
                                 <Radar
                                     name="Score"
                                     dataKey="A"
-                                    stroke="#06AB69"
+                                    stroke={color}
                                     strokeWidth={2}
-                                    fill="#06AB69"
+                                    fill={color}
                                     fillOpacity={empty ? 0.15 : 0.25}
                                 />
                             </RadarChart>
@@ -96,7 +95,7 @@ function BreakdownSection({ label, title, data, count, empty }) {
     );
 }
 
-function RadarSection({ title, radarData, avg, count }) {
+function RadarSection({ title, radarData, avg, count, color = '#E6235A' }) {
     return (
         <div className="m-diagres-section-row">
             <div className="m-diagres-section-label">{title}</div>
@@ -116,9 +115,9 @@ function RadarSection({ title, radarData, avg, count }) {
                                 <Radar
                                     name="Score"
                                     dataKey="A"
-                                    stroke="#06AB69"
+                                    stroke={color}
                                     strokeWidth={2}
-                                    fill="#06AB69"
+                                    fill={color}
                                     fillOpacity={0.25}
                                 />
                             </RadarChart>
@@ -135,6 +134,10 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
     const [resultDetail, setResultDetail] = useState(null);
     const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
     const [breakdown, setBreakdown] = useState(null);
+    const [comments, setComments] = useState([
+        { id: 1, user: 'citizen1024', date: '2025-01-15', text: '횡단보도 주변에 불법 주정차 차량이 많아 보행 시 시야 확보가 어렵습니다. 특히 출퇴근 시간대에 위험하다고 느낍니다.' },
+        { id: 2, user: 'busan_walk', date: '2025-01-15', text: '야간에 가로등 밝기가 부족해 보행 안전이 우려됩니다. 조명 추가 설치나 점검이 필요해 보입니다.' },
+    ]);
 
     // Fetch 3-axis breakdown (facility/zone/person) — depends on resultId for scope
     useEffect(() => {
@@ -173,12 +176,13 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
 
     // Displayed date: prop → result created_at → today
     const displayDate = useMemo(() => {
-        if (date && date !== '2024/05/16') return date;
+        const norm = (s) => s.replace(/\//g, '-');
+        if (date && date !== '2024/05/16') return norm(date);
         if (resultDetail?.created_at) {
             const d = new Date(resultDetail.created_at);
             if (!isNaN(d)) return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
-        if (date) return date;
+        if (date) return norm(date);
         const now = new Date();
         return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     }, [date, resultDetail]);
@@ -241,7 +245,7 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         <polyline points="15 18 9 12 15 6"/>
                     </svg>
                 </button>
-                <span className="m-diagres-topbar-title">일반 진단 결과</span>
+                <span className="m-diagres-topbar-title">시민 진단 결과</span>
                 <button
                     type="button"
                     className="m-diagres-iconbtn"
@@ -306,6 +310,7 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         radarData={radarData}
                         avg={radarAvg}
                         count={stats.count}
+                        color={RADAR_COLORS.total}
                     />
 
                     {/* 시설물별 세부 정보 */}
@@ -313,8 +318,8 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         label="시설물별"
                         title={`시설물별 ${breakdown?.facility?.label || '전체'} 세부 정보`}
                         data={(breakdown?.facility?.radar?.length ? breakdown.facility.radar : FALLBACK_RADAR_DATA)}
-                        count={breakdown?.facility?.count}
                         empty={!breakdown}
+                        color={RADAR_COLORS.facility}
                     />
 
                     {/* 구역별 세부 정보 */}
@@ -322,8 +327,8 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         label="구역별"
                         title={`구역별 ${breakdown?.zone?.label || '전체'} 세부 정보`}
                         data={(breakdown?.zone?.radar?.length ? breakdown.zone.radar : FALLBACK_RADAR_DATA)}
-                        count={breakdown?.zone?.count}
                         empty={!breakdown}
+                        color={RADAR_COLORS.zone}
                     />
 
                     {/* 인원별 세부 정보 */}
@@ -331,8 +336,8 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         label="인원별"
                         title={`인원별 ${breakdown?.person?.label || '전체'} 세부 정보`}
                         data={(breakdown?.person?.radar?.length ? breakdown.person.radar : FALLBACK_RADAR_DATA)}
-                        count={breakdown?.person?.count}
                         empty={!breakdown}
+                        color={RADAR_COLORS.person}
                     />
                 </div>
 
@@ -353,20 +358,28 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         </span>
                     </div>
                     <ul className="m-diagres-comments">
-                        <li className="m-diagres-comment">
-                            <div className="m-diagres-comment-head">
-                                <span className="m-diagres-comment-user">citizen1024</span>
-                                <span className="m-diagres-comment-date">2025.01.15</span>
-                            </div>
-                            <p className="m-diagres-comment-text">횡단보도 주변에 불법 주정차 차량이 많아 보행 시 시야 확보가 어렵습니다. 특히 출퇴근 시간대에 위험하다고 느낍니다.</p>
-                        </li>
-                        <li className="m-diagres-comment">
-                            <div className="m-diagres-comment-head">
-                                <span className="m-diagres-comment-user">busan_walk</span>
-                                <span className="m-diagres-comment-date">2025.01.15</span>
-                            </div>
-                            <p className="m-diagres-comment-text">야간에 가로등 밝기가 부족해 보행 안전이 우려됩니다. 조명 추가 설치나 점검이 필요해 보입니다.</p>
-                        </li>
+                        {comments.map((c) => (
+                            <li key={c.id} className="m-diagres-comment">
+                                <div className="m-diagres-comment-head">
+                                    <span className="m-diagres-comment-user">{c.user}</span>
+                                    <span className="m-diagres-comment-date">{c.date}</span>
+                                    <button
+                                        type="button"
+                                        className="m-diagres-comment-del"
+                                        aria-label="댓글 삭제"
+                                        onClick={() => setComments((prev) => prev.filter((x) => x.id !== c.id))}
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="3 6 5 6 21 6"/>
+                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                            <path d="M10 11v6M14 11v6"/>
+                                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <p className="m-diagres-comment-text">{c.text}</p>
+                            </li>
+                        ))}
                     </ul>
                 </div>
             </main>

@@ -118,17 +118,26 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
                     {data.cat && <span className="m-prop-cat-tag" style={{ background: style.bg, color: style.color }}>{data.cat}</span>}
                     {data.sub && <span className="m-report-sub-tag">{data.sub}</span>}
                 </div>
-                <span className="m-myrdetail-status-badge">{STATUS_LABELS[data.currentStage] || '접수'}</span>
             </header>
 
             <div className="m-detail-content">
-                <div className="m-rdetail-author-row">
-                    <span className="m-rdetail-author">{data.author}</span>
-                    {data.authorRegion && <span>· {data.authorRegion}</span>}
-                    <span style={{ marginLeft: 'auto' }}>{data.createdAt}</span>
+                <div className="m-myrdetail-author-row">
+                    <div className="m-rdetail-author-block">
+                        {data.author && <span className="m-rdetail-author">{data.author}</span>}
+                        {(data.authorRegion || data.createdAt) && (
+                            <span className="m-rdetail-author-sub">
+                                {data.authorRegion}
+                                {data.authorRegion && data.createdAt && ' · '}
+                                {data.createdAt}
+                            </span>
+                        )}
+                    </div>
+                    <span className={`m-myrdetail-status-badge stage-${data.currentStage}`}>{STATUS_LABELS[data.currentStage] || '접수'}</span>
                 </div>
 
                 <h1 className="m-detail-title">{data.title}</h1>
+
+                {data.body && <p className="m-myrdetail-body">{data.body}</p>}
 
                 {data.image ? (
                     <img className="m-detail-image" src={data.image} alt={data.title} onError={(e) => { e.target.style.display = 'none'; }} />
@@ -142,7 +151,7 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
                 </div>
 
                 <div className="m-rdetail-stat-row">
-                    <span className="m-rdetail-stat-meta">{data.date} · 조회수 {data.views}</span>
+                    <span className="m-rdetail-stat-meta">{(data.createdAt || data.date) ? `${data.createdAt || data.date} · ` : ''}조회수 {data.views}</span>
                     <span className="m-rdetail-stat-icons">
                         <span>
                             <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor">
@@ -158,8 +167,6 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
                         </span>
                     </span>
                 </div>
-
-                {data.body && <p className="m-myrdetail-body">{data.body}</p>}
 
                 <div className="m-comment-input-row">
                     <input

@@ -113,12 +113,12 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
                 <button
                     type="button"
                     className="m-diagform-back"
-                    onClick={() => onNavigate?.('mDiagnosisMap')}
+                    onClick={() => onNavigate?.('home')}
                 >
                     <svg width="7" height="13" viewBox="0 0 7 13" fill="none">
                         <path d="M6.5 1L1 6.5L6.5 12" stroke="#242424" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                    <span>뒤로</span>
+                    <span>홈으로</span>
                 </button>
                 {mode === 'expert' && (
                     <span className="m-diagform-mode-badge">전문가 진단</span>
@@ -140,7 +140,7 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
                         {photoPreview ? (
                             <img src={photoPreview} alt="첨부 사진 미리보기" />
                         ) : (
-                            <img src="/figma-assets/diagnosis/photo_add.svg" width="28" height="28" alt="사진 추가" />
+                            <img className="m-diagform-photo-add" src="/figma-assets/diagnosis/photo_add.svg" width="28" height="28" alt="사진 추가" />
                         )}
                     </button>
                     <input

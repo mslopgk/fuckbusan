@@ -1,6 +1,7 @@
 /* PCHeader.jsx - PC 전용 네비게이션 헤더 */
 import React, { useState, useEffect } from 'react';
 import './PCHeader.css';
+import { useUnreadNotifications } from '../hooks/useUnreadNotifications';
 
 const SURVEY_VIEWS = ['pcSurveyList', 'pcSurveyDetail', 'pcSurveyConsent', 'pcSurveyJoin', 'pcSurveyResults', 'pcSurveyDone'];
 const REPORT_SUGGEST_VIEWS = ['pcProposeMap', 'pcProposeForm', 'pcProposeDone', 'pcProposeDetail', 'pcReportMap', 'pcReportForm', 'pcReportDone', 'pcReportDetail', 'pcMyReportList', 'pcMyReportEdit', 'myProposals', 'myReportList'];
@@ -13,6 +14,7 @@ const PCHeader = ({ currentView, onNavigate }) => {
     const [showLogoutToast, setShowLogoutToast] = useState(false);
     const [chooserOpen, setChooserOpen] = useState(false);
     const [comingSoonToast, setComingSoonToast] = useState(false);
+    const { count: unreadCount } = useUnreadNotifications();
 
     useEffect(() => {
         const token = localStorage.getItem('access_token');
@@ -115,14 +117,24 @@ const PCHeader = ({ currentView, onNavigate }) => {
                         </>
                     )}
                     <button
-                        className="pc-bell-btn disabled"
-                        style={disabledStyle}
-                        onClick={() => {}}
+                        className="pc-bell-btn"
+                        style={{ position: 'relative' }}
+                        aria-label={unreadCount > 0 ? `알림 ${unreadCount}개` : '알림'}
+                        onClick={() => isLoggedIn ? onNavigate('mNotifications') : onNavigate('login')}
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                         </svg>
+                        {unreadCount > 0 && (
+                            <span aria-hidden="true" style={{
+                                position: 'absolute', top: 2, right: 2,
+                                background: '#E6235A', color: '#fff',
+                                borderRadius: 8, minWidth: 16, height: 16, padding: '0 4px',
+                                fontSize: 10, fontWeight: 700, lineHeight: '16px',
+                                textAlign: 'center', boxSizing: 'border-box',
+                            }}>{unreadCount > 99 ? '99+' : unreadCount}</span>
+                        )}
                     </button>
                 </div>
             </div>

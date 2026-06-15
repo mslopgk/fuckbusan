@@ -2,8 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import { Map, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk';
 import UserPCLayout from './UserPCLayout';
 import './PCFormShared.css';
+import './PCPropose.css';
 import { API_URL } from '../utils/api';
 import { extractDistrict } from '../utils/format';
+import { compressImage } from '../utils/imageCompress';
 
 
 const TYPES = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
@@ -121,15 +123,74 @@ export default function PCProposeForm({ onNavigate }) {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const [location, setLocation] = useState(null); // { lat, lng }
-    const [files, setFiles] = useState([]); // [{ name, url, type, size }]
+    const [files, setFiles] = useState([]); // [{ name, url, type, size, serverUrl }]
+    const [uploading, setUploading] = useState(false);
 
     const [showMap, setShowMap] = useState(false);
     const [showDone, setShowDone] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
+    const [errors, setErrors] = useState({});
     const fileInputRef = useRef(null);
 
-    const valid = type && title.trim() && body.trim() && !submitting;
+    const clearError = (key) => setErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
+
+    // Figma "오류멘트" 검증: 유형·위치 필수, 제목 5자↑, 내용 20자↑
+    const validate = () => {
+        const e = {};
+        if (!type) e.type = '제안 유형을 선택해주세요.';
+        if (title.trim().length < 5) e.title = '제목을 입력해주세요. (5자 이상)';
+        if (body.trim().length < 20) e.body = '내용을 조금 더 자세히 작성해주세요. (20자 이상)';
+        if (!location) e.location = '어디에서 발생한 문제인지 위치를 선택해 주세요.';
+        return e;
+    };
+
+    const valid = type && title.trim().length >= 5 && body.trim().length >= 20 && location && !submitting && !uploading;
+
+    const handleSubmit = async () => {
+        setSubmitting(true);
+        setSubmitError('');
+        const token = localStorage.getItem('access_token');
+        const uploadedUrls = files.map((f) => f.serverUrl).filter(Boolean);
+        const payload = {
+            category: type,
+            title: title.trim(),
+            content: body.trim(),
+            region: extractDistrict(location?.address),
+            lat: location?.lat,
+            lng: location?.lng,
+            files: uploadedUrls,
+            image_url: uploadedUrls[0] || undefined,
+        };
+        try {
+            const res = await fetch(`${API_URL}/api/reports/new-proposal`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify(payload),
+            });
+            if (res.ok) {
+                setShowDone(true);
+            } else {
+                setSubmitError('제출에 실패했습니다. 다시 시도해주세요.');
+            }
+        } catch {
+            setSubmitError('네트워크 오류가 발생했습니다.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    // 비활성 스타일이어도 클릭은 받아 미충족 필드를 인라인으로 안내 (Figma 오류멘트)
+    const onSubmitClick = () => {
+        if (submitting) return;
+        const e = validate();
+        if (Object.keys(e).length) { setErrors(e); return; }
+        setErrors({});
+        handleSubmit();
+    };
 
     const handleDraft = () => {
         const draft = { type, title, body, location, savedAt: new Date().toISOString() };
@@ -140,18 +201,46 @@ export default function PCProposeForm({ onNavigate }) {
 
     const handleSelectLocation = ({ lat, lng, address }) => {
         setLocation({ lat, lng, address });
+        clearError('location');
         setShowMap(false);
     };
 
-    const handleFileChange = (e) => {
-        const newFiles = Array.from(e.target.files || []).map((f) => ({
-            name: f.name,
-            type: f.type,
-            size: f.size,
-            url: f.type.startsWith('image/') || f.type.startsWith('video/') ? URL.createObjectURL(f) : null,
-        }));
-        setFiles((prev) => [...prev, ...newFiles]);
+    const handleFileChange = async (e) => {
+        const picked = Array.from(e.target.files || []);
+        if (!picked.length) return;
         e.target.value = ''; // 같은 파일 재선택 가능하게
+        setUploading(true);
+        try {
+            for (const f of picked) {
+                // 로컬 미리보기 먼저, 서버 업로드 후 serverUrl 채움 (PCReportForm 패턴)
+                const local = {
+                    name: f.name,
+                    type: f.type,
+                    size: f.size,
+                    url: f.type.startsWith('image/') || f.type.startsWith('video/') ? URL.createObjectURL(f) : null,
+                    serverUrl: '',
+                };
+                setFiles((prev) => [...prev, local]);
+                try {
+                    const toSend = f.type.startsWith('image/') ? await compressImage(f) : f;
+                    const form = new FormData();
+                    form.append('file', toSend);
+                    const res = await fetch(`${API_URL}/api/reports/upload`, { method: 'POST', body: form });
+                    if (res.ok) {
+                        const j = await res.json();
+                        setFiles((prev) => prev.map((p) => (p === local ? { ...p, serverUrl: j.url || '' } : p)));
+                    } else {
+                        setSubmitError('첨부파일 업로드에 실패했습니다.');
+                        setTimeout(() => setSubmitError(''), 2500);
+                    }
+                } catch (err) {
+                    setSubmitError(err?.message || '첨부파일 업로드 중 오류가 발생했습니다.');
+                    setTimeout(() => setSubmitError(''), 2500);
+                }
+            }
+        } finally {
+            setUploading(false);
+        }
     };
 
     const removeFile = (idx) => {
@@ -168,7 +257,7 @@ export default function PCProposeForm({ onNavigate }) {
 
     return (
         <UserPCLayout currentView="pcProposeForm" onNavigate={onNavigate}>
-            <div className="pc-form-page">
+            <div className="pc-form-page pc-propose-form">
                 <div className="pc-form-inner">
                     <h2 className="pc-form-title">제안하기</h2>
 
@@ -188,42 +277,46 @@ export default function PCProposeForm({ onNavigate }) {
                                         type="radio"
                                         name="proposeType"
                                         checked={type === t}
-                                        onChange={() => setType(t)}
+                                        onChange={() => { setType(t); clearError('type'); }}
                                     />
                                     {t}
                                 </label>
                             ))}
                         </div>
+                        {errors.type && <p className="pc-form-error-msg">{errors.type}</p>}
                     </div>
 
                     <div className="pc-form-section">
                         <label className="pc-form-label">제목</label>
                         <input
                             type="text"
-                            className="pc-form-input"
+                            className={`pc-form-input${errors.title ? ' error' : ''}`}
                             placeholder="제목을 입력해주세요"
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={(e) => { setTitle(e.target.value); clearError('title'); }}
                         />
+                        {errors.title && <p className="pc-form-error-msg">{errors.title}</p>}
                     </div>
 
                     <div className="pc-form-section">
                         <label className="pc-form-label">자세한 설명</label>
                         <textarea
-                            className="pc-form-textarea"
+                            className={`pc-form-textarea${errors.body ? ' error' : ''}`}
                             placeholder="우리동네 현황 및 문제점, 개선방안, 기대효과 등을 자세히 작성해주세요."
                             rows={6}
                             value={body}
-                            onChange={(e) => setBody(e.target.value)}
+                            onChange={(e) => { setBody(e.target.value); clearError('body'); }}
                         />
+                        {errors.body && <p className="pc-form-error-msg">{errors.body}</p>}
                     </div>
 
                     <div className="pc-form-section">
                         <label className="pc-form-label">위치정보</label>
-                        <button className="pc-form-input pc-form-clickable" onClick={() => setShowMap(true)}>
+                        <button className={`pc-form-input pc-form-clickable${errors.location ? ' error' : ''}`} onClick={() => setShowMap(true)}>
                             <span className={location ? '' : 'placeholder'}>{locationLabel}</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="10" r="3"/><path d="M12 22s7-7.5 7-13a7 7 0 0 0-14 0c0 5.5 7 13 7 13z"/></svg>
                         </button>
+                        {errors.location && <p className="pc-form-error-msg">{errors.location}</p>}
                     </div>
 
                     <div className="pc-form-section">
@@ -254,44 +347,13 @@ export default function PCProposeForm({ onNavigate }) {
                         <p className="pc-form-hint">* 사진 또는 동영상 첨부해주세요</p>
                     </div>
 
+                    <div className="pc-form-divider" />
                     <div className="pc-form-actions">
-                        <button className="pc-btn-light" disabled={!valid} onClick={handleDraft}>임시저장</button>
+                        <button className="pc-btn-propose-draft" onClick={handleDraft}>임시저장</button>
                         <button
-                            className={`pc-btn-pink ${valid ? '' : 'disabled'}`}
-                            disabled={!valid}
-                            onClick={async () => {
-                                setSubmitting(true);
-                                setSubmitError('');
-                                const token = localStorage.getItem('access_token');
-                                const payload = {
-                                    category: type,
-                                    title: title.trim(),
-                                    content: body.trim(),
-                                    region: extractDistrict(location?.address),
-                                    lat: location?.lat,
-                                    lng: location?.lng,
-                                    files: [],
-                                };
-                                try {
-                                    const res = await fetch(`${API_URL}/api/reports/new-proposal`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                                        },
-                                        body: JSON.stringify(payload),
-                                    });
-                                    if (res.ok) {
-                                        setShowDone(true);
-                                    } else {
-                                        setSubmitError('제출에 실패했습니다. 다시 시도해주세요.');
-                                    }
-                                } catch {
-                                    setSubmitError('네트워크 오류가 발생했습니다.');
-                                } finally {
-                                    setSubmitting(false);
-                                }
-                            }}
+                            className="pc-btn-propose-submit"
+                            disabled={submitting}
+                            onClick={onSubmitClick}
                         >
                             {submitting ? '제출 중...' : '작성완료'}
                         </button>
@@ -310,20 +372,22 @@ export default function PCProposeForm({ onNavigate }) {
                     <div className="pc-modal-backdrop">
                         <div className="pc-modal pc-modal-done" onClick={(e) => e.stopPropagation()}>
                             <div className="pc-done-illu">
-                                <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
-                                    {/* Figma 일치: 핑크 노트 스타일 카드 + 체크 */}
-                                    <rect x="20" y="14" width="80" height="92" rx="8" fill="#FCDAE3" stroke="#E6235A" strokeWidth="2.5"/>
-                                    <rect x="32" y="26" width="56" height="6" rx="3" fill="#E6235A" opacity="0.4"/>
-                                    <rect x="32" y="38" width="40" height="4" rx="2" fill="#E6235A" opacity="0.25"/>
-                                    <circle cx="60" cy="70" r="22" fill="#fff" stroke="#E6235A" strokeWidth="2"/>
-                                    <path d="M48 71l8 8 16-18" stroke="#E6235A" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                                </svg>
+                                <img
+                                    className="pc-done-scroll-img"
+                                    src="/figma-assets/proposal-done-scroll.svg"
+                                    alt=""
+                                />
+                                <img
+                                    className="pc-done-check-img"
+                                    src="/figma-assets/proposal-done-check.svg"
+                                    alt=""
+                                />
                             </div>
                             <h3>제안 작성이<br/>완료되었습니다</h3>
-                            <button className="pc-btn-pink" onClick={() => onNavigate && onNavigate('pcProposeMap')}>
+                            <button className="pc-btn-propose-done-primary" onClick={() => onNavigate && onNavigate('pcProposeMap')}>
                                 등록하기
                             </button>
-                            <button className="pc-btn-pink-soft" onClick={() => setShowDone(false)}>
+                            <button className="pc-btn-propose-done-secondary" onClick={() => setShowDone(false)}>
                                 임시저장
                             </button>
                         </div>

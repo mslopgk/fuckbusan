@@ -4,8 +4,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 40px 24px 100px;
+    /* Figma: 일러스트 top:219px / 852px 화면 → 상단 25% 위치. justify-content 제거하고 상단 여백으로 조정 */
+    justify-content: flex-start;
+    padding-top: min(219px, 25vh);
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 100px;
     text-align: center;
 }
 

@@ -721,6 +721,8 @@ CREATE TABLE `users` (
   `nickname` varchar(100) DEFAULT NULL,
   `phone_num` varchar(20) DEFAULT NULL,
   `birth_date` varchar(20) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `detailed_address` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `district_code` varchar(50) DEFAULT NULL,
   `is_approved` tinyint(1) NOT NULL DEFAULT 1,

@@ -51,7 +51,7 @@
 
 .m-detail-author {
     font-size: 14px;
-    color: #737373;
+    color: #1e1e1e;
     margin: 0 0 18px;
 }
 
@@ -139,7 +139,7 @@
     margin-bottom: 14px;
 }
 
-.m-detail-meta-left { color: #888; }
+.m-detail-meta-left { color: #1e1e1e; }
 
 .m-detail-meta-icons {
     display: inline-flex;
@@ -151,7 +151,7 @@
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    color: #888;
+    color: #bfbfbf;
 }
 
 /* Comments */
@@ -189,18 +189,20 @@
 .m-comment-meta span  { color: #999; }
 
 .m-detail-comments p {
-    font-size: 12px;
-    color: #444;
+    font-size: 16px;
+    color: #242424;
     margin: 0 0 4px;
-    line-height: 1.5;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
 }
 
 .m-comment-reply {
     background: none;
     border: none;
     padding: 0;
-    color: #888;
-    font-size: 11px;
+    margin-top: 4px;
+    color: #1e1e1e;
+    font-size: 14px;
     cursor: pointer;
     font-family: inherit;
 }
@@ -208,7 +210,10 @@
 .m-comment-input-row {
     display: flex;
     gap: 8px;
-    margin-top: 8px;
+    margin-bottom: 16px;
+    /* Figma: 댓글 입력창이 left:10px / w:373px — content 패딩(20px)에서 10px 빼서 edge 맞춤 */
+    margin-left: -10px;
+    margin-right: -10px;
 }
 
 .m-comment-input {
@@ -279,3 +284,104 @@
     color: #fff;
     border-color: #E6235A;
 }
+
+/* 투표 완료/취소확인 모달 — Figma 제안상세2/4 */
+.m-vote-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 36px;
+}
+
+.m-vote-modal {
+    width: 100%;
+    max-width: 300px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 24px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.m-vote-modal-title {
+    margin: 16px 0 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1b;
+    line-height: 1.45;
+    letter-spacing: -0.02em;
+}
+
+.m-vote-modal-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.m-vote-modal-btn {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 23px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.m-vote-modal-btn.primary {
+    background: #E6235A;
+    color: #fff;
+}
+
+.m-vote-modal-btn.ghost {
+    background: #FCDAE3;
+    color: #E6235A;
+}
+
+/* 답글 작성 표시 바 + 대댓글 들여쓰기 */
+.m-comment-reply-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f7f7f8;
+    border-radius: 10px;
+    padding: 7px 12px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #555;
+    letter-spacing: -0.02em;
+}
+
+.m-comment-reply-bar strong { color: #E6235A; font-weight: 700; }
+
+.m-comment-reply-bar button {
+    border: none;
+    background: none;
+    font-size: 16px;
+    line-height: 1;
+    color: #999;
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.m-comment-replies {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0 0 0 16px;
+    border-left: 2px solid #f0f0f0;
+}
+
+.m-comment-replies li { margin-bottom: 10px; }
+.m-comment-replies li:last-child { margin-bottom: 0; }

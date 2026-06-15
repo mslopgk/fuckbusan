@@ -29,6 +29,22 @@
       "waitFor": "input"
     },
     {
+      "id": "pcLogin",
+      "view": "login",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pcauth",
+      "viewport": { "width": 1280, "height": 900 }
+    },
+    {
+      "id": "pcSignup",
+      "view": "signup",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pcauth",
+      "viewport": { "width": 1280, "height": 900 }
+    },
+    {
       "id": "report",
       "view": "report",
       "path": "/",
@@ -86,7 +102,7 @@
       "id": "mDiagnosisForm",
       "view": "mDiagnosisForm",
       "path": "/",
-      "auth": false,
+      "auth": true,
       "waitFor": ".m-diagform-page"
     },
     {
@@ -253,14 +269,22 @@
       "view": "pcDiagnosisForm",
       "path": "/",
       "auth": false,
-      "waitFor": ".pc-diagform-page"
+      "waitFor": ".pc-diagform-page",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "pcDiagnosisDone",
       "view": "pcDiagnosisDone",
       "path": "/",
       "auth": false,
-      "waitFor": ".check-done-container"
+      "waitFor": ".check-done-container",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "mProposalList",
@@ -280,7 +304,7 @@
       "id": "mProposalForm",
       "view": "mProposalForm",
       "path": "/",
-      "auth": false,
+      "auth": true,
       "waitFor": ".m-prop-form-page"
     },
     {
@@ -288,7 +312,21 @@
       "view": "mProposalDetail",
       "path": "/",
       "auth": false,
-      "waitFor": ".m-prop-detail-page"
+      "waitFor": ".m-prop-detail-page",
+      "sessionSeed": {
+        "selectedProposal": {
+          "id": 1,
+          "category": "주거",
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "content": "지역 시간별 수요 편차로 대여소마다 전기자전거 부족/과잉이 반복되고 있습니다.",
+          "author": "동래구 우리디자이너",
+          "created_at": "2026-01-02",
+          "views_count": 333,
+          "likes_count": 12,
+          "lat": 35.197,
+          "lng": 129.063
+        }
+      }
     },
     {
       "id": "mProposalDone",
@@ -301,7 +339,7 @@
       "id": "mNotifications",
       "view": "mNotifications",
       "path": "/",
-      "auth": false,
+      "auth": true,
       "waitFor": ".m-notif-page"
     },
     {
@@ -329,7 +367,7 @@
       "id": "mReportForm",
       "view": "mReportForm",
       "path": "/",
-      "auth": false,
+      "auth": true,
       "waitFor": ".m-report-form-page"
     },
     {
@@ -369,29 +407,138 @@
       "id": "mMyReportDetail",
       "view": "mMyReportDetail",
       "path": "/",
-      "auth": false,
-      "waitFor": ".m-myreport-detail-page"
+      "auth": true,
+      "waitFor": ".m-myreport-detail-page",
+      "sessionSeed": {
+        "selectedReport": {
+          "id": 1,
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "content": "골목쓰레기통 주변 안전 관리가 필요합니다.",
+          "category": "주거",
+          "sub_category": "골목쓰레기통",
+          "region": "동래구",
+          "author": "동래구 우리디자이너",
+          "authorRegion": "동래구 수안동",
+          "views": 333,
+          "likes": 12,
+          "comments": 12,
+          "lat": 35.197,
+          "lng": 129.063,
+          "progress_step": 2,
+          "date": "2026.03.13"
+        }
+      }
     },
     {
       "id": "mMyReportEdit",
       "view": "mMyReportEdit",
       "path": "/",
-      "auth": false,
-      "waitFor": ".m-myrep-edit-page"
+      "auth": true,
+      "waitFor": ".m-myrep-edit-page",
+      "sessionSeed": {
+        "selectedReport": {
+          "id": 1,
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "content": "골목쓰레기통 주변 안전 관리가 필요합니다.",
+          "category": "주거",
+          "sub_category": "골목쓰레기통",
+          "region": "동래구",
+          "location": "부산 동래구 수안동",
+          "lat": 35.197,
+          "lng": 129.063,
+          "progress_step": 2
+        }
+      }
     },
     {
       "id": "pcMyReportList",
       "view": "pcMyReportList",
       "path": "/",
       "auth": false,
-      "waitFor": ".pc-myrep-page"
+      "waitFor": ".pc-myrep-page",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "pcMyReportEdit",
       "view": "pcMyReportEdit",
       "path": "/",
       "auth": false,
-      "waitFor": ".pc-myrep-edit-page"
+      "waitFor": ".pc-myrep-edit-page",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "pcReportForm",
+      "view": "pcReportForm",
+      "path": "/",
+      "auth": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "waitFor": ".pc-modal-backdrop"
+    },
+    {
+      "id": "pcReportDetail",
+      "view": "pcReportDetail",
+      "path": "/",
+      "auth": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "waitFor": ".pcd-page",
+      "sessionSeed": {
+        "selectedReport": {
+          "id": 1,
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "content": "골목쓰레기통 주변 안전 관리가 필요합니다.",
+          "category": "주거",
+          "sub_category": "골목쓰레기통",
+          "region": "동래구",
+          "author": "동래구 우리디자이너",
+          "status": "개선완료",
+          "created_at": "2026.03.13",
+          "views": 333,
+          "likes": 12,
+          "comments": 1,
+          "lat": 35.197,
+          "lng": 129.063,
+          "progress_step": 4
+        }
+      }
+    },
+    {
+      "id": "pcProposeDetail",
+      "view": "pcProposeDetail",
+      "path": "/",
+      "auth": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "waitFor": ".pcd-page",
+      "sessionSeed": {
+        "selectedProposal": {
+          "id": 1,
+          "title": "보행로 폭 개선 제안",
+          "content": "보행 환경 개선이 필요합니다.",
+          "category": "주거",
+          "region": "동래구",
+          "author": "동래구 우리디자이너",
+          "created_at": "2026.03.13",
+          "views": 120,
+          "likes": 8,
+          "comments": 2,
+          "lat": 35.197,
+          "lng": 129.063
+        }
+      }
     },
     {
       "id": "mSurveyList",
@@ -486,70 +633,110 @@
       "view": "adminLoginNew",
       "path": "/admin",
       "auth": false,
-      "waitFor": "input"
+      "waitFor": "input",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "adminMain",
       "view": "adminMain",
       "path": "/admin",
       "auth": "admin",
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "adminUserList",
       "view": "adminUserList",
       "path": "/admin",
       "auth": "admin",
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "reportManagement",
       "view": "reportManagement",
       "path": "/admin",
       "auth": "admin",
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "proposalManagement",
       "view": "proposalManagement",
       "path": "/admin",
       "auth": "admin",
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "surveyManagement",
       "view": "surveyManagement",
       "path": "/admin",
       "auth": "admin",
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "surveyEditor",
       "view": "surveyEditor",
       "path": "/admin",
       "auth": "admin",
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "surveyResults",
       "view": "surveyResults",
       "path": "/admin",
       "auth": "admin",
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "adminDashboardNew",
       "view": "adminDashboardNew",
       "path": "/admin",
       "auth": "admin",
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "expertManagement",
       "view": "expertManagement",
       "path": "/admin",
       "auth": "admin",
-      "waitFor": "body"
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
     },
     {
       "id": "pcAICitizen",
@@ -568,6 +755,27 @@
       "path": "/",
       "auth": false,
       "waitFor": ".m-ai-citizen"
+    },
+    {
+      "id": "mAICitizenDetail",
+      "view": "mAICitizenDetail",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-ai-detail",
+      "sessionSeed": {
+        "selectedReport": {
+          "id": 1,
+          "name": "이서연",
+          "age": 22,
+          "district": "해운대구",
+          "gender": "여성",
+          "tags": [
+            "#대학생",
+            "#카페탐방러",
+            "#야간도보족"
+          ]
+        }
+      }
     }
   ],
   "apiChecks": [
@@ -670,7 +878,7 @@
     {
       "id": "reports-list",
       "method": "GET",
-      "path": "/api/reports/list",
+      "path": "/api/reports/full",
       "expectStatus": [
         200
       ],
