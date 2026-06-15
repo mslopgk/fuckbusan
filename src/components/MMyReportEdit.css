@@ -98,3 +98,12 @@
 .m-myrep-edit-footer {
     padding-bottom: env(safe-area-inset-bottom, 16px);
 }
+
+/* 본문 입력 — 여러 줄 textarea (Figma: 자유 작성 영역) */
+.m-myrep-textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.5;
+    padding-top: 12px;
+    font-family: inherit;
+}

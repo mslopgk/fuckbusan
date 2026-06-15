@@ -180,6 +180,23 @@
     flex: none;
 }
 
+/* AI 대화형 설문: 대화내역 보기 (보라) */
+.ms-result-btn--ai {
+    color: #5b2eab;
+}
+
+/* 클릭 가능한 카드(AI 대화형 설문) */
+.ms-card--clickable {
+    cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.1s;
+}
+.ms-card--clickable:hover {
+    box-shadow: 0 4px 16px rgba(91, 46, 171, 0.12);
+}
+.ms-card--clickable:active {
+    transform: translateY(1px);
+}
+
 /* ─── 카드 본문 ─── */
 .ms-card-title {
     font-size: 16px;

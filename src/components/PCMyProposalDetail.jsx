@@ -26,6 +26,22 @@ const PROGRESS_TO_STATUS = {
     4: '개선완료',
 };
 
+// 업로드 파일명 → 표시 가능한 URL
+const getImgSrc = (file) => {
+    if (!file) return null;
+    if (file.startsWith('http') || file.startsWith('/assets/')) return file;
+    if (file.startsWith('/uploads/')) return `${API_URL}${file}`;
+    return `${API_URL}/uploads/${file}`;
+};
+
+// 제안 사진: files(배열/JSON문자열) 우선, 없으면 image 폴백
+const firstProposalImage = (detail) => {
+    let f = detail?.files;
+    if (typeof f === 'string') { try { f = JSON.parse(f); } catch { f = f ? [f] : []; } }
+    if (Array.isArray(f) && f.length > 0) return getImgSrc(f[0]);
+    return detail?.image ? getImgSrc(detail.image) : null;
+};
+
 export default function PCMyProposalDetail({ onNavigate, proposal, onDelete, onEdit }) {
     const [detail, setDetail] = useState(proposal || null);
     const [comments, setComments] = useState([]);
@@ -79,7 +95,7 @@ export default function PCMyProposalDetail({ onNavigate, proposal, onDelete, onE
         body: detail?.content || detail?.body || '',
         lat: detail?.lat ?? 35.1631,
         lng: detail?.lng ?? 129.1638,
-        image: detail?.image,
+        image: firstProposalImage(detail),
         isMine: detail?.is_mine ?? proposal?.isMine ?? true,
     };
 
@@ -207,7 +223,7 @@ export default function PCMyProposalDetail({ onNavigate, proposal, onDelete, onE
 
                     {/* 본문 + 투표 버튼 */}
                     <div className="pcmpd-body-wrap">
-                        <div className="pcmpd-body">
+                        <div className="pcmpd-body" style={data.isMine ? { paddingRight: 0 } : undefined}>
                             {data.body
                                 ? data.body.split('\n').map((line, i) =>
                                     line.trim().startsWith('-')
@@ -217,21 +233,26 @@ export default function PCMyProposalDetail({ onNavigate, proposal, onDelete, onE
                                 : <p style={{ color: '#999' }}>본문이 없습니다.</p>
                             }
                         </div>
-                        <button
-                            className={`pcmpd-vote-btn${liked ? ' on' : ''}`}
-                            onClick={toggleLike}
-                            type="button"
-                            aria-label={liked ? '투표 취소' : '투표하기'}
-                        >
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill={liked ? '#f74e7e' : 'none'} stroke="#f74e7e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                            </svg>
-                            <span>{data.likes}</span>
-                            <span className="pcmpd-vote-label">투표</span>
-                        </button>
+                        {/* 본인 글은 투표 불가 → 버튼 숨김 */}
+                        {!data.isMine && (
+                            <button
+                                className={`pcmpd-vote-btn${liked ? ' on' : ''}`}
+                                onClick={toggleLike}
+                                type="button"
+                                aria-label={liked ? '투표 취소' : '투표하기'}
+                            >
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill={liked ? '#f74e7e' : 'none'} stroke="#f74e7e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                                </svg>
+                                <span>{data.likes}</span>
+                                <span className="pcmpd-vote-label">투표</span>
+                            </button>
+                        )}
                     </div>
 
-                    {/* 삭제/수정 버튼 (내 글일 때만) */}
+                    <div className="pcmpd-divider" />
+
+                    {/* 삭제/수정 버튼 (내 글일 때만) — 본문 아래 중앙 */}
                     {data.isMine && (
                         <div className="pcmpd-actions">
                             <button
@@ -242,12 +263,10 @@ export default function PCMyProposalDetail({ onNavigate, proposal, onDelete, onE
                             <button
                                 type="button"
                                 className="pcmpd-btn pcmpd-btn--primary"
-                                onClick={() => onEdit ? onEdit(detail) : (onNavigate && onNavigate('proposalForm', detail))}
+                                onClick={() => onEdit ? onEdit(detail) : (onNavigate && onNavigate('proposalForm', { isEdit: true, proposal: detail, returnView: 'pcMyProposalDetail' }))}
                             >수정하기</button>
                         </div>
                     )}
-
-                    <div className="pcmpd-divider" />
 
                     {/* 댓글 */}
                     <div className="pcmpd-comments">

@@ -81,6 +81,8 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.now)
     district_code = Column(String(50))
     is_approved = Column(Boolean, default=True, server_default='1')
+    last_login = Column(DateTime)   # 이번 로그인 시각
+    prev_login = Column(DateTime)   # 직전(이전) 로그인 시각 — "마지막 접속 일시" 표시용
 
 class ChecklistResult(Base):
     __tablename__ = "checklist_result"
@@ -355,6 +357,7 @@ class SurveyChatInterview(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(String(40), index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True, index=True)
     issue_text = Column(Text, nullable=True)
     severity_score = Column(Integer, nullable=True)
     primary_category = Column(String(50), nullable=True)
@@ -362,3 +365,81 @@ class SurveyChatInterview(Base):
     evidence_span = Column(Text, nullable=True)
     raw_log = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.now, index=True)
+
+
+class SurveyChatSession(Base):
+    """AI 대화형 설문 세션 1건 (세션당 1 row).
+
+    나의 활동 '설문' 목록/상세에 사용: AI가 생성한 짧은 제목(title)과
+    전체 대화내역(transcript: [{role, content}, ...])을 보관한다.
+    """
+    __tablename__ = "survey_chat_sessions"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    session_id = Column(String(40), primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True, index=True)
+    title = Column(String(255), nullable=True)
+    transcript = Column(JSON, nullable=True)   # [{"role": "user|assistant", "content": "..."}]
+    issue_count = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.now, index=True)
+
+
+# =============================================================================
+# 공공데이터 대시보드 (PCPublicData) — 실데이터 (출처: data.go.kr, data.busan.go.kr,
+# 행정안전부, TAAS, 문체부, 통계청 등. 시드: backend/public_data/seed_data.py)
+# =============================================================================
+
+class PublicDistrict(Base):
+    """부산 16개 구·군별 실데이터 (구 단위 전수 확보된 지표)."""
+    __tablename__ = "public_districts"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    region = Column(String(30), unique=True, index=True)  # 구·군명
+    population = Column(Integer, nullable=True)            # 총인구 (2026-05, 행안부)
+    accidents = Column(Integer, nullable=True)             # 교통사고 발생건수 (2024, TAAS)
+    acc_deaths = Column(Integer, nullable=True)            # 사망
+    acc_injuries = Column(Integer, nullable=True)          # 부상
+    libraries = Column(Integer, nullable=True)             # 공공도서관 수 (2024, 문체부)
+
+
+class PublicPopTrend(Base):
+    """부산 인구 추이 (연도별 총인구)."""
+    __tablename__ = "public_pop_trend"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    region = Column(String(30), index=True, default='부산광역시')
+    year = Column(Integer, index=True)
+    value = Column(Integer)   # 총인구(명)
+    source = Column(String(255), nullable=True)
+
+
+class PublicThemeStat(Base):
+    """테마별 핵심 지표 (통계 리스트 패널). 지역=부산진구/부산."""
+    __tablename__ = "public_theme_stats"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    theme = Column(String(30), index=True)   # 안전/주거/산업·일자리/교육/환경/문화·여가/보건·복지/교통
+    region = Column(String(30))
+    metric = Column(String(100))             # 지표명
+    value_text = Column(String(60))          # 표시값 (예: "1,130대")
+    year = Column(String(20), nullable=True)
+    note = Column(String(60), nullable=True) # 부가(예: "부산 내 3위")
+    source = Column(String(255), nullable=True)
+    sort_order = Column(Integer, default=0)
+
+
+class PublicLayer(Base):
+    """공공데이터 리스트(지도 레이어) 메타 + 건수."""
+    __tablename__ = "public_layers"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    key = Column(String(30), unique=True, index=True)
+    label = Column(String(40))
+    region = Column(String(30), nullable=True)
+    count = Column(Integer, nullable=True)   # null = 데이터 출처 미확정
+    source = Column(String(255), nullable=True)
+    sort_order = Column(Integer, default=0)

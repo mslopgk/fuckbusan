@@ -2,13 +2,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import './SurveyChat.css';
 import MobileBottomNav from './MobileBottomNav';
 import UserPCLayout from './UserPCLayout';
-import { API_URL } from '../utils/api';
+import { API_URL, authHeaders } from '../utils/api';
 
 /* AI 대화형 설문 (구글폼 → 챗봇 형태 리뉴얼)
    Figma: TCuOzEqNhoLKjhF0reBDks  모바일 215:13887 / PC 215:1980
-   백엔드: /api/survey-chat (start/message) — shain1912/test4 인터뷰 엔진 이식
-   - 서버가 응답하는 AI 메시지 + suggested_replies(보기 칩)로 진행
-   - 서버 연결 실패 시 로컬 스크립트 폴백 (오프라인 데모용)
+   백엔드: /api/survey-chat (start/message) — shain1912/test4 인터뷰 엔진 이식 (OpenAI 전용)
+   - 서버가 응답하는 AI 메시지 + suggested_replies(보기 칩)로 진행 (로컬 목업 없음)
    - PC는 Figma에 입력바가 없어 자체 디자인으로 추가 */
 
 const INTRO = [
@@ -17,50 +16,50 @@ const INTRO = [
     { key: 'diagnose', emoji: '🏠', label: '우리동네 진단하기' },
 ];
 
-/* 서버 미응답 시 로컬 폴백 스크립트 */
-const FALLBACK = [
-    { q: '생활 속에서 느낀 불편이나 개선이 필요한 공간에 대해 이야기해주세요.', chips: [] },
-    { q: '불편을 느낀 장소를 알려주실 수 있을까요?', chips: [] },
-    { q: '주로 어떤 점 때문에 불편하다고 느끼시나요?', chips: ['안전', '접근성', '길찾기', '쾌적성/미관', '기타'] },
-    { q: '이 문제가 얼마나 심각하다고 느끼시나요?', chips: ['별로', '조금', '보통', '심각', '매우 심각'] },
-];
-const FALLBACK_CLOSING = '소중한 의견 나눠주셔서 감사합니다. 말씀해주신 내용은 우리 동네 개선에 큰 도움이 됩니다.';
-
 export default function SurveyChat({ onNavigate, isPC = false }) {
     const [messages, setMessages] = useState([]); // { role:'ai'|'user', text }
     const [suggestions, setSuggestions] = useState([]);
+    // 현재 질문이 기대하는 입력 위젯: { type:'text'|'single_choice'|'scale', choices:[], scale:{min,max,labels} }
+    const [activeInput, setActiveInput] = useState({ type: 'text', choices: [], scale: null });
     const [complete, setComplete] = useState(false);
     const [draft, setDraft] = useState('');
     const [busy, setBusy] = useState(false);
-    const sessionRef = useRef(null);   // 서버 세션 id (null이면 폴백)
-    const fbStep = useRef(0);          // 폴백 진행 인덱스
+    const sessionRef = useRef(null);   // 서버 세션 id
     const scrollRef = useRef(null);
+    const startedRef = useRef(false);  // start() 1회만 실행 (StrictMode 이중 마운트로 인사말 중복 방지)
 
     const nav = (target) => onNavigate && onNavigate(target);
 
-    const pushAI = (text, chips = []) => {
+    // AI 턴 반영: 메시지 + 입력 위젯(유형/보기/척도) + 텍스트형 빠른보기
+    const pushAI = (text, payload = {}) => {
         setMessages((m) => [...m, { role: 'ai', text }]);
-        setSuggestions(chips || []);
+        const type = payload.input_type || 'text';
+        setActiveInput({ type, choices: payload.choices || [], scale: payload.scale || null });
+        setSuggestions(type === 'text' ? (payload.suggested_replies || []) : []);
     };
 
     // 세션 시작
     const start = useCallback(async () => {
         setMessages([]); setSuggestions([]); setComplete(false); setDraft('');
-        sessionRef.current = null; fbStep.current = 0;
+        setActiveInput({ type: 'text', choices: [], scale: null });
+        sessionRef.current = null;
         try {
             const res = await fetch(`${API_URL}/api/survey-chat/start`, { method: 'POST' });
             if (!res.ok) throw new Error('start failed');
             const d = await res.json();
             sessionRef.current = d.session_id;
-            pushAI(d.greeting, d.suggested_replies);
+            pushAI(d.greeting, d);
         } catch {
-            // 폴백: 로컬 스크립트
             sessionRef.current = null;
-            pushAI(FALLBACK[0].q, FALLBACK[0].chips);
+            pushAI('지금은 AI 설문을 시작할 수 없습니다. 잠시 후 다시 시도해주세요.');
         }
     }, []);
 
-    useEffect(() => { start(); }, [start]);
+    useEffect(() => {
+        if (startedRef.current) return;   // 중복 시작 방지 (StrictMode/리렌더)
+        startedRef.current = true;
+        start();
+    }, [start]);
 
     // 새 메시지마다 맨 아래로 스크롤
     useEffect(() => {
@@ -68,40 +67,31 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
         if (el) el.scrollTop = el.scrollHeight;
     }, [messages, suggestions, complete]);
 
-    const sendFallback = (text) => {
-        const i = fbStep.current;
-        const next = i + 1;
-        if (next < FALLBACK.length) {
-            fbStep.current = next;
-            pushAI(FALLBACK[next].q, FALLBACK[next].chips);
-        } else {
-            fbStep.current = next;
-            pushAI(FALLBACK_CLOSING, []);
-            setComplete(true);
-        }
-    };
-
     const send = async (text) => {
         const t = (text ?? draft).trim();
         if (!t || busy || complete) return;
         setMessages((m) => [...m, { role: 'user', text: t }]);
         setSuggestions([]);
+        setActiveInput({ type: 'text', choices: [], scale: null });
         setDraft('');
 
-        if (!sessionRef.current) { sendFallback(t); return; }
+        if (!sessionRef.current) {
+            pushAI('지금은 AI 설문을 사용할 수 없습니다. 잠시 후 다시 시도해주세요.');
+            return;
+        }
 
         setBusy(true);
         try {
             const res = await fetch(`${API_URL}/api/survey-chat/message`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify({ session_id: sessionRef.current, message: t }),
             });
             if (!res.ok) throw new Error('message failed');
             const d = await res.json();
-            pushAI(d.response, d.suggested_replies);
+            pushAI(d.response, d);
             if (d.is_complete) setComplete(true);
         } catch {
-            pushAI('일시적으로 응답을 받지 못했습니다. 잠시 후 다시 시도해주세요.', []);
+            pushAI('일시적으로 응답을 받지 못했습니다. 잠시 후 다시 시도해주세요.');
         } finally { setBusy(false); }
     };
 
@@ -109,11 +99,6 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
         if (key === 'diagnose') { nav(isPC ? 'pcDiagnosisMap' : 'mDiagnosisList'); return; }
         const chip = INTRO.find((c) => c.key === key);
         send(chip ? chip.label : '');
-    };
-
-    const onFinal = (kind) => {
-        if (kind === 'report') nav(isPC ? 'pcReportMap' : 'mReportMap');
-        else nav(isPC ? 'pcProposeMap' : 'mProposalMap');
     };
 
     const body = (
@@ -142,23 +127,60 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                         </div>
                     )}
 
-                    {/* AI가 제시한 보기 칩 */}
-                    {!complete && !busy && suggestions.length > 0 && (
-                        <div className="surveychat-options">
-                            {suggestions.map((opt) => (
-                                <button key={opt} type="button" className="surveychat-opt" onClick={() => send(opt)}>{opt}</button>
-                            ))}
-                        </div>
+                    {/* 질문 유형별 입력 위젯 */}
+                    {!complete && !busy && (
+                        <>
+                            {/* 척도(리커트) — 진단 만족도 바와 동일 패턴 */}
+                            {activeInput.type === 'scale' && activeInput.scale?.labels?.length > 0 && (
+                                <div className="surveychat-scale" role="radiogroup" aria-label="척도 선택">
+                                    <span className="surveychat-scale-track" />
+                                    <div className="surveychat-scale-dots">
+                                        {activeInput.scale.labels.map((lbl, i) => (
+                                            <button
+                                                key={lbl + i}
+                                                type="button"
+                                                role="radio"
+                                                aria-checked="false"
+                                                aria-label={lbl}
+                                                className="surveychat-scale-dot"
+                                                onClick={() => send(lbl)}
+                                            >
+                                                <span className="surveychat-scale-bullet" />
+                                                <span className="surveychat-scale-label">{lbl}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* 단일 선택 — 옵션 칩 */}
+                            {activeInput.type === 'single_choice' && activeInput.choices.length > 0 && (
+                                <div className="surveychat-options">
+                                    {activeInput.choices.map((opt) => (
+                                        <button key={opt} type="button" className="surveychat-opt" onClick={() => send(opt)}>{opt}</button>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* 자유서술 — 빠른 예시 보기(선택) */}
+                            {activeInput.type === 'text' && suggestions.length > 0 && (
+                                <div className="surveychat-options">
+                                    {suggestions.map((opt) => (
+                                        <button key={opt} type="button" className="surveychat-opt" onClick={() => send(opt)}>{opt}</button>
+                                    ))}
+                                </div>
+                            )}
+                        </>
                     )}
 
-                    {/* 종료: 제보/제안 선택 + 안내 */}
+                    {/* 종료: 새 설문 시작 / 홈으로 */}
                     {complete && (
                         <>
                             <div className="surveychat-final">
-                                <button type="button" className="surveychat-cta fill" onClick={() => onFinal('report')}>제보하기</button>
-                                <button type="button" className="surveychat-cta ghost" onClick={() => onFinal('propose')}>제안하기</button>
+                                <button type="button" className="surveychat-cta fill" onClick={() => start()}>새로운 설문 시작하기</button>
+                                <button type="button" className="surveychat-cta ghost" onClick={() => nav('home')}>홈으로</button>
                             </div>
-                            <p className="surveychat-note">추가 의견이 있으신 경우{'\n'}자유롭게 남겨주시기 바랍니다.</p>
+                            <p className="surveychat-note">소중한 의견 감사합니다.{'\n'}우리 동네 개선에 큰 도움이 됩니다.</p>
                         </>
                     )}
                 </div>
@@ -171,7 +193,10 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                         placeholder={complete ? '설문이 완료되었습니다' : '질문하기'}
                         value={draft}
                         onChange={(e) => setDraft(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
+                        onKeyDown={(e) => {
+                            // 한글 IME 조합 중 Enter는 무시 (조합 미완 글자가 입력창에 남는 버그 방지)
+                            if (e.key === 'Enter' && !e.nativeEvent.isComposing) send();
+                        }}
                         disabled={complete}
                     />
                     <button

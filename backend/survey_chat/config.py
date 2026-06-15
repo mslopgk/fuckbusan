@@ -9,20 +9,21 @@ AI 대화형 설문(인터뷰) 토픽 설정.
 LANGUAGE = "ko"
 
 # 반드시 수집해야 할 필드 (대화 흐름에 따라 순서는 유연)
+# type 미지정 = 자유서술(text). type=category → 단일선택, type=scale → 리커트 척도.
 REQUIRED_FIELDS = [
     {
         "id": "issue_text",
         "name": {"ko": "불편 사항", "en": "Issue"},
         "description": {
-            "ko": "생활 속에서 겪은 구체적인 불편 경험",
-            "en": "Specific uncomfortable experience",
+            "ko": "생활 속에서 겪은 구체적인 불편 경험 (언제·어디서·무슨 일이 있었는지 구체적으로)",
+            "en": "Specific uncomfortable experience (when, where, what happened)",
         },
     },
     {
         "id": "location_bucket",
         "name": {"ko": "위치", "en": "Location"},
         "description": {
-            "ko": "문제가 발생한 대략적인 위치 (정확한 주소 X)",
+            "ko": "문제가 발생한 대략적인 위치 (정확한 주소 X, 예: '수영구 광안리 해변 입구')",
             "en": "Approximate location of the issue",
         },
     },
@@ -42,7 +43,7 @@ REQUIRED_FIELDS = [
     {
         "id": "severity_score",
         "name": {"ko": "심각도", "en": "Severity"},
-        "description": {"ko": "문제의 심각성 (0-4 척도)", "en": "Severity (0-4 scale)"},
+        "description": {"ko": "문제가 일상에 주는 불편의 정도", "en": "Severity"},
         "type": "scale",
         "scale": {
             "min": 0,
@@ -51,6 +52,38 @@ REQUIRED_FIELDS = [
                 "ko": ["별로", "조금", "보통", "심각", "매우 심각"],
                 "en": ["Not bad", "A little", "Moderate", "Serious", "Very serious"],
             },
+        },
+    },
+    {
+        "id": "frequency",
+        "name": {"ko": "발생 빈도", "en": "Frequency"},
+        "description": {"ko": "이 불편을 얼마나 자주 겪는지", "en": "How often it occurs"},
+        "type": "category",
+        "options": [
+            {"id": "daily", "label": {"ko": "거의 매일", "en": "Almost daily"}},
+            {"id": "weekly", "label": {"ko": "주 몇 번", "en": "A few times a week"}},
+            {"id": "sometimes", "label": {"ko": "가끔", "en": "Sometimes"}},
+            {"id": "rare", "label": {"ko": "드물게", "en": "Rarely"}},
+        ],
+    },
+    {
+        "id": "affected_target",
+        "name": {"ko": "주 영향 대상", "en": "Who is affected"},
+        "description": {"ko": "이 문제로 주로 불편을 겪는 사람", "en": "Who is mainly affected"},
+        "type": "category",
+        "options": [
+            {"id": "self", "label": {"ko": "나 자신", "en": "Myself"}},
+            {"id": "children", "label": {"ko": "아이·학생", "en": "Children/Students"}},
+            {"id": "vulnerable", "label": {"ko": "노약자·장애인", "en": "Elderly/Disabled"}},
+            {"id": "residents", "label": {"ko": "지역주민 전체", "en": "All residents"}},
+        ],
+    },
+    {
+        "id": "desired_improvement",
+        "name": {"ko": "바라는 개선", "en": "Desired improvement"},
+        "description": {
+            "ko": "어떻게 바뀌면 좋겠는지 (구체적인 바람·아이디어)",
+            "en": "What change the citizen hopes for",
         },
     },
 ]
@@ -70,12 +103,16 @@ SYSTEM_PROMPT = {
         "ko": (
             "## 인터뷰 스타일\n"
             "- 자연스러운 대화처럼 진행하고, 응답자의 말을 경청하며 따라가세요.\n"
-            "- 모호하거나 흥미로운 답변에는 후속 질문(probing)을 하세요.\n"
+            "- **깊이 있게 캐물으세요.** 표면적 답변에 그치지 말고, 하나의 이슈에 대해 최소 2~3회 후속 질문(probing)으로 "
+            "구체적 상황(언제/어디서/어떻게), 실제 겪은 사례, 그로 인한 영향까지 끌어내세요.\n"
+            "- '왜 그렇게 느끼셨나요?', '구체적으로 어떤 상황이었나요?', '그때 어떻게 하셨나요?' 같은 개방형 후속 질문을 활용하세요.\n"
+            "- issue_text 는 한 문장이 아니라 맥락이 담긴 풍부한 서술이 되도록 충분히 대화한 뒤 추출하세요.\n"
             "- 질문 순서에 얽매이지 말고 대화 흐름에 맞춰 유연하게 진행하세요.\n"
-            "- 한 번에 하나의 질문만 하고, 답변은 2~3문장 이내로 간결하게 하세요.\n"
+            "- 한 번에 하나의 질문만 하고, 답변(response)은 2~3문장 이내로 간결하게 하세요.\n"
             "## 중요 원칙\n"
             "- 유도 질문 금지 (예: '위험하셨죠?' → '어떠셨어요?')\n"
-            "- 응답자의 표현을 그대로 반영하고, 판단하지 말고 공감하세요."
+            "- 응답자의 표현을 그대로 반영하고, 판단하지 말고 공감하세요.\n"
+            "- 충분히 깊이 들어가기 전에 성급히 다음 필드로 넘어가거나 인터뷰를 끝내지 마세요."
         ),
         "en": (
             "## Interview Style\n"
@@ -90,12 +127,21 @@ SYSTEM_PROMPT = {
         "ko": (
             "## 정보 추출 규칙\n"
             "- 응답에서 자연스럽게 언급된 정보를 info_update 로 추출하세요.\n"
-            "- 카테고리는 키워드로 자동 분류하되 애매하면 직접 물어보세요.\n"
+            "- 카테고리/빈도/영향대상은 키워드로 자동 분류하되 애매하면 직접 물어보세요.\n"
             "- 심각도(0-4)는 감정 표현/맥락에서 추론하거나 자연스럽게 물어보세요.\n"
             "- 추출 근거가 된 사용자 문장을 evidence_span 에 담으세요.\n"
-            "- suggested_replies 에는 사용자가 바로 누를 수 있는 짧은 보기(2~5개)를 제시하세요. "
-            "특히 심각도/카테고리 질문에는 척도/옵션 라벨을 보기로 제시하세요.\n"
-            "- 모든 필수 정보가 수집되면 interview_finished=True 로 마무리하세요."
+            "- 모든 필수 정보가 충분히(깊이 있게) 수집되면 interview_finished=True 로 마무리하세요.\n"
+            "\n"
+            "## 질문 유형(input_type) — 프론트엔드 위젯 결정\n"
+            "지금 던지는 질문이 어떤 답을 기대하는지에 맞춰 input_type 을 반드시 정확히 설정하세요. "
+            "프론트엔드는 이 값으로 입력 위젯을 바꿔 보여줍니다.\n"
+            "- 심각도/만족도 같은 정도(degree)를 묻는 질문 → input_type='scale', scale={min,max,labels} 에 척도 라벨을 채우세요 "
+            "(심각도는 min=0,max=4, labels=[\"별로\",\"조금\",\"보통\",\"심각\",\"매우 심각\"]).\n"
+            "- 카테고리/발생 빈도/영향 대상처럼 정해진 보기 중 하나를 고르는 질문 → input_type='single_choice', "
+            "choices 에 해당 옵션 라벨을 채우세요. (예 빈도: [\"거의 매일\",\"주 몇 번\",\"가끔\",\"드물게\"])\n"
+            "- 그 외 자유 서술형 질문 → input_type='text'. 이때도 도움이 되면 suggested_replies 로 짧은 예시 보기를 줄 수 있습니다.\n"
+            "- scale/single_choice 일 때는 choices 또는 scale 을 반드시 채우고, 그 값을 suggested_replies 와 중복으로 넣지 마세요.\n"
+            "- text 일 때 scale=null, choices=[] 로 두세요."
         ),
         "en": (
             "## Extraction Rules\n"

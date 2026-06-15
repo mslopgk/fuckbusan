@@ -56,17 +56,25 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
             })
             .catch(() => {});
 
-        // 나의 진단 건수
-        fetchWithLogout(`${API_URL}/checklist/my`, {
-            headers: { Authorization: `Bearer ${token}` },
-        })
-            .then(r => r.ok ? r.json() : [])
-            .then(data => {
-                if (Array.isArray(data)) {
-                    setCounts(prev => ({ ...prev, diagnosis: data.length }));
-                }
-            })
-            .catch(() => {});
+        // 4개 도메인 카운트 — 각 전용 엔드포인트에서 집계
+        // 제보=/api/reports/mine, 제안=/api/reports/my-proposals, 진단=/checklist/my, 설문=/api/surveys/my-participations
+        const lenOf = (d) => (Array.isArray(d) ? d.length : 0);
+        const getJson = (path) =>
+            fetchWithLogout(`${API_URL}${path}`, { headers: { Authorization: `Bearer ${token}` } })
+                .then(r => (r.ok ? r.json() : null)).catch(() => null);
+        Promise.all([
+            getJson('/api/reports/mine'),
+            getJson('/api/reports/my-proposals'),
+            getJson('/checklist/my'),
+            getJson('/api/surveys/my-participations'),
+        ]).then(([reports, proposals, diagnoses, surveys]) => {
+            setCounts({
+                report: lenOf(reports),
+                proposal: lenOf(proposals),
+                diagnosis: lenOf(diagnoses),
+                survey: lenOf(surveys),
+            });
+        });
     }, []);
 
     // PC 분기 — 절대 건드리지 말 것

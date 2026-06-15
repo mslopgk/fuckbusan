@@ -32,6 +32,7 @@ const MENU_TREE = [
         label: '설문관리',
         children: [
             { key: 'surveyList', label: '설문목록', view: 'surveyManagement' },
+            { key: 'surveyChatAnalytics', label: 'AI설문 분석', view: 'surveyChatAnalytics' },
         ],
     },
     {
@@ -39,6 +40,13 @@ const MENU_TREE = [
         label: '공공데이터관리',
         children: [
             { key: 'publicDataList', label: '공공데이터목록', view: 'comingSoon' },
+        ],
+    },
+    {
+        key: 'aiCitizen',
+        label: 'AI 가상시민',
+        children: [
+            { key: 'rag', label: 'RAG 관리', view: 'adminRAG' },
         ],
     },
     {
@@ -74,10 +82,12 @@ const VIEW_TO_PATH = {
     proposalManagement: ['reportSuggest', 'proposals'],
     proposalEdit: ['reportSuggest', 'proposals'],
     surveyManagement: ['survey', 'surveyList'],
+    surveyChatAnalytics: ['survey', 'surveyChatAnalytics'],
     surveyEditor: ['survey', 'surveyList'],
     surveyCreated: ['survey', 'surveyList'],
     surveyResults: ['survey', 'surveyList'],
     adminProposalDetail: ['reportSuggest', 'proposals'],
+    adminRAG: ['aiCitizen', 'rag'],
 };
 
 export default function AdminSidebar({ onNavigate, currentView }) {

@@ -79,7 +79,7 @@ const BIG_TO_ICON = {
     '교육': 'book', '산업·일자리': 'briefcase', '문화·여가': 'heart', '보건·복지': 'plus',
 };
 
-const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onMapClick, selectedPoint = null, accentColor = '#E6235A', showRegions = true, mapType = 'roadmap', initialCenter = null, initialLevel = null, pinVariant = 'solid', showLocateBtn = false, selectedDistrict = null }, ref) {
+const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onMapClick, onRegionClick, selectedPoint = null, accentColor = '#E6235A', showRegions = true, mapType = 'roadmap', initialCenter = null, initialLevel = null, pinVariant = 'solid', showLocateBtn = false, selectedDistrict = null }, ref) {
     useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services'] });
     const [geo, setGeo] = useState(null);
     const [internalShowRegions, setInternalShowRegions] = useState(showRegions);
@@ -226,6 +226,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                         fillColor={isSelected ? accentColor : "#fff"}
                         fillOpacity={isSelected ? 0.12 : 0.10}
                         zIndex={isSelected ? 1 : 0}
+                        onClick={onRegionClick ? () => onRegionClick(p.name) : undefined}
                     />
                 ));
             })}

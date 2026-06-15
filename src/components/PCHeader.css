@@ -307,10 +307,7 @@
     }
 
     .pc-rp-chooser-card:hover {
-        background: #fde7ee;
-        border-color: #E6235A;
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(230,35,90,0.15);
     }
 
     .pc-rp-chooser-icon {
@@ -318,11 +315,27 @@
         width: 56px;
         height: 56px;
         border-radius: 50%;
-        background: #fde7ee;
-        color: #E6235A;
         align-items: center;
         justify-content: center;
         margin-bottom: 6px;
+    }
+
+    /* 제보하기 = 보라 (WDC) */
+    .pc-rp-chooser-card.report { color: #542aa3; }
+    .pc-rp-chooser-card.report .pc-rp-chooser-icon { background: #ece4f7; color: #542aa3; }
+    .pc-rp-chooser-card.report:hover {
+        background: #f3eefb;
+        border-color: #542aa3;
+        box-shadow: 0 6px 16px rgba(84,42,163,0.15);
+    }
+
+    /* 제안하기 = 핑크 (WDC) */
+    .pc-rp-chooser-card.propose { color: #f74e7e; }
+    .pc-rp-chooser-card.propose .pc-rp-chooser-icon { background: #fde7ee; color: #f74e7e; }
+    .pc-rp-chooser-card.propose:hover {
+        background: #fde7ee;
+        border-color: #f74e7e;
+        box-shadow: 0 6px 16px rgba(247,78,126,0.15);
     }
 
     .pc-rp-chooser-card strong {

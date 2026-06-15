@@ -30,11 +30,13 @@
     "framer-motion": "^12.23.26",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.561.0",
+    "plotly.js-gl3d-dist-min": "^3.6.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-kakao-maps-sdk": "^1.2.1",
     "react-leaflet": "^5.0.0",
     "react-leaflet-cluster": "^4.0.0",
+    "react-plotly.js": "^3.0.0",
     "react-router-dom": "^7.10.1",
     "recharts": "^3.5.1",
     "xlsx": "^0.18.5"

@@ -13,7 +13,6 @@ import './PCProposeMap.css';
 export default function PCProposeMap({ onNavigate }) {
     const [district, setDistrict] = useState('');
     const [livingCats, setLivingCats] = useState(() => new Set(['all']));
-    const [kind, setKind] = useState(null);
     const [sort, setSort] = useState('latest');
     const [policyItem, setPolicyItem] = useState(null);
     const [policyDismissed, setPolicyDismissed] = useState(true);
@@ -22,23 +21,8 @@ export default function PCProposeMap({ onNavigate }) {
 
     const { reports, proposals } = useReportsData();
 
+    // 제안 전용 지도 — 제안(new_proposals)만 표시. 제보는 pcReportMap에서.
     const ITEMS = useMemo(() => {
-        const reportItems = reports.map((r) => ({
-            id: `r-${r.id}`,
-            rawId: r.id,
-            kind: '제보',
-            title: r.title,
-            subtitle: r.author || '익명',
-            category: r.category,
-            categoryKey: CAT_TO_KEY[r.category] || 'safety',
-            region: r.region,
-            date: r.date,
-            views: r.views || 0,
-            votes: r.likes || 0,
-            image: r.image || null,
-            lat: r.lat,
-            lng: r.lng,
-        }));
         const proposalItems = proposals.map((p) => {
             let lat, lng;
             if (p.lat && p.lng) {
@@ -67,8 +51,8 @@ export default function PCProposeMap({ onNavigate }) {
                 lng,
             };
         });
-        return [...reportItems, ...proposalItems];
-    }, [reports, proposals]);
+        return proposalItems;
+    }, [proposals]);
 
     // 정책정보 카드: 데이터 들어오면 첫 항목으로 시드. X로 닫은 뒤(policyDismissed=true)는 다시 안 열림.
     useEffect(() => {
@@ -93,16 +77,15 @@ export default function PCProposeMap({ onNavigate }) {
         let arr = ITEMS;
         if (district) arr = arr.filter((it) => it.region === district);
         if (!livingCats.has('all')) arr = arr.filter((it) => livingCats.has(it.categoryKey));
-        if (kind) arr = arr.filter((it) => it.kind === kind);
         if (sort === 'views') arr = [...arr].sort((a, b) => b.views - a.views);
         else if (sort === 'votes') arr = [...arr].sort((a, b) => b.votes - a.votes);
         else arr = [...arr].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
         return arr;
-    }, [ITEMS, district, livingCats, kind, sort]);
+    }, [ITEMS, district, livingCats, sort]);
 
     const counts = {
-        report: ITEMS.filter((i) => i.kind === '제보').length,
-        propose: ITEMS.filter((i) => i.kind === '제안').length,
+        report: reports.length,
+        propose: proposals.length,
     };
 
     const pins = filtered.filter((it) => it.lat && it.lng).map((it) => ({ ...it, color: '#E6235A' }));
@@ -143,15 +126,15 @@ export default function PCProposeMap({ onNavigate }) {
                         <div className="pc-map3-section-label">유형</div>
                         <div className="pc-map3-kind-row">
                             <button
-                                className={`pc-map3-kind-card ${kind === '제보' ? 'active' : ''}`}
-                                onClick={() => setKind(kind === '제보' ? null : '제보')}
+                                className="pc-map3-kind-card"
+                                onClick={() => onNavigate && onNavigate('pcReportMap')}
                             >
                                 <div>제보</div>
                                 <strong>{counts.report}건</strong>
                             </button>
                             <button
-                                className={`pc-map3-kind-card ${kind === '제안' ? 'active' : ''}`}
-                                onClick={() => setKind(kind === '제안' ? null : '제안')}
+                                className="pc-map3-kind-card active"
+                                onClick={() => { }}
                             >
                                 <div>제안</div>
                                 <strong>{counts.propose}건</strong>
@@ -207,7 +190,7 @@ export default function PCProposeMap({ onNavigate }) {
                             <div className="pc-map3-policy-actions">
                                 <button
                                     className="pc-map3-policy-cta"
-                                    onClick={() => onNavigate && onNavigate(policyItem.kind === '제안' ? 'pcProposeDetail' : 'pcReportDetail', { ...policyItem, id: policyItem.rawId })}
+                                    onClick={() => onNavigate && onNavigate('pcProposeDetail', { ...policyItem, id: policyItem.rawId })}
                                 >
                                     자세히 보기
                                 </button>
@@ -244,7 +227,7 @@ export default function PCProposeMap({ onNavigate }) {
                         {filtered.map((it) => (
                             <li
                                 key={it.id}
-                                onClick={() => onNavigate && onNavigate(it.kind === '제안' ? 'pcProposeDetail' : 'pcReportDetail', { ...it, id: it.rawId })}
+                                onClick={() => onNavigate && onNavigate('pcProposeDetail', { ...it, id: it.rawId })}
                             >
                                 <div className="pc-map3-list-info">
                                     <div className="pc-map3-list-tags">

@@ -726,6 +726,8 @@ CREATE TABLE `users` (
   `created_at` datetime DEFAULT NULL,
   `district_code` varchar(50) DEFAULT NULL,
   `is_approved` tinyint(1) NOT NULL DEFAULT 1,
+  `last_login` datetime DEFAULT NULL,
+  `prev_login` datetime DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `ix_users_ID` (`ID`),
   KEY `ix_users_user_id` (`user_id`)

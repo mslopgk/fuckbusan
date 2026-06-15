@@ -173,6 +173,7 @@ class ReportRead(BaseModel):
     lat: Optional[float] = None
     lng: Optional[float] = None
     image: Optional[str] = None  # frontend uses `image`
+    images: List[str] = []  # 다중 이미지 (files 기반)
     status: Optional[str] = None
     progress_step: Optional[int] = None
     views: Optional[int] = 0

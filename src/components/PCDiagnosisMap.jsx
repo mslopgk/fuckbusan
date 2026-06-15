@@ -389,7 +389,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                     )}
 
                     {panel === 'form' && (
-                        <PCDiagPanelForm onCancel={goList} onSubmit={goDone} location={selectedLocation} />
+                        <PCDiagPanelForm onCancel={goList} onSubmit={goDone} location={selectedLocation} mode={target === 'expert' ? 'expert' : 'citizen'} />
                     )}
 
                     {panel === 'done' && (

@@ -26,10 +26,31 @@ _BOT_SCHEMA = {
         "additionalProperties": False,
         "properties": {
             "response": {"type": "string", "description": "사용자에게 보낼 자연어 답변"},
+            "input_type": {
+                "type": "string",
+                "enum": ["text", "single_choice", "scale"],
+                "description": "지금 던진 질문이 기대하는 답변 입력 위젯 유형",
+            },
+            "choices": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "input_type=single_choice 일 때 보기 라벨들 (그 외엔 빈 배열)",
+            },
+            "scale": {
+                "type": ["object", "null"],
+                "additionalProperties": False,
+                "properties": {
+                    "min": {"type": "integer"},
+                    "max": {"type": "integer"},
+                    "labels": {"type": "array", "items": {"type": "string"}},
+                },
+                "required": ["min", "max", "labels"],
+                "description": "input_type=scale 일 때 척도 정의 (그 외엔 null)",
+            },
             "suggested_replies": {
                 "type": "array",
                 "items": {"type": "string"},
-                "description": "바로 누를 수 있는 짧은 보기(선택)",
+                "description": "input_type=text 에서 바로 누를 수 있는 짧은 예시 보기(선택)",
             },
             "info_update": {
                 "type": ["object", "null"],
@@ -39,6 +60,9 @@ _BOT_SCHEMA = {
                     "severity_score": {"type": ["integer", "null"]},
                     "primary_category": {"type": ["string", "null"]},
                     "location_bucket": {"type": ["string", "null"]},
+                    "frequency": {"type": ["string", "null"]},
+                    "affected_target": {"type": ["string", "null"]},
+                    "desired_improvement": {"type": ["string", "null"]},
                     "evidence_span": {"type": ["string", "null"]},
                 },
                 "required": [
@@ -46,6 +70,9 @@ _BOT_SCHEMA = {
                     "severity_score",
                     "primary_category",
                     "location_bucket",
+                    "frequency",
+                    "affected_target",
+                    "desired_improvement",
                     "evidence_span",
                 ],
             },
@@ -56,6 +83,9 @@ _BOT_SCHEMA = {
         },
         "required": [
             "response",
+            "input_type",
+            "choices",
+            "scale",
             "suggested_replies",
             "info_update",
             "current_issue_complete",
@@ -128,16 +158,10 @@ class SurveyChatEngine:
         self._sessions: Dict[str, Dict[str, Any]] = {}
 
         api_key = os.getenv("OPENAI_API_KEY")
-        if api_key:
-            try:
-                from openai import AsyncOpenAI
-                self.client = AsyncOpenAI(api_key=api_key)
-            except Exception as e:  # pragma: no cover
-                print(f"[survey_chat] OpenAI init 실패, 폴백 사용: {e}")
-                self.client = None
-        else:
-            print("[survey_chat] OPENAI_API_KEY 없음 → 결정론적 폴백 엔진 사용")
-            self.client = None
+        if not api_key:
+            raise RuntimeError("OPENAI_API_KEY 가 설정되지 않았습니다. AI 설문은 백엔드(OpenAI) 전용으로 동작합니다.")
+        from openai import AsyncOpenAI
+        self.client = AsyncOpenAI(api_key=api_key)
 
     # --- 세션 ---
     def start(self) -> Dict[str, Any]:
@@ -153,6 +177,9 @@ class SurveyChatEngine:
             "session_id": sid,
             "greeting": greeting,
             "topic_name": C.loc(C.TOPIC_NAME, self.lang),
+            "input_type": "text",
+            "choices": [],
+            "scale": None,
             "suggested_replies": [],
         }
 
@@ -166,10 +193,7 @@ class SurveyChatEngine:
 
         sess["messages"].append({"role": "user", "content": user_text})
 
-        if self.client:
-            bot = await self._llm_turn(sess)
-        else:
-            bot = self._fallback_turn(sess, user_text)
+        bot = await self._llm_turn(sess)
 
         # info 갱신
         info = sess["info"]
@@ -192,106 +216,63 @@ class SurveyChatEngine:
         sess["messages"].append({"role": "assistant", "content": bot["response"]})
         sess["complete"] = is_complete
 
+        # 완료 시에는 입력 위젯을 노출하지 않음(text)
+        input_type = "text" if is_complete else (bot.get("input_type") or "text")
+        scale = bot.get("scale") if input_type == "scale" else None
+        choices = bot.get("choices", []) if input_type == "single_choice" else []
         return {
             "response": bot["response"],
-            "suggested_replies": bot.get("suggested_replies", []),
+            "input_type": input_type,
+            "choices": choices,
+            "scale": scale,
+            "suggested_replies": [] if input_type != "text" else bot.get("suggested_replies", []),
             "info": _collected_snapshot(sess),
             "collected_issues": sess["collected_issues"],
             "is_complete": is_complete,
         }
 
-    # --- LLM 경로 ---
+    async def summarize_title(self, sess: Dict[str, Any]) -> str:
+        """완료된 인터뷰의 짧은 설문 제목을 생성한다(한국어, 18자 이내).
+        실패 시 첫 이슈 텍스트나 일반 제목으로 폴백."""
+        issues = sess.get("collected_issues", [])
+        fallback = None
+        if issues:
+            t = (issues[0].get("issue_text") or "").strip()
+            fallback = (t[:16] + "…") if len(t) > 16 else t
+        fallback = fallback or "AI 대화형 설문"
+        # 대화/이슈 요약 재료
+        issue_lines = "\n".join(
+            f"- {str(i.get('issue_text') or '')[:60]} (분류:{i.get('primary_category') or '-'}, 지역:{i.get('location_bucket') or '-'})"
+            for i in issues
+        ) or "(수집된 이슈 없음)"
+        try:
+            resp = await self.client.chat.completions.create(
+                model=os.getenv("SURVEY_CHAT_TITLE_MODEL", "gpt-4o-mini"),
+                temperature=0.3,
+                messages=[
+                    {"role": "system", "content": "너는 시민 설문 인터뷰의 제목을 짓는 도우미다. "
+                        "수집된 이슈를 바탕으로 핵심을 담은 한국어 설문 제목을 한 줄로 만들어라. "
+                        "18자 이내, 따옴표/마침표 없이 제목만 출력. 예: '수영구 야간 보행 안전 설문'."},
+                    {"role": "user", "content": f"수집된 이슈:\n{issue_lines}\n\n제목:"},
+                ],
+            )
+            title = (resp.choices[0].message.content or "").strip().strip('"\'' ).splitlines()[0]
+            title = title[:40]
+            return title or fallback
+        except Exception:
+            return fallback
+
+    # --- LLM 경로 (OpenAI 전용, 폴백 없음) ---
     async def _llm_turn(self, sess: Dict[str, Any]) -> Dict[str, Any]:
         system_prompt = _build_system_prompt(sess["info"], sess["collected_issues"], self.lang)
         messages = [{"role": "system", "content": system_prompt}] + sess["messages"]
-        try:
-            resp = await self.client.chat.completions.create(
-                model=self.model,
-                temperature=self.temperature,
-                messages=messages,
-                response_format={"type": "json_schema", "json_schema": _BOT_SCHEMA},
-            )
-            return json.loads(resp.choices[0].message.content)
-        except Exception as e:
-            print(f"[survey_chat] LLM 호출 실패, 폴백: {e}")
-            # 마지막 사용자 발화로 폴백
-            last_user = next((m["content"] for m in reversed(sess["messages"]) if m["role"] == "user"), "")
-            return self._fallback_turn(sess, last_user)
-
-    # --- 폴백 경로 (키 없거나 LLM 오류) ---
-    def _fallback_turn(self, sess: Dict[str, Any], user_text: str) -> Dict[str, Any]:
-        """결정론적 진행: 빈 필드를 순서대로 채운다."""
-        info = dict(sess["info"])
-        text = (user_text or "").strip()
-
-        # 종료 의사
-        if text in ("끝", "없어요", "이게 다예요", "그만", "종료"):
-            return _bot("", interview_finished=True,
-                        response=C.loc(C.CLOSING, self.lang))
-
-        # 직전 질문이 채우려던 필드를 user_text 로 채움
-        target = next((f for f in C.REQUIRED_FIELDS if info.get(f["id"]) is None), None)
-        update = {}
-        if target and text:
-            fid = target["id"]
-            if target.get("type") == "scale":
-                labels = target["scale"]["labels"][self.lang]
-                idx = labels.index(text) if text in labels else _digit(text)
-                update[fid] = idx if idx is not None else 2
-            elif target.get("type") == "category":
-                opts = {C.loc(o["label"], self.lang): o["id"] for o in target["options"]}
-                update[fid] = opts.get(text, text)
-            else:
-                update[fid] = text
-            info[fid] = update[fid]
-
-        # 다음 빈 필드 질문
-        nxt = next((f for f in C.REQUIRED_FIELDS if info.get(f["id"]) is None), None)
-        if nxt is None:
-            return _bot(update, current_issue_complete=True, interview_finished=True,
-                        response=C.loc(C.CLOSING, self.lang))
-
-        q, replies = _fallback_question(nxt, self.lang)
-        return _bot(update, response=q, suggested_replies=replies)
-
-
-def _digit(s: str) -> Optional[int]:
-    for ch in s:
-        if ch.isdigit():
-            return max(0, min(4, int(ch)))
-    return None
-
-
-def _fallback_question(field: dict, lang: str):
-    fid = field["id"]
-    if fid == "issue_text":
-        return "생활 속에서 느낀 불편이나 개선이 필요한 공간에 대해 이야기해주세요.", []
-    if fid == "location_bucket":
-        return "불편을 느낀 장소를 알려주실 수 있을까요? (대략적인 위치)", []
-    if fid == "primary_category":
-        opts = [C.loc(o["label"], lang) for o in field["options"]]
-        return "주로 어떤 점 때문에 불편하다고 느끼시나요?", opts
-    if fid == "severity_score":
-        labels = field["scale"]["labels"][lang]
-        return "이 문제가 얼마나 심각하다고 느끼시나요?", labels
-    return C.loc(field["description"], lang), []
-
-
-def _bot(update, response="", suggested_replies=None, current_issue_complete=False,
-         new_issue_started=False, interview_finished=False, early_exit=False):
-    info_update = None
-    if isinstance(update, dict) and update:
-        info_update = {k: update.get(k) for k in ["issue_text", "severity_score",
-                                                  "primary_category", "location_bucket", "evidence_span"]}
-    return {
-        "response": response,
-        "suggested_replies": suggested_replies or [],
-        "info_update": info_update,
-        "current_issue_complete": current_issue_complete,
-        "new_issue_started": new_issue_started,
-        "interview_finished": interview_finished,
-        "early_exit": early_exit,
-    }
+        resp = await self.client.chat.completions.create(
+            model=self.model,
+            temperature=self.temperature,
+            messages=messages,
+            response_format={"type": "json_schema", "json_schema": _BOT_SCHEMA},
+        )
+        return json.loads(resp.choices[0].message.content)
 
 
 def _collected_snapshot(sess: Dict[str, Any]) -> Dict[str, Any]:

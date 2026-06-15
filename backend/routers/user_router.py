@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.orm import Session
@@ -162,6 +163,10 @@ def login(user_input: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.ID == user_input.ID).first()
     if not user or not verify_password(user_input.PW, user.PW):
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 틀렸습니다.")
+    # 접속 시각 갱신: 직전 로그인(prev_login)을 "마지막 접속 일시"로 표시 → 이번 로그인 전 값 보존
+    user.prev_login = user.last_login or user.created_at
+    user.last_login = datetime.now()
+    db.commit()
     access_token = create_access_token(data={"sub": user.ID})
     return {"access_token": access_token, "token_type": "bearer", "user_name": user.name, "district_code": user.district_code}
 
@@ -176,7 +181,10 @@ def get_me(current_user: User = Depends(get_current_user)):
         "district_code": current_user.district_code,
         "birth_date": current_user.birth_date or "",
         "address": current_user.address or "",
-        "detailed_address": current_user.detailed_address or ""
+        "detailed_address": current_user.detailed_address or "",
+        # "마지막 접속 일시" = 직전 로그인(prev_login). 없으면 가입일(created_at) 폴백.
+        "last_login": (current_user.prev_login or current_user.last_login or current_user.created_at).isoformat()
+        if (current_user.prev_login or current_user.last_login or current_user.created_at) else None,
     }
 
 @router.put("/users/me", response_model=UserOut)

@@ -526,6 +526,19 @@
     display: block;
 }
 
+/* 다중 이미지 갤러리 — 2장 이상이면 2열 그리드, 각 셀 높이 축소 */
+.pcd-photos { margin-bottom: 18px; }
+.pcd-photos.multi {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.pcd-photos.multi .pcd-photo {
+    height: 240px;
+    margin-bottom: 0;
+}
+.pcd-photos.multi .pcd-photo:only-child { grid-column: 1 / -1; }
+
 .pcd-map-wrap {
     width: 100%;
     height: 208px;
@@ -801,6 +814,64 @@
     transition: background 0.15s;
 }
 .pcd-edit-btn:hover { background: #c61d4d; }
+
+/* 내 제보 상세 — 삭제/수정 버튼 쌍 (제보 테마: 보라 #542aa3). 본문 아래 중앙 배치 */
+.pcd-owner-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0 16px;
+}
+.pcd-owner-actions .pcd-edit-btn {
+    background: #fff;
+    color: #542aa3;
+    border: 1.5px solid #542aa3;
+    height: 32px;
+    padding: 0 18px;
+    border-radius: 16px;
+    font-size: 14px;
+}
+.pcd-owner-actions .pcd-edit-btn:hover { background: #f3eefb; }
+.pcd-delete-btn {
+    background: #ececed;
+    color: #3d3d3d;
+    border: none;
+    height: 32px;
+    padding: 0 18px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+    transition: background 0.15s;
+}
+.pcd-delete-btn:hover { background: #e0e0e1; }
+
+/* 삭제 확인 모달 */
+.pcd-confirm-modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 32px 22px;
+    width: 360px;
+    max-width: 90%;
+    box-shadow: 0 14px 50px rgba(0,0,0,0.25);
+    text-align: center;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+.pcd-confirm-title {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #1a1a1b;
+    letter-spacing: -0.02em;
+}
+.pcd-confirm-sub {
+    margin: 0 0 22px;
+    font-size: 13px;
+    color: #888;
+}
 
 /* 개선완료 결과 배너 */
 .pcd-result-banner {

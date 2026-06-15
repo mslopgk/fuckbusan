@@ -7,6 +7,7 @@ const SURVEY_VIEWS = ['pcSurveyList', 'pcSurveyDetail', 'pcSurveyConsent', 'pcSu
 const REPORT_SUGGEST_VIEWS = ['pcProposeMap', 'pcProposeForm', 'pcProposeDone', 'pcProposeDetail', 'pcReportMap', 'pcReportForm', 'pcReportDone', 'pcReportDetail', 'pcMyReportList', 'pcMyReportEdit', 'myProposals', 'myReportList'];
 const DIAGNOSIS_VIEWS = ['diagnosis', 'diagnosisStep1', 'bigCategory', 'checkList', 'satisfaction', 'review', 'checkDone', 'diagnosisResult', 'diagnosisList', 'diagnosisEdit', 'expertDiagnosisResult', 'pcDiagnosisMap', 'pcDiagnosisForm', 'pcDiagnosisDetail', 'pcDiagnosisDone'];
 const AI_CITIZEN_VIEWS = ['pcAICitizen'];
+const PUBLIC_DATA_VIEWS = ['pcPublicData'];
 
 const PCHeader = ({ currentView, onNavigate }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -52,6 +53,7 @@ const PCHeader = ({ currentView, onNavigate }) => {
         if (key === 'reportSuggest') return REPORT_SUGGEST_VIEWS.includes(currentView);
         if (key === 'diagnosis') return DIAGNOSIS_VIEWS.includes(currentView);
         if (key === 'aiCitizen') return AI_CITIZEN_VIEWS.includes(currentView);
+        if (key === 'publicData') return PUBLIC_DATA_VIEWS.includes(currentView);
         return false;
     };
 
@@ -90,9 +92,8 @@ const PCHeader = ({ currentView, onNavigate }) => {
                         AI가상시민
                     </button>
                     <button
-                        className="pc-nav-link disabled"
-                        style={disabledStyle}
-                        onClick={() => handleNav('comingSoon')}
+                        className={`pc-nav-link ${isActive('publicData') ? 'active' : ''}`}
+                        onClick={() => handleNav('pcPublicData')}
                     >
                         공공데이터
                     </button>
@@ -102,10 +103,9 @@ const PCHeader = ({ currentView, onNavigate }) => {
                 <div className="pc-header-actions">
                     {isLoggedIn ? (
                         <>
-                            <span className="pc-user-name" onClick={() => onNavigate('myPage')} style={{ cursor: 'pointer' }}>{userName}</span>
-                            <button className="pc-auth-link" onClick={() => onNavigate('myActivityHub')}>나의 활동</button>
+                            <span className="pc-user-name">{userName}님</span>
                             <span className="pc-auth-divider"></span>
-                            <button className="pc-auth-link" onClick={() => onNavigate('myPage')}>마이페이지</button>
+                            <button className="pc-auth-link" onClick={() => onNavigate('myActivityHub')}>마이페이지</button>
                             <span className="pc-auth-divider"></span>
                             <button className="pc-auth-link" onClick={handleLogout}>로그아웃</button>
                         </>
@@ -168,7 +168,7 @@ const PCHeader = ({ currentView, onNavigate }) => {
                         <div className="pc-rp-chooser-row">
                             <button
                                 type="button"
-                                className="pc-rp-chooser-card"
+                                className="pc-rp-chooser-card report"
                                 onClick={() => { setChooserOpen(false); onNavigate('pcReportMap'); }}
                             >
                                 <span className="pc-rp-chooser-icon" aria-hidden="true">
@@ -182,7 +182,7 @@ const PCHeader = ({ currentView, onNavigate }) => {
                             </button>
                             <button
                                 type="button"
-                                className="pc-rp-chooser-card"
+                                className="pc-rp-chooser-card propose"
                                 onClick={() => { setChooserOpen(false); onNavigate('pcProposeMap'); }}
                             >
                                 <span className="pc-rp-chooser-icon" aria-hidden="true">

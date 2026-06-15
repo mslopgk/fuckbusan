@@ -12,7 +12,6 @@ import './PCReportMap.css';
 export default function PCReportMap({ onNavigate }) {
     const [district, setDistrict] = useState('');
     const [livingCats, setLivingCats] = useState(() => new Set(['all']));
-    const [kind, setKind] = useState(null);
     const [sort, setSort] = useState('latest');
     const [policyItem, setPolicyItem] = useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -101,8 +100,8 @@ export default function PCReportMap({ onNavigate }) {
                         <div className="pc-map3-section-label">유형</div>
                         <div className="pc-map3-kind-row">
                             <button
-                                className={`pc-map3-kind-card ${kind === '제보' ? 'active' : ''}`}
-                                onClick={() => { setKind('제보'); }}
+                                className="pc-map3-kind-card active"
+                                onClick={() => { }}
                             >
                                 <div>제보</div>
                                 <strong>{counts.report}건</strong>
@@ -112,7 +111,7 @@ export default function PCReportMap({ onNavigate }) {
                                 onClick={() => onNavigate && onNavigate('pcProposeMap')}
                             >
                                 <div>제안</div>
-                                <strong>0건</strong>
+                                <strong>{counts.propose}건</strong>
                             </button>
                         </div>
                     </aside>

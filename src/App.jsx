@@ -45,8 +45,10 @@ const ProposalManagement = lazy(() => import('./admin/pages/ProposalManagement')
 const ProposalEdit = lazy(() => import('./admin/pages/ProposalEdit'));
 const AdminMain = lazy(() => import('./admin/pages/AdminMain'));
 const AdminUserList = lazy(() => import('./admin/pages/AdminUserList'));
+const AdminRAGDashboard = lazy(() => import('./admin/pages/AdminRAGDashboard'));
 const ReportManagement = lazy(() => import('./admin/pages/ReportManagement'));
 const SurveyManagement = lazy(() => import('./admin/pages/SurveyManagement'));
+const SurveyChatAnalytics = lazy(() => import('./admin/pages/SurveyChatAnalytics'));
 const AdminReportDetail = lazy(() => import('./admin/pages/ReportDetail'));
 const AdminProposalDetail = lazy(() => import('./admin/pages/AdminProposalDetail'));
 const SurveyEditor = lazy(() => import('./admin/pages/SurveyEditor'));
@@ -70,6 +72,7 @@ const PCReportDetail = lazy(() => import('./components/PCReportDetail'));
 // USER:MOBILE survey pages (Figma node 848:13553)
 const MSurveyList = lazy(() => import('./components/MSurveyList'));
 const SurveyChat = lazy(() => import('./components/SurveyChat'));
+const SurveyChatHistory = lazy(() => import('./components/SurveyChatHistory'));
 const MSurveyDetail1 = lazy(() => import('./components/MSurveyDetail1'));
 const MSurveyDetail2 = lazy(() => import('./components/MSurveyDetail2'));
 const MSurveyJoin = lazy(() => import('./components/MSurveyJoin'));
@@ -98,6 +101,7 @@ const PCDiagnosisMap = lazy(() => import('./components/PCDiagnosisMap'));
 
 // USER: AI 가상시민 (Figma file TCuOzEqNhoLKjhF0reBDks — Phase 1)
 const PCAICitizen = lazy(() => import('./components/PCAICitizen'));
+const PCPublicData = lazy(() => import('./components/PCPublicData'));
 const MAICitizen = lazy(() => import('./components/MAICitizen'));
 const MAICitizenDetail = lazy(() => import('./components/MAICitizenDetail'));
 
@@ -134,7 +138,7 @@ function App() {
 
         const stored = sessionStorage.getItem('current_view');
         // If path is not /admin, but stored view is an admin view, reset to home
-        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit', 'adminProposalDetail'].includes(stored);
+        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'surveyChatAnalytics'].includes(stored);
         if (path === '/' && isAdminView) return 'home';
 
         if (['adminLogin', 'adminSignup', 'adminDashboard'].includes(stored)) return 'home';
@@ -187,6 +191,8 @@ function App() {
     });
     const [isProposalEdit, setIsProposalEdit] = useState(false); // [추가] 제안 수정 모드 여부
     const [proposalToEdit, setProposalToEdit] = useState(null); // [추가] 수정할 제안 데이터
+    const [proposalEditReturn, setProposalEditReturn] = useState('proposalDetail'); // 제안 수정 후 복귀 뷰
+    const [selectedChatSession, setSelectedChatSession] = useState(null); // AI 대화형 설문 이전 대화내역 보기용
 
     const [selectedReport, setSelectedReport] = useState(() => {
         const stored = sessionStorage.getItem('selectedReport');
@@ -338,7 +344,7 @@ function App() {
         window.scrollTo(0, 0);
         sessionStorage.setItem('current_view', view);
 
-        const adminViews = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'proposalManagement', 'memberEdit', 'expertEdit', 'proposalEdit', 'adminProposalDetail'];
+        const adminViews = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'proposalManagement', 'memberEdit', 'expertEdit', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'surveyChatAnalytics'];
         const newPath = adminViews.includes(view) ? '/admin' : '/';
         
         if (window.history.state?.view !== view || window.location.pathname !== newPath) {
@@ -484,6 +490,8 @@ function App() {
             setView('proposalManagement');
         } else if (target === 'adminMain') {
             setView('adminMain');
+        } else if (target === 'adminRAG') {
+            setView('adminRAG');
         } else if (target === 'adminUserList') {
             setView('adminUserList');
         } else if (target === 'reportManagement') {
@@ -493,6 +501,8 @@ function App() {
             setView('adminReportDetail');
         } else if (target === 'surveyManagement') {
             setView('surveyManagement');
+        } else if (target === 'surveyChatAnalytics') {
+            setView('surveyChatAnalytics');
         } else if (target === 'surveyEditor') {
             setSelectedSurvey(data || null);
             setView('surveyEditor');
@@ -510,6 +520,7 @@ function App() {
         } else if (target === 'proposalForm') {
             setIsProposalEdit(!!data?.isEdit); // 데이터로 수정 모드 판단
             setProposalToEdit(data?.proposal || null);
+            setProposalEditReturn(data?.returnView || 'proposalDetail'); // 수정 후 복귀할 뷰(진입점)
             setView('proposalForm');
         } else if (target === 'proposalPreview') {
             setView('proposalPreview');
@@ -552,6 +563,10 @@ function App() {
         } else if (target === 'mySurveys') {
             if (!localStorage.getItem('access_token')) { alert('로그인이 필요한 서비스입니다.'); setView('login'); return; }
             setView('mySurveys');
+        } else if (target === 'surveyChatHistory') {
+            if (!localStorage.getItem('access_token')) { alert('로그인이 필요한 서비스입니다.'); setView('login'); return; }
+            if (data) setSelectedChatSession(data);
+            setView('surveyChatHistory');
         } else if (target === 'myActivityHub') {
             if (!localStorage.getItem('access_token')) {
                 alert('로그인이 필요한 서비스입니다.');
@@ -682,6 +697,8 @@ function App() {
             setView('mDiagnosisDone');
         } else if (target === 'pcAICitizen') {
             setView('pcAICitizen');
+        } else if (target === 'pcPublicData') {
+            setView('pcPublicData');
         } else if (target === 'mAICitizen') {
             setView('mAICitizen');
         } else if (target === 'mAICitizenDetail') {
@@ -728,17 +745,17 @@ function App() {
     const noHeaderViews = [
         // login/signup/signupDone는 PC에서 공용 PCHeader 노출 (모바일은 PCHeader가 CSS로 숨김)
         'changePassword',
-        'adminLogin', 'adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList',
+        'adminLogin', 'adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'adminRAG',
         'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor',
-        'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit',
+        'surveyCreated', 'surveyResults', 'surveyChatAnalytics', 'expertManagement', 'memberEdit', 'expertEdit',
         'proposalManagement', 'proposalEdit', 'adminProposalDetail',
         // UserPCLayout 자체 헤더를 가진 PC 전용 뷰 (PCHeader 중복 방지)
         'pcSurveyList', 'pcSurveyDetail', 'pcSurveyConsent', 'pcSurveyJoin', 'pcSurveyResults', 'pcSurveyDone',
         'pcProposeMap', 'pcProposeForm', 'pcProposeDetail',
         'pcReportMap', 'pcReportForm', 'pcReportDetail',
         'pcMyReportList', 'pcMyReportEdit', 'pcMyProposalDetail',
-        'myActivityHub', 'mySurveys',
-        'pcAICitizen',
+        'myActivityHub', 'mySurveys', 'surveyChatHistory',
+        'pcAICitizen', 'pcPublicData',
         'pcDiagnosisMap', 'pcDiagnosisForm', 'pcDiagnosisDetail', 'pcDiagnosisDone',
     ];
     const showPCHeader = !noHeaderViews.includes(view);
@@ -997,7 +1014,7 @@ function App() {
                 )}
                 {view === 'proposalForm' && (
                     <ProposalForm
-                        onBack={() => setView(isProposalEdit ? 'proposalDetail' : 'proposalList')}
+                        onBack={() => setView(isProposalEdit ? proposalEditReturn : 'proposalList')}
                         onNavigate={onNavigate}
                         isEdit={isProposalEdit}
                         initialData={proposalToEdit}
@@ -1068,7 +1085,7 @@ function App() {
                                             return updatedProposal;
                                         });
 
-                                        setView('proposalDetail');
+                                        setView(proposalEditReturn);
                                     } else {
                                         alert('수정에 실패했습니다.');
                                     }
@@ -1155,6 +1172,15 @@ function App() {
                 )}
                 {view === 'mySurveys' && (
                     <MySurveys onBack={() => setView('myActivityHub')} onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'surveyChatHistory' && (
+                    <SurveyChatHistory
+                        isPC={typeof window !== 'undefined' && window.innerWidth >= 1024}
+                        sessionId={selectedChatSession?.session_id}
+                        title={selectedChatSession?.title}
+                        onBack={() => setView('mySurveys')}
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
                 )}
                 {view === 'myActivityHub' && (
                     <MyActivityHub
@@ -1296,6 +1322,11 @@ function App() {
                         onNavigate={(target, data) => onNavigate(target, data)}
                     />
                 )}
+                {view === 'adminRAG' && (
+                    <AdminRAGDashboard
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
                 {view === 'reportManagement' && (
                     <ReportManagement
                         onNavigate={(target, data) => onNavigate(target, data)}
@@ -1334,6 +1365,9 @@ function App() {
                     <SurveyManagement
                         onNavigate={(target, data) => onNavigate(target, data)}
                     />
+                )}
+                {view === 'surveyChatAnalytics' && (
+                    <SurveyChatAnalytics onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'pcSurveyList' && (
                     <SurveyChat isPC onNavigate={(target, data) => onNavigate(target, data)} />
@@ -1446,6 +1480,9 @@ function App() {
                 )}
                 {view === 'pcAICitizen' && (
                     <PCAICitizen onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcPublicData' && (
+                    <PCPublicData onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'mAICitizen' && (
                     <MAICitizen onNavigate={(target, data) => onNavigate(target, data)} />

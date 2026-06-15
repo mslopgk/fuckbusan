@@ -49,6 +49,22 @@ export default function MReportDetail({ onNavigate, report }) {
     const [likeCount, setLikeCount] = useState(data.likes);
     const [resultOpen, setResultOpen] = useState(false);
     const [comments, setComments] = useState([]);
+    const [myId, setMyId] = useState(null);
+
+    // 소유자 판정용 현재 사용자 user_id
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+        fetch(`${API_URL}/users/me`, { headers: { Authorization: `Bearer ${token}` } })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => { if (d?.user_id != null) setMyId(d.user_id); })
+            .catch(() => {});
+    }, []);
+
+    const myName = (() => { try { return localStorage.getItem('user_name') || localStorage.getItem('username') || ''; } catch { return ''; } })();
+    const isOwner = (myId != null && report?.user_id != null)
+        ? report.user_id === myId
+        : (!!myName && !!data.author && data.author === myName);
 
     useEffect(() => {
         if (!report?.id) return;
@@ -181,19 +197,29 @@ export default function MReportDetail({ onNavigate, report }) {
                 <div className="m-rdetail-stat-row">
                     <span className="m-rdetail-stat-meta">{data.date} · 조회수 {data.views}</span>
                     <span className="m-rdetail-stat-icons">
-                        <button
-                            type="button"
-                            className={`m-rdetail-like-btn ${liked ? 'liked' : ''}`}
-                            onClick={toggleLike}
-                            aria-pressed={liked}
-                            aria-label={liked ? '좋아요 취소' : '좋아요'}
-                        >
-                            {/* Figma heart icon (Union path) */}
-                            <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor">
-                                <path d="M9.0568 1.0811C10.4983 -0.360439 12.8359 -0.360292 14.2775 1.0811C15.7191 2.52272 15.7191 4.86019 14.2775 6.30181L8.78141 11.7989C8.47833 12.102 8.07586 12.2441 7.67887 12.2286C7.2822 12.2438 6.88013 12.1017 6.57731 11.7989L1.08121 6.30181C-0.360404 4.86019 -0.360404 2.52272 1.08121 1.0811C2.52285 -0.360296 4.86037 -0.36044 6.30192 1.0811L7.67887 2.45806L9.0568 1.0811Z"/>
-                            </svg>
-                            {likeCount}
-                        </button>
+                        {isOwner ? (
+                            /* 본인 글은 좋아요 불가 → 클릭 불가 정적 표시 */
+                            <span className="m-rdetail-like-btn" aria-label="좋아요 수" style={{ cursor: 'default' }}>
+                                <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor">
+                                    <path d="M9.0568 1.0811C10.4983 -0.360439 12.8359 -0.360292 14.2775 1.0811C15.7191 2.52272 15.7191 4.86019 14.2775 6.30181L8.78141 11.7989C8.47833 12.102 8.07586 12.2441 7.67887 12.2286C7.2822 12.2438 6.88013 12.1017 6.57731 11.7989L1.08121 6.30181C-0.360404 4.86019 -0.360404 2.52272 1.08121 1.0811C2.52285 -0.360296 4.86037 -0.36044 6.30192 1.0811L7.67887 2.45806L9.0568 1.0811Z"/>
+                                </svg>
+                                {likeCount}
+                            </span>
+                        ) : (
+                            <button
+                                type="button"
+                                className={`m-rdetail-like-btn ${liked ? 'liked' : ''}`}
+                                onClick={toggleLike}
+                                aria-pressed={liked}
+                                aria-label={liked ? '좋아요 취소' : '좋아요'}
+                            >
+                                {/* Figma heart icon (Union path) */}
+                                <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor">
+                                    <path d="M9.0568 1.0811C10.4983 -0.360439 12.8359 -0.360292 14.2775 1.0811C15.7191 2.52272 15.7191 4.86019 14.2775 6.30181L8.78141 11.7989C8.47833 12.102 8.07586 12.2441 7.67887 12.2286C7.2822 12.2438 6.88013 12.1017 6.57731 11.7989L1.08121 6.30181C-0.360404 4.86019 -0.360404 2.52272 1.08121 1.0811C2.52285 -0.360296 4.86037 -0.36044 6.30192 1.0811L7.67887 2.45806L9.0568 1.0811Z"/>
+                                </svg>
+                                {likeCount}
+                            </button>
+                        )}
                         <span>
                             {/* Figma comment bubble icon */}
                             <svg width="14" height="12" viewBox="0 0 14 11.8457" fill="currentColor">

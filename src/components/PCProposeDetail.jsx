@@ -4,6 +4,7 @@ import PCMapCanvas from './PCMapCanvas';
 import './PCDetailShared.css';
 import './PCPropose.css';
 import { API_URL } from '../utils/api';
+import { recordView } from '../utils/viewHistory';
 
 
 const getImgSrc = (file) => {
@@ -37,6 +38,7 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                 setDetail(d);
                 setLikeCount(d.likes_count ?? 0);
                 setVoted(!!d.has_voted);
+                recordView({ type: 'proposal', id: numId, title: d.title, category: d.category, region: d.region });
                 try { sessionStorage.setItem('selectedProposal', JSON.stringify(d)); } catch (_) {}
             })
             .catch(() => {});

@@ -8,7 +8,7 @@ import {
 } from '../constants/diagnosis';
 import { API_URL, authHeaders } from '../utils/api';
 
-export default function PCDiagPanelForm({ onCancel, onSubmit, location }) {
+export default function PCDiagPanelForm({ onCancel, onSubmit, location, mode = 'citizen' }) {
     const [photo, setPhoto] = useState(null);
     const [photoPreview, setPhotoPreview] = useState('');
     const [category, setCategory] = useState('주거');
@@ -65,6 +65,7 @@ export default function PCDiagPanelForm({ onCancel, onSubmit, location }) {
                 위도: location?.lat ?? null,
                 경도: location?.lng ?? null,
                 district_code: location?.district ?? null,
+                진단대상: mode === 'expert' ? '전문가' : '시민',
             };
             const submitRes = await fetch(`${API_URL}/checklist/submit`, {
                 method: 'POST',

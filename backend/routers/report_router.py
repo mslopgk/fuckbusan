@@ -134,6 +134,21 @@ async def upload_file(file: UploadFile = File(...)):
     return {"filename": unique_filename, "url": url, "thumb_url": thumb_url}
 
 
+def _report_image_list(r):
+    """제보 이미지 URL 배열 — files(JSON) 우선, 없으면 image_url 단일로 폴백.
+    files 컬럼은 과거 json.dumps 문자열로 저장된 경우가 있어 둘 다 처리."""
+    raw = r.files
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except Exception:
+            raw = None
+    urls = [u for u in raw if u] if isinstance(raw, list) else []
+    if not urls and r.image_url:
+        urls = [r.image_url]
+    return urls
+
+
 def _serialize_report(r, comments=None):
     """Convert Report ORM row to the shape the frontend expects."""
     return {
@@ -150,6 +165,7 @@ def _serialize_report(r, comments=None):
         "lat": float(r.lat) if r.lat is not None else None,
         "lng": float(r.lng) if r.lng is not None else None,
         "image": r.image_url,
+        "images": _report_image_list(r),
         "status": r.status,
         "progress_step": r.progress_step,
         "views": r.views or 0,
@@ -577,6 +593,8 @@ def toggle_proposal_vote(
         raise HTTPException(status_code=404, detail="제안을 찾을 수 없습니다.")
     if current_user.user_id >= 999990:
         raise HTTPException(status_code=403, detail="관리자는 투표할 수 없습니다.")
+    if proposal.user_id == current_user.user_id:
+        raise HTTPException(status_code=403, detail="본인 글에는 투표할 수 없습니다.")
 
     existing_like = db.query(models.ProposalLike).filter(
         models.ProposalLike.proposal_id == proposal_id,
@@ -879,6 +897,8 @@ def toggle_report_like(
         raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
     if current_user.user_id >= 999990:
         raise HTTPException(status_code=403, detail="관리자는 공감할 수 없습니다.")
+    if r.user_id == current_user.user_id:
+        raise HTTPException(status_code=403, detail="본인 글에는 공감할 수 없습니다.")
     existing = db.query(models.ReportLike).filter(
         models.ReportLike.report_id == report_id,
         models.ReportLike.user_id == current_user.user_id,

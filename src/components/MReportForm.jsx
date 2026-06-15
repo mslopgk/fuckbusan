@@ -179,7 +179,8 @@ export default function MReportForm({ onNavigate }) {
     const handleSubmit = async () => {
         setSubmitting(true);
         const token = localStorage.getItem('access_token');
-        const title = `${position}에 ${issue} 불편해요`;
+        // '불편' 선택 시 접미사 "불편해요"와 중복되지 않도록 처리
+        const title = issue === '불편' ? `${position}에 불편해요` : `${position}에 ${issue} 불편해요`;
         const payload = {
             category: cat,
             sub_category: `${position} · ${issue}`,
@@ -301,7 +302,7 @@ export default function MReportForm({ onNavigate }) {
                                 <option key={p} value={i === 0 ? '' : p}>{p}</option>
                             ))}
                         </select>
-                        <span className="m-row-suffix">불편해요</span>
+                        <span className="m-row-suffix">{issue === '불편' ? '해요' : '불편해요'}</span>
                     </div>
                     {errors.issue && <p className="m-form-error-msg">{errors.issue}</p>}
 

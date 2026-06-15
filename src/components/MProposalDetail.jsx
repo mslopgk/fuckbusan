@@ -28,6 +28,7 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
     const [comments, setComments] = useState([]);
     const [views, setViews] = useState(proposal?.views ?? proposal?.views_count ?? 0);
     const [votes, setVotes] = useState(proposal?.likes_count ?? proposal?.votes ?? 0);
+    const [isMine, setIsMine] = useState(!!(proposal?.is_mine || proposal?.isMine));
     const viewCalled = useRef(false);
 
     useEffect(() => {
@@ -46,6 +47,7 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
             .then((d) => {
                 if (!d) return;
                 setVoted(!!d.has_voted);
+                setIsMine(!!d.is_mine);
                 if (d.likes_count != null) setVotes(d.likes_count);
                 if (d.views_count != null) setViews(d.views_count);
             })
@@ -278,17 +280,20 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                 </div>
             </div>
 
-            <footer className="m-detail-footer">
-                <button
-                    className={`m-vote-cta ${voted ? 'on' : ''}`}
-                    type="button"
-                    onClick={handleVoteClick}
-                    disabled={voting}
-                    style={{ opacity: voting ? 0.7 : 1 }}
-                >
-                    {voting ? '처리 중...' : voted ? '투표하셨습니다' : '투표하기'}
-                </button>
-            </footer>
+            {/* 본인 글은 투표 불가 → CTA 숨김 */}
+            {!isMine && (
+                <footer className="m-detail-footer">
+                    <button
+                        className={`m-vote-cta ${voted ? 'on' : ''}`}
+                        type="button"
+                        onClick={handleVoteClick}
+                        disabled={voting}
+                        style={{ opacity: voting ? 0.7 : 1 }}
+                    >
+                        {voting ? '처리 중...' : voted ? '투표하셨습니다' : '투표하기'}
+                    </button>
+                </footer>
+            )}
 
             {/* 투표 완료 모달 — Figma 제안상세2 */}
             {voteDoneOpen && (

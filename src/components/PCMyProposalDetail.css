@@ -126,6 +126,7 @@
 .pcmpd-body-wrap {
     position: relative;
     margin-bottom: 20px;
+    min-height: 96px;   /* 우측 floating 투표 버튼(86px)이 위 지도와 겹치지 않도록 */
 }
 
 .pcmpd-body {
@@ -186,6 +187,7 @@
 }
 
 /* ── 삭제·수정 버튼 ── */
+/* 본문 아래 중앙: 본인글 삭제/수정 버튼 */
 .pcmpd-actions {
     display: flex;
     justify-content: center;
@@ -205,6 +207,7 @@
     font-family: 'Pretendard Variable', sans-serif;
     transition: background 0.15s;
     border: none;
+    white-space: nowrap;
 }
 
 .pcmpd-btn--ghost {

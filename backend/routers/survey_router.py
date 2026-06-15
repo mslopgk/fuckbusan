@@ -265,6 +265,74 @@ def admin_delete_question(
 
 
 # =============================================================================
+# 내가 참여한 설문 — /{survey_id} 와일드카드보다 먼저 등록 (정적 경로 우선)
+# =============================================================================
+
+@router.get("/my-participations")
+def my_survey_participations(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """현재 로그인 사용자가 응답한 설문 목록.
+    일반(폼) 설문 + AI 대화형 설문(survey_chat) 참여를 함께 반환 (최근 참여 우선)."""
+    from sqlalchemy import func
+    out = []
+
+    # 1) 일반 폼 설문: 설문별 최근 제출 시각
+    rows = (
+        db.query(
+            models.SurveyResponse.survey_id,
+            func.max(models.SurveyResponse.submitted_at).label("participated_at"),
+        )
+        .filter(models.SurveyResponse.user_id == current_user.user_id)
+        .group_by(models.SurveyResponse.survey_id)
+        .all()
+    )
+    if rows:
+        participated = {sid: ts for sid, ts in rows}
+        surveys = db.query(models.Survey).filter(models.Survey.id.in_(list(participated.keys()))).all()
+        surveys_by_id = {s.id: s for s in surveys}
+        for sid, ts in participated.items():
+            s = surveys_by_id.get(sid)
+            at = ts or (s.created_at if s else None)
+            out.append({
+                "id": sid,
+                "survey_id": sid,
+                "kind": "form",
+                "title": s.title if s else "",
+                "status": "완료",
+                "approval_status": "승인",
+                "participated_at": at,
+            })
+
+    # 2) AI 대화형 설문: 세션별 1건 (제목/대화내역은 survey_chat_sessions)
+    ai_rows = (
+        db.query(models.SurveyChatSession)
+        .filter(models.SurveyChatSession.user_id == current_user.user_id)
+        .all()
+    )
+    for r in ai_rows:
+        out.append({
+            "id": f"ai-{r.session_id}",
+            "session_id": r.session_id,
+            "survey_id": None,
+            "kind": "ai",
+            "title": r.title or "AI 대화형 설문",
+            "status": "완료",
+            "approval_status": "승인",
+            "issue_count": r.issue_count or 0,
+            "participated_at": r.created_at,
+        })
+
+    # 최근 참여 우선 정렬 후 직렬화
+    out.sort(key=lambda x: (x["participated_at"] is None, x["participated_at"]), reverse=True)
+    for item in out:
+        at = item["participated_at"]
+        item["participated_at"] = at.isoformat() if at else None
+    return out
+
+
+# =============================================================================
 # 공개 설문 상세 / 응답 제출 / 결과 — 반드시 admin 정적 경로 다음에 등록
 # =============================================================================
 

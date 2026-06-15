@@ -16,7 +16,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy import text
 
 # Routers
-from routers import dashboard, ai, user_router, checklist_router, report_router, survey_router, home_router, admin_router, notification_router, search_router, ai_citizens, survey_chat_router
+from routers import dashboard, ai, user_router, checklist_router, report_router, survey_router, home_router, admin_router, notification_router, search_router, ai_citizens, survey_chat_router, public_data_router, rag_admin_router
 
 import models
 from database import engine
@@ -49,12 +49,27 @@ async def lifespan(app: FastAPI):
                 "ALTER TABLE proposal_comments MODIFY COLUMN user_id INT NULL",
                 # survey_responses.demographics 컬럼 추가 (설문 인구통계 정보)
                 "ALTER TABLE survey_responses ADD COLUMN demographics JSON NULL",
+                # AI 대화형 설문: 인터뷰 작성자 연결 (나의 활동 노출용)
+                "ALTER TABLE survey_chat_interviews ADD COLUMN user_id INT NULL",
             ]:
                 try:
                     conn.execute(text(stmt))
                     conn.commit()
                 except Exception:
                     pass
+
+        # 공공데이터 대시보드 실데이터 시드 (참조 테이블, idempotent)
+        try:
+            from database import SessionLocal
+            from public_data.seed_data import seed_public_data
+            _db = SessionLocal()
+            try:
+                counts = seed_public_data(_db)
+                logger.info(f"Startup: Public data seeded {counts}")
+            finally:
+                _db.close()
+        except Exception as e:
+            logger.error(f"Startup: public data seed failed: {e}")
     except Exception as e:
         logger.error(f"Startup Error: Database connection failed. {e}")
         # We don't exit to allow frontend to serve even if DB fails, but dependent APIs will fail.
@@ -99,6 +114,8 @@ app.include_router(notification_router.router)
 app.include_router(search_router.router)
 app.include_router(ai_citizens.router)
 app.include_router(survey_chat_router.router)
+app.include_router(public_data_router.router)
+app.include_router(rag_admin_router.router)
 
 # Static Files & Frontend Serving (로컬 전용 — Lambda/CloudFront 환경에선 스킵)
 current_dir = os.path.dirname(os.path.abspath(__file__))

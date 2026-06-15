@@ -190,10 +190,10 @@ export default function MMyReportEdit({ onNavigate, report, onComplete }) {
                         <span className="m-row-suffix">불편해요</span>
                     </div>
 
-                    <input
-                        type="text"
-                        className="m-row-input"
+                    <textarea
+                        className="m-row-input m-myrep-textarea"
                         placeholder="느끼신 점을 자유롭게 작성해 주세요."
+                        rows={5}
                         value={body}
                         onChange={(e) => setBody(e.target.value)}
                     />

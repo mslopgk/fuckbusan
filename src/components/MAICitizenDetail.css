@@ -10,12 +10,31 @@
 .m-ai-detail__topbar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 8px 12px;
     background: #fff;
     border-bottom: 1px solid #f0f0f0;
     flex-shrink: 0;
     z-index: 10;
 }
+
+.m-ai-detail__chat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #23bdbb;
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    font-family: 'Pretendard Variable', sans-serif;
+    box-shadow: 0 2px 8px rgba(35, 189, 187, 0.3);
+}
+.m-ai-detail__chat:active { transform: translateY(1px); }
 
 .m-ai-detail__back {
     background: none;

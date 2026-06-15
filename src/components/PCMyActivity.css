@@ -76,3 +76,62 @@
 .pcma-stat-label { font-size: 16px; font-weight: 500; color: #000; }
 .pcma-stat-count { font-size: 18px; font-weight: 500; color: #000; }
 .pcma-stat-count b { font-size: 26px; font-weight: 700; }
+
+/* 탭 콘텐츠 목록 (관심목록 / 최근 본 글 / 자주 본 글) */
+.pcma-tablist {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.pcma-empty {
+    padding: 36px 0;
+    text-align: center;
+    color: #9a9a9a;
+    font-size: 14px;
+}
+.pcma-listitem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.pcma-listitem:hover { border-color: #ddd; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.pcma-listitem-type {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+    color: #fff;
+}
+.pcma-listitem-type.type-report { background: #f74e7e; }
+.pcma-listitem-type.type-proposal { background: #23bdbb; }
+.pcma-listitem-type.type-survey { background: #542aa3; }
+.pcma-listitem-type.type-diagnosis { background: #dd5b1b; }
+.pcma-listitem-title {
+    flex: 1;
+    min-width: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.02em;
+}
+.pcma-listitem-meta {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #9a9a9a;
+}

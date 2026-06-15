@@ -187,7 +187,7 @@ export default function PCReportForm({ onNavigate }) {
             location: location?.address || undefined,
             detailed_address: detailAddress.trim() || undefined,
             image_url: uploadedUrls[0] || undefined,
-            image_urls: uploadedUrls.length ? uploadedUrls : undefined,
+            files: uploadedUrls,
         };
         try {
             const res = await fetch(`${API_URL}/api/reports/report`, {
@@ -424,12 +424,12 @@ export default function PCReportForm({ onNavigate }) {
                         <div className="pcrf-done-modal" onClick={(e) => e.stopPropagation()}>
                             <div className="pcrf-done-icons">
                                 <img
-                                    src="/figma-assets/report_done_scroll.png"
+                                    src="/figma-assets/report_done_scroll.svg"
                                     alt=""
                                     className="pcrf-done-scroll"
                                 />
                                 <img
-                                    src="/figma-assets/report_done_check.png"
+                                    src="/figma-assets/report_done_check.svg"
                                     alt=""
                                     className="pcrf-done-check"
                                 />

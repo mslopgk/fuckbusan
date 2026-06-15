@@ -1143,6 +1143,23 @@ def get_citizen(citizen_id: int, db: Session = Depends(get_db)):
     return _serialize_persona(p, include_detail=True)
 
 
+class ChatReq(BaseModel):
+    message: str
+    history: List[dict] = []
+
+
+@router.post("/{citizen_id}/chat")
+def chat_with_citizen(citizen_id: int, req: ChatReq, db: Session = Depends(get_db)):
+    """AI 가상시민과 1인칭 대화 (RAG 그라운딩). PersonaChat 프론트 계약."""
+    p = db.query(models.Persona).filter(models.Persona.id == citizen_id).first()
+    if not p:
+        raise HTTPException(status_code=404, detail="시민을 찾을 수 없습니다.")
+    if not (req.message or "").strip():
+        raise HTTPException(status_code=400, detail="메시지가 비어 있습니다.")
+    from rag import chat as rag_chat
+    return rag_chat.chat(p, req.message.strip(), req.history)
+
+
 async def _generate_avatar(citizen_id: int, db: Session) -> dict:
     """Imagen 4로 아바타 생성 후 디스크 저장. URL 딕셔너리 반환."""
     p = db.query(models.Persona).filter(models.Persona.id == citizen_id).first()

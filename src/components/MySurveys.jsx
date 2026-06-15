@@ -131,7 +131,11 @@ const MySurveys = ({ onBack, onNavigate }) => {
     });
 
     const handleResultClick = (item) => {
-        if (onNavigate && item.survey_id) {
+        if (!onNavigate) return;
+        if (item.kind === 'ai' && item.session_id) {
+            // AI 대화형 설문 → 이전 대화내역 다시보기
+            onNavigate('surveyChatHistory', { session_id: item.session_id, title: item.title });
+        } else if (item.survey_id) {
             onNavigate(isPC ? 'pcSurveyResults' : 'mSurveyResults', { id: item.survey_id, title: item.title });
         }
     };
@@ -178,21 +182,39 @@ const MySurveys = ({ onBack, onNavigate }) => {
                         const statusKey = item.status || 'ongoing';
                         const badgeLabel = STATUS_LABEL[statusKey] || statusKey;
                         const badgeClass = STATUS_CLASS[statusKey] || 'ms-badge--ongoing';
+                        const isAi = item.kind === 'ai' && item.session_id;
                         return (
-                            <div key={item.id} className="ms-card">
-                                {/* 상단 행: 배지 + 종합결과보기 */}
+                            <div
+                                key={item.id}
+                                className={`ms-card${isAi ? ' ms-card--clickable' : ''}`}
+                                onClick={isAi ? () => handleResultClick(item) : undefined}
+                                role={isAi ? 'button' : undefined}
+                                tabIndex={isAi ? 0 : undefined}
+                            >
+                                {/* 상단 행: 배지 + 종합결과보기 / AI 대화내역 보기 */}
                                 <div className="ms-card-top">
                                     <span className={`ms-badge ${badgeClass}`}>{badgeLabel}</span>
-                                    <button
-                                        className="ms-result-btn"
-                                        onClick={() => handleResultClick(item)}
-                                    >
-                                        종합결과보기
-                                        <svg width="23" height="23" viewBox="0 0 23 23" fill="none" aria-hidden="true">
-                                            <circle cx="11.5" cy="11.5" r="11.5" fill="#23bdbb" />
-                                            <path d="M9 7l4.5 4.5L9 16" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    </button>
+                                    {/* 폼 설문은 종합결과보기, AI 대화형 설문은 대화내역 보기 */}
+                                    {item.survey_id ? (
+                                        <button
+                                            className="ms-result-btn"
+                                            onClick={() => handleResultClick(item)}
+                                        >
+                                            종합결과보기
+                                            <svg width="23" height="23" viewBox="0 0 23 23" fill="none" aria-hidden="true">
+                                                <circle cx="11.5" cy="11.5" r="11.5" fill="#23bdbb" />
+                                                <path d="M9 7l4.5 4.5L9 16" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </button>
+                                    ) : isAi ? (
+                                        <span className="ms-result-btn ms-result-btn--ai">
+                                            대화내역 보기
+                                            <svg width="23" height="23" viewBox="0 0 23 23" fill="none" aria-hidden="true">
+                                                <circle cx="11.5" cy="11.5" r="11.5" fill="#5b2eab" />
+                                                <path d="M9 7l4.5 4.5L9 16" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </span>
+                                    ) : null}
                                 </div>
                                 {/* 제목 */}
                                 <p className="ms-card-title">{item.title}</p>

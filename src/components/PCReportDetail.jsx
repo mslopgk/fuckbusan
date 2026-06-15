@@ -4,6 +4,7 @@ import PCMapCanvas from './PCMapCanvas';
 import './PCDetailShared.css';
 import './PCReportDetail.css';
 import { API_URL } from '../utils/api';
+import { recordView } from '../utils/viewHistory';
 
 
 const LS_KEY = 'liked_report_ids';
@@ -28,9 +29,21 @@ export default function PCReportDetail({ onNavigate, report }) {
     const [commenting, setCommenting] = useState(false);
     const [liked, setLiked] = useState(() => getLikedSet().has(reportId));
     const [likeCount, setLikeCount] = useState(0);
-    const [voteDoneType, setVoteDoneType] = useState(null); // 'liked' | 'unliked' | null
     const [showResult, setShowResult] = useState(false);
+    const [myId, setMyId] = useState(null);
+    const [deleting, setDeleting] = useState(false);
+    const [confirmDelete, setConfirmDelete] = useState(false);
     const fetchCalled = useRef(false);
+
+    // 현재 로그인 사용자의 user_id (소유자 판정용 — 이름/닉네임 문자열 비교 대신 신뢰 가능한 id 비교)
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+        fetch(`${API_URL}/users/me`, { headers: { Authorization: `Bearer ${token}` } })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => { if (d?.user_id != null) setMyId(d.user_id); })
+            .catch(() => {});
+    }, []);
 
     useEffect(() => {
         if (!reportId || fetchCalled.current) return;
@@ -42,6 +55,7 @@ export default function PCReportDetail({ onNavigate, report }) {
                 if (!d) return;
                 setDetail(d);
                 setLikeCount(d.likes ?? d.likes_count ?? 0);
+                recordView({ type: 'report', id: reportId, title: d.title, category: d.category, region: d.region, status: d.status });
             })
             .catch(() => {});
         fetch(`${API_URL}/api/reports/${reportId}/comments`)
@@ -59,6 +73,10 @@ export default function PCReportDetail({ onNavigate, report }) {
             : '';
     const author = detail?.author || detail?.nickname || '익명';
     const imageSrc = detail?.image_url || detail?.image || null;
+    // 다중 이미지: 백엔드 images 배열 우선, 없으면 단일 대표 이미지로 폴백
+    const images = (Array.isArray(detail?.images) && detail.images.length)
+        ? detail.images
+        : (imageSrc ? [imageSrc] : []);
 
     // 개선완료 결과 데이터
     const isImproved = detail?.status === '개선완료' || detail?.status === '결과안내';
@@ -66,9 +84,34 @@ export default function PCReportDetail({ onNavigate, report }) {
     const resultImage = resultDetails?.image || detail?.result_image || null;
     const resultText = resultDetails?.content || resultDetails?.title || '';
 
-    // 소유자(작성자) 판별: user_name 일치 (백엔드에 /users/me 호출 없이 경량 비교)
+    // 소유자(작성자) 판별: user_id 우선(신뢰), 없으면 이름 문자열 폴백
     const myName = (() => { try { return localStorage.getItem('user_name') || localStorage.getItem('username') || ''; } catch { return ''; } })();
-    const isOwner = !!myName && (author === myName);
+    const isOwner = (myId != null && detail?.user_id != null)
+        ? detail.user_id === myId
+        : (!!myName && author === myName);
+
+    const handleDelete = async () => {
+        if (!reportId || deleting) return;
+        const token = localStorage.getItem('access_token');
+        if (!token) { alert('로그인이 필요합니다.'); return; }
+        setDeleting(true);
+        try {
+            const res = await fetch(`${API_URL}/api/reports/${reportId}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!res.ok) {
+                const e = await res.json().catch(() => ({}));
+                throw new Error(typeof e.detail === 'string' ? e.detail : `삭제 실패 (${res.status})`);
+            }
+            setConfirmDelete(false);
+            onNavigate && onNavigate('pcMyReportList');
+        } catch (e) {
+            alert(e.message || '삭제 중 오류가 발생했습니다.');
+        } finally {
+            setDeleting(false);
+        }
+    };
 
     const toggleLike = async () => {
         if (!reportId) {
@@ -90,8 +133,6 @@ export default function PCReportDetail({ onNavigate, report }) {
                 const ids = getLikedSet();
                 if (nowLiked) ids.add(reportId); else ids.delete(reportId);
                 saveLikedSet(ids);
-                setVoteDoneType(nowLiked ? 'liked' : 'unliked');
-                setTimeout(() => setVoteDoneType(null), 2000);
             } else {
                 const errText = await res.text().catch(() => '');
                 let msg;
@@ -153,16 +194,6 @@ export default function PCReportDetail({ onNavigate, report }) {
                                 {detail.status}
                             </span>
                         )}
-                        {isOwner && (
-                            <button
-                                type="button"
-                                className="pcd-edit-btn"
-                                style={detail?.status ? undefined : { marginLeft: 'auto' }}
-                                onClick={() => onNavigate && onNavigate('pcMyReportEdit', detail)}
-                            >
-                                수정하기
-                            </button>
-                        )}
                     </div>
 
                     <h1 className="pcd-title">{detail?.title || '(제목 없음)'}</h1>
@@ -175,14 +206,19 @@ export default function PCReportDetail({ onNavigate, report }) {
 
                     <div className="pcd-divider" />
 
-                    {/* 대표 이미지 */}
-                    {imageSrc && (
-                        <img
-                            src={imageSrc}
-                            alt="제보 사진"
-                            className="pcd-photo"
-                            onError={(e) => { e.target.style.display = 'none'; }}
-                        />
+                    {/* 제보 사진 (다중 지원) */}
+                    {images.length > 0 && (
+                        <div className={`pcd-photos${images.length > 1 ? ' multi' : ''}`}>
+                            {images.map((src, i) => (
+                                <img
+                                    key={`${src}-${i}`}
+                                    src={src}
+                                    alt={`제보 사진 ${i + 1}`}
+                                    className="pcd-photo"
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                />
+                            ))}
+                        </div>
                     )}
 
                     {/* 카카오 지도 */}
@@ -207,19 +243,21 @@ export default function PCReportDetail({ onNavigate, report }) {
                                 : <p style={{ color: '#999' }}>본문이 없습니다.</p>
                             }
                         </div>
-                        {/* Vote — Figma: purple #542aa3 circle, "좋아요" label */}
-                        <button
-                            className={`pcrd-vote-circle${liked ? ' voted' : ''}`}
-                            onClick={toggleLike}
-                        >
-                            <span className="pcd-vote-icon">
-                                <svg width="26" height="26" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
-                                </svg>
-                            </span>
-                            <span className="pcd-vote-count">{likeCount}</span>
-                            <span className="pcd-vote-label">좋아요</span>
-                        </button>
+                        {/* Vote — Figma: purple #542aa3 circle, "좋아요" label. 본인 글은 공감 불가 → 숨김 */}
+                        {!isOwner && (
+                            <button
+                                className={`pcrd-vote-circle${liked ? ' voted' : ''}`}
+                                onClick={toggleLike}
+                            >
+                                <span className="pcd-vote-icon">
+                                    <svg width="26" height="26" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
+                                    </svg>
+                                </span>
+                                <span className="pcd-vote-count">{likeCount}</span>
+                                <span className="pcd-vote-label">좋아요</span>
+                            </button>
+                        )}
                     </div>
 
                     {/* 개선완료 결과 배너 — Figma: purple rgba(84,42,163,0.2) bg, no border */}
@@ -237,6 +275,29 @@ export default function PCReportDetail({ onNavigate, report }) {
                                 결과보기
                             </button>
                         </div>
+                    )}
+
+                    {/* 본인 글 삭제/수정 — 본문 아래 중앙 (Figma) */}
+                    {isOwner && (
+                        <>
+                            <div className="pcd-divider" />
+                            <div className="pcd-owner-actions">
+                                <button
+                                    type="button"
+                                    className="pcd-delete-btn"
+                                    onClick={() => setConfirmDelete(true)}
+                                >
+                                    삭제하기
+                                </button>
+                                <button
+                                    type="button"
+                                    className="pcd-edit-btn"
+                                    onClick={() => onNavigate && onNavigate('pcMyReportEdit', detail)}
+                                >
+                                    수정하기
+                                </button>
+                            </div>
+                        </>
                     )}
 
                     {/* 댓글 */}
@@ -309,22 +370,16 @@ export default function PCReportDetail({ onNavigate, report }) {
                     </div>
                 )}
 
-                {/* 투표 완료/취소 팝업 */}
-                {voteDoneType && (
-                    <div className="pcd-vote-modal-overlay" onClick={() => setVoteDoneType(null)}>
-                        <div className="pcd-vote-modal-box">
-                            <div className="pcd-vote-modal-icon">
-                                <svg width="90" height="100" viewBox="0 0 90 100" fill="none">
-                                    <path d="M10 6 H58 L80 28 V92 Q80 96 76 96 H14 Q10 96 10 92 Z" fill="white" stroke="#1a1a1a" strokeWidth="4.5" strokeLinejoin="round"/>
-                                    <path d="M58 6 L80 28 H58 Z" fill="white" stroke="#1a1a1a" strokeWidth="4.5" strokeLinejoin="round"/>
-                                    <g transform="translate(45,62) rotate(-5)">
-                                        <path d="M-18 2 L-5 16 L20 -14" stroke="#542aa3" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                                    </g>
-                                </svg>
+                {/* 삭제 확인 모달 */}
+                {confirmDelete && (
+                    <div className="pcd-result-backdrop" onClick={() => !deleting && setConfirmDelete(false)}>
+                        <div className="pcd-confirm-modal" onClick={(e) => e.stopPropagation()}>
+                            <p className="pcd-confirm-title">제보글을 삭제하시겠습니까?</p>
+                            <p className="pcd-confirm-sub">삭제한 제보글은 복구할 수 없습니다.</p>
+                            <div className="pcrd-result-modal-actions">
+                                <button type="button" className="pcrd-result-btn-soft" disabled={deleting} onClick={() => setConfirmDelete(false)}>취소</button>
+                                <button type="button" className="pcrd-result-btn-purple" disabled={deleting} onClick={handleDelete}>{deleting ? '삭제 중…' : '삭제'}</button>
                             </div>
-                            <p className="pcd-vote-modal-text">
-                                투표가<br />{voteDoneType === 'liked' ? '완료되었습니다' : '취소되었습니다'}
-                            </p>
                         </div>
                     </div>
                 )}
