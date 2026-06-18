@@ -19,7 +19,7 @@ def _llm_key():
     a = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
     if a:
         return ("anthropic", a)
-    for k in ("MINIMAX1", "MINIMAX2", "MINIMAX3", "MINIMAX4"):
+    for k in ("MINIMAX5", "MINIMAX1", "MINIMAX2", "MINIMAX3", "MINIMAX4"):
         v = (os.getenv(k) or "").strip()
         if v:
             return ("minimax", v)
@@ -87,7 +87,7 @@ def _candidates():
     a = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
     if a:
         out.append({"provider": "anthropic", "key": a, "model": _model_for("anthropic"), "base_url": ANTHROPIC_BASE_URL})
-    for k in ("MINIMAX1", "MINIMAX2", "MINIMAX3", "MINIMAX4"):
+    for k in ("MINIMAX5", "MINIMAX1", "MINIMAX2", "MINIMAX3", "MINIMAX4"):
         v = (os.getenv(k) or "").strip()
         if v:
             out.append({"provider": "minimax", "key": v, "model": _model_for("minimax"), "base_url": ANTHROPIC_BASE_URL or MINIMAX_BASE_URL, "name": k})
