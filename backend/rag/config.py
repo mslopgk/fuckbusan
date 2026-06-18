@@ -91,9 +91,6 @@ def _candidates():
         v = (os.getenv(k) or "").strip()
         if v:
             out.append({"provider": "minimax", "key": v, "model": _model_for("minimax"), "base_url": ANTHROPIC_BASE_URL or MINIMAX_BASE_URL, "name": k})
-    o = (os.getenv("OPENAI_API_KEY") or "").strip()
-    if o:
-        out.append({"provider": "openai", "key": o, "model": os.getenv("RAG_OPENAI_MODEL", "gpt-4o")})
     return [c for c in out if c["key"] not in _DEAD_KEYS]
 
 
@@ -106,30 +103,21 @@ def llm_complete(system, messages, max_tokens=2000, temperature=0.7):
     반환: {ok, text, provider, model} 또는 {ok:False, error, tried}."""
     cands = _candidates()
     if not cands:
-        return {"ok": False, "error": "사용 가능한 LLM 키가 없습니다 (ANTHROPIC/MINIMAX/OPENAI)."}
+        return {"ok": False, "error": "사용 가능한 LLM 키가 없습니다 (.env ANTHROPIC_API_KEY 또는 MINIMAX1~4)."}
     errors = []
     for c in cands:
         try:
-            if c["provider"] == "openai":
-                from openai import OpenAI
-                cli = OpenAI(api_key=c["key"])
-                resp = cli.chat.completions.create(
-                    model=c["model"], max_tokens=max_tokens, temperature=temperature,
-                    messages=[{"role": "system", "content": system}] + messages,
-                )
-                text = resp.choices[0].message.content or ""
-            else:
-                from anthropic import Anthropic
-                kwargs = {"api_key": c["key"]}
-                if c.get("base_url"):
-                    kwargs["base_url"] = c["base_url"]
-                    kwargs["default_headers"] = {"Authorization": f"Bearer {c['key']}"}
-                cli = Anthropic(**kwargs)
-                resp = cli.messages.create(
-                    model=c["model"], max_tokens=max_tokens, temperature=temperature,
-                    system=system, messages=messages,
-                )
-                text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
+            from anthropic import Anthropic
+            kwargs = {"api_key": c["key"]}
+            if c.get("base_url"):
+                kwargs["base_url"] = c["base_url"]
+                kwargs["default_headers"] = {"Authorization": f"Bearer {c['key']}"}
+            cli = Anthropic(**kwargs)
+            resp = cli.messages.create(
+                model=c["model"], max_tokens=max_tokens, temperature=temperature,
+                system=system, messages=messages,
+            )
+            text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
             if text.strip():
                 return {"ok": True, "text": text, "provider": c["provider"], "model": c["model"]}
             errors.append(f"{c.get('name', c['provider'])}: 빈 응답")

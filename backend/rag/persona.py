@@ -33,7 +33,7 @@ def generate(db, district, n=3):
     import models
     q = C.get_qdrant()
     if not C.llm_available():
-        return {"ok": False, "error": "LLM 키 미설정 (.env ANTHROPIC_API_KEY/MINIMAX/OPENAI)"}
+        return {"ok": False, "error": "LLM 키 미설정 (.env ANTHROPIC_API_KEY 또는 MINIMAX1~4)"}
 
     # 지역 근거 검색
     grounding = ""
