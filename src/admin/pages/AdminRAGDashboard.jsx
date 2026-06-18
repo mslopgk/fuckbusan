@@ -39,9 +39,22 @@ export default function AdminRAGDashboard({ onNavigate }) {
         try {
             const r = await fetch(`${API}/ingest`, { method: 'POST', headers: auth(), body: JSON.stringify({ full }) });
             const d = await r.json();
-            setLog({ title: '인덱싱 결과', data: d });
-            refresh();
-        } catch (e) { setLog({ err: String(e) }); } finally { setBusy(''); }
+            if (!d.started) { setLog({ title: '인덱싱', data: d }); setBusy(''); return; }
+            // 백그라운드 진행 폴링
+            const poll = setInterval(async () => {
+                try {
+                    const s = await fetch(`${API}/status`, { headers: auth() }).then((x) => x.json());
+                    setStatus(s); setSources((prev) => prev);
+                    const ing = s.ingest || {};
+                    if (!ing.running) {
+                        clearInterval(poll);
+                        setLog({ title: '인덱싱 완료', data: ing.error ? { error: ing.error } : ing.result });
+                        setBusy('');
+                        refresh();
+                    }
+                } catch { /* 폴링 일시 실패 무시 */ }
+            }, 4000);
+        } catch (e) { setLog({ err: String(e) }); setBusy(''); }
     };
 
     const genPersonas = async () => {
@@ -96,13 +109,14 @@ export default function AdminRAGDashboard({ onNavigate }) {
                         <div className="ragd-src total"><b>{(sources?.total ?? 0).toLocaleString()}</b><span>총 문서</span></div>
                     </div>
                     <div className="ragd-actions">
-                        <button disabled={!!busy || !status?.qdrant_ok} onClick={() => runIngest(false)}>
-                            {busy === 'ingest' ? '인덱싱 중…' : '증분 인덱싱'}
+                        <button disabled={!!busy || status?.ingest?.running || !status?.qdrant_ok} onClick={() => runIngest(false)}>
+                            {(busy === 'ingest' || status?.ingest?.running) ? '인덱싱 중…' : '증분 인덱싱'}
                         </button>
-                        <button className="ghost" disabled={!!busy || !status?.qdrant_ok} onClick={() => runIngest(true)}>
+                        <button className="ghost" disabled={!!busy || status?.ingest?.running || !status?.qdrant_ok} onClick={() => runIngest(true)}>
                             전체 재인덱싱
                         </button>
                         {!status?.qdrant_ok && <span className="ragd-hint">Qdrant 연결 후 활성화</span>}
+                        {status?.ingest?.running && <span className="ragd-hint">백그라운드 인덱싱 진행 중… (최초 모델 다운로드 시 수 분)</span>}
                     </div>
                 </div>
 

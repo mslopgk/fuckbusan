@@ -24,8 +24,10 @@ def _admin(user=Depends(get_current_user)):
 
 @router.get("/status")
 def status(_=Depends(_admin)):
-    """Qdrant/의존성/LLM/인덱싱 포인트 상태."""
-    return rag_config.status()
+    """Qdrant/의존성/LLM/인덱싱 포인트 상태 + 인덱싱 진행 상태."""
+    s = rag_config.status()
+    s["ingest"] = {k: rag_ingest.STATE.get(k) for k in ("running", "result", "error")}
+    return s
 
 
 @router.get("/sources")
@@ -43,12 +45,13 @@ class IngestReq(BaseModel):
 
 
 @router.post("/ingest")
-def ingest(req: IngestReq, _=Depends(_admin), db: Session = Depends(get_db)):
-    """DB 데이터 집계 → 임베딩 → Qdrant 적재 (동기). 무거우면 수십 초 소요."""
-    try:
-        return rag_ingest.ingest(db, full=req.full)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"인덱싱 실패: {e}")
+def ingest(req: IngestReq, _=Depends(_admin)):
+    """DB 데이터 집계 → 임베딩 → Qdrant 적재 (백그라운드 실행, 즉시 반환).
+    진행/결과는 GET /status 의 ingest 필드로 폴링."""
+    started = rag_ingest.run_ingest_bg(full=req.full)
+    if not started:
+        return {"ok": False, "error": "이미 인덱싱이 진행 중입니다."}
+    return {"ok": True, "started": True, "message": "인덱싱을 시작했습니다. 상태에서 진행을 확인하세요."}
 
 
 class GenReq(BaseModel):

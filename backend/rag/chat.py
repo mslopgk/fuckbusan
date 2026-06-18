@@ -26,14 +26,33 @@ def _persona_system(p):
         lines.append("동네에서 개선됐으면 하는 점: " + ", ".join(map(str, issues)))
     lines.append(
         "\n[규칙] 캐릭터 유지·1인칭·2~4문장 간결. 동네 현안 질문엔 네 생활 경험으로 솔직히. "
-        "데이터에 없는 사실 단정 금지. 답변 뒤 사용자가 이어 물을 만한 짧은 질문 2~3개를 제안."
+        "데이터에 없는 사실 단정 금지. **답변 본문에는 되묻는 질문 목록이나 '추천 질문'을 넣지 말 것** "
+        "(후속 질문 칩은 화면이 따로 보여준다). 자연스러운 대화 답변만 한다."
     )
     return "\n".join(lines)
 
 
+def _clean_reply(text):
+    """모델이 끝에 붙이는 질문 목록/구분선 제거 (본문만 남김)."""
+    import re
+    text = (text or "").strip()
+    # '---' 이후 꼬리(추천질문 등) 절단
+    text = re.split(r"\n-{3,}\s*\n", text)[0].strip()
+    lines = text.split("\n")
+    while lines:
+        last = lines[-1].strip()
+        # 끝에 매달린 불릿/번호형 질문 라인 제거
+        if re.match(r"^([-*•]|\d+[.)]|Q\d|추천\s*질문|이어서)", last) and last.endswith(("?", "요?", "까?", "나요?")):
+            lines.pop()
+        elif re.match(r"^(추천\s*질문|이어서 물어|더 궁금)", last):
+            lines.pop()
+        else:
+            break
+    return "\n".join(lines).strip()
+
+
 def chat(persona, message, history=None):
-    client, model = C.get_llm()
-    if client is None:
+    if not C.llm_available():
         return {"reply": f"안녕하세요, {persona.name}예요. 지금은 대화 기능이 준비 중이에요.",
                 "suggested": ["요즘 동네에서 불편한 점은요?", "어떤 게 개선되면 좋겠어요?"]}
 
@@ -56,13 +75,11 @@ def chat(persona, message, history=None):
             msgs.append({"role": role, "content": content})
     msgs.append({"role": "user", "content": message + grounding})
 
-    try:
-        resp = client.messages.create(
-            model=model, max_tokens=700, system=_persona_system(persona), messages=msgs,
-        )
-        reply = "".join(b.text for b in resp.content if b.type == "text").strip()
-    except Exception as e:
-        return {"reply": "죄송해요, 잠시 응답이 어려워요. 다시 시도해 주세요.", "suggested": [], "error": str(e)}
+    r = C.llm_complete(_persona_system(persona), msgs, max_tokens=700, temperature=0.7)
+    if not r.get("ok"):
+        return {"reply": "죄송해요, 잠시 응답이 어려워요. 다시 시도해 주세요.",
+                "suggested": [], "error": r.get("error"), "tried": r.get("tried")}
+    reply = _clean_reply(r["text"])
 
     # 추천 질문: 답변 끝 줄에서 추출 시도, 없으면 기본
     suggested = []

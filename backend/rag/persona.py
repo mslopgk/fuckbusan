@@ -32,9 +32,8 @@ PERSONA_SCHEMA_HINT = (
 def generate(db, district, n=3):
     import models
     q = C.get_qdrant()
-    client, model = C.get_llm()
-    if client is None:
-        return {"ok": False, "error": "LLM 키 미설정 (.env ANTHROPIC_API_KEY/MINIMAX)"}
+    if not C.llm_available():
+        return {"ok": False, "error": "LLM 키 미설정 (.env ANTHROPIC_API_KEY/MINIMAX/OPENAI)"}
 
     # 지역 근거 검색
     grounding = ""
@@ -61,21 +60,16 @@ def generate(db, district, n=3):
             f"위 근거를 반영해 {district} 대표 가상시민 1명을 생성하라.\n"
             f"반드시 아래 형식의 JSON 객체 1개만 출력(설명/코드펜스 없이): {PERSONA_SCHEMA_HINT}"
         )
-        try:
-            resp = client.messages.create(
-                model=model, max_tokens=8000, system=PERSONA_SYS,
-                messages=[{"role": "user", "content": prompt}],
-            )
-            text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
-            stop = getattr(resp, "stop_reason", None)
-            data = _parse_json(text)
-        except Exception as e:
-            errors.append(f"#{i+1} LLM 호출 실패: {e}")
+        r = C.llm_complete(PERSONA_SYS, [{"role": "user", "content": prompt}], max_tokens=8000, temperature=0.7)
+        if not r.get("ok"):
+            errors.append(f"#{i+1} LLM 실패: {r.get('error')} {r.get('tried') or ''}")
             continue
+        text = r["text"]
+        data = _parse_json(text)
 
         p = _coerce_one(data)
         if not p or not p.get("name"):
-            errors.append(f"#{i+1} 파싱 실패(stop={stop}, len={len(text)}): {text[:120]}")
+            errors.append(f"#{i+1} 파싱 실패(len={len(text)}): {text[:120]}")
             continue
 
         det = p.get("detail") or {}

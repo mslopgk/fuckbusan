@@ -5,10 +5,37 @@
 각 레코드 = 1 문서: {text, metadata{type,id,district,category}}.
 """
 import uuid
+import threading
 
 from . import config as C
 
 ID_NS = uuid.UUID("b7e2c1a4-3d5f-4a8b-9c1e-2f6d8a0b4e33")
+
+# 인덱싱 진행 상태 (대시보드 폴링용)
+STATE = {"running": False, "result": None, "error": None, "started_at": None}
+_LOCK = threading.Lock()
+
+
+def run_ingest_bg(full=False):
+    """백그라운드 스레드에서 자체 세션으로 인덱싱 실행 (HTTP 타임아웃 방지)."""
+    with _LOCK:
+        if STATE["running"]:
+            return False
+        STATE.update(running=True, result=None, error=None)
+
+    def _work():
+        from database import SessionLocal
+        db = SessionLocal()
+        try:
+            STATE["result"] = ingest(db, full=full)
+        except Exception as e:
+            STATE["error"] = str(e)
+        finally:
+            db.close()
+            STATE["running"] = False
+
+    threading.Thread(target=_work, daemon=True).start()
+    return True
 
 
 def _doc(typ, rid, district, category, title, body):
