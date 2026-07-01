@@ -253,12 +253,15 @@ ProposalCommentRead.update_forward_refs()
 
 class ReportCommentCreate(BaseModel):
     content: str
+    parent_id: Optional[int] = None
 
 class ReportCommentRead(BaseModel):
     id: int
     author: Optional[str] = None
     content: str
     date: Optional[str] = None
+    parent_id: Optional[int] = None
+    replies: List['ReportCommentRead'] = []
 
     model_config = _orm
 

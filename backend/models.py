@@ -169,6 +169,7 @@ class ReportComment(Base):
     user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
     author_name = Column(String(100), nullable=True)  # for seeded comments without real user
     content = Column(Text, nullable=False)
+    parent_id = Column(Integer, ForeignKey("report_comments.id"), nullable=True)  # 답글(대댓글)
     created_at = Column(DateTime, default=datetime.now)
     user = relationship("User", foreign_keys=[user_id], lazy="select")
 

@@ -934,15 +934,26 @@ def list_report_comments(report_id: int, db: Session = Depends(get_db)):
     rows = db.query(models.ReportComment).filter(
         models.ReportComment.report_id == report_id
     ).order_by(models.ReportComment.created_at.asc()).all()
-    return [
-        {
+
+    def _ser(c):
+        return {
             "id": c.id,
             "author": c.author_name or (c.user.nickname if c.user else "익명"),
             "content": c.content,
             "date": c.created_at.strftime("%Y.%m.%d") if c.created_at else None,
+            "parent_id": c.parent_id,
+            "replies": [],
         }
-        for c in rows
-    ]
+
+    by_id = {c.id: _ser(c) for c in rows}
+    top = []
+    for c in rows:
+        node = by_id[c.id]
+        if c.parent_id and c.parent_id in by_id:
+            by_id[c.parent_id]["replies"].append(node)
+        else:
+            top.append(node)
+    return top
 
 
 @router.post("/{report_id}/comments", response_model=schemas.ReportCommentRead, status_code=201)
@@ -961,6 +972,7 @@ def create_report_comment(
         user_id=safe_uid,
         author_name=current_user.nickname or current_user.name,
         content=payload.content,
+        parent_id=payload.parent_id,
     )
     db.add(c)
     r.comments_count = (r.comments_count or 0) + 1
@@ -985,6 +997,8 @@ def create_report_comment(
         "author": c.author_name,
         "content": c.content,
         "date": c.created_at.strftime("%Y.%m.%d") if c.created_at else None,
+        "parent_id": c.parent_id,
+        "replies": [],
     }
 
 

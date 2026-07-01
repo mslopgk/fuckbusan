@@ -163,6 +163,40 @@
     cursor: pointer;
 }
 
+/* 답글 작성 안내 바 */
+.m-comment-reply-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f7f7f8;
+    border-radius: 10px;
+    padding: 7px 12px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #555;
+    letter-spacing: -0.02em;
+}
+.m-comment-reply-bar strong { color: #542aa3; font-weight: 700; }
+.m-comment-reply-bar button {
+    border: none;
+    background: none;
+    font-size: 16px;
+    line-height: 1;
+    color: #999;
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+/* 대댓글(답글) 목록 */
+.m-comment-replies {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0 0 0 16px;
+    border-left: 2px solid #f0f0f0;
+}
+.m-comment-replies li { margin-bottom: 10px; }
+.m-comment-replies li:last-child { margin-bottom: 0; }
+
 /* Stage tracker bar (fixed bottom) */
 .m-rdetail-stage-bar {
     position: fixed;

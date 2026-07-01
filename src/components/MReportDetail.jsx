@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
 import './MProposalDetail.css';
@@ -49,6 +49,8 @@ export default function MReportDetail({ onNavigate, report }) {
     const [likeCount, setLikeCount] = useState(data.likes);
     const [resultOpen, setResultOpen] = useState(false);
     const [comments, setComments] = useState([]);
+    const [replyTo, setReplyTo] = useState(null);
+    const commentInputRef = useRef(null);
     const [myId, setMyId] = useState(null);
 
     // 소유자 판정용 현재 사용자 user_id
@@ -130,12 +132,19 @@ export default function MReportDetail({ onNavigate, report }) {
             const res = await fetch(`${API_URL}/api/reports/${report.id}/comments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ content: comment }),
+                body: JSON.stringify({ content: comment, parent_id: replyTo?.id ?? null }),
             });
             if (res.ok) {
                 const c = await res.json();
-                setComments((prev) => [...prev, c]);
+                if (replyTo) {
+                    setComments((prev) => prev.map((p) =>
+                        p.id === replyTo.id ? { ...p, replies: [...(p.replies || []), c] } : p
+                    ));
+                } else {
+                    setComments((prev) => [...prev, c]);
+                }
                 setComment('');
+                setReplyTo(null);
             }
         } catch (e) {
             console.error(e);
@@ -230,16 +239,24 @@ export default function MReportDetail({ onNavigate, report }) {
                     </span>
                 </div>
 
+                {replyTo && (
+                    <div className="m-comment-reply-bar">
+                        <span><strong>{replyTo.author || '익명'}</strong>님에게 답글 작성 중</span>
+                        <button type="button" aria-label="답글 취소" onClick={() => setReplyTo(null)}>×</button>
+                    </div>
+                )}
                 <div className="m-comment-input-row">
                     <input
+                        ref={commentInputRef}
                         type="text"
-                        placeholder="댓글을 입력해주세요"
+                        placeholder={replyTo ? '답글을 입력해주세요' : '댓글을 입력해주세요'}
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') submitComment(); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' && !commenting) submitComment(); }}
                         className="m-comment-input"
+                        disabled={commenting}
                     />
-                    <button className="m-comment-send" onClick={submitComment} aria-label="등록">
+                    <button className="m-comment-send" onClick={submitComment} aria-label="등록" disabled={!comment.trim() || commenting} style={{ opacity: (!comment.trim() || commenting) ? 0.45 : 1 }}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
                     </button>
                 </div>
@@ -249,8 +266,27 @@ export default function MReportDetail({ onNavigate, report }) {
                         <li key={c.id ?? i}>
                             <div className="m-comment-meta">
                                 <strong>{c.author || '익명'}</strong>
+                                {c.date && <span>{c.date}</span>}
                             </div>
                             <p className="m-rdetail-comment-content">{c.content}</p>
+                            <button
+                                type="button"
+                                className="m-comment-reply"
+                                onClick={() => { setReplyTo(c); commentInputRef.current?.focus(); }}
+                            >답글쓰기</button>
+                            {(c.replies?.length > 0) && (
+                                <ul className="m-comment-replies">
+                                    {c.replies.map((r, j) => (
+                                        <li key={r.id ?? j}>
+                                            <div className="m-comment-meta">
+                                                <strong>{r.author || '익명'}</strong>
+                                                {r.date && <span>{r.date}</span>}
+                                            </div>
+                                            <p className="m-rdetail-comment-content">{r.content}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </li>
                     ))}
                 </ul>

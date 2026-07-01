@@ -51,6 +51,8 @@ async def lifespan(app: FastAPI):
                 "ALTER TABLE survey_responses ADD COLUMN demographics JSON NULL",
                 # AI 대화형 설문: 인터뷰 작성자 연결 (나의 활동 노출용)
                 "ALTER TABLE survey_chat_interviews ADD COLUMN user_id INT NULL",
+                # 제보 댓글 답글(대댓글) 지원
+                "ALTER TABLE report_comments ADD COLUMN parent_id INT NULL",
             ]:
                 try:
                     conn.execute(text(stmt))
