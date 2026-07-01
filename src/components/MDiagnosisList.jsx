@@ -6,6 +6,7 @@ import {
     CATEGORIES_WITH_ALL as CATEGORIES,
 } from '../constants/diagnosis';
 import { API_URL } from '../utils/api';
+import MDiagnosisFilterModal from './MDiagnosisFilterModal';
 import './MDiagnosisList.css';
 
 const DIAG_PAGE_SIZE = 50;
@@ -47,13 +48,15 @@ const DiagCard = memo(function DiagCard({ it, onNavigate }) {
 });
 
 export default function MDiagnosisList({ onNavigate }) {
-    const [mode, setMode] = useState('citizen');
     const [district, setDistrict] = useState('');
     const [category, setCategory] = useState('전체');
     const [allRows, setAllRows] = useState([]);
     const [hasMore, setHasMore] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [districtOpen, setDistrictOpen] = useState(false);
+    // 필터 모달 상태 (진단대상/대분류/중분류/소분류)
+    const [filterOpen, setFilterOpen] = useState(false);
+    const [filter, setFilter] = useState({ target: 'citizen', bigCats: [], mid: '', sub: '' });
 
     useEffect(() => {
         setAllRows([]);
@@ -67,7 +70,7 @@ export default function MDiagnosisList({ onNavigate }) {
                 setHasMore(arr.length === DIAG_PAGE_SIZE);
             })
             .catch(() => setAllRows([]));
-    }, [mode]);
+    }, []);
 
     const loadMore = useCallback(() => {
         if (!hasMore || loadingMore) return;
@@ -92,12 +95,16 @@ export default function MDiagnosisList({ onNavigate }) {
     }, [loadMore]);
 
     const filtered = useMemo(() => {
+        const bigSet = new Set(filter.bigCats);
         return allRows
             .filter((r) => !district || r.진단지역 === district || r.district_code === district)
             .filter((r) => category === '전체' || r.대분류 === category)
+            .filter((r) => !bigSet.size || bigSet.has(r.대분류))
+            .filter((r) => !filter.mid || r.중분류 === filter.mid)
             .filter((r) => {
                 const target = r.진단대상 ?? r.target ?? null;
-                if (mode === 'expert') return target === '전문가' || target === 'expert';
+                if (filter.target === 'all') return true;
+                if (filter.target === 'expert') return target === '전문가' || target === 'expert';
                 return target !== '전문가' && target !== 'expert';
             })
             .map((r) => ({
@@ -112,7 +119,7 @@ export default function MDiagnosisList({ onNavigate }) {
                 comments: r.comments ?? r.댓글 ?? 0,
                 thumb: r.이미지경로 || null,
             }));
-    }, [allRows, district, category, mode]);
+    }, [allRows, district, category, filter]);
 
     return (
         <div className="m-diag-list-only-page">
@@ -129,21 +136,18 @@ export default function MDiagnosisList({ onNavigate }) {
                     </svg>
                 </button>
                 <span className="m-diag-list-topbar-title">진단 상세를 선택해주세요</span>
+                {/* 필터 버튼 (원형 ∧) — 진단대상/대분류 필터 모달 열기 */}
+                <button
+                    type="button"
+                    className="m-diag-filter-btn"
+                    aria-label="필터"
+                    onClick={() => setFilterOpen(true)}
+                >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M6 15l6-6 6 6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
             </header>
-
-            {/* 시민/전문가 모드 탭 */}
-            <div className="m-diag-list-mode-tabs">
-                <button
-                    type="button"
-                    className={`m-diag-list-mode-tab${mode === 'citizen' ? ' active' : ''}`}
-                    onClick={() => setMode('citizen')}
-                >시민 진단</button>
-                <button
-                    type="button"
-                    className={`m-diag-list-mode-tab${mode === 'expert' ? ' active' : ''}`}
-                    onClick={() => setMode('expert')}
-                >전문가 진단</button>
-            </div>
 
             {/* 지역 선택 행 — Figma: bold "전체 ▶" */}
             <div className="m-diag-list-district-row">
@@ -227,6 +231,14 @@ export default function MDiagnosisList({ onNavigate }) {
                     </div>
                 </div>
             )}
+
+            {/* 진단 상세 필터 모달 */}
+            <MDiagnosisFilterModal
+                open={filterOpen}
+                value={filter}
+                onClose={() => setFilterOpen(false)}
+                onApply={setFilter}
+            />
 
             <MobileBottomNav currentView="mDiagnosisList" onNavigate={onNavigate} />
         </div>

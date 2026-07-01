@@ -38,6 +38,11 @@
     line-height: 1.4;
 }
 
+/* 필터 버튼을 헤더 우측 끝으로 */
+.m-diag-map-filter-btn {
+    margin-left: auto;
+}
+
 /* 지역 드롭다운 행 */
 .m-diag-district-row-map {
     position: relative;

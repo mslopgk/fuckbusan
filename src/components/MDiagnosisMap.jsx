@@ -10,7 +10,10 @@ import {
 } from '../constants/diagnosis';
 import './MDiagnosisList.css';
 import './MDiagnosisMap.css';
+import MDiagnosisFilterModal from './MDiagnosisFilterModal';
 import { API_URL, authHeaders } from '../utils/api';
+
+const TARGET_LABEL = { all: '전체 진단', citizen: '시민 진단', expert: '전문가 진단' };
 
 // 줌 레벨 → 클러스터 합치기 반경 (위경도 도 단위)
 // Kakao level 1=가장 가까이, 14=가장 멀리
@@ -103,7 +106,8 @@ const DiagCard = memo(function DiagCard({ it, onNavigate }) {
 
 export default function MDiagnosisMap({ onNavigate }) {
     const [category, setCategory] = useState('전체');
-    const [mode, setMode] = useState('citizen');
+    const [filterOpen, setFilterOpen] = useState(false);
+    const [filter, setFilter] = useState({ target: 'citizen', bigCats: [], mid: '', sub: '' });
     const [district, setDistrict] = useState('');
     const [allRows, setAllRows] = useState([]);
     const [diagHasMore, setDiagHasMore] = useState(true);
@@ -115,7 +119,6 @@ export default function MDiagnosisMap({ onNavigate }) {
     // panTo 중 onDragEnd 이벤트가 발생해 selectedPin을 덮어쓰는 것을 방지
     const isPanningRef = useRef(false);
 
-    // mode 변경 시 page 1부터 재로드
     useEffect(() => {
         setAllRows([]);
         setDiagHasMore(true);
@@ -128,7 +131,7 @@ export default function MDiagnosisMap({ onNavigate }) {
                 setDiagHasMore(arr.length === DIAG_PAGE_SIZE);
             })
             .catch(() => setAllRows([]));
-    }, [mode]);
+    }, []);
 
     const loadMoreDiag = useCallback(() => {
         if (!diagHasMore || diagLoadingMore) return;
@@ -161,14 +164,18 @@ export default function MDiagnosisMap({ onNavigate }) {
     }, []);
 
     const filtered = useMemo(() => {
+        const bigSet = new Set(filter.bigCats);
         return allRows
             .filter((r) => !district || r.진단지역 === district || r.district_code === district)
             .filter((r) => category === '전체' || r.대분류 === category)
+            .filter((r) => !bigSet.size || bigSet.has(r.대분류))
+            .filter((r) => !filter.mid || r.중분류 === filter.mid)
             .filter((r) => {
-                // 시민/전문가 탭 필터
+                // 진단대상 필터 (필터 모달에서 선택)
                 const target = r.진단대상 ?? r.target ?? null;
-                if (mode === 'expert') return target === '전문가' || target === 'expert';
-                // citizen 모드: 전문가 제외 (미설정 포함)
+                if (filter.target === 'all') return true;
+                if (filter.target === 'expert') return target === '전문가' || target === 'expert';
+                // citizen: 전문가 제외 (미설정 포함)
                 return target !== '전문가' && target !== 'expert';
             })
             .map((r) => ({
@@ -183,7 +190,7 @@ export default function MDiagnosisMap({ onNavigate }) {
                 comments: r.comments ?? r.댓글 ?? 0,
                 thumb: r.이미지경로 || null,
             }));
-    }, [allRows, district, category, mode]);
+    }, [allRows, district, category, filter]);
 
     // 지도 핀: 서버 clusters를 줌 레벨 기반 지리 클러스터링으로 표시
     // allRows 개별 좌표는 리스트 카드 필터에만 사용
@@ -256,12 +263,18 @@ export default function MDiagnosisMap({ onNavigate }) {
                     </svg>
                 </button>
                 <div className="m-diag-map-header-title">
-                    <span className="m-diag-map-header-label">{mode === 'expert' ? '전문가 진단' : '일반 진단'}</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="#23BDBB" strokeWidth="2"/>
-                        <path d="M10 8l4 4-4 4" stroke="#23BDBB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <span className="m-diag-map-header-label">{TARGET_LABEL[filter.target] || '진단'}</span>
                 </div>
+                <button
+                    type="button"
+                    className="m-diag-filter-btn m-diag-map-filter-btn"
+                    aria-label="필터"
+                    onClick={() => setFilterOpen(true)}
+                >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M6 15l6-6 6 6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
             </header>
 
             {/* 지역 드롭다운 — Figma: 흰 라운드 박스 + 지역명 + 아래 화살표 */}
@@ -416,19 +429,10 @@ export default function MDiagnosisMap({ onNavigate }) {
             <div className="m-diag-sheet">
                 <div className="m-diag-sheet-handle" />
 
-                {/* 시민/전문가 모드 탭 + 목록 보기 햄버거 (Figma 22:6281) */}
+                {/* 진단대상 표시 + 목록 보기 햄버거 (진단대상 선택은 필터 모달) */}
                 <div className="m-diag-mode-tabs-row">
                     <div className="m-diag-mode-tabs">
-                        <button
-                            type="button"
-                            className={`m-diag-mode-tab${mode === 'citizen' ? ' active' : ''}`}
-                            onClick={() => setMode('citizen')}
-                        >시민 진단</button>
-                        <button
-                            type="button"
-                            className={`m-diag-mode-tab${mode === 'expert' ? ' active' : ''}`}
-                            onClick={() => setMode('expert')}
-                        >전문가 진단</button>
+                        <span className="m-diag-mode-tab active">{TARGET_LABEL[filter.target] || '진단'}</span>
                     </div>
                     <button
                         type="button"
@@ -481,7 +485,7 @@ export default function MDiagnosisMap({ onNavigate }) {
                     type="button"
                     className={`m-diag-fab${!selectedPin ? ' disabled' : ''}`}
                     disabled={!selectedPin}
-                    onClick={() => selectedPin && onNavigate?.('mDiagnosisForm', { ...selectedPin, mode })}
+                    onClick={() => selectedPin && onNavigate?.('mDiagnosisForm', { ...selectedPin, mode: filter.target })}
                 >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19" />
@@ -490,6 +494,14 @@ export default function MDiagnosisMap({ onNavigate }) {
                     <span>진단하기</span>
                 </button>
             </div>
+
+            {/* 진단 상세 필터 모달 */}
+            <MDiagnosisFilterModal
+                open={filterOpen}
+                value={filter}
+                onClose={() => setFilterOpen(false)}
+                onApply={setFilter}
+            />
 
             <MobileBottomNav currentView="mDiagnosisMap" onNavigate={onNavigate} />
         </div>

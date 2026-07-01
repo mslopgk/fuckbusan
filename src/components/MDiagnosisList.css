@@ -583,6 +583,20 @@
     justify-content: center;
 }
 
+/* 필터 버튼 (원형 ∧) — 헤더/시트 우측 */
+.m-diag-filter-btn {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
 .m-diag-list-mode-tabs {
     display: flex;
     align-items: baseline;

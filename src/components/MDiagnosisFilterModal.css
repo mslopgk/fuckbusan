@@ -1,0 +1,249 @@
+/* Figma 269:26256 — 진단 상세 필터 모달 (teal #23BDBB) */
+
+.mdf-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.mdf-panel {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Pretendard Variable', 'Pretendard', 'Noto Sans KR', sans-serif;
+    color: #242424;
+}
+
+/* ── 헤더 ── */
+.mdf-head {
+    flex-shrink: 0;
+    height: 56px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mdf-back {
+    background: none;
+    border: none;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.mdf-title {
+    flex: 1;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #242424;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mdf-collapse {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* ── 본문 ── */
+.mdf-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 8px 20px 24px;
+}
+
+.mdf-section {
+    padding: 6px 0;
+}
+
+.mdf-label {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #242424;
+    margin-bottom: 10px;
+}
+
+.mdf-label-sub {
+    margin-top: 2px;
+}
+
+.mdf-group-label {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #242424;
+    margin-bottom: 12px;
+}
+
+/* ── 진단대상 세그먼트 ── */
+.mdf-segment {
+    display: flex;
+    gap: 10px;
+}
+
+.mdf-seg-btn {
+    flex: 1;
+    height: 48px;
+    border-radius: 10px;
+    border: 1px solid #d5d5d5;
+    background: #fff;
+    color: #8a8a8a;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    letter-spacing: -0.03em;
+    cursor: pointer;
+}
+
+.mdf-seg-btn.on {
+    border-color: #23BDBB;
+    color: #23BDBB;
+    font-weight: 700;
+    box-shadow: inset 0 0 0 1px #23BDBB;
+}
+
+/* ── 구분 밴드 ── */
+.mdf-band {
+    height: 12px;
+    background: #eeeeee;
+    margin: 14px -20px;
+}
+
+/* 점선 구분선 */
+.mdf-dotted {
+    border-top: 1px dashed #e2e2e2;
+    margin: 6px 0;
+}
+
+/* ── 대분류 체크박스 ── */
+.mdf-check-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mdf-check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.mdf-check-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: 1.5px solid #cfcfcf;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mdf-check-box.on {
+    background: #23BDBB;
+    border-color: #23BDBB;
+}
+
+.mdf-check-text {
+    font-size: 15px;
+    color: #242424;
+    letter-spacing: -0.02em;
+}
+
+/* ── 드롭다운 ── */
+.mdf-select-wrap {
+    position: relative;
+}
+
+.mdf-select {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #d5d5d5;
+    border-radius: 10px;
+    padding: 0 40px 0 14px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #242424;
+    background: #fff;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    outline: none;
+    letter-spacing: -0.02em;
+}
+
+.mdf-select:invalid,
+.mdf-select option[value=''] {
+    color: #9a9a9a;
+}
+
+.mdf-select-chevron {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* ── 하단 액션 ── */
+.mdf-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.mdf-btn {
+    flex: 1;
+    height: 52px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+}
+
+.mdf-btn-cancel {
+    background: #fff;
+    border: 1px solid #d5d5d5;
+    color: #555;
+}
+
+.mdf-btn-confirm {
+    background: #23BDBB;
+    border: none;
+    color: #fff;
+}
+
+@media (min-width: 1024px) {
+    .mdf-overlay { display: none; }
+}
