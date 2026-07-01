@@ -13,8 +13,8 @@
 
 /* 가상시민 배너 — 로고·텍스트·일러스트를 한 카드에 담고 일러스트가 상단까지 크게 올라옴 */
 .hmob2-aic {
-    position: relative; margin: 12px 16px 0; width: calc(100% - 32px);
-    border-radius: 18px; min-height: 340px; overflow: hidden;
+    position: relative; margin: 0; width: 100%;
+    border-radius: 0; min-height: 340px; overflow: hidden;
     background: #e2f1fd;
 }
 .hmob2-aic-text { position: relative; z-index: 1; display: block; width: 100%;
