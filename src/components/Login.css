@@ -25,9 +25,9 @@
     cursor: pointer;
 }
 
-/* Title Section */
+/* Title Section (Figma: gap 100px between title block and form block) */
 .login-title-section {
-    margin-bottom: 60px;
+    margin-bottom: 100px;
 }
 
 .login-title {
@@ -40,19 +40,20 @@
 }
 
 .login-subtitle-main {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 20px;
     font-weight: 700;
     letter-spacing: -0.8px;
-    color: #242424;
+    color: #111;
     line-height: 1.4;
-    margin-bottom: 0.5rem;
+    margin-bottom: 8px;
 }
 
 .login-subtitle-desc {
     font-size: 14px;
-    color: #1e1e1e;
+    color: #1f1f1f;
     font-weight: 400;
+    line-height: 1.35;
 }
 
 /* 아이디/비밀번호 찾기 탭 */
@@ -88,9 +89,9 @@
 }
 
 .input-label {
-    font-size: 1rem;
-    color: #666;
-    font-weight: 500;
+    font-size: 14px;
+    color: #1f1f1f;
+    font-weight: 400;
 }
 
 .login-input {
@@ -98,7 +99,7 @@
     height: 48px;
     padding: 0 12px;
     font-size: 16px;
-    border: 1px solid #e6e6e6;
+    border: 1px solid #f4f4f4;
     border-radius: 8px;
     outline: none;
     color: #242424;
@@ -107,16 +108,16 @@
 }
 
 .login-input::placeholder {
-    color: #bfbfbf;
+    color: #aaa;
 }
 
 .login-input:focus {
     border-color: #23bdbb;
 }
 
-/* Submit Button */
+/* Submit Button (Figma: gap 40px below form) */
 .login-btn-container {
-    margin-top: 3.125rem;
+    margin-top: 40px;
 }
 
 .login-submit-btn {
@@ -148,36 +149,48 @@
     color: #fff;
 }
 
-/* Footer Links */
+/* Footer Links (Figma 269:20081: 3 items with pipe separators) */
 .login-footer-links {
     margin-top: 1rem;
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
     font-size: 14px;
-    color: #1e1e1e;
+    color: #1f1f1f;
     padding: 0 4px;
+}
+
+.login-footer-sep {
+    color: #ddd;
+    font-size: 14px;
+    padding: 0 10px;
+    user-select: none;
+    pointer-events: none;
 }
 
 .text-link {
     background: none;
     border: none;
-    color: #1e1e1e;
-    text-decoration: underline;
+    color: #1f1f1f;
+    text-decoration: none;
     cursor: pointer;
     padding: 0;
     font-size: 14px;
+    font-family: inherit;
+    line-height: 1.35;
 }
 
-/* 간편 회원가입 */
+/* 간편 회원가입 (Figma: gap 16px from footer links, bg #111) */
 .login-simple-btn {
     width: 100%;
     height: 56px;
-    margin-top: 40px;
+    margin-top: 16px;
     border: none;
     border-radius: 8px;
-    background: #262626;
+    background: #111;
     color: #fff;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 18px;
     font-weight: 700;
     letter-spacing: -0.72px;

@@ -68,7 +68,7 @@
 }
 
 .ex-edit-input:focus {
-    border-color: #16B5B0;
+    border-color: #23BDBB;
 }
 
 .ex-edit-input.wide {
@@ -130,7 +130,7 @@
 }
 
 .btn-ex-confirm {
-    background-color: #16B5B0;
+    background-color: #23BDBB;
     color: white;
     border: none;
     padding: 0 60px;

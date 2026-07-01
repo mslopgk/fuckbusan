@@ -340,7 +340,7 @@
     flex: 1;
     height: 56px;
     border: none;
-    border-radius: 8px;
+    border-radius: 15px;
     font-size: 18px;
     font-weight: 700;
     cursor: pointer;
@@ -348,9 +348,12 @@
     letter-spacing: -0.04em;
 }
 
+/* Figma 269:25059 — 임시저장: #e6e6e6 bg, #777 text, regular weight */
 .m-diagform-cta-secondary {
-    background: #f0f1f4;
-    color: #888c93;
+    background: #e6e6e6;
+    color: #777;
+    font-weight: 400;
+    flex: 0 0 103px;
 }
 
 .m-diagform-cta-primary {

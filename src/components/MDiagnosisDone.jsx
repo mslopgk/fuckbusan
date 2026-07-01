@@ -1,13 +1,13 @@
 import CheckDone from './CheckDone';
 
-// Figma 22:7205 — 시민 진단 완료. CheckDone을 teal 테마(#23BDBB)로 재사용.
+// Figma 269:25745 — 일반 진단 완료. 닫기(gray) + 홈으로 이동(teal) 두 버튼.
 export default function MDiagnosisDone({ onNavigate }) {
     return (
         <CheckDone
             type="diagnosis"
             color="#23BDBB"
-            btnLabel="진단 홈으로 가기"
             onGoHome={() => onNavigate?.('mDiagnosisList')}
+            onClose={() => onNavigate?.('home')}
         />
     );
 }

@@ -29,11 +29,18 @@ PERSONA_SCHEMA_HINT = (
 )
 
 
-def generate(db, district, n=3):
+def generate(db, district, n=3, period=None, extra_grounding="", evidence_override=None):
+    """지역 페르소나 생성.
+    - period: 갱신 주기/연도 라벨(예: '2025H2', '2026'). 미지정 시 '2026'.
+    - extra_grounding: 선택 데이터 행 기반 변환 시 우선 주입할 근거 텍스트.
+    - evidence_override: 근거 출처를 RAG 검색 대신 명시적으로 지정(선택 행 변환용).
+    """
     import models
     q = C.get_qdrant()
     if not C.llm_available():
-        return {"ok": False, "error": "LLM 키 미설정 (.env ANTHROPIC_API_KEY 또는 MINIMAX1~4)"}
+        return {"ok": False, "error": "LLM 키 미설정 (.env ANTHROPIC_API_KEY 또는 MINIMAX5/1~4)"}
+
+    year = period or "2026"
 
     # 지역 근거 검색
     grounding = ""
@@ -46,6 +53,11 @@ def generate(db, district, n=3):
             evidence = [{"source": r["source"]} for r in results][:12]
         except Exception:
             pass
+    # 선택 행 근거가 있으면 최우선으로 주입
+    if extra_grounding:
+        grounding = (extra_grounding + ("\n\n" + grounding if grounding else "")).strip()
+    if evidence_override is not None:
+        evidence = evidence_override
     if not grounding:
         grounding = "(검색된 근거 없음 — 일반적인 부산 도시생활 맥락으로 생성)"
 
@@ -74,7 +86,7 @@ def generate(db, district, n=3):
 
         det = p.get("detail") or {}
         row = models.Persona(
-            district_code=district, year="2026",
+            district_code=district, year=year,
             name=p.get("name"), age=int(p.get("age") or 40),
             gender=p.get("gender") or "", job=det.get("job") or "",
             image_emoji="👤", quote=p.get("quote") or "",

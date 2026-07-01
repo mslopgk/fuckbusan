@@ -73,7 +73,10 @@ const LoginCard = ({ onBack, onSignup, setMode }) => {
                     </button>
                     <div className="pcauth-loginlinks">
                         <button className="pcauth-link" onClick={onSignup}>회원가입</button>
-                        <button className="pcauth-link" onClick={() => setMode('findChoose')}>아이디/비밀번호 찾기</button>
+                        <span className="pcauth-link-sep" />
+                        <button className="pcauth-link" onClick={() => setMode('findId')}>아이디 찾기</button>
+                        <span className="pcauth-link-sep" />
+                        <button className="pcauth-link" onClick={() => setMode('findPw')}>비밀번호 찾기</button>
                     </div>
                     <button className="pcauth-simple" onClick={onSignup}>간편 회원가입</button>
                 </div>

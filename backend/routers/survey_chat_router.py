@@ -246,9 +246,11 @@ _cluster_cache: dict = {}
 
 
 @router.get("/clusters")
-def clusters(db: Session = Depends(get_db), k: Optional[int] = None):
+def clusters(db: Session = Depends(get_db), k: Optional[int] = None, force: bool = False):
     """이슈 군집화(3D) — OpenAI 임베딩 + K-Means + t-SNE(3D 좌표).
-    test4 analysis.py 시각화 이식. 데이터가 적으면 graceful 처리(>=4건)."""
+    test4 analysis.py 시각화 이식. 데이터가 적으면 graceful 처리(>=4건).
+    OpenAI 임베딩 비용이 있으므로 프론트에서 '재분석' 버튼으로만 호출.
+    force=True면 데이터 변동이 없어도 캐시를 무시하고 재계산."""
     rows = [r for r in db.query(models.SurveyChatInterview).all() if (r.issue_text or "").strip()]
     n = len(rows)
     if n < 4:
@@ -256,7 +258,7 @@ def clusters(db: Session = Depends(get_db), k: Optional[int] = None):
                 "note": f"군집화에는 최소 4건의 이슈가 필요합니다. (현재 {n}건)"}
 
     sig = f"{n}:{max(r.id for r in rows)}:{k or 0}"
-    if _cluster_cache.get("sig") == sig:
+    if not force and _cluster_cache.get("sig") == sig:
         return _cluster_cache["data"]
 
     try:

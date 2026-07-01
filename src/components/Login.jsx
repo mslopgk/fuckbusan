@@ -324,10 +324,13 @@ const Login = ({ onBack, onSignup }) => {
                 </button>
             </div>
 
-            {/* Footer Links (Figma: 회원가입 / 아이디·비밀번호 찾기) */}
+            {/* Footer Links (Figma 269:20081: 회원가입 | 아이디 찾기 | 비밀번호 찾기) */}
             <div className="login-footer-links">
                 <button className="text-link" onClick={onSignup}>회원가입</button>
-                <button className="text-link" onClick={() => setFindMode('id')}>아이디/비밀번호 찾기</button>
+                <span className="login-footer-sep">|</span>
+                <button className="text-link" onClick={() => setFindMode('id')}>아이디 찾기</button>
+                <span className="login-footer-sep">|</span>
+                <button className="text-link" onClick={() => setFindMode('pw')}>비밀번호 찾기</button>
             </div>
 
             {/* 간편 회원가입 */}

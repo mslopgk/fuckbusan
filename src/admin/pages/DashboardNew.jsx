@@ -4,9 +4,13 @@ import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import { API_BASE } from '../api';
 
+const GUGUN = ['부산진구', '해운대구', '사하구', '동래구', '북구', '남구', '연제구', '금정구',
+    '사상구', '기장군', '수영구', '강서구', '서구', '영도구', '동구', '중구'];
+
 export default function DashboardNew({ onNavigate }) {
     const [memberData, setMemberData] = useState([]);
     const [search, setSearch] = useState('');
+    const [region, setRegion] = useState('');
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -24,8 +28,10 @@ export default function DashboardNew({ onNavigate }) {
                         name: u.name || '-',
                         nickname: u.nickname || '-',
                         phone: u.phone_num || '-',
-                        address: u.district_code || '-',
+                        address: u.address || u.district_code || '-',
+                        district: u.district_code || '',
                         email: u.ID,
+                        birth: u.birth_date || '-',
                         joinedAt: u.created_at ? String(u.created_at).slice(0, 10) : '-',
                     })));
                 }
@@ -55,7 +61,9 @@ export default function DashboardNew({ onNavigate }) {
         }
     };
 
-    const filtered = memberData.filter((m) => !search || m.name.includes(search));
+    const filtered = memberData.filter((m) =>
+        (!search || m.name.includes(search) || m.nickname.includes(search))
+        && (!region || (m.district || '').includes(region) || (m.address || '').includes(region)));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
@@ -66,25 +74,40 @@ export default function DashboardNew({ onNavigate }) {
                 <div className="total-count-text">전체 회원 <span>{filtered.length}명</span></div>
             </div>
 
-            <div className="search-box-new">
-                <div className="search-label-new">회원검색</div>
-                <div className="search-input-wrapper-new">
-                    <input
-                        type="text"
+            <div className="search-box-new-col">
+                <div className="search-row">
+                    <div className="search-label-new" style={{ minWidth: 92 }}>카테고리 선택</div>
+                    <select
                         className="search-input-new"
-                        placeholder="이름을 입력해 주세요"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                    <svg
-                        style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#ccc' }}
-                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ maxWidth: 300, color: region ? '#242424' : '#999' }}
+                        value={region}
+                        onChange={(e) => { setRegion(e.target.value); setPage(1); }}
                     >
-                        <circle cx="11" cy="11" r="8" />
-                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
+                        <option value="">선택해주세요</option>
+                        {GUGUN.map((g) => <option key={g} value={g}>{g}</option>)}
+                    </select>
                 </div>
-                <button className="btn-search-new" onClick={() => setPage(1)}>검색</button>
+                <div className="search-row">
+                    <div className="search-label-new" style={{ minWidth: 92 }}>검색</div>
+                    <div className="search-input-wrapper-new">
+                        <input
+                            type="text"
+                            className="search-input-new"
+                            placeholder="이름 또는 닉네임을 입력해 주세요"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') setPage(1); }}
+                        />
+                        <svg
+                            style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#ccc' }}
+                            width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                        >
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                    </div>
+                    <button className="btn-search-new" onClick={() => setPage(1)}>검색</button>
+                </div>
             </div>
 
             <div className="table-container-new">
@@ -96,7 +119,7 @@ export default function DashboardNew({ onNavigate }) {
                             <th>연락처</th>
                             <th>주소</th>
                             <th>이메일</th>
-                            <th>가입일</th>
+                            <th>생년월일</th>
                             <th>메뉴</th>
                         </tr>
                     </thead>
@@ -114,7 +137,7 @@ export default function DashboardNew({ onNavigate }) {
                                 <td>{item.phone}</td>
                                 <td>{item.address}</td>
                                 <td>{item.email}</td>
-                                <td>{item.joinedAt}</td>
+                                <td>{item.birth}</td>
                                 <td>
                                     <div className="action-btns-new">
                                         <span

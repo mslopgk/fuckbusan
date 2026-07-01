@@ -21,18 +21,19 @@ export default function SurveyChatAnalytics({ onNavigate }) {
     const [clusters, setClusters] = useState(null);
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState(null);
+    // 군집 분석(OpenAI 임베딩)은 비용이 있어 버튼으로만 실행
+    const [clusterLoading, setClusterLoading] = useState(false);
+    const [clusterErr, setClusterErr] = useState(null);
 
+    // 집계(DB only, 무료)는 진입 시 자동 로드
     useEffect(() => {
         let alive = true;
         (async () => {
             setLoading(true); setErr(null);
             try {
-                const [a, c] = await Promise.all([
-                    fetch(`${API_BASE}/survey-chat/analytics`).then((r) => r.json()),
-                    fetch(`${API_BASE}/survey-chat/clusters`).then((r) => r.json()),
-                ]);
+                const a = await fetch(`${API_BASE}/survey-chat/analytics`).then((r) => r.json());
                 if (!alive) return;
-                setData(a); setClusters(c);
+                setData(a);
             } catch (e) {
                 if (alive) setErr('데이터를 불러오지 못했습니다.');
             } finally {
@@ -41,6 +42,21 @@ export default function SurveyChatAnalytics({ onNavigate }) {
         })();
         return () => { alive = false; };
     }, []);
+
+    // 군집 분석 실행 — 버튼 클릭 시에만. force=true면 캐시 무시 재계산.
+    const runClusters = async (force = false) => {
+        setClusterLoading(true); setClusterErr(null);
+        try {
+            const c = await fetch(
+                `${API_BASE}/survey-chat/clusters${force ? '?force=true' : ''}`
+            ).then((r) => r.json());
+            setClusters(c);
+        } catch (e) {
+            setClusterErr('군집 분석에 실패했습니다.');
+        } finally {
+            setClusterLoading(false);
+        }
+    };
 
     // plotly 3D 트레이스: 군집별로 분리
     const plotData = useMemo(() => {
@@ -155,10 +171,32 @@ export default function SurveyChatAnalytics({ onNavigate }) {
                             </div>
                         )}
 
-                        {/* 3D 의미 군집 */}
-                        <h2 className="sca-section">이슈 의미 군집 (3D)</h2>
+                        {/* 3D 의미 군집 — 버튼 클릭 시에만 실행 (OpenAI 임베딩 비용) */}
+                        <div className="sca-cluster-head">
+                            <h2 className="sca-section" style={{ margin: 0 }}>이슈 의미 군집 (3D)</h2>
+                            <button
+                                className="sca-run-btn"
+                                onClick={() => runClusters(!!clusters && !clusters.note)}
+                                disabled={clusterLoading}
+                            >
+                                {clusterLoading
+                                    ? '분석 중…'
+                                    : clusters && !clusters.note
+                                        ? '↻ 재분석'
+                                        : 'AI 군집 분석 실행'}
+                            </button>
+                        </div>
                         <div className="sca-chart-card">
-                            {clusters?.note ? (
+                            {clusterErr ? (
+                                <div className="sca-empty">{clusterErr}</div>
+                            ) : clusterLoading ? (
+                                <div className="sca-empty">OpenAI 임베딩으로 군집을 계산하는 중입니다…</div>
+                            ) : !clusters ? (
+                                <div className="sca-empty">
+                                    군집 분석은 OpenAI 임베딩을 사용해 비용이 발생하므로
+                                    <br />위 <b>‘AI 군집 분석 실행’</b> 버튼을 눌렀을 때만 실행됩니다.
+                                </div>
+                            ) : clusters.note ? (
                                 <div className="sca-empty">{clusters.note}</div>
                             ) : (
                                 <>

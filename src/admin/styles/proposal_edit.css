@@ -68,7 +68,7 @@
 }
 
 .pr-edit-input:focus {
-    border-color: #16B5B0;
+    border-color: #23BDBB;
 }
 
 .pr-edit-textarea {
@@ -87,7 +87,7 @@
 }
 
 .pr-edit-textarea:focus {
-    border-color: #16B5B0;
+    border-color: #23BDBB;
 }
 
 .pr-location-group {
@@ -149,7 +149,7 @@
 }
 
 .btn-pr-confirm {
-    background-color: #16B5B0;
+    background-color: #23BDBB;
     color: white;
     border: none;
     padding: 0 60px;

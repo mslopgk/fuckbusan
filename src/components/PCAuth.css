@@ -21,7 +21,7 @@
 /* 타이틀 */
 .pcauth-title { text-align: center; margin-bottom: 24px; }
 .pcauth-title h1 {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
     font-size: 20px;
     letter-spacing: -0.8px;
@@ -29,7 +29,10 @@
     margin: 0;
     line-height: 1.4;
 }
-.pcauth-title h1.accent { color: #5b2eab; font-size: 24px; }
+/* Figma 269:8621: 로그인 title = #23bdbb, 32px, centered */
+.pcauth-title h1.accent { color: var(--teal); font-size: 32px; letter-spacing: -1.28px; }
+/* Figma 269:8314: 회원가입 title = #23bdbb, 28px */
+.pcauth-title h1.signup-accent { font-size: 28px; letter-spacing: -1.12px; }
 .pcauth-title p {
     margin: 10px 0 0;
     font-size: 14px;
@@ -37,13 +40,14 @@
     color: var(--sub);
 }
 .pcauth-title p.hero {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
-    font-size: 18px;
-    color: var(--black);
+    font-size: 20px;
+    letter-spacing: -0.8px;
+    color: #111;
     margin-top: 14px;
 }
-.pcauth-title p.hero + p { margin-top: 6px; color: #999; }
+.pcauth-title p.hero + p { margin-top: 6px; color: #111; font-size: 14px; }
 
 /* 카드 */
 .pcauth-card {
@@ -79,8 +83,8 @@
 .pcauth-label .req { color: var(--red); font-size: 14px; line-height: 1; }
 .pcauth-input {
     width: 100%;
-    height: 46px;
-    border: 1px solid var(--line);
+    height: 48px;
+    border: 1px solid #aaa;
     border-radius: 8px;
     padding: 0 12px;
     font-family: inherit;
@@ -90,8 +94,8 @@
     outline: none;
     box-sizing: border-box;
 }
-.pcauth-input::placeholder { color: var(--line); }
-.pcauth-input:focus { border-color: var(--black); }
+.pcauth-input::placeholder { color: #aaa; }
+.pcauth-input:focus { border-color: #111; }
 .pcauth-input:disabled { background: #f5f5f5; color: #999; }
 
 .pcauth-helper { margin-top: 8px; font-size: 14px; line-height: 1.35; color: var(--sub); }
@@ -141,7 +145,7 @@
 /* 구분선 */
 .pcauth-divider { height: 1px; background: #eee; margin: 28px 0; width: 100%; }
 
-/* 제출 버튼 (카드 아래) */
+/* 제출 버튼 (카드 아래) — Figma: Pretendard Bold, 18px, -0.72px */
 .pcauth-submit {
     width: 343px;
     max-width: 100%;
@@ -151,7 +155,7 @@
     border-radius: 8px;
     background: var(--teal);
     color: #fff;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
     font-size: 18px;
     letter-spacing: -0.72px;
@@ -186,22 +190,23 @@
 .pcauth-link:hover { color: var(--black); }
 .pcauth-link-sep { width: 1px; height: 12px; background: #ddd; }
 
-/* 로그인 카드 내부 링크 (회원가입 | 아이디/비밀번호 찾기) */
+/* 로그인 카드 내부 링크 (회원가입 | 아이디 찾기 | 비밀번호 찾기) */
 .pcauth-loginlinks { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 18px; }
+.pcauth-loginlinks .pcauth-link-sep { width: 1px; height: 12px; background: #ddd; flex: none; }
 
-/* 간편 회원가입 (검정 버튼) */
+/* 간편 회원가입 (검정 버튼) — Figma: #111, 18px, Pretendard Bold */
 .pcauth-simple {
     width: 100%;
-    height: 50px;
-    margin-top: 18px;
+    height: 56px;
+    margin-top: 16px;
     border: none;
     border-radius: 8px;
-    background: #1a1a1a;
+    background: #111;
     color: #fff;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
-    font-size: 15px;
-    letter-spacing: -0.6px;
+    font-size: 18px;
+    letter-spacing: -0.72px;
     cursor: pointer;
 }
 .pcauth-simple:hover { background: #000; }

@@ -50,6 +50,17 @@
 
 .sca-cluster-desc { font-size: 13px; color: #777; line-height: 1.5; margin: 0 0 12px; word-break: keep-all; }
 
+/* 군집 분석 실행/재분석 버튼 */
+.sca-cluster-head { display: flex; align-items: center; justify-content: space-between; margin: 28px 0 14px; gap: 12px; }
+.sca-run-btn {
+    background: #542aa3; color: #fff; border: none; border-radius: 10px;
+    padding: 9px 16px; font-size: 13px; font-weight: 700; letter-spacing: -0.02em;
+    cursor: pointer; white-space: nowrap; transition: background .15s, opacity .15s;
+}
+.sca-run-btn:hover:not(:disabled) { background: #46228a; }
+.sca-run-btn:disabled { opacity: 0.55; cursor: default; }
+.sca-empty b { color: #542aa3; font-weight: 800; }
+
 @media (max-width: 1100px) {
     .sca-kpis { grid-template-columns: repeat(2, 1fr); }
     .sca-grid2 { grid-template-columns: 1fr; }

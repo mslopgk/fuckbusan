@@ -299,10 +299,10 @@
 .m-diag-tag {
     height: 24px;
     padding: 0 10px;
-    background: #DFF8F8;
+    background: #e6e6e6;
     border-radius: 15px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     color: #242424;
     display: inline-flex;
     align-items: center;
@@ -543,6 +543,19 @@
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+/* Figma 269:26746 — 헤더 타이틀 */
+.m-diag-list-topbar-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #242424;
+    letter-spacing: -0.03em;
+    line-height: 1.4;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Figma 22:8219 — 헤더 타이틀: "일반 진단 ⊙" */

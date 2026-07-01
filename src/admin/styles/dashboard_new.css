@@ -45,7 +45,7 @@
 }
 
 .menu-item-new.active {
-    color: #16B5B0; /* Teal for active main menu */
+    color: #23BDBB; /* Teal for active main menu */
 }
 
 .submenu-item-new {
@@ -57,7 +57,7 @@
 }
 
 .submenu-item-new.active {
-    color: #16B5B0;
+    color: #23BDBB;
 }
 
 .submenu-item-new:hover {
@@ -100,7 +100,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #16B5B0;
+    color: #23BDBB;
 }
 
 .btn-logout-new {
@@ -201,7 +201,7 @@
 }
 
 .btn-search-new {
-    background-color: #16B5B0;
+    background-color: #23BDBB;
     color: white;
     padding: 0 30px;
     height: 48px;
@@ -284,6 +284,6 @@
 }
 
 .page-num-new.active {
-    color: #16B5B0;
+    color: #23BDBB;
     font-weight: 700;
 }

@@ -158,7 +158,8 @@ const SignupForm = ({ onNavigate, onBack, consent }) => {
     return (
         <div className="pcauth">
             <div className="pcauth-title">
-                <h1>더 나은 도시 환경을 위해 함께해주세요</h1>
+                <h1 className="accent signup-accent">회원가입</h1>
+                <p className="hero">더 나은 도시 환경을 위해 함께해주세요</p>
                 <p>서비스 이용을 위해 회원가입이 필요합니다.</p>
             </div>
 

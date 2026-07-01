@@ -229,7 +229,7 @@
 .pc-diagpanel-cta-btn {
     width: 239px;
     height: 67px;
-    background: #06ab69;
+    background: var(--diag-teal);
     border: none;
     border-radius: 100px;
     color: #fff;
@@ -238,9 +238,10 @@
     letter-spacing: -0.8px;
     cursor: pointer;
     font-family: inherit;
+    box-shadow: 0 6px 16px rgba(35, 189, 187, 0.35);
     transition: background 0.18s;
 }
 
 .pc-diagpanel-cta-btn:hover {
-    background: #059a5f;
+    background: #1da9a7;
 }

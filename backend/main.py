@@ -16,7 +16,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy import text
 
 # Routers
-from routers import dashboard, ai, user_router, checklist_router, report_router, survey_router, home_router, admin_router, notification_router, search_router, ai_citizens, survey_chat_router, public_data_router, rag_admin_router
+from routers import dashboard, ai, user_router, checklist_router, report_router, survey_router, home_router, admin_router, notification_router, search_router, ai_citizens, survey_chat_router, public_data_router, rag_admin_router, announcement_router, checklist_admin_router
 
 import models
 from database import engine
@@ -116,6 +116,8 @@ app.include_router(ai_citizens.router)
 app.include_router(survey_chat_router.router)
 app.include_router(public_data_router.router)
 app.include_router(rag_admin_router.router)
+app.include_router(announcement_router.router)
+app.include_router(checklist_admin_router.router)
 
 # Static Files & Frontend Serving (로컬 전용 — Lambda/CloudFront 환경에선 스킵)
 current_dir = os.path.dirname(os.path.abspath(__file__))

@@ -256,7 +256,7 @@ export default function MDiagnosisMap({ onNavigate }) {
                     </svg>
                 </button>
                 <div className="m-diag-map-header-title">
-                    <span className="m-diag-map-header-label">일반 진단</span>
+                    <span className="m-diag-map-header-label">{mode === 'expert' ? '전문가 진단' : '일반 진단'}</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                         <circle cx="12" cy="12" r="10" stroke="#23BDBB" strokeWidth="2"/>
                         <path d="M10 8l4 4-4 4" stroke="#23BDBB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

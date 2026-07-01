@@ -5,15 +5,15 @@ import '../styles/admin_layout.css';
 import { API_BASE } from '../api';
 
 const CARDS = [
-    { key: 'member',        label: '회원관리',   imgSrc: '/figma-assets/admin/member_icon.svg',       view: 'adminUserList' },
-    { key: 'reportSuggest', label: '제보/제안',  imgSrc: '/figma-assets/admin/report_propose_icon.svg', view: 'reportManagement' },
-    { key: 'diagnosis',     label: '진단',       imgSrc: '/figma-assets/admin/diagnosis_icon.svg',    view: 'comingSoon' },
-    { key: 'survey',        label: '설문',       imgSrc: '/figma-assets/admin/survey_icon.svg',       view: 'surveyManagement' },
-    { key: 'publicData',    label: '공공데이터', imgSrc: '/figma-assets/admin/public_data_icon.svg',  view: 'comingSoon' },
-    { key: 'promo',         label: '홍보',       imgSrc: '/figma-assets/admin/promo_icon.svg',        view: 'comingSoon' },
-    { key: 'notice',        label: '공지사항',   imgSrc: '/figma-assets/admin/notice_icon.svg',       view: 'comingSoon' },
-    { key: 'etc1',          label: '기타+',      imgSrc: null, view: 'comingSoon', empty: true },
-    { key: 'etc2',          label: '기타+',      imgSrc: null, view: 'comingSoon', empty: true },
+    { key: 'member',        label: '회원관리',     imgSrc: '/figma-assets/admin/member_icon.svg',         view: 'adminUserList' },
+    { key: 'reportSuggest', label: '제보/제안',    imgSrc: '/figma-assets/admin/report_propose_icon.svg', view: 'reportManagement' },
+    { key: 'diagnosis',     label: '진단',         imgSrc: '/figma-assets/admin/diagnosis_icon.svg',      view: 'adminDiagnosis' },
+    { key: 'survey',        label: '설문',         imgSrc: '/figma-assets/admin/survey_icon.svg',         view: 'surveyManagement' },
+    { key: 'publicData',    label: '공공데이터',   imgSrc: '/figma-assets/admin/public_data_icon.svg',    view: 'adminPublicData' },
+    { key: 'aiCitizen',     label: 'AI 가상시민',  imgSrc: '/figma-assets/icons/nav_ai_citizen.svg',      view: 'adminCitizenData' },
+    { key: 'promo',         label: '홍보',         imgSrc: '/figma-assets/admin/promo_icon.svg',          view: 'adminPromos' },
+    { key: 'notice',        label: '공지사항',     imgSrc: '/figma-assets/admin/notice_icon.svg',         view: 'adminNotices' },
+    { key: 'etc1',          label: '기타+',        imgSrc: null, view: 'comingSoon', empty: true },
 ];
 
 const STAT_KEY_BY_CARD = {

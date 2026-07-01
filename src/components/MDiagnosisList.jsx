@@ -29,8 +29,9 @@ const DiagCard = memo(function DiagCard({ it, onNavigate }) {
         <li className="m-diag-card" onClick={() => onNavigate?.('mDiagnosisResult', it)}>
             <div className="m-diag-card-body">
                 <div className="m-diag-card-tags">
-                    <span className="m-diag-tag" style={{ background: getCatTagBg(it.big) }}>{it.big}</span>
-                    {it.mid && <span className="m-diag-tag" style={{ background: getCatTagBg(it.big) }}>{it.mid}</span>}
+                    {/* Figma 진단 목록4: 태그는 중립 회색 배경 */}
+                    <span className="m-diag-tag">{it.big}</span>
+                    {it.mid && <span className="m-diag-tag">{it.mid}</span>}
                 </div>
                 <div className="m-diag-card-name-row">
                     <span className="m-diag-card-name">{it.name}</span>
@@ -115,7 +116,7 @@ export default function MDiagnosisList({ onNavigate }) {
 
     return (
         <div className="m-diag-list-only-page">
-            {/* 헤더: Figma 22:6281 — back 단독 행 (타이틀은 모드탭이 담당) */}
+            {/* 헤더: Figma 269:26746 — back + 타이틀 "진단 상세를 선택해주세요" */}
             <header className="m-diag-list-topbar">
                 <button
                     type="button"
@@ -127,6 +128,7 @@ export default function MDiagnosisList({ onNavigate }) {
                         <path d="M15 18L9 12L15 6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                 </button>
+                <span className="m-diag-list-topbar-title">진단 상세를 선택해주세요</span>
             </header>
 
             {/* 시민/전문가 모드 탭 */}

@@ -46,6 +46,11 @@ const ProposalEdit = lazy(() => import('./admin/pages/ProposalEdit'));
 const AdminMain = lazy(() => import('./admin/pages/AdminMain'));
 const AdminUserList = lazy(() => import('./admin/pages/AdminUserList'));
 const AdminRAGDashboard = lazy(() => import('./admin/pages/AdminRAGDashboard'));
+const AdminCitizenData = lazy(() => import('./admin/pages/AdminCitizenData'));
+const AdminCitizenPersonas = lazy(() => import('./admin/pages/AdminCitizenPersonas'));
+const AdminDiagnosisList = lazy(() => import('./admin/pages/AdminDiagnosisList'));
+const AdminPublicData = lazy(() => import('./admin/pages/AdminPublicData'));
+const AdminAnnouncements = lazy(() => import('./admin/pages/AdminAnnouncements'));
 const ReportManagement = lazy(() => import('./admin/pages/ReportManagement'));
 const SurveyManagement = lazy(() => import('./admin/pages/SurveyManagement'));
 const SurveyChatAnalytics = lazy(() => import('./admin/pages/SurveyChatAnalytics'));
@@ -138,7 +143,7 @@ function App() {
 
         const stored = sessionStorage.getItem('current_view');
         // If path is not /admin, but stored view is an admin view, reset to home
-        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'surveyChatAnalytics'].includes(stored);
+        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos', 'surveyChatAnalytics'].includes(stored);
         if (path === '/' && isAdminView) return 'home';
 
         if (['adminLogin', 'adminSignup', 'adminDashboard'].includes(stored)) return 'home';
@@ -344,7 +349,7 @@ function App() {
         window.scrollTo(0, 0);
         sessionStorage.setItem('current_view', view);
 
-        const adminViews = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'proposalManagement', 'memberEdit', 'expertEdit', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'surveyChatAnalytics'];
+        const adminViews = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'proposalManagement', 'memberEdit', 'expertEdit', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos', 'surveyChatAnalytics'];
         const newPath = adminViews.includes(view) ? '/admin' : '/';
         
         if (window.history.state?.view !== view || window.location.pathname !== newPath) {
@@ -492,6 +497,18 @@ function App() {
             setView('adminMain');
         } else if (target === 'adminRAG') {
             setView('adminRAG');
+        } else if (target === 'adminCitizenData') {
+            setView('adminCitizenData');
+        } else if (target === 'adminCitizenPersonas') {
+            setView('adminCitizenPersonas');
+        } else if (target === 'adminDiagnosis') {
+            setView('adminDiagnosis');
+        } else if (target === 'adminPublicData') {
+            setView('adminPublicData');
+        } else if (target === 'adminNotices') {
+            setView('adminNotices');
+        } else if (target === 'adminPromos') {
+            setView('adminPromos');
         } else if (target === 'adminUserList') {
             setView('adminUserList');
         } else if (target === 'reportManagement') {
@@ -746,6 +763,7 @@ function App() {
         // login/signup/signupDone는 PC에서 공용 PCHeader 노출 (모바일은 PCHeader가 CSS로 숨김)
         'changePassword',
         'adminLogin', 'adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'adminRAG',
+        'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos',
         'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor',
         'surveyCreated', 'surveyResults', 'surveyChatAnalytics', 'expertManagement', 'memberEdit', 'expertEdit',
         'proposalManagement', 'proposalEdit', 'adminProposalDetail',
@@ -1326,6 +1344,28 @@ function App() {
                     <AdminRAGDashboard
                         onNavigate={(target, data) => onNavigate(target, data)}
                     />
+                )}
+                {view === 'adminCitizenData' && (
+                    <AdminCitizenData
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminCitizenPersonas' && (
+                    <AdminCitizenPersonas
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminDiagnosis' && (
+                    <AdminDiagnosisList onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'adminPublicData' && (
+                    <AdminPublicData onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'adminNotices' && (
+                    <AdminAnnouncements kind="notice" onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'adminPromos' && (
+                    <AdminAnnouncements kind="promo" onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'reportManagement' && (
                     <ReportManagement

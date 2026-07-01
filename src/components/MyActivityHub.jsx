@@ -1,30 +1,20 @@
-/* MyActivityHub.jsx */
+/* MyActivityHub.jsx — Figma 269:24130 기준 */
 import React, { useState, useEffect } from 'react';
 import './MyActivityHub.css';
 import MobileBottomNav from './MobileBottomNav';
 import PCMyActivity from './PCMyActivity';
 import { fetchWithLogout, API_URL } from '../utils/api';
 
-const CATEGORIES = [
-    { id: 'all', label: '전체' },
-    { id: 'housing', label: '주거' },
-    { id: 'env', label: '환경' },
-    { id: 'traffic', label: '교통' },
-    { id: 'industry', label: '산업·일자리' },
-    { id: 'edu', label: '교육' },
-    { id: 'safety', label: '안전' },
-    { id: 'culture', label: '문화·여가' },
-    { id: 'health', label: '보건·복지' },
-];
+const DISTRICTS = ['전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구'];
+const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 
 const MyActivityHub = ({ onBack, onNavigate }) => {
     const [isPC, setIsPC] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
-    const [activeCat, setActiveCat] = useState('all');
     const [userName, setUserName] = useState(localStorage.getItem('user_name') || '사용자');
     const [lastLogin, setLastLogin] = useState('');
-    const [idVerified, setIdVerified] = useState(true);
-    const [areaVerified, setAreaVerified] = useState(false);
     const [counts, setCounts] = useState({ report: 0, proposal: 0, survey: 0, diagnosis: 0 });
+    const [activeDistrict, setActiveDistrict] = useState('전체');
+    const [activeCategories, setActiveCategories] = useState(new Set(['전체']));
 
     useEffect(() => {
         const onResize = () => setIsPC(window.innerWidth >= 1024);
@@ -37,7 +27,6 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
         const token = localStorage.getItem('access_token');
         if (!token) return;
 
-        // 사용자 me
         fetchWithLogout(`${API_URL}/users/me`, {
             headers: { Authorization: `Bearer ${token}` },
         })
@@ -48,16 +37,19 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
                 if (data.last_login) {
                     try {
                         const d = new Date(data.last_login);
-                        setLastLogin(
-                            `마지막 접속 일시는 ${d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })} 였습니다.`
-                        );
+                        const y = d.getFullYear();
+                        const m = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        let h = d.getHours();
+                        const ampm = h < 12 ? '오전' : '오후';
+                        h = h % 12 || 12;
+                        const min = String(d.getMinutes()).padStart(2, '0');
+                        setLastLogin(`마지막 접속 ${y}. ${m}. ${day}. ${ampm} ${h}:${min}`);
                     } catch (_) {}
                 }
             })
             .catch(() => {});
 
-        // 4개 도메인 카운트 — 각 전용 엔드포인트에서 집계
-        // 제보=/api/reports/mine, 제안=/api/reports/my-proposals, 진단=/checklist/my, 설문=/api/surveys/my-participations
         const lenOf = (d) => (Array.isArray(d) ? d.length : 0);
         const getJson = (path) =>
             fetchWithLogout(`${API_URL}${path}`, { headers: { Authorization: `Bearer ${token}` } })
@@ -77,124 +69,201 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
         });
     }, []);
 
+    const toggleCategory = (cat) => {
+        if (cat === '전체') {
+            setActiveCategories(new Set(['전체']));
+            return;
+        }
+        const next = new Set(activeCategories);
+        next.delete('전체');
+        if (next.has(cat)) {
+            next.delete(cat);
+            if (next.size === 0) next.add('전체');
+        } else {
+            next.add(cat);
+        }
+        setActiveCategories(next);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('user_name');
+        localStorage.removeItem('district_code');
+        onNavigate('home');
+    };
+
     // PC 분기 — 절대 건드리지 말 것
     if (isPC) return <PCMyActivity onNavigate={onNavigate} />;
 
     return (
         <div className="mahub-container">
-            {/* 상단 바 */}
-            <div className="mahub-topbar">
-                <button
-                    className="mahub-profile-manage-btn"
-                    onClick={() => onNavigate('myPage')}
-                >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                    </svg>
-                    내 정보 관리
-                </button>
+            {/* 페이지 타이틀 */}
+            <div className="mahub-page-header">
+                <h1 className="mahub-page-title">마이페이지</h1>
+                <p className="mahub-page-subtitle">나의 활동과 관심서비스를 한눈에 확인하세요.</p>
             </div>
 
             {/* 프로필 카드 */}
             <div className="mahub-profile-card">
-                <div className="mahub-profile-left">
-                    <p className="mahub-greeting">
-                        반가워요<br />
-                        <span className="mahub-greeting-name">{userName}님</span>
-                    </p>
-                    {lastLogin && (
-                        <p className="mahub-last-login">{lastLogin}</p>
-                    )}
-                    <div className="mahub-verify-badges">
-                        <div className={`mahub-verify-row ${idVerified ? 'verified' : 'unverified'}`}>
-                            <img src="/assets/activity/verify_id_icon.png" alt="본인인증" className="mahub-verify-icon" />
-                            <span>본인인증 완료</span>
-                        </div>
-                        <div className={`mahub-verify-row ${areaVerified ? 'verified' : 'unverified'}`}>
-                            <img src="/assets/activity/verify_area_icon.png" alt="동네인증" className="mahub-verify-icon" />
-                            <span>동네 인증(최근 30일)</span>
-                        </div>
-                    </div>
-                </div>
                 <div className="mahub-profile-avatar">
-                    <img src="/assets/activity/profile_avatar.png" alt="프로필" />
+                    <img src="/assets/activity/avatar_girl.png" alt="프로필" />
                 </div>
-            </div>
-
-            {/* 관심 버튼 3개 */}
-            <div className="mahub-bookmark-row">
-                <button className="mahub-bookmark-pill">관심목록</button>
-                <button className="mahub-bookmark-pill">최근 본 글</button>
-                <button className="mahub-bookmark-pill">자주본 글</button>
+                <div className="mahub-profile-info">
+                    <p className="mahub-greeting">반가워요 <strong>{userName}님</strong></p>
+                    {lastLogin && <p className="mahub-last-login">{lastLogin}</p>}
+                    <button className="mahub-profile-edit-btn" onClick={() => onNavigate('myPage')}>
+                        프로필 수정
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#777" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             {/* 나의 활동 섹션 */}
-            <div className="mahub-activity-section">
-                <h2 className="mahub-activity-title">나의 활동</h2>
+            <div className="mahub-section">
+                <h2 className="mahub-section-title">나의 활동</h2>
+                <div className="mahub-activity-grid">
+                    {/* 제보 */}
+                    <button className="mahub-act-card mahub-act-card--report" onClick={() => onNavigate('myReportList')}>
+                        <div className="mahub-act-top">
+                            <span className="mahub-act-label">제보</span>
+                            <img className="mahub-act-icon" src="/assets/activity/icon_report.png" alt="제보" />
+                        </div>
+                        <div className="mahub-act-count">
+                            <strong>{counts.report}</strong>건
+                        </div>
+                        <div className="mahub-act-link">제보 전체보기 <span className="mahub-act-arrow">›</span></div>
+                    </button>
 
-                {/* 카테고리 필터 */}
-                <div className="mahub-cat-scroll">
-                    {CATEGORIES.map(cat => (
-                        <button
-                            key={cat.id}
-                            className={`mahub-cat-chip ${activeCat === cat.id ? 'active' : ''}`}
-                            onClick={() => setActiveCat(cat.id)}
-                        >
-                            {cat.label}
-                        </button>
-                    ))}
+                    {/* 제안 */}
+                    <button className="mahub-act-card mahub-act-card--proposal" onClick={() => onNavigate('myProposals')}>
+                        <div className="mahub-act-top">
+                            <span className="mahub-act-label">제안</span>
+                            <img className="mahub-act-icon" src="/assets/activity/icon_proposal.png" alt="제안" />
+                        </div>
+                        <div className="mahub-act-count">
+                            <strong>{counts.proposal}</strong>건
+                        </div>
+                        <div className="mahub-act-link">제안 전체보기 <span className="mahub-act-arrow">›</span></div>
+                    </button>
+
+                    {/* 진단 */}
+                    <button className="mahub-act-card mahub-act-card--diagnosis" onClick={() => onNavigate('mMyActivity')}>
+                        <div className="mahub-act-top">
+                            <span className="mahub-act-label">진단</span>
+                            <img className="mahub-act-icon" src="/assets/activity/icon_diagnosis.png" alt="진단" />
+                        </div>
+                        <div className="mahub-act-count">
+                            <strong>{counts.diagnosis}</strong>건
+                        </div>
+                        <div className="mahub-act-link">진단 전체보기 <span className="mahub-act-arrow">›</span></div>
+                    </button>
+
+                    {/* 설문 */}
+                    <button className="mahub-act-card mahub-act-card--survey" onClick={() => onNavigate('mySurveys')}>
+                        <div className="mahub-act-top">
+                            <span className="mahub-act-label">설문</span>
+                            <img className="mahub-act-icon" src="/assets/activity/icon_survey.png" alt="설문" />
+                        </div>
+                        <div className="mahub-act-count">
+                            <strong>{counts.survey}</strong>건
+                        </div>
+                        <div className="mahub-act-link">설문 전체보기 <span className="mahub-act-arrow">›</span></div>
+                    </button>
+                </div>
+            </div>
+
+            {/* 관심서비스 설정 섹션 */}
+            <div className="mahub-section">
+                <h2 className="mahub-section-title">관심서비스 설정</h2>
+
+                {/* 지역별 */}
+                <div className="mahub-interest-card">
+                    <h3 className="mahub-interest-subtitle">지역별</h3>
+                    <div className="mahub-district-chips">
+                        {DISTRICTS.map(d => (
+                            <button
+                                key={d}
+                                className={`mahub-district-chip ${activeDistrict === d ? 'active' : ''}`}
+                                onClick={() => setActiveDistrict(d)}
+                            >
+                                {d}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                {/* 2×2 통계 그리드 */}
-                <div className="mahub-stats-container">
-                    <div className="mahub-stats-grid">
-                        {/* 제보 */}
-                        <button
-                            className="mahub-stat-card"
-                            onClick={() => onNavigate('myReportList')}
-                        >
-                            <span className="mahub-stat-label">제보</span>
-                            <span className="mahub-stat-count report">
-                                <span className="mahub-stat-num">{counts.report}</span>건
-                            </span>
-                        </button>
-
-                        {/* 제안 */}
-                        <button
-                            className="mahub-stat-card"
-                            onClick={() => onNavigate('myProposals')}
-                        >
-                            <span className="mahub-stat-label">제안</span>
-                            <span className="mahub-stat-count proposal">
-                                <span className="mahub-stat-num">{counts.proposal}</span>건
-                            </span>
-                        </button>
-
-                        {/* 설문 */}
-                        <button
-                            className="mahub-stat-card"
-                            onClick={() => onNavigate('mySurveys')}
-                        >
-                            <span className="mahub-stat-label">설문</span>
-                            <span className="mahub-stat-count survey">
-                                <span className="mahub-stat-num">{counts.survey}</span>건
-                            </span>
-                        </button>
-
-                        {/* 진단 */}
-                        <button
-                            className="mahub-stat-card"
-                            onClick={() => onNavigate('mMyActivity')}
-                        >
-                            <span className="mahub-stat-label">진단</span>
-                            <span className="mahub-stat-count diagnosis">
-                                <span className="mahub-stat-num">{counts.diagnosis}</span>건
-                            </span>
-                        </button>
+                {/* 유형별 */}
+                <div className="mahub-interest-card mahub-interest-card--type">
+                    <h3 className="mahub-interest-subtitle">유형별</h3>
+                    <div className="mahub-category-list">
+                        {CATEGORIES.map(cat => (
+                            <label key={cat} className="mahub-cat-row">
+                                <span className={`mahub-cat-checkbox ${activeCategories.has(cat) ? 'checked' : ''}`}>
+                                    {activeCategories.has(cat) && (
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                            <path d="M2 6l3 3 5-5" stroke="#23bdbb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    )}
+                                </span>
+                                <span className="mahub-cat-name" onClick={() => toggleCategory(cat)}>{cat}</span>
+                            </label>
+                        ))}
                     </div>
                 </div>
             </div>
+
+            {/* 빠른메뉴 섹션 */}
+            <div className="mahub-section">
+                <h2 className="mahub-section-title">빠른메뉴</h2>
+                <div className="mahub-quick-grid">
+                    <button className="mahub-quick-item" onClick={() => {}}>
+                        <div className="mahub-quick-top">
+                            <span className="mahub-quick-label">관심목록</span>
+                            <img src="/assets/activity/icon_bookmark_quick.svg" alt="" className="mahub-quick-icon" onError={e => e.target.style.display='none'} />
+                        </div>
+                        <span className="mahub-quick-sub">내가 찜한 글 보기</span>
+                    </button>
+                    <button className="mahub-quick-item" onClick={() => {}}>
+                        <div className="mahub-quick-top">
+                            <span className="mahub-quick-label">최근 본 글</span>
+                        </div>
+                        <span className="mahub-quick-sub">최근 열람한 콘텐츠 보기</span>
+                    </button>
+                    <button className="mahub-quick-item" onClick={() => {}}>
+                        <div className="mahub-quick-top">
+                            <span className="mahub-quick-label">자주 본 글</span>
+                        </div>
+                        <span className="mahub-quick-sub">자주 본 글보기</span>
+                    </button>
+                    <button className="mahub-quick-item" onClick={() => onNavigate('myPage')}>
+                        <div className="mahub-quick-top">
+                            <span className="mahub-quick-label">회원정보 관리</span>
+                        </div>
+                        <span className="mahub-quick-sub">개인정보 및 개정 관리</span>
+                    </button>
+                    <button className="mahub-quick-item" onClick={() => {}}>
+                        <div className="mahub-quick-top">
+                            <span className="mahub-quick-label">서비스 이용 동의</span>
+                        </div>
+                        <span className="mahub-quick-sub">이용 동의 내역 관리</span>
+                    </button>
+                    <button className="mahub-quick-item" onClick={() => {}}>
+                        <div className="mahub-quick-top">
+                            <span className="mahub-quick-label">알림 수신 동의</span>
+                        </div>
+                        <span className="mahub-quick-sub">알림 설정 관리</span>
+                    </button>
+                </div>
+            </div>
+
+            {/* 로그아웃 */}
+            <button className="mahub-logout-btn" onClick={handleLogout}>
+                로그아웃
+            </button>
 
             <MobileBottomNav currentView="myActivityHub" onNavigate={onNavigate} />
         </div>

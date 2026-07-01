@@ -23,8 +23,7 @@ const MENU_TREE = [
         key: 'diagnosis',
         label: '진단관리',
         children: [
-            { key: 'citizenDiag', label: '시민진단', view: 'comingSoon' },
-            { key: 'expertDiag', label: '전문가진단', view: 'comingSoon' },
+            { key: 'diagList', label: '진단 목록', view: 'adminDiagnosis' },
         ],
     },
     {
@@ -39,34 +38,30 @@ const MENU_TREE = [
         key: 'publicData',
         label: '공공데이터관리',
         children: [
-            { key: 'publicDataList', label: '공공데이터목록', view: 'comingSoon' },
+            { key: 'publicDataList', label: '공공데이터목록', view: 'adminPublicData' },
         ],
     },
     {
         key: 'aiCitizen',
         label: 'AI 가상시민',
         children: [
-            { key: 'rag', label: 'RAG 관리', view: 'adminRAG' },
+            { key: 'citizenData', label: '가상시민데이터 관리', view: 'adminCitizenData' },
+            { key: 'citizenPersonas', label: '가상시민 생성 관리', view: 'adminCitizenPersonas' },
         ],
     },
     {
         key: 'notice',
         label: '공지사항',
         children: [
-            { key: 'noticeList', label: '공지사항목록', view: 'comingSoon' },
+            { key: 'noticeList', label: '공지사항목록', view: 'adminNotices' },
         ],
     },
     {
         key: 'promo',
         label: '홍보',
         children: [
-            { key: 'promoList', label: '홍보목록', view: 'comingSoon' },
+            { key: 'promoList', label: '홍보목록', view: 'adminPromos' },
         ],
-    },
-    {
-        key: 'etc',
-        label: '기타',
-        children: [],
     },
 ];
 
@@ -87,7 +82,13 @@ const VIEW_TO_PATH = {
     surveyCreated: ['survey', 'surveyList'],
     surveyResults: ['survey', 'surveyList'],
     adminProposalDetail: ['reportSuggest', 'proposals'],
-    adminRAG: ['aiCitizen', 'rag'],
+    adminRAG: ['aiCitizen', 'citizenData'],
+    adminCitizenData: ['aiCitizen', 'citizenData'],
+    adminCitizenPersonas: ['aiCitizen', 'citizenPersonas'],
+    adminDiagnosis: ['diagnosis', 'diagList'],
+    adminPublicData: ['publicData', 'publicDataList'],
+    adminNotices: ['notice', 'noticeList'],
+    adminPromos: ['promo', 'promoList'],
 };
 
 export default function AdminSidebar({ onNavigate, currentView }) {

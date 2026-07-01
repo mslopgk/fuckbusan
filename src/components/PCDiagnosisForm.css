@@ -16,11 +16,13 @@
 }
 
 .pc-diagform-title {
+    /* Figma 269:13157 — 24px bold, line-height 1.4 */
     margin: 0 0 24px;
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 700;
+    line-height: 1.4;
     color: var(--diag-text);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
 }
 
 .pc-diagform-section {
@@ -217,37 +219,45 @@
     min-height: 120px;
 }
 
-/* Actions */
+/* Actions — Figma 269:13157: full-width flex row, gap 8px */
 .pc-diagform-actions {
     display: flex;
-    gap: 12px;
-    justify-content: flex-end;
+    gap: 8px;
+    justify-content: stretch;
     margin-top: 24px;
+    padding-bottom: 8px;
 }
 
 .pc-diagform-btn-secondary,
 .pc-diagform-btn-primary {
-    height: 48px;
-    padding: 0 32px;
-    border-radius: 24px;
-    font-size: 15px;
+    /* Figma 269:13157 — h-[59px] rounded-[15px] not pill */
+    height: 59px;
+    border-radius: 15px;
+    font-size: 18px;
     font-weight: 700;
     border: none;
     cursor: pointer;
     font-family: inherit;
+    letter-spacing: -0.04em;
 }
 
 .pc-diagform-btn-secondary {
-    background: #f0f1f4;
-    color: #888c93;
+    /* Figma: w-[103px], #e6e6e6 bg, #777 text, regular weight */
+    flex: 0 0 103px;
+    padding: 0;
+    background: #e6e6e6;
+    color: #777;
+    font-weight: 400;
 }
 
 .pc-diagform-btn-primary {
+    flex: 1;
+    padding: 0;
     background: var(--diag-teal);
     color: #fff;
 }
 
 .pc-diagform-btn-primary:disabled {
-    background: #c9d2d2;
+    background: #a0dede;
     cursor: not-allowed;
 }

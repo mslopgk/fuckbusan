@@ -58,7 +58,7 @@
 }
 
 .submenu-item-new.active {
-    color: #16B5B0;
+    color: #23BDBB;
     font-weight: 600;
 }
 
@@ -84,8 +84,8 @@
 }
 
 .admin-card:hover:not(.empty):not(.disabled) {
-    background: #16B5B0;
-    border-color: #16B5B0;
+    background: #23BDBB;
+    border-color: #23BDBB;
     box-shadow: 0 10px 24px rgba(22, 181, 176, 0.25);
     transform: translateY(-2px);
 }
@@ -145,9 +145,9 @@
     height: 28px;
     padding: 0 14px;
     border-radius: 14px;
-    border: 1px solid #16B5B0;
+    border: 1px solid #23BDBB;
     background: #fff;
-    color: #16B5B0;
+    color: #23BDBB;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -155,7 +155,7 @@
 }
 
 .pill-btn:hover {
-    background: #16B5B0;
+    background: #23BDBB;
     color: #fff;
 }
 
@@ -177,15 +177,15 @@
     height: 40px;
     padding: 0 20px;
     border-radius: 6px;
-    border: 1px solid #16B5B0;
+    border: 1px solid #23BDBB;
     background: #fff;
-    color: #16B5B0;
+    color: #23BDBB;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
 }
 .btn-outline-new:hover {
-    background: #16B5B0;
+    background: #23BDBB;
     color: #fff;
 }
 
@@ -440,7 +440,7 @@
 }
 
 .stage-item.reached .stage-dot {
-    background: #16B5B0;
+    background: #23BDBB;
     color: #fff;
 }
 
@@ -492,7 +492,7 @@
 }
 
 .reply-textarea:focus {
-    border-color: #16B5B0;
+    border-color: #23BDBB;
 }
 
 .reply-actions {

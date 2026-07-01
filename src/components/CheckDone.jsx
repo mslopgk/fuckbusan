@@ -1,6 +1,6 @@
 import './CheckDone.css';
 
-const CheckDone = ({ onGoHome, color = '#E6235A', type = 'diagnosis', btnLabel: btnLabelProp }) => {
+const CheckDone = ({ onGoHome, onClose, color = '#E6235A', type = 'diagnosis', btnLabel: btnLabelProp }) => {
     const isExpert = color === '#542AA3';
 
     let title, subtitle, description, btnLabel;
@@ -39,7 +39,10 @@ const CheckDone = ({ onGoHome, color = '#E6235A', type = 'diagnosis', btnLabel: 
                 </p>
             </div>
 
-            <div className="check-done-footer">
+            <div className={`check-done-footer${onClose ? ' check-done-footer--two' : ''}`}>
+                {onClose && (
+                    <button className="btn-close" onClick={onClose}>닫기</button>
+                )}
                 <button className="btn-home" onClick={onGoHome} style={{ backgroundColor: color, color: '#fff', border: 'none' }}>
                     {btnLabelProp || btnLabel}
                 </button>

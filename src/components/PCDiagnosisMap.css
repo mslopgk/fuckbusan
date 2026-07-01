@@ -386,11 +386,11 @@
 
 .pc-diag-right-list { padding: 16px 16px 0; }
 
-/* Figma 스타일 카드 태그 */
+/* Figma 스타일 카드 태그 — Figma 269:10408 목록 카드: 중립 회색 #e6e6e6 */
 .pc-diag-tag-fig {
     height: 24px;
     padding: 0 12px;
-    background: #dff8f8;
+    background: #e6e6e6;
     border-radius: 15px;
     font-size: 13px;
     font-weight: 600;
@@ -615,15 +615,18 @@
 
 /* ───── form 패널 안 슬림 적응 ───── */
 .pc-diag-right-form .pc-diagform-title {
+    /* Figma 269:13157 — right panel: keep 24px but reduce margin */
     margin: 0 0 16px;
-    font-size: 18px;
+    font-size: 20px;
+    line-height: 1.4;
 }
 .pc-diag-right-form .pc-diagform-section {
     padding: 14px 0;
 }
 .pc-diag-right-form .pc-diagform-photo {
-    width: 120px;
-    height: 120px;
+    width: 80px;
+    height: 80px;
+    border-radius: 15px;
 }
 .pc-diag-right-form .pc-diagform-q-text { font-size: 13px; }
 .pc-diag-right-form .pc-diagform-q-num { width: 22px; height: 22px; font-size: 12px; }
@@ -644,7 +647,17 @@
     gap: 8px;
     justify-content: stretch;
 }
-.pc-diag-right-form .pc-diagform-actions button { flex: 1; height: 44px; padding: 0; font-size: 14px; }
+/* Figma 269:13157 — 임시저장 103px, 작성완료 fills rest; both 59px tall rounded-15 */
+.pc-diag-right-form .pc-diagform-btn-secondary {
+    flex: 0 0 103px;
+    height: 56px;
+    font-size: 16px;
+}
+.pc-diag-right-form .pc-diagform-btn-primary {
+    flex: 1;
+    height: 56px;
+    font-size: 16px;
+}
 
 /* ───── done 패널 ───── */
 .pc-diag-done-panel {
@@ -657,22 +670,19 @@
     padding: 24px;
 }
 .pc-diag-done-check {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: var(--diag-teal);
-    color: #fff;
+    /* Figma 269:14100 — icon itself is the circle, no outer wrapper background */
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 24px;
 }
 .pc-diag-done-title {
+    /* Figma 269:14100 — 28px bold teal */
     margin: 0 0 12px;
-    font-size: 22px;
-    font-weight: 800;
+    font-size: 28px;
+    font-weight: 700;
     color: var(--diag-teal);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
 }
 .pc-diag-done-sub {
     margin: 0 0 6px;
@@ -687,13 +697,15 @@
 }
 .pc-diag-done-close {
     width: 100%;
-    height: 48px;
+    height: 56px;
     border: none;
-    border-radius: 24px;
+    /* Figma 269:14100 — rounded-[8px], NOT pill */
+    border-radius: 8px;
     background: var(--diag-teal);
     color: #fff;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
+    letter-spacing: -0.04em;
 }

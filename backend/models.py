@@ -443,3 +443,23 @@ class PublicLayer(Base):
     count = Column(Integer, nullable=True)   # null = 데이터 출처 미확정
     source = Column(String(255), nullable=True)
     sort_order = Column(Integer, default=0)
+
+
+class Announcement(Base):
+    """공지사항 + 홍보 통합 (kind 으로 구분). 어드민 CRUD."""
+    __tablename__ = "announcements"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    kind = Column(String(10), index=True, default="notice")  # notice | promo
+    title = Column(String(255), nullable=False)
+    content = Column(Text, nullable=True)
+    category = Column(String(50), nullable=True)   # 공지 분류 / 홍보 채널 등
+    image_url = Column(String(500), nullable=True) # 홍보 배너 이미지
+    link_url = Column(String(500), nullable=True)  # 홍보 외부 링크
+    pinned = Column(Boolean, default=False)        # 상단 고정
+    published = Column(Boolean, default=True)       # 게시 여부
+    views = Column(Integer, default=0)
+    author = Column(String(50), nullable=True, default="관리자")
+    created_at = Column(DateTime, default=datetime.now, index=True)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)

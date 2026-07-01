@@ -153,9 +153,9 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
                     <p className="m-diagform-hint">* 사진을 첨부해주세요</p>
                 </section>
 
-                {/* 공공/시설물 */}
+                {/* 분류 */}
                 <section className="m-diagform-section">
-                    <h2 className="m-diagform-label">공공/시설물</h2>
+                    <h2 className="m-diagform-label">분류</h2>
                     <input
                         type="text"
                         className="m-diagform-facility-input"

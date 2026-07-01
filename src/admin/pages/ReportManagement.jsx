@@ -85,7 +85,7 @@ export default function ReportManagement({ onNavigate }) {
     return (
         <AdminLayout onNavigate={onNavigate} currentView="reportManagement">
             <div className="content-header-new">
-                <h2 className="content-title-new" style={{ marginBottom: 0 }}>제보현황</h2>
+                <h2 className="content-title-new" style={{ marginBottom: 0 }}>제보</h2>
                 <div className="total-count-text">전체 제보 <span>{total}건</span></div>
             </div>
 

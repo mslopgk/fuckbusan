@@ -1,270 +1,134 @@
-/* HomePC — Figma TCuOzEqNhoLKjhF0reBDks node 215:3621 (USER: 홈, desktop) */
-
-.pchome {
-    --black: #242424;
-    --teal: #23bdbb;
-    --red: #e6235a;
-    --sub: #777;
-    --line: #e6e6e6;
-    font-family: 'Pretendard Variable', sans-serif;
-    color: var(--black);
-    background: #fff;
-    min-height: 100vh;
-}
+/* PC 홈 리뉴얼 (Figma 269:7671). accent teal #23bdbb */
+.pchome2 { width: 100%; background: #fff; }
 
 /* ===== Hero ===== */
-.pchome-hero {
-    background: url('/assets/지도%20배경%20데스크탑.png') center top / cover no-repeat;
-}
-.pchome-hero-inner {
-    max-width: 1320px;
-    margin: 0 auto;
-    padding: 56px 24px 72px;
-    display: flex;
-    gap: 24px;
-    align-items: flex-start;
-}
-.pchome-hero-left { flex: 0 0 400px; width: 400px; }
-.pchome-hero-text h1 {
-    font-family: 'Pretendard Variable', sans-serif;
-    font-weight: 700;
-    font-size: 40px;
-    line-height: 1.4;
-    letter-spacing: -1.6px;
-    color: var(--black);
-    margin: 0;
-    white-space: nowrap;
-}
-.pchome-hero-text h1 .accent { color: var(--teal); }
-.pchome-hero-text p {
-    margin: 16px 0 0;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 1.35;
-    color: var(--sub);
-}
-
-/* 구역별 필터 */
-.pchome-filter {
+.pch2-hero {
     position: relative;
-    margin-top: 24px;
-    width: 305px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 16px;
+    min-height: 600px;
+    background: linear-gradient(180deg, #eaf5f4 0%, #dcebee 100%);
+    overflow: hidden;
 }
-.pchome-filter-label { display: block; font-size: 14px; color: var(--sub); }
-.pchome-filter-select {
-    margin-top: 6px;
-    height: 46px;
-    border: 1px solid #000;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 12px;
-    cursor: pointer;
-    user-select: none;
+.pch2-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: url('/assets/지도 배경 데스크탑.png') center/cover no-repeat;
+    opacity: 0.3; pointer-events: none;
 }
-.pchome-filter-select.disabled { cursor: default; background: #fafafa; border-color: #d9d9d9; }
-.pchome-filter-select > span { flex: 1; min-width: 0; font-size: 16px; color: #000; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pchome-filter-select > span.placeholder { color: #9e9e9e; }
-.pchome-filter-clear { flex: none; cursor: pointer; }
-.pchome-filter-arrow { flex: none; transition: transform 0.18s ease; }
-.pchome-filter-arrow.open { transform: rotate(180deg); }
-.pchome-filter-menu {
-    position: absolute;
-    left: 16px;
-    right: 16px;
-    top: calc(100% - 8px);
-    z-index: 20;
-    margin: 0;
-    padding: 6px;
-    list-style: none;
-    max-height: 244px;
-    overflow-y: auto;
-    background: #fff;
-    border: 1px solid #e6e6e6;
-    border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+.pch2-hero-map {
+    position: absolute; left: 0; right: 0; top: 24px; display: flex; align-items: flex-start; justify-content: center;
 }
-.pchome-filter-menu li {
-    padding: 9px 12px;
-    font-size: 15px;
-    color: #242424;
-    border-radius: 6px;
-    cursor: pointer;
-}
-.pchome-filter-menu li:hover { background: #f4f4f4; }
-.pchome-filter-menu li.active { background: var(--teal); color: #fff; }
-
-/* 생활정보 */
-.pchome-cats {
-    margin-top: 17px;
-    width: 305px;
-    background: #fff;
-    border-radius: 19px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-    padding: 16px 16px 18px;
-}
-.pchome-cats-title {
-    font-family: 'GmarketSans', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: -0.64px;
-    color: var(--black);
-    padding: 4px;
-}
-.pchome-cats-grid {
-    margin-top: 8px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    column-gap: 12px;
-}
-.pchome-cat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 10px 4px;
-    border: none;
-    border-radius: 12px;
-    background: #fff;
-    color: var(--sub);
-    cursor: pointer;
-}
-/* 행 구분선 (각 열 2·3행 위) */
-.pchome-cat:nth-child(n+4) { border-top: 1px solid #f0f0f0; }
-.pchome-cat span {
-    font-family: 'GmarketSans', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.56px;
-    line-height: 1.35;
-    text-align: center;
-}
-.pchome-cat.selected {
-    background: var(--teal);
-    color: #fff;
-    border-top-color: transparent;
+.pch2-hero-map .busanmap { width: min(40vw, 560px); }
+.pch2-hero-inner {
+    position: relative; max-width: 1320px; margin: 0 auto; height: 600px; padding: 0 24px;
 }
 
-/* 지도 */
-.pchome-hero-map {
-    flex: 1;
-    min-width: 0;
-    height: 760px;
-    align-self: center;
+/* 좌측 참여 현황 카드 */
+.pch2-stats {
+    position: absolute; left: 24px; top: 44px; width: 290px; z-index: 4;
+    background: #fff; border-radius: 20px; padding: 26px 24px; box-shadow: 0 12px 40px rgba(0,0,0,0.08);
 }
+.pch2-stats-region { color: #23bdbb; font-size: 15px; font-weight: 800; }
+.pch2-stats-head h2 { margin: 4px 0 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #1a1a1b; }
+.pch2-stats-head p { margin: 6px 0 0; font-size: 13px; color: #8a8a8a; }
+.pch2-stats-total {
+    margin: 20px 0 14px; background: #23bdbb; border-radius: 16px;
+    padding: 16px 18px; color: #fff; display: flex; flex-direction: column; gap: 4px;
+}
+.pch2-stats-total span { font-size: 13px; opacity: 0.92; font-weight: 600; }
+.pch2-stats-total strong { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.pch2-stats-rows { display: flex; flex-direction: column; gap: 10px; }
+.pch2-stats-row {
+    display: flex; align-items: center; gap: 10px; width: 100%; border: 1px solid #eee; background: #fff;
+    border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: border-color .15s, background .15s;
+}
+.pch2-stats-row:hover { border-color: #23bdbb; background: #f4fbfb; }
+.pch2-stats-row-k { font-size: 14px; font-weight: 700; color: #333; }
+.pch2-stats-row-v { margin-left: auto; font-size: 15px; font-weight: 800; color: #23bdbb; }
 
-/* ===== Main ===== */
-.pchome-main {
-    max-width: 1218px;
-    margin: 0 auto;
-    padding: 36px 24px 0;
+/* 우측 TOP5 카드 */
+.pch2-top5 {
+    position: absolute; right: 24px; top: 44px; width: 290px; z-index: 4;
+    background: #fff; border-radius: 20px; padding: 24px 22px; box-shadow: 0 12px 40px rgba(0,0,0,0.08);
 }
+.pch2-top5 h3 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+.pch2-top5-sub { font-size: 13px; color: #9aa3ab; }
+.pch2-top5-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.pch2-top5-list li { display: flex; align-items: center; gap: 10px; }
+.pch2-rank { width: 24px; height: 24px; border-radius: 50%; color: #fff; font-size: 13px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pch2-rank-name { font-size: 14px; font-weight: 700; color: #333; width: 64px; flex-shrink: 0; }
+.pch2-rank-bar { flex: 1; height: 8px; background: #eef2f2; border-radius: 6px; overflow: hidden; }
+.pch2-rank-bar > div { height: 100%; border-radius: 6px; }
+.pch2-rank-cnt { font-size: 13px; font-weight: 800; color: #444; width: 64px; text-align: right; flex-shrink: 0; }
+.pch2-top5-empty { color: #9aa3ab; font-size: 13.5px; line-height: 1.6; text-align: center;
+    padding: 24px 8px; white-space: pre-line; }
 
-/* 액션 카드 */
-.pchome-cards { display: flex; gap: 20px; }
-.pchome-card {
-    flex: 1;
-    min-width: 0;
-    height: 140px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    position: relative;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+/* ===== 빠른 액션 ===== */
+.pch2-actions {
+    max-width: 1320px; margin: 0 auto; padding: 48px 24px 0;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
 }
-.pchome-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); }
-.pchome-card.survey {
-    background: #fff;
-    border: 2px solid var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 24px 20px;
+.pch2-act {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; text-align: left;
+    border: none; border-radius: 18px; padding: 24px 22px; cursor: pointer; background: #f5f6f7;
+    min-height: 132px; transition: transform .15s, box-shadow .15s;
 }
-.pchome-card.report { background: var(--black); padding: 21px 15px; }
-.pchome-card.propose { background: var(--teal); padding: 23px 20px; }
+.pch2-act:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(0,0,0,0.08); }
+.pch2-act.plain { background: #f4f4f4; }
+.pch2-act.report { background: #f3edff; }
+.pch2-act.propose { background: #ffecf1; }
+.pch2-act .pch2-act-title { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: #1a1a1b; }
+.pch2-act.report .pch2-act-title { color: #542aa3; }
+.pch2-act.propose .pch2-act-title { color: #e6235a; }
+.pch2-act p { margin: 8px 0 0; font-size: 13px; color: #6b7280; line-height: 1.5; }
+.pch2-act img { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; }
 
-.pchome-card-title { font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.72px; color: var(--black); }
-.pchome-card-title.light { color: #fff; }
-.pchome-card-sub { font-weight: 400; font-size: 14px; line-height: 1.35; color: #1e1e1e; }
-.pchome-card-sub.light { color: #fff; font-size: 12px; margin-top: 12px; }
-.pchome-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
-.pchome-card-title-row { display: flex; align-items: center; gap: 4px; }
-.pchome-card-survey-icon { width: 72px; height: 72px; flex: none; }
-.pchome-card-head { display: flex; align-items: center; gap: 16px; }
-.pchome-card-emoji { width: 40px; height: 40px; object-fit: contain; }
-.pchome-card-emoji.sm { width: 28px; height: 28px; }
-.pchome-card-arrow { position: absolute; left: 15px; bottom: 14px; display: flex; }
-.pchome-card.propose .pchome-card-arrow { left: 20px; }
-
-/* 소식 + 가이드 */
-.pchome-bottom { display: flex; gap: 40px; margin-top: 56px; align-items: flex-start; }
-.pchome-news { flex: 1; min-width: 0; }
-.pchome-news-head { display: flex; align-items: center; justify-content: space-between; }
-.pchome-news-head h2 { font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 40px; letter-spacing: -1.6px; color: var(--black); margin: 0; }
-.pchome-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border-radius: 9999px;
-    padding: 8px 16px 8px 24px;
-    font-family: 'GmarketSans', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.56px;
-    background: none;
-    cursor: pointer;
-    white-space: nowrap;
+/* ===== 소식 + 가상시민 배너 ===== */
+.pch2-bottom {
+    max-width: 1320px; margin: 0 auto; padding: 36px 24px 64px;
+    display: grid; grid-template-columns: 552fr 743fr; gap: 20px;
 }
-.pchome-pill.dark { border: 1px solid #1e1e1e; color: #1e1e1e; }
-.pchome-pill.red { border: 1px solid var(--red); color: var(--red); }
-.pchome-pill.faq { border: 1px solid #8c8c8c; color: #fff; padding: 12px 20px 12px 28px; font-family: 'Pretendard Variable', sans-serif; }
-.pchome-news-divider { height: 1px; background: #d9d9d9; margin: 16px 0; }
-.pchome-news-list { list-style: none; margin: 0; padding: 12px 16px; display: flex; flex-direction: column; gap: 16px; }
-.pchome-news-list li { display: flex; gap: 28px; align-items: center; font-size: 16px; line-height: 1.4; color: #1e1e1e; }
-.pchome-news-date { flex: 0 0 72px; }
-.pchome-news-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pch2-news { background: #fff; border: 1px solid #eee; border-radius: 18px; padding: 26px 28px; }
+.pch2-news h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+.pch2-news-divider { height: 2px; background: #1e1e1e; margin: 14px 0 6px; }
+.pch2-news ul { list-style: none; margin: 0; padding: 0; }
+.pch2-news li { display: flex; gap: 18px; padding: 14px 0; border-bottom: 1px solid #f1f1f1; }
+.pch2-news li:last-child { border-bottom: none; }
+.pch2-news-date { color: #9aa3ab; font-size: 14px; flex-shrink: 0; }
+.pch2-news-text { color: #333; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.pchome-guide {
-    flex: 0 0 630px;
-    width: 630px;
-    height: 286px;
-    background: #fff3f3;
-    border-radius: 8px;
-    padding: 24px 32px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.pch2-aic {
+    position: relative; overflow: hidden; border: none; cursor: pointer; text-align: left;
+    border-radius: 18px; padding: 30px 0 30px 34px; min-height: 188px; display: flex; align-items: center;
+    background: #e2f1fd; transition: transform .15s, box-shadow .15s;
 }
-.pchome-guide-body { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
-.pchome-guide-textwrap h2 { font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 32px; letter-spacing: -1.28px; color: var(--red); margin: 0; }
-.pchome-guide-textwrap p { margin: 20px 0 0; font-size: 16px; line-height: 1.4; color: #1e1e1e; }
-.pchome-guide-char { width: 186px; height: 211px; object-fit: contain; flex: none; }
+.pch2-aic:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+.pch2-aic-text { position: relative; z-index: 1; flex-shrink: 0; }
+.pch2-aic-text h3 { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -0.03em; color: #1a1a1b; line-height: 1.4; }
+.pch2-aic-text h3 span { color: #23bdbb; }
+.pch2-aic-text p { margin: 12px 0 0; font-size: 14px; color: #5b6b6a; line-height: 1.6; }
+.pch2-aic-img { position: absolute; right: 0; bottom: 0; top: 0; height: 100%; width: auto;
+    object-fit: contain; object-position: bottom right; }
 
 /* ===== Footer ===== */
-.pchome-footer { background: var(--black); margin-top: 67px; padding: 40px 0 60px; }
-.pchome-footer-inner {
-    max-width: 1218px;
-    margin: 0 auto;
-    padding: 0 24px;
-    display: flex;
-    gap: 28px;
-    align-items: center;
-}
-.pchome-footer-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
-.pchome-footer-brand { font-weight: 700; font-size: 24px; color: #e6e6e6; }
-.pchome-footer-lines { display: flex; flex-direction: column; gap: 4px; color: #e6e6e6; font-size: 14px; line-height: 1.35; }
-.pchome-footer-copy { color: #8c8c8c; font-size: 14px; }
-.pchome-footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 28px; }
-.pchome-footer-links { display: flex; gap: 12px; align-items: center; color: #e6e6e6; font-size: 14px; font-weight: 600; }
-.pchome-footer-links a { cursor: pointer; }
-.pchome-footer-links a:hover { color: #fff; }
+.pch2-footer { background: #1e1e1e; color: #cfcfcf; padding: 40px 0; }
+.pch2-footer-inner { max-width: 1280px; margin: 0 auto; padding: 0 max(24px, 4vw);
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+.pch2-footer-brand { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: 0.02em; }
+.pch2-footer-lines { display: flex; flex-direction: column; gap: 4px; margin: 14px 0 10px; font-size: 13px; color: #9a9a9a; }
+.pch2-footer-copy { font-size: 12px; color: #6f6f6f; }
+.pch2-footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 18px; }
+.pch2-footer-links { display: flex; gap: 10px; font-size: 13px; color: #b9b9b9; }
+.pch2-footer-links a { cursor: pointer; }
+.pch2-footer-links span { color: #555; }
+.pch2-faq { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #4a4a4a; background: transparent;
+    color: #fff; border-radius: 30px; padding: 12px 22px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.pch2-faq:hover { background: #2b2b2b; }
 
+@media (max-width: 1180px) {
+    .pch2-stats, .pch2-top5 { position: static; width: auto; margin: 16px; }
+    .pch2-hero { min-height: 0; padding-bottom: 24px; }
+    .pch2-hero-map { position: relative; inset: auto; padding: 12px; }
+    .pch2-hero-map .busanmap { width: min(80vw, 560px); }
+    .pch2-actions { grid-template-columns: repeat(2, 1fr); }
+    .pch2-bottom { grid-template-columns: 1fr; }
+}

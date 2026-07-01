@@ -457,48 +457,9 @@ def seed_dashboard_data(db: Session):
                 longitude=lng,
                 category=random.choice(["report", "diagnosis", "survey"]),
             ))
-    # 가상시민(Persona) 시드: ai_citizens 모듈의 MOCK_CITIZENS / MOCK_DETAILS 사용.
-    # 추후 RAG 자동 생성이 도입되면 이 시드는 fallback이 되거나 제거됨.
-    from routers.ai_citizens import MOCK_CITIZENS, MOCK_DETAILS
-    for c in MOCK_CITIZENS:
-        d = MOCK_DETAILS.get(c["id"], {})
-        # MOCK_DETAILS의 풍부한 필드는 detail JSON에 그대로 보관
-        detail_payload = {
-            k: v for k, v in d.items()
-            if k not in ("job",)  # job은 별도 컬럼
-        }
-        # MOCK엔 없지만 화면에서 쓰는 보조 필드도 detail에 포함되도록 유지
-        db.add(models.Persona(
-            id=c["id"],
-            district_code=c["district"],
-            year="2026",
-            name=c["name"],
-            age=c["age"],
-            gender=c.get("gender"),
-            job=d.get("job", ""),
-            image_emoji="👤",
-            image_url=None,
-            quote=c["quote"],
-            full_quote=d.get("body_language") or c["quote"],
-            tags=c.get("tags", []),
-            pain_points=d.get("top_issues", []),
-            suggestions=d.get("policy_signals", {}),
-            expected_effects=[],
-            stats={
-                "participation": d.get("participation", {}),
-                "category_scores": d.get("category_scores", {}),
-                "similar_ratio": d.get("similar_ratio"),
-                "similar_desc": d.get("similar_desc"),
-            },
-            categories=c.get("categories", []),
-            avatar_initial=c.get("avatar_initial") or (c["name"][:1] if c.get("name") else ""),
-            importance=c.get("importance", 100),
-            detail=detail_payload,
-            generation_source="seed",
-            evidence=None,
-        ))
+    # 가상시민(Persona) 목업 시드 제거됨 — Persona는 RAG/실데이터로만 생성·제공.
     db.commit()
-    print(f"  district_analysis/insights/personas: 시드 완료 ({len(MOCK_CITIZENS)} personas)")
+    print("  district_analysis/insights: 시드 완료 (personas는 RAG/실데이터로 대체 — 목업 제거됨)")
 
 
 def seed_checklist_templates(db: Session):

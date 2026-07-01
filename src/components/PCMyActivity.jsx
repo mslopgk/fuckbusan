@@ -2,52 +2,30 @@ import React, { useState, useEffect } from 'react';
 import UserPCLayout from './UserPCLayout';
 import './PCMyActivity.css';
 import { API_URL } from '../utils/api';
-import { getRecentViews, getFrequentViews } from '../utils/viewHistory';
 
-/* PC 나의 활동 — Figma 215:2080 (PC_나의활동) */
+/* PC 나의 활동 — Figma 269:15666 (PC_나의활동) */
 
-const TABS = ['관심목록', '최근 본 글', '자주본 글'];
-
-const LIKED_REPORTS_KEY = 'liked_report_ids';
-const readLikedReportIds = () => {
-    try { return new Set(JSON.parse(localStorage.getItem(LIKED_REPORTS_KEY) || '[]')); } catch { return new Set(); }
-};
-
-// 항목 클릭 → 도메인별 상세로 이동
-const navTargetFor = (it) => {
-    if (it.type === 'report') return ['pcReportDetail', { id: it.id }];
-    if (it.type === 'proposal') return ['pcMyProposalDetail', { id: it.id, title: it.title }];
-    if (it.type === 'survey') return ['pcSurveyResults', { id: it.id, title: it.title }];
-    return ['pcDiagnosisMap', null];
-};
-
-const TYPE_LABEL = { report: '제보', proposal: '제안', survey: '설문', diagnosis: '진단' };
+const DISTRICTS = ['전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구'];
+const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 
 const STAT_DEFS = [
-    { key: 'report', label: '제보', color: '#f74e7e', target: 'pcMyReportList' },
-    { key: 'proposal', label: '제안', color: '#23bdbb', target: 'myProposals' },
-    { key: 'survey', label: '설문', color: '#542aa3', target: 'mySurveys' },
-    { key: 'diagnosis', label: '진단', color: '#dd5b1b', target: 'pcDiagnosisMap' },
+    { key: 'report',   label: '제보',   icon: '/assets/activity/icon_report.png',    linkLabel: '제보 전체보기',   target: 'pcMyReportList' },
+    { key: 'proposal', label: '제안',   icon: '/assets/activity/icon_proposal.png',  linkLabel: '제안 전체보기',   target: 'myProposals' },
+    { key: 'diagnosis',label: '진단',   icon: '/assets/activity/icon_diagnosis.png', linkLabel: '진단 전체보기',   target: 'pcDiagnosisMap' },
+    { key: 'survey',   label: '설문',   icon: '/assets/activity/icon_survey.png',    linkLabel: '설문 전체보기',   target: 'mySurveys' },
+];
+
+const QUICK_MENU = [
+    { label: '관심목록',       sub: '내가 찜한 글 보기',         target: null },
+    { label: '최근 본 글',     sub: '최근 열람한 콘텐츠 보기',   target: null },
+    { label: '자주 본 글',     sub: '자주 본 글보기',            target: null },
+    { label: '회원정보 관리',  sub: '개인정보 및 개정 관리',     target: 'myPage' },
+    { label: '서비스 이용 동의', sub: '이용 동의 내역 관리',     target: null },
+    { label: '알림 수신 동의', sub: '알림 설정 관리',            target: null },
 ];
 
 const lenOf = (rows) => (Array.isArray(rows) ? rows.length : 0);
 
-// "3개월 전", "5일 전" 같은 상대시간
-const relativeTime = (d) => {
-    const diff = Date.now() - d.getTime();
-    const min = Math.floor(diff / 60000);
-    if (min < 1) return '방금';
-    if (min < 60) return `${min}분 전`;
-    const hr = Math.floor(min / 60);
-    if (hr < 24) return `${hr}시간 전`;
-    const day = Math.floor(hr / 24);
-    if (day < 30) return `${day}일 전`;
-    const mon = Math.floor(day / 30);
-    if (mon < 12) return `${mon}개월 전`;
-    return `${Math.floor(mon / 12)}년 전`;
-};
-
-// "2025. 12. 09. 오전 10:44"
 const formatAccess = (d) => {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -56,15 +34,15 @@ const formatAccess = (d) => {
     const ampm = h < 12 ? '오전' : '오후';
     h = h % 12 || 12;
     const min = String(d.getMinutes()).padStart(2, '0');
-    return `${y}. ${m}. ${day}. ${ampm} ${h}:${min}`;
+    return `마지막 접속 ${y}. ${m}. ${day}. ${ampm} ${h}:${min}`;
 };
 
 const PCMyActivity = ({ onNavigate }) => {
-    const [tab, setTab] = useState('관심목록');
     const [name, setName] = useState(localStorage.getItem('user_name') || '');
-    const [lastLogin, setLastLogin] = useState(null);
+    const [lastLogin, setLastLogin] = useState('');
     const [counts, setCounts] = useState({ report: 0, proposal: 0, survey: 0, diagnosis: 0 });
-    const [bookmarks, setBookmarks] = useState([]); // 관심목록: 좋아요 제보 + 투표 제안
+    const [activeDistrict, setActiveDistrict] = useState('전체');
+    const [activeCategories, setActiveCategories] = useState(new Set(['전체']));
 
     useEffect(() => {
         const token = localStorage.getItem('access_token');
@@ -75,11 +53,12 @@ const PCMyActivity = ({ onNavigate }) => {
 
         getJson('/users/me').then((d) => {
             if (d?.name) setName(d.name);
-            if (d?.last_login) { const dt = new Date(d.last_login); if (!isNaN(dt)) setLastLogin(dt); }
+            if (d?.last_login) {
+                const dt = new Date(d.last_login);
+                if (!isNaN(dt)) setLastLogin(formatAccess(dt));
+            }
         });
 
-        // 4개 도메인 카운트를 각 전용 엔드포인트에서 집계
-        // 제보=/api/reports/mine, 제안=/api/reports/my-proposals, 진단=/checklist/my, 설문=/api/surveys/my-participations
         Promise.all([
             getJson('/api/reports/mine'),
             getJson('/api/reports/my-proposals'),
@@ -93,109 +72,114 @@ const PCMyActivity = ({ onNavigate }) => {
                 survey: lenOf(surveys),
             });
         });
-
-        // 관심목록: 좋아요한 제보(localStorage id → /api/reports/full에서 매칭) + 투표한 제안(/voted-proposals)
-        const likedIds = readLikedReportIds();
-        Promise.all([
-            likedIds.size ? getJson('/api/reports/full') : Promise.resolve(null),
-            getJson('/api/reports/voted-proposals'),
-        ]).then(([full, voted]) => {
-            const rows = Array.isArray(full?.items) ? full.items : (Array.isArray(full) ? full : []);
-            const likedReports = rows
-                .filter((r) => likedIds.has(r.id))
-                .map((r) => ({ type: 'report', id: r.id, title: r.title, category: r.category, region: r.region, status: r.status }));
-            const votedProposals = (Array.isArray(voted) ? voted : [])
-                .map((p) => ({ type: 'proposal', id: p.id, title: p.title, category: p.category, region: p.region, status: '' }));
-            setBookmarks([...likedReports, ...votedProposals]);
-        });
     }, []);
 
-    const tabItems = tab === '관심목록' ? bookmarks
-        : tab === '최근 본 글' ? getRecentViews(20)
-            : getFrequentViews(20);
-
-    const emptyMsg = tab === '관심목록' ? '좋아요·투표한 글이 여기에 모여요.'
-        : tab === '최근 본 글' ? '최근 본 글이 없습니다.'
-            : '자주 본 글이 없습니다. (2번 이상 본 글이 모여요)';
-
-    const openItem = (it) => {
-        const [target, payload] = navTargetFor(it);
-        onNavigate && onNavigate(target, payload);
+    const toggleCategory = (cat) => {
+        if (cat === '전체') { setActiveCategories(new Set(['전체'])); return; }
+        const next = new Set(activeCategories);
+        next.delete('전체');
+        if (next.has(cat)) { next.delete(cat); if (next.size === 0) next.add('전체'); }
+        else next.add(cat);
+        setActiveCategories(next);
     };
 
     return (
         <UserPCLayout currentView="myActivityHub" onNavigate={onNavigate}>
             <div className="pcma">
                 <div className="pcma-inner">
-                    {/* 프로필 헤더 */}
-                    <div className="pcma-head">
-                        <h2 className="pcma-h">프로필</h2>
-                        <button className="pcma-info-link" onClick={() => onNavigate && onNavigate('myPage')}>
-                            <img src="/assets/activity/info_person.svg" alt="" /> 내 정보 관리
-                        </button>
+                    {/* 페이지 타이틀 */}
+                    <div className="pcma-page-header">
+                        <h1 className="pcma-page-title">마이페이지</h1>
+                        <p className="pcma-page-subtitle">나의 활동과 관심서비스를 한눈에 확인하세요.</p>
                     </div>
 
                     {/* 프로필 카드 */}
                     <div className="pcma-profile">
-                        <img className="pcma-avatar" src="/assets/activity/avatar.png" alt="프로필" />
+                        <img className="pcma-avatar" src="/assets/activity/avatar_girl.png" alt="프로필" />
                         <div className="pcma-profile-info">
-                            <div className="pcma-greeting">반가워요 {name || '회원'}님</div>
-                            <div className="pcma-lastlogin">
-                                {lastLogin ? (
-                                    <>
-                                        마지막 접속 일시는 {relativeTime(lastLogin)}<br />
-                                        {formatAccess(lastLogin)} 였습니다.
-                                    </>
-                                ) : (
-                                    <>
-                                        오늘도 우리 동네를 위한<br />
-                                        활동에 참여해 주셔서 감사합니다.
-                                    </>
-                                )}
-                            </div>
+                            <div className="pcma-greeting">반가워요 <strong>{name || '회원'}님</strong></div>
+                            {lastLogin && <div className="pcma-lastlogin">{lastLogin}</div>}
                         </div>
-                        <div className="pcma-verify">
-                            <div className="pcma-verify-row"><img src="/assets/activity/verify_id.png" alt="" /> 본인인증 완료</div>
-                            <div className="pcma-verify-row"><img src="/assets/activity/verify_area.png" alt="" /> 동네 인증(최근 30일)</div>
-                        </div>
+                        <button className="pcma-profile-edit-btn" onClick={() => onNavigate && onNavigate('myPage')}>
+                            프로필 수정
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#777" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </button>
                     </div>
 
-                    {/* 탭 */}
-                    <div className="pcma-tabs">
-                        {TABS.map((t) => (
-                            <button key={t} className={`pcma-tab${tab === t ? ' active' : ''}`} onClick={() => setTab(t)}>{t}</button>
+                    {/* 나의 활동 */}
+                    <h2 className="pcma-section-title">나의 활동</h2>
+                    <div className="pcma-activity-grid">
+                        {STAT_DEFS.map((s) => (
+                            <button
+                                key={s.key}
+                                className={`pcma-act-card pcma-act-card--${s.key}`}
+                                onClick={() => onNavigate && onNavigate(s.target)}
+                            >
+                                <div className="pcma-act-top">
+                                    <span className="pcma-act-label">{s.label}</span>
+                                    <img className="pcma-act-icon" src={s.icon} alt={s.label} />
+                                </div>
+                                <div className="pcma-act-count">
+                                    <strong>{counts[s.key]}</strong>건
+                                </div>
+                                <div className="pcma-act-link">{s.linkLabel} <span>›</span></div>
+                            </button>
                         ))}
                     </div>
 
-                    {/* 탭 콘텐츠 (관심목록 / 최근 본 글 / 자주 본 글) */}
-                    <div className="pcma-tablist">
-                        {tabItems.length === 0 ? (
-                            <div className="pcma-empty">{emptyMsg}</div>
-                        ) : (
-                            tabItems.map((it) => (
-                                <button key={`${it.type}:${it.id}`} className="pcma-listitem" onClick={() => openItem(it)}>
-                                    <span className={`pcma-listitem-type type-${it.type}`}>{TYPE_LABEL[it.type] || ''}</span>
-                                    <span className="pcma-listitem-title">{it.title}</span>
-                                    <span className="pcma-listitem-meta">
-                                        {it.region && <span>{it.region}</span>}
-                                        {it.category && <span>{it.category}</span>}
-                                        {it.viewedAt && <span>{relativeTime(new Date(it.viewedAt))}</span>}
-                                        {tab === '자주본 글' && it.count && <span>{it.count}회</span>}
-                                    </span>
-                                </button>
-                            ))
-                        )}
+                    {/* 관심서비스 설정 */}
+                    <h2 className="pcma-section-title">관심서비스 설정</h2>
+                    <div className="pcma-interest-row">
+                        {/* 지역별 */}
+                        <div className="pcma-interest-card">
+                            <h3 className="pcma-interest-subtitle">지역별</h3>
+                            <div className="pcma-district-chips">
+                                {DISTRICTS.map(d => (
+                                    <button
+                                        key={d}
+                                        className={`pcma-district-chip ${activeDistrict === d ? 'active' : ''}`}
+                                        onClick={() => setActiveDistrict(d)}
+                                    >
+                                        {d}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* 유형별 */}
+                        <div className="pcma-interest-card">
+                            <h3 className="pcma-interest-subtitle">유형별</h3>
+                            <div className="pcma-category-list">
+                                {CATEGORIES.map(cat => (
+                                    <label key={cat} className="pcma-cat-row" onClick={() => toggleCategory(cat)}>
+                                        <span className={`pcma-cat-checkbox ${activeCategories.has(cat) ? 'checked' : ''}`}>
+                                            {activeCategories.has(cat) && (
+                                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                                    <path d="M2 6l3 3 5-5" stroke="#23bdbb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            )}
+                                        </span>
+                                        <span className="pcma-cat-name">{cat}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
-                    {/* 나의 활동 통계 */}
-                    <h2 className="pcma-h pcma-section">나의 활동</h2>
-                    <div className="pcma-stats">
-                        {STAT_DEFS.map((s) => (
-                            <button key={s.key} className="pcma-stat" onClick={() => onNavigate && onNavigate(s.target)}>
-                                <span className="pcma-stat-label">{s.label}</span>
-                                <span className="pcma-stat-count">
-                                    <b style={{ color: s.color }}>{counts[s.key]}</b>건
-                                </span>
+                    {/* 빠른메뉴 */}
+                    <h2 className="pcma-section-title">빠른메뉴</h2>
+                    <div className="pcma-quick-grid">
+                        {QUICK_MENU.map((item) => (
+                            <button
+                                key={item.label}
+                                className="pcma-quick-item"
+                                onClick={() => item.target && onNavigate && onNavigate(item.target)}
+                            >
+                                <span className="pcma-quick-label">{item.label}</span>
+                                <span className="pcma-quick-sub">{item.sub}</span>
                             </button>
                         ))}
                     </div>

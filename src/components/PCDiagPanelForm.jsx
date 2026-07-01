@@ -88,7 +88,8 @@ export default function PCDiagPanelForm({ onCancel, onSubmit, location, mode = '
 
     return (
         <>
-            <h2 className="pc-diagform-title">진단하기</h2>
+            {/* Figma 269:13157 — 24px bold subtitle, not just "진단하기" */}
+            <h2 className="pc-diagform-title">우리동네 개선 아이디어를<br/>진단해보세요.</h2>
 
             <div className="pc-diagform-section">
                 <h3 className="pc-diagform-label">사진등록</h3>
@@ -101,10 +102,8 @@ export default function PCDiagPanelForm({ onCancel, onSubmit, location, mode = '
                     {photoPreview ? (
                         <img src={photoPreview} alt="첨부 사진 미리보기" />
                     ) : (
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
+                        /* Figma 269:13157 — same photo_add icon as mobile form */
+                        <img src="/figma-assets/diagnosis/photo_add.svg" width="22" height="22" alt="사진 추가" style={{ objectFit: 'contain' }} />
                     )}
                 </button>
                 <input

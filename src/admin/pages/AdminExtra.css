@@ -1,0 +1,46 @@
+/* 진단/공공데이터/공지·홍보 관리 보조 스타일 (acd-* 디자인 시스템 확장) */
+
+.acd-counts-4 { grid-template-columns: repeat(4, 1fr); }
+
+.acd-region-input { height: 44px; width: 130px; border: 1px solid #ddd; border-radius: 10px;
+    padding: 0 14px; font-size: 14px; }
+
+.acd-row-del { border: none; background: none; cursor: pointer; font-size: 15px; opacity: .55; }
+.acd-row-del:hover { opacity: 1; }
+
+.acd-modal-wide { width: 680px; }
+
+/* 관리 셀 (수정/삭제) */
+.acx-mgmt { white-space: nowrap; }
+.acx-mgmt button { height: 30px; padding: 0 12px; border: 1px solid #e2e2e2; background: #fff;
+    border-radius: 8px; font-size: 13px; font-weight: 600; color: #555; cursor: pointer; margin-left: 4px; }
+.acx-mgmt button:hover { background: #f5f5f5; }
+.acx-mgmt button.del { color: #d6336c; border-color: #f6cad7; }
+.acx-src { color: #8a8a8a; font-size: 13px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 상세 모달 */
+.acx-detail { display: flex; flex-direction: column; gap: 2px; margin-bottom: 18px; }
+.acx-drow { display: flex; gap: 16px; padding: 12px 4px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+.acx-drow > span { min-width: 110px; color: #888; font-weight: 600; }
+.acx-drow > b { color: #242424; font-weight: 600; }
+.acx-drow.col { flex-direction: column; gap: 6px; }
+.acx-drow.col p { margin: 0; color: #333; line-height: 1.6; }
+.acx-detail-img { max-width: 100%; border-radius: 12px; margin-top: 10px; }
+
+/* 폼 (작성/수정 모달) */
+.acx-form { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+.acx-form-grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.acx-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #555; }
+.acx-form input, .acx-form select, .acx-form textarea { border: 1px solid #ddd; border-radius: 9px;
+    padding: 10px 12px; font-size: 14px; font-family: inherit; color: #222; }
+.acx-form input:focus, .acx-form select:focus, .acx-form textarea:focus { outline: none; border-color: #23bdbb; }
+.acx-checks { justify-content: flex-end; }
+.acx-checks span { display: inline-flex; align-items: center; gap: 6px; margin-right: 16px; font-weight: 600; color: #444; }
+.acx-checks input { width: 16px; height: 16px; accent-color: #23bdbb; }
+
+/* 게시 상태 토글 / 고정 / 썸네일 */
+.acx-pub { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700;
+    cursor: pointer; background: #ececec; color: #888; }
+.acx-pub.on { background: #e3f6f5; color: #199; }
+.acx-pin { margin-left: 6px; font-size: 13px; }
+.acx-thumb { width: 56px; height: 34px; object-fit: cover; border-radius: 6px; }

@@ -162,3 +162,84 @@ def _count_by_type(docs):
 def source_counts(db):
     """인덱싱 없이 집계 가능 건수만 (대시보드 표시용)."""
     return _count_by_type(aggregate_documents(db))
+
+
+# ── 가상시민데이터 관리(테이블) 용 통합 행 목록 ──────────────────────────────
+
+def _user_map(db):
+    """user_id → (name, birth_date) 1회 조회 (제출자/연령 표기용)."""
+    import models
+    out = {}
+    try:
+        for u in db.query(models.User.user_id, models.User.name, models.User.birth_date).all():
+            out[u.user_id] = (u.name, u.birth_date)
+    except Exception:
+        pass
+    return out
+
+
+def _age_band(birth):
+    """birth_date 문자열 → 'NN대' (불명 시 '')."""
+    if not birth:
+        return ""
+    import re
+    m = re.match(r"(\d{4})", str(birth))
+    if not m:
+        return ""
+    try:
+        age = 2026 - int(m.group(1))
+        if age < 0 or age > 120:
+            return ""
+        return f"{(age // 10) * 10}대"
+    except Exception:
+        return ""
+
+
+def source_rows(db, diag_limit=1000):
+    """제보/제안/진단/설문을 가상시민데이터 관리 테이블용 통합 행으로 집계.
+    각 행: {kind, id, type, title, category, region, author, age, created_at, content}."""
+    import models
+    um = _user_map(db)
+    rows = []
+
+    def author_age(uid, fallback=None):
+        nm, bd = um.get(uid, (None, None))
+        return (nm or fallback or "익명"), _age_band(bd)
+
+    for r in db.query(models.Report).all():
+        a, ab = author_age(r.user_id, r.author_name)
+        rows.append({"kind": "report", "id": r.id, "type": "제보",
+                     "title": r.title or (r.content or "")[:40], "category": r.category or "",
+                     "region": r.region or "", "author": a, "age": ab,
+                     "created_at": r.created_at.isoformat() if r.created_at else "",
+                     "content": r.content or ""})
+    for p in db.query(models.NewProposal).all():
+        a, ab = author_age(p.user_id)
+        rows.append({"kind": "proposal", "id": p.id, "type": "제안",
+                     "title": p.title or (p.content or "")[:40], "category": p.category or "",
+                     "region": p.region or "", "author": a, "age": ab,
+                     "created_at": p.created_at.isoformat() if p.created_at else "",
+                     "content": p.content or ""})
+    for c in (db.query(models.ChecklistResult)
+              .order_by(models.ChecklistResult.result_id.desc()).limit(diag_limit).all()):
+        a, ab = author_age(c.user_id)
+        rows.append({"kind": "diagnosis", "id": c.result_id, "type": "진단",
+                     "title": c.질문기준 or f"{c.대분류 or ''} {c.중분류 or ''}".strip(),
+                     "category": c.대분류 or "", "region": c.진단지역 or "",
+                     "author": a, "age": ab,
+                     "created_at": c.created_at.isoformat() if c.created_at else "",
+                     "content": (c.리뷰 or "")})
+    try:
+        for s in db.query(models.SurveyChatInterview).all():
+            a, ab = author_age(s.user_id)
+            rows.append({"kind": "survey", "id": s.id, "type": "설문",
+                         "title": (s.issue_text or "")[:60], "category": s.primary_category or "",
+                         "region": s.location_bucket or "", "author": a, "age": ab,
+                         "created_at": s.created_at.isoformat() if s.created_at else "",
+                         "content": s.issue_text or ""})
+    except Exception:
+        pass
+
+    # 최신순
+    rows.sort(key=lambda x: x["created_at"], reverse=True)
+    return rows
