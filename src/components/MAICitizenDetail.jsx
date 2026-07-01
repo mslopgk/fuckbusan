@@ -267,8 +267,10 @@ export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }
                         {/* Similarity ratio */}
                         <div className="m-ai-detail__ratio-section">
                             <div className="m-ai-detail__ratio-title">유사 시민 비율</div>
-                            <PersonIconsRow total={personTotal} highlighted={highlighted} />
-                            <div className="m-ai-detail__ratio-pct">{d.similar_ratio || '-'}</div>
+                            <div className="m-ai-detail__ratio-row">
+                                <div className="m-ai-detail__ratio-pct">{d.similar_ratio || '-'}</div>
+                                <PersonIconsRow total={personTotal} highlighted={highlighted} />
+                            </div>
                             <div className="m-ai-detail__ratio-desc">{d.similar_desc || `${citizen.district || ''} 유사 생활 유형`}</div>
                         </div>
                     </div>

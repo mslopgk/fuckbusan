@@ -77,6 +77,11 @@
     transition: none;
 }
 
+/* Figma 269:21250 — 카테고리 칩 간격 8px */
+.m-rmap-page .m-sheet-chips {
+    gap: 8px;
+}
+
 /* peek: 칩 1행 가로 스크롤 */
 .m-rmap-page.sheet-peek .m-sheet-chips {
     flex-wrap: nowrap;

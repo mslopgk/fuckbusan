@@ -25,7 +25,7 @@ function ProposalCard({ it, onNavigate }) {
                     <p className="m-prop-author">{it.author}</p>
                     <div className="m-prop-stats">
                         <span>
-                            <img src="/figma-assets/icons/icon_heart.svg" alt="" width="13" height="11" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }} />
+                            <img src="/figma-assets/icons/icon_vote_check.png" alt="" width="12" height="12" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 3, opacity: 0.3 }} />
                             {it.votes ?? 0}
                         </span>
                         <span>
@@ -40,7 +40,7 @@ function ProposalCard({ it, onNavigate }) {
     );
 }
 
-const CATEGORIES = ['전체', '주거', '환경', '교통', '산업·일자리', '교육', '안전', '문화·여가', '보건·복지'];
+const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 
 export default function MProposalMap({ onNavigate }) {
     const [region, setRegion] = useState('부산전체');
@@ -209,6 +209,12 @@ export default function MProposalMap({ onNavigate }) {
                     </ul>
                 </div>
             </div>
+
+            {/* 제안하기 FAB — Figma 269:23255 (pink pill, nav 위 우측) */}
+            <button type="button" className="m-prop-fab" onClick={() => onNavigate?.('mProposalForm')}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>제안하기</span>
+            </button>
 
             {regionOpen && <RegionSheet accent="#f74e7e" regions={REGIONS} draft={regionDraft} onSelect={setRegionDraft} onConfirm={confirmRegion} onClose={() => setRegionOpen(false)} />}
             {sortOpen && <SortSheet accent="#f74e7e" sorts={SORTS} draft={sortDraft} onSelect={setSortDraft} onConfirm={() => { setSort(sortDraft); setSortOpen(false); }} onClose={() => setSortOpen(false)} />}

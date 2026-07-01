@@ -52,7 +52,7 @@
 .m-report-done-page .m-prop-done-primary {
     background: #542aa3;
     color: #fff;
-    box-shadow: 0 4px 16px rgba(84, 42, 163, 0.3);
+    box-shadow: none; /* Figma 269:22490 — 버튼 그림자/글로우 없음 */
 }
 
 .m-report-done-page .m-prop-done-secondary {

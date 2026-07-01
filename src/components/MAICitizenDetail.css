@@ -89,8 +89,10 @@
 
 .m-ai-detail__name-row {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    flex-direction: row;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .m-ai-detail__name {
@@ -140,18 +142,27 @@
     letter-spacing: -0.02em;
 }
 
+.m-ai-detail__ratio-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
 .m-ai-detail__person-icons {
     display: flex;
     gap: 2px;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .m-ai-detail__ratio-pct {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
     color: #111111;
     letter-spacing: -0.04em;
     line-height: 1.1;
+    flex-shrink: 0;
 }
 
 .m-ai-detail__ratio-desc {

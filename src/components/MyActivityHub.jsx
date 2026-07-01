@@ -196,21 +196,25 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
                     </div>
                 </div>
 
-                {/* 유형별 */}
+                {/* 유형별 — Figma 269:24130: 좌 4개 / 우 5개 두 열 그룹 */}
                 <div className="mahub-interest-card mahub-interest-card--type">
                     <h3 className="mahub-interest-subtitle">유형별</h3>
-                    <div className="mahub-category-list">
-                        {CATEGORIES.map(cat => (
-                            <label key={cat} className="mahub-cat-row">
-                                <span className={`mahub-cat-checkbox ${activeCategories.has(cat) ? 'checked' : ''}`}>
-                                    {activeCategories.has(cat) && (
-                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                            <path d="M2 6l3 3 5-5" stroke="#23bdbb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    )}
-                                </span>
-                                <span className="mahub-cat-name" onClick={() => toggleCategory(cat)}>{cat}</span>
-                            </label>
+                    <div className="mahub-category-cols">
+                        {[CATEGORIES.slice(0, 4), CATEGORIES.slice(4)].map((col, ci) => (
+                            <div key={ci} className="mahub-category-col">
+                                {col.map(cat => (
+                                    <label key={cat} className="mahub-cat-row">
+                                        <span className={`mahub-cat-checkbox ${activeCategories.has(cat) ? 'checked' : ''}`}>
+                                            {activeCategories.has(cat) && (
+                                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                                    <path d="M2 6l3 3 5-5" stroke="#23bdbb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            )}
+                                        </span>
+                                        <span className="mahub-cat-name" onClick={() => toggleCategory(cat)}>{cat}</span>
+                                    </label>
+                                ))}
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -223,19 +227,21 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
                     <button className="mahub-quick-item" onClick={() => {}}>
                         <div className="mahub-quick-top">
                             <span className="mahub-quick-label">관심목록</span>
-                            <img src="/assets/activity/icon_bookmark_quick.svg" alt="" className="mahub-quick-icon" onError={e => e.target.style.display='none'} />
+                            <img src="/assets/activity/icon_quick_bookmark.png" alt="" className="mahub-quick-icon" onError={e => e.target.style.display='none'} />
                         </div>
                         <span className="mahub-quick-sub">내가 찜한 글 보기</span>
                     </button>
                     <button className="mahub-quick-item" onClick={() => {}}>
                         <div className="mahub-quick-top">
                             <span className="mahub-quick-label">최근 본 글</span>
+                            <img src="/assets/activity/icon_quick_recent.png" alt="" className="mahub-quick-icon" onError={e => e.target.style.display='none'} />
                         </div>
                         <span className="mahub-quick-sub">최근 열람한 콘텐츠 보기</span>
                     </button>
                     <button className="mahub-quick-item" onClick={() => {}}>
                         <div className="mahub-quick-top">
                             <span className="mahub-quick-label">자주 본 글</span>
+                            <img src="/assets/activity/icon_quick_frequent.png" alt="" className="mahub-quick-icon" onError={e => e.target.style.display='none'} />
                         </div>
                         <span className="mahub-quick-sub">자주 본 글보기</span>
                     </button>
@@ -248,6 +254,7 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
                     <button className="mahub-quick-item" onClick={() => {}}>
                         <div className="mahub-quick-top">
                             <span className="mahub-quick-label">서비스 이용 동의</span>
+                            <img src="/assets/activity/icon_quick_consent.png" alt="" className="mahub-quick-icon" onError={e => e.target.style.display='none'} />
                         </div>
                         <span className="mahub-quick-sub">이용 동의 내역 관리</span>
                     </button>

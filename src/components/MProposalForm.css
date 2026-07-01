@@ -61,7 +61,7 @@
 .m-form-type {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     font-size: 14px;
     color: #1a1a1b;
     cursor: pointer;
@@ -71,12 +71,13 @@
 
 .m-form-type input { display: none; }
 
+/* Figma 269:23289~ — 채워진 연회색 원 (링 아님), 22px */
 .m-form-type-dot {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #d0d0d0;
+    width: 22px;
+    height: 22px;
+    border: none;
     border-radius: 50%;
-    background: #fff;
+    background: #ececec;
     flex-shrink: 0;
     box-sizing: border-box;
     position: relative;
@@ -84,17 +85,16 @@
 }
 
 .m-form-type input:checked + .m-form-type-dot {
-    border-color: #f74e7e;
     background: #f74e7e;
 }
 
 .m-form-type input:checked + .m-form-type-dot::after {
     content: '';
     position: absolute;
-    left: 4px;
-    top: 6px;
-    width: 6px;
-    height: 3px;
+    left: 6px;
+    top: 8px;
+    width: 7px;
+    height: 4px;
     border-left: 2px solid #fff;
     border-bottom: 2px solid #fff;
     transform: rotate(-45deg);

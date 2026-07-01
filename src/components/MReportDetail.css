@@ -2,6 +2,19 @@
     padding-bottom: 120px;
 }
 
+/* Figma 269:21932 — 뒤로가기 화살표는 태그 위 별도 행에 배치 (arrow y25 / tags y62) */
+.m-report-detail-page .m-detail-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    gap: 13px;
+    padding: 22px 20px 6px;
+}
+
+.m-report-detail-page .m-detail-back {
+    padding: 0;
+}
+
 /* Figma 0:1328: sub-tag in detail topbar uses #ffc9c9 bg / #242424 text (different from list) */
 .m-report-detail-page .m-report-sub-tag {
     background: #ffc9c9;
@@ -297,9 +310,25 @@
     color: #737373;
 }
 
-/* Comment send button: override proposal default to report pink */
+/* Comment send button: Figma 269:21932 — 입력창 안쪽 우측 아이콘(원형 배경 없음) */
+.m-report-detail-page .m-comment-input-row {
+    position: relative;
+}
+
+.m-report-detail-page .m-comment-input {
+    padding-right: 44px;
+}
+
 .m-report-detail-page .m-comment-send {
-    background: #542aa3;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: none;
+    color: #542aa3;
 }
 
 .m-report-detail-page .m-comment-input:focus {

@@ -33,7 +33,7 @@
     padding: 12px 16px 16px;
     flex-wrap: wrap;
     display: flex;
-    gap: 6px;
+    gap: 8px; /* Figma 269:21501 — 칩 간격 8px (5개/행 wrap) */
 }
 
 /* Sort row — white bg */

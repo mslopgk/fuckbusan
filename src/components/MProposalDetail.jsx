@@ -159,8 +159,8 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
     return (
         <div className="m-prop-detail-page">
             <header className="m-detail-topbar">
-                <button className="m-detail-back" onClick={() => onNavigate && onNavigate(sourceView || 'mProposalList')}>
-                    <svg width="6.5" height="13" viewBox="0 0 6.5 13" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 1 0.5 6.5 6 12"/></svg>
+                <button className="m-detail-back" onClick={() => onNavigate && onNavigate(sourceView || 'mProposalList')} aria-label="뒤로">
+                    <img src="/figma-assets/icons/icon_arrow_back.svg" alt="" width="24" height="24" />
                 </button>
             </header>
 
@@ -210,9 +210,9 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                 <div className="m-detail-meta-row">
                     <span className="m-detail-meta-left">{data.date} · 조회수 {views}</span>
                     <span className="m-detail-meta-icons">
-                        {/* WDC: heart icon for votes — 투표 시 핑크 (Figma 제안상세3) */}
-                        <span style={voted ? { color: '#f74e7e' } : undefined}>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill={voted ? '#f74e7e' : 'none'} stroke={voted ? '#f74e7e' : '#bfbfbf'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        {/* Figma 제안상세 269:23522 — 동의수 체크 서클 아이콘 (image 59, opacity 0.3) */}
+                        <span>
+                            <img src="/figma-assets/icons/icon_vote_check.png" alt="" width="12" height="12" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 3, opacity: 0.3 }} />
                             {votes}
                         </span>
                         <span>
@@ -223,8 +223,6 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                 </div>
 
                 <div className="m-detail-comments">
-                    <div className="m-detail-comments-header">댓글 {comments.length}</div>
-
                     {replyTo && (
                         <div className="m-comment-reply-bar">
                             <span><strong>{replyTo.nickname || '익명'}</strong>님에게 답글 작성 중</span>
@@ -260,7 +258,7 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                                     type="button"
                                     className="m-comment-reply"
                                     onClick={() => { setReplyTo(c); commentInputRef.current?.focus(); }}
-                                >답글달기</button>
+                                >답글쓰기</button>
                                 {(c.replies?.length > 0) && (
                                     <ul className="m-comment-replies">
                                         {c.replies.map((r, j) => (

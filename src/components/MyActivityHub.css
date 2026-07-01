@@ -280,11 +280,17 @@
     color: #fff;
 }
 
-/* 유형별 체크박스 리스트 */
-.mahub-category-list {
+/* 유형별 체크박스 리스트 — 좌 4 / 우 5 두 열 그룹 */
+.mahub-category-cols {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0;
+    align-items: start;
+}
+
+.mahub-category-col {
+    display: flex;
+    flex-direction: column;
 }
 
 .mahub-cat-row {

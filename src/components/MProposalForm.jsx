@@ -213,7 +213,7 @@ export default function MProposalForm({ onNavigate }) {
         <div className="m-prop-form-page">
             <header className="m-form-topbar">
                 <button className="m-form-back" onClick={() => onNavigate && onNavigate('mProposalList')} aria-label="뒤로">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    <img src="/figma-assets/icons/icon_arrow_back.svg" alt="" width="24" height="24" />
                 </button>
             </header>
 

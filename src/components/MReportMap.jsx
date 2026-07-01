@@ -190,7 +190,7 @@ export default function MReportMap({ onNavigate }) {
                 value={search}
                 onChange={setSearch}
                 onBack={() => onNavigate?.('mReportList')}
-                placeholder="제목·내용으로 검색"
+                placeholder="검색"
                 showBack={true}
             />
 

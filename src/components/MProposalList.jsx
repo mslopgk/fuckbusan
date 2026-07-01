@@ -11,14 +11,15 @@ import { useLazyImage } from '../hooks/useLazyImage';
 import { thumbUrl, matchDistrict, nearestDistrict } from '../utils/format';
 import './MProposalList.css';
 
-function HeartIcon() {
+function VoteIcon() {
+    // Figma 리스트/지도 카드 동의수 아이콘 — 체크 서클 (image 59, opacity 0.3)
     return (
         <img
-            src="/figma-assets/icons/icon_heart.svg"
+            src="/figma-assets/icons/icon_vote_check.png"
             alt=""
-            width="13"
-            height="11"
-            style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}
+            width="12"
+            height="12"
+            style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 3, opacity: 0.3 }}
         />
     );
 }
@@ -56,7 +57,7 @@ function ProposalListCard({ it, onNavigate }) {
                 <div className="m-report-author-stat-row">
                     <p className="m-prop-author">{author}</p>
                     <div className="m-prop-stats">
-                        <span><HeartIcon />{it.likes_count ?? 0}</span>
+                        <span><VoteIcon />{it.likes_count ?? 0}</span>
                         <span><CommentIcon />{it.comments_count ?? 0}</span>
                     </div>
                 </div>
@@ -144,11 +145,8 @@ export default function MProposalList({ onNavigate }) {
         <div className="m-prop-list-page">
             {/* 상단 topbar: < 홈으로 + 지도보기 pill */}
             <header className="m-prop-topbar">
-                <button type="button" className="m-prop-back" onClick={() => onNavigate && onNavigate('home')}>
-                    <svg width="7" height="13" viewBox="0 0 7 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 1L1 6.5L6 12" stroke="#555555" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <span>홈으로</span>
+                <button type="button" className="m-prop-back" onClick={() => onNavigate && onNavigate('home')} aria-label="뒤로">
+                    <img src="/figma-assets/icons/icon_arrow_back.svg" alt="" width="24" height="24" />
                 </button>
                 <button type="button" className="m-map-btn" onClick={() => onNavigate && onNavigate('mProposalMap')}>
                     <img src="/figma-assets/icons/icon_location_pin.svg" alt="" width="17" height="23" />

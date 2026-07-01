@@ -547,8 +547,8 @@
 
 /* Figma 269:26746 — 헤더 타이틀 */
 .m-diag-list-topbar-title {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
     color: #242424;
     letter-spacing: -0.03em;
     line-height: 1.4;
@@ -638,17 +638,10 @@
 }
 
 .m-diag-list-cats {
-    padding: 8px 16px 12px;
+    padding: 8px 16px 14px;
     display: flex;
-    flex-wrap: nowrap;
-    gap: 6px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-}
-
-.m-diag-list-cats::-webkit-scrollbar {
-    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .m-diag-list-cat-chip {
@@ -656,12 +649,13 @@
     background: #e6e6e6;
     border: none;
     border-radius: 20px;
-    padding: 7px 14px;
-    font-size: 14px;
+    padding: 8px 16px;
+    font-size: 15px;
     color: #242424;
     cursor: pointer;
     font-family: inherit;
     white-space: nowrap;
+    letter-spacing: -0.02em;
 }
 
 .m-diag-list-cat-chip.active {
