@@ -12,14 +12,14 @@
 /* 가상시민 배너 */
 .hmob2-aic {
     position: relative; margin: 4px 16px 0; width: calc(100% - 32px); border: none; cursor: pointer; text-align: left;
-    border-radius: 18px; padding: 22px 20px 0; min-height: 344px; display: block;
+    border-radius: 18px; padding: 22px 20px 0; min-height: 306px; display: block;
     background: #e2f1fd; overflow: hidden;
 }
 .hmob2-aic-text { position: relative; z-index: 1; }
 .hmob2-aic-text h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.04em; color: #111; line-height: 1.35; }
 .hmob2-aic-text h2 span { color: #23bdbb; }
 .hmob2-aic-text p { margin: 10px 0 0; font-size: 13px; color: #5b6b6a; line-height: 1.5; }
-.hmob2-aic-img { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: auto; display: block; }
+.hmob2-aic-img { position: absolute; left: 50%; transform: translateX(-50%); bottom: 0; width: 116%; max-width: none; height: auto; display: block; }
 
 /* 공공데이터 카드 */
 .hmob2-pubdata {
