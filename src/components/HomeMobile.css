@@ -12,7 +12,7 @@
 /* 가상시민 배너 */
 .hmob2-aic {
     position: relative; margin: 4px 16px 0; width: calc(100% - 32px); border: none; cursor: pointer; text-align: left;
-    border-radius: 18px; padding: 22px 20px 0; min-height: 296px; display: block;
+    border-radius: 18px; padding: 22px 20px 0; min-height: 344px; display: block;
     background: #e2f1fd; overflow: hidden;
 }
 .hmob2-aic-text { position: relative; z-index: 1; }
