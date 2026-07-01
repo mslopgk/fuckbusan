@@ -50,24 +50,23 @@ const HomeMobile = ({ onNavigate }) => {
 
     return (
         <div className="hmob2">
-            <header className="hmob2-header">
-                <button className="hmob2-logo" onClick={() => go('home')} aria-label="홈"><img src="/WDC.svg" alt="WDC" /></button>
-                <button className="hmob2-bell" aria-label="알림" onClick={() => go('mNotifications')}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                    </svg>
-                    {unreadCount > 0 && <span className="hmob2-bell-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
-                </button>
-            </header>
-
-            {/* 가상시민 배너 */}
-            <button className="hmob2-aic" onClick={() => go('mAICitizen')}>
-                <div className="hmob2-aic-text">
+            {/* 가상시민 배너 — 로고·벨을 포함한 상단 카드 (일러스트가 로고 영역까지 올라옴) */}
+            <div className="hmob2-aic">
+                <header className="hmob2-header">
+                    <button className="hmob2-logo" onClick={() => go('home')} aria-label="홈"><img src="/WDC.svg" alt="WDC" /></button>
+                    <button className="hmob2-bell" aria-label="알림" onClick={() => go('mNotifications')}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                        {unreadCount > 0 && <span className="hmob2-bell-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+                    </button>
+                </header>
+                <button className="hmob2-aic-text" onClick={() => go('mAICitizen')}>
                     <h2>우리 지역을 대표하는<br /><span>가상 시민</span>을 만나보세요</h2>
                     <p>지역의 생활환경과 문제, 요구를<br />‘시민의 모습’으로 이해할 수 있습니다.</p>
-                </div>
+                </button>
                 <img className="hmob2-aic-img" src="/assets/home/aic_banner.png" alt="" />
-            </button>
+            </div>
 
             {/* 공공데이터 카드 */}
             <button className="hmob2-pubdata" onClick={() => go('pcPublicData')}>

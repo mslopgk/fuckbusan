@@ -1,25 +1,30 @@
 /* 모바일 홈 리뉴얼 (Figma 269:19829). accent teal #23bdbb */
 .hmob2 { background: #fff; min-height: 100vh; padding-bottom: 96px; }
 
-.hmob2-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; }
+/* 상단 헤더 — 파란 배너 카드 안에 겹쳐 배치 (로고/벨) */
+.hmob2-header { display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px 0; position: relative; z-index: 2; background: transparent; }
 .hmob2-logo { border: none; background: none; padding: 0; cursor: pointer; }
-.hmob2-logo img { height: 28px; display: block; }
+.hmob2-logo img { height: 30px; display: block; }
 .hmob2-bell { position: relative; border: none; background: none; cursor: pointer; }
 .hmob2-bell-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px;
     background: #e6235a; color: #fff; font-size: 10px; font-weight: 700; border-radius: 8px;
     display: flex; align-items: center; justify-content: center; }
 
-/* 가상시민 배너 */
+/* 가상시민 배너 — 로고·텍스트·일러스트를 한 카드에 담고 일러스트가 상단까지 크게 올라옴 */
 .hmob2-aic {
-    position: relative; margin: 4px 16px 0; width: calc(100% - 32px); border: none; cursor: pointer; text-align: left;
-    border-radius: 18px; padding: 22px 20px 0; min-height: 306px; display: block;
-    background: #e2f1fd; overflow: hidden;
+    position: relative; margin: 12px 16px 0; width: calc(100% - 32px);
+    border-radius: 18px; min-height: 340px; overflow: hidden;
+    background: #e2f1fd;
 }
-.hmob2-aic-text { position: relative; z-index: 1; }
-.hmob2-aic-text h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.04em; color: #111; line-height: 1.35; }
+.hmob2-aic-text { position: relative; z-index: 1; display: block; width: 100%;
+    border: none; background: none; text-align: left; cursor: pointer; padding: 16px 20px 0; }
+.hmob2-aic-text h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.04em; color: #111; line-height: 1.35; }
 .hmob2-aic-text h2 span { color: #23bdbb; }
 .hmob2-aic-text p { margin: 10px 0 0; font-size: 13px; color: #5b6b6a; line-height: 1.5; }
-.hmob2-aic-img { position: absolute; left: 50%; transform: translateX(-50%); bottom: 0; width: 116%; max-width: none; height: auto; display: block; }
+/* 일러스트: 카드 하단 전체폭 블리드 + 크게 배치해 시민 머리가 텍스트/로고 영역까지 올라옴 */
+.hmob2-aic-img { position: absolute; left: 50%; transform: translateX(-50%); bottom: 0; z-index: 0;
+    width: 130%; max-width: none; height: auto; display: block; }
 
 /* 공공데이터 카드 */
 .hmob2-pubdata {
