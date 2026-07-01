@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    padding: 0 24px;
+    padding: 0 16px;
     background-color: #fff;
     max-width: 1280px;
     margin: 0 auto;
@@ -26,40 +26,70 @@
 }
 
 .done-title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
     color: #E6235A;
     margin: 0 0 16px 0;
+    letter-spacing: -0.04em;
 }
 
 .done-subtitle {
     font-size: 20px;
     font-weight: 700;
-    color: #111;
-    margin: 0 0 12px 0;
+    color: #242424;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.04em;
 }
 
 .done-description {
-    font-size: 16px;
-    color: #888;
-    line-height: 1.5;
+    font-size: 14px;
+    color: #737373;
+    line-height: 1.35;
     margin: 0;
 }
 
 .check-done-footer {
-    padding-bottom: 30px;
+    padding-bottom: 16px;
     width: 100%;
+    display: flex;
+    gap: 8px;
+}
+
+/* Two-button layout (닫기 + 홈으로 이동) — Figma 진단 완료 */
+.check-done-footer--two .btn-close {
+    flex: 0 0 103px;
+}
+.check-done-footer--two .btn-home {
+    flex: 1;
 }
 
 .btn-home {
-    width: 100%;
-    padding: 16px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 500;
+    flex: 1;
+    height: 56px;
+    padding: 12px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
     color: #fff;
     background-color: #E6235A;
     border: none;
     cursor: pointer;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: inherit;
+    letter-spacing: -0.04em;
+}
+
+/* 닫기 버튼 — Figma: #e6e6e6 bg, #777 text */
+.btn-close {
+    height: 56px;
+    padding: 12px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 400;
+    color: #777;
+    background-color: #e6e6e6;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
 }

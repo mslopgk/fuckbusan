@@ -1,0 +1,522 @@
+.m-survey-detail-page {
+    min-height: 100vh;
+    background: #fff;
+    padding-bottom: 80px;
+}
+
+/* Figma: hero area is 285px tall, title at ~99px from top, card starts at 180px */
+.m-survey-hero {
+    background: #542AA3;
+    padding: 0 16px;
+    color: #fff;
+    min-height: 285px;
+}
+
+/* Detail2: 개인정보 동의 카드 오버랩용 — same hero height */
+.m-survey-hero.hero-shrunk {
+    min-height: 285px;
+}
+
+.m-hero-topbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.m-hero-back {
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    color: #fff;
+    margin-left: -6px;
+}
+
+/* Figma: borderless icon + text, transparent bg */
+.m-hero-copy {
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 5px 4px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: inherit;
+}
+
+/* Figma: title centered in purple hero, word-break at natural Korean boundaries */
+.m-hero-title {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    margin: 0 24px 24px;
+    letter-spacing: -0.04em;
+    /* Figma: title sits toward hero center, large gap below back row */
+    padding-top: 44px;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+.m-hero-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 22px;
+    color: #1a1a1b;
+}
+
+/* Figma: card starts at 180px from top in a 285px hero → overlap = 285-180 = 105px */
+.m-hero-card-overlap {
+    margin: -105px 16px 0;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    position: relative;
+    z-index: 2;
+}
+
+.m-hero-row {
+    display: flex;
+    gap: 16px;
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 6px 0;
+}
+
+.m-hero-key {
+    flex-shrink: 0;
+    width: 72px;
+    font-weight: 700;
+    color: #111;
+    letter-spacing: -0.04em;
+}
+
+.m-hero-val {
+    flex: 1;
+    color: #111;
+    word-break: keep-all;
+    letter-spacing: -0.04em;
+    font-weight: 500;
+}
+
+/* Body (lead + bullets + cta) */
+.m-survey-body {
+    padding: 28px 20px 40px;
+}
+
+.m-body-lead {
+    font-size: 16px;
+    color: #111;
+    line-height: 1.4;
+    margin: 0 0 18px;
+    letter-spacing: -0.04em;
+}
+
+.m-body-bullets {
+    list-style: none;
+    margin: 0 0 24px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.m-body-bullets li {
+    position: relative;
+    padding-left: 22px;
+    font-size: 16px;
+    color: #111;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
+}
+
+/* Figma: small chevron-down bullet (∨, purple) */
+.m-body-bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid #5B2EAB;
+    border-bottom: 2px solid #5B2EAB;
+    transform: rotate(45deg);
+}
+
+.m-body-terms {
+    text-align: center;
+    font-size: 14px;
+    color: #111;
+    margin: 0 0 24px;
+    letter-spacing: -0.04em;
+}
+
+.m-body-terms .link {
+    color: #111;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.m-policy-link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #111;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+    letter-spacing: inherit;
+}
+
+.m-policy-link:hover {
+    color: #542AA3;
+}
+
+/* ───── 약관/개인정보 모달 ───── */
+.m-policy-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: m-policy-fade 0.18s ease-out;
+}
+
+@keyframes m-policy-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.m-policy-sheet {
+    width: 100%;
+    max-width: 100%;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    animation: m-policy-slide 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes m-policy-slide {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.m-policy-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 12px;
+    border-bottom: 1px solid #ececec;
+    flex-shrink: 0;
+}
+
+.m-policy-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1b;
+    letter-spacing: -0.02em;
+}
+
+.m-policy-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.m-policy-body {
+    flex: 1;
+    overflow-y: auto;
+    margin: 0;
+    padding: 18px 20px 32px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #333;
+    line-height: 1.7;
+    letter-spacing: -0.02em;
+    white-space: pre-wrap;
+    word-break: keep-all;
+}
+
+.m-survey-cta {
+    display: block;
+    margin: 8px auto 0;
+    width: 152px;
+    height: 50px;
+    border: none;
+    border-radius: 30px;
+    background: #542AA3;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    font-family: inherit;
+    letter-spacing: -0.04em;
+}
+
+.m-survey-cta:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Consent card content */
+.m-consent-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    color: #111;
+}
+
+/* Figma: each consent group wrapped in a rounded bordered box */
+.m-consent-box {
+    border: 1px solid #e2e2e2;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin: 0 0 10px;
+}
+
+.m-consent-box .m-consent-section { margin-top: 0; }
+.m-consent-box .m-consent-bullets { margin-bottom: 0; }
+
+.m-consent-section {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin: 14px 0 6px;
+}
+
+.m-consent-bullets {
+    list-style: disc;
+    margin: 0 0 0 18px;
+    padding: 0;
+}
+
+.m-consent-bullets li {
+    font-size: 12px;
+    color: #444;
+    line-height: 1.7;
+    margin-bottom: 4px;
+}
+
+.m-consent-final {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin: 18px 0 8px;
+}
+
+.m-consent-radios {
+    display: flex;
+    gap: 16px;
+    padding: 4px 0;
+}
+
+.m-consent-radios label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #1a1a1b;
+    cursor: pointer;
+}
+
+/* 동의 체크박스 스타일 — 정사각형 + 체크마크 (Figma: teal #43c1c1 when checked) */
+.m-consent-radios input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    background: #fff;
+    cursor: pointer;
+    margin: 0;
+    position: relative;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.m-consent-radios input[type="radio"]:checked {
+    background: #43c1c1;
+    border-color: #43c1c1;
+}
+
+.m-consent-radios input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    width: 7px;
+    height: 4px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg);
+}
+
+/* 자체 라디오 — Figma 우선: 청록(teal #23bdbb) 채움 */
+.m-form-radios input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #c8c8c8;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    margin: 0;
+    position: relative;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.m-form-radios input[type="radio"]:checked {
+    border-color: #23bdbb;
+}
+
+.m-form-radios input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #23bdbb;
+}
+
+/* Form rows */
+.m-form-section-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+}
+
+.m-form-row {
+    margin-bottom: 18px;
+}
+
+/* Figma: 작성자 기본정보 — 흰 카드, 라벨 좌측 열 + 옵션 우측, 행 사이 divider */
+.m-form-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 4px 16px;
+    background: #fff;
+}
+
+.m-form-row-inline {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 0;
+    padding: 16px 0;
+    border-bottom: 1px solid #efefef;
+}
+
+.m-form-card .m-form-row-inline:last-child {
+    border-bottom: none;
+}
+
+.m-form-row-inline > .m-form-label {
+    flex: 0 0 88px;
+    margin-bottom: 0;
+    padding-top: 2px;
+}
+
+.m-form-row-inline .m-form-radios-wrap {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 성명/휴대폰: 라벨 좌측 + input 우측 인라인 (input 폭 ~234px) */
+.m-form-row-inline .m-form-field {
+    flex: 1;
+    min-width: 0;
+}
+
+.m-form-row-inline .m-form-field .m-form-input {
+    max-width: 234px;
+}
+
+.m-form-input-other {
+    margin-top: 10px;
+    max-width: 234px;
+}
+
+.m-form-label {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+}
+
+/* Figma: required asterisk in survey form uses teal #23bdbb */
+.m-form-label .req { color: #23bdbb; }
+
+.m-form-radios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+    padding: 4px 0;
+}
+
+.m-form-radios-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 16px;
+}
+
+.m-form-radios-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.m-form-radios label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #1a1a1b;
+    cursor: pointer;
+    letter-spacing: -0.02em;
+}
+
+.m-form-input {
+    width: 100%;
+    height: 42px;
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.m-form-input:focus { border-color: #542AA3; }
+.m-form-input-error { border-color: #E6235A !important; }
+.m-form-error {
+    margin: 4px 0 0;
+    font-size: 11px;
+    color: #E6235A;
+}

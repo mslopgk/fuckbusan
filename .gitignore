@@ -12,6 +12,7 @@ __pycache__/
 *.sqlite
 *.sqlite3
 *.sql
+!database/*.sql
 
 # Environment
 .env
@@ -20,3 +21,58 @@ __pycache__/
 
 # Package lock
 package-lock.json
+
+# Claude Code local settings
+.claude/
+
+# macOS
+.DS_Store
+
+# Binary archives
+*.zip
+
+# Figma exports & reference assets (작업용, 배포 불필요)
+figma-pages/
+figma-pages-thumb/
+figma.pdf
+figma/
+figma-compare/
+verify/figma-refs/
+verify/screenshots/
+
+# Work-only markdown docs
+FIGMA_DIFF.md
+FIGMA_FIX_REPORT.md
+DEV_PLAN.md
+CHANGES_*.md
+QA_REPORT_*.md
+
+# Reference data & work docs (data files, changelogs, figma exports)
+_refs/
+
+# Backend logs
+backend/*.log
+
+# Playwright MCP session logs
+.playwright-mcp/
+
+# User uploads (runtime generated)
+backend/uploads/
+
+# Root-level debug/verify screenshots
+map_debug.mjs
+current-*.png
+*-verify.png
+*-debug.png
+
+# Auto-generated verify reports
+verify/reports/
+
+# Root-level screenshots from debugging
+screenshots-all/
+
+# Exported data / temp folders
+제목 없음/
+
+# Nested external repos
+external-repo/

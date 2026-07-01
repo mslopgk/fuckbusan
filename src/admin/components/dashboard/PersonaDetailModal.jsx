@@ -1,4 +1,4 @@
-import { X, MapPin, Activity, Heart, Quote, PieChart as PieIcon, ChevronDown, ChevronUp } from 'lucide-react';
+// lucide-react removed — using inline SVGs
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { DISTRICTS } from '../../data/constants';
 import '../../styles/admin.css';
@@ -23,7 +23,7 @@ export default function PersonaDetailModal({ persona, onClose }) {
                     onClick={onClose}
                     className="modal-close-btn"
                 >
-                    <X className="w-6 h-6 text-slate-600" style={{ color: '#475569' }} />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
 
                 {/* Left Column: Visual Profile */}
@@ -57,7 +57,7 @@ export default function PersonaDetailModal({ persona, onClose }) {
                         </div>
                         <h2 className="modal-name-title">{persona.name} <span className="modal-age-sub">{persona.age}세</span></h2>
                         <div className="modal-location">
-                            <MapPin className="w-4 h-4" /> {DISTRICTS.find(d => d.id === persona.district_code)?.name || persona.district_code}
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-3px', marginRight: 2 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {DISTRICTS.find(d => d.id === persona.district_code)?.name || persona.district_code}
                         </div>
                         <div className="modal-tags">
                             {persona.tags && persona.tags.map((tag, idx) => (
@@ -71,7 +71,7 @@ export default function PersonaDetailModal({ persona, onClose }) {
                     {/* Stats Box */}
                     <div className="modal-stats-box">
                         <h3 className="modal-section-title">
-                            <Activity className="w-5 h-5 text-primary" style={{ color: '#E6235A' }} /> 활동 데이터
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E6235A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-4px', marginRight: 4 }}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> 활동 데이터
                         </h3>
                         <div className="h-48 w-full relative" style={{ height: '192px', width: '100%', position: 'relative' }}>
                             <ResponsiveContainer width="100%" height="100%">
@@ -135,7 +135,7 @@ export default function PersonaDetailModal({ persona, onClose }) {
                 <div className="modal-right-col custom-scrollbar">
                     {/* Quote Section */}
                     <div className="modal-quote-box">
-                        <Quote className="modal-quote-icon" />
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" className="modal-quote-icon"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
                         <p className="modal-quote-text">
                             {persona.quote}
                         </p>
@@ -185,7 +185,7 @@ export default function PersonaDetailModal({ persona, onClose }) {
                         <div className="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16" style={{ position: 'absolute', top: 0, right: 0, padding: '128px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '9999px', filter: 'blur(64px)', marginRight: '-64px', marginTop: '-64px' }}></div>
 
                         <h3 className="relative z-10 text-lg font-bold mb-6 flex items-center gap-2 text-primary-light" style={{ position: 'relative', zIndex: 10, fontSize: '1.125rem', fontWeight: 700, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px', color: '#fca5a5' }}>
-                            <Heart className="w-5 h-5 fill-current" />
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
                             기대 효과 (Expected Effects)
                         </h3>
 

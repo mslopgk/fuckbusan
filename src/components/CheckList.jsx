@@ -5,7 +5,6 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
     // Determine if expert mode
     const isExpert = diagnosisMode === 'expert';
 
-    console.log("CheckList rendered with questions:", questions);
     if (!Array.isArray(questions)) {
         console.error("CheckList: questions is not an array!", questions);
         return <div>Error: Invalid questions data.</div>;

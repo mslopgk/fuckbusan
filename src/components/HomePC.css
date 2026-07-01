@@ -1,0 +1,134 @@
+/* PC 홈 리뉴얼 (Figma 269:7671). accent teal #23bdbb */
+.pchome2 { width: 100%; background: #fff; }
+
+/* ===== Hero ===== */
+.pch2-hero {
+    position: relative;
+    min-height: 600px;
+    background: linear-gradient(180deg, #eaf5f4 0%, #dcebee 100%);
+    overflow: hidden;
+}
+.pch2-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: url('/assets/지도 배경 데스크탑.png') center/cover no-repeat;
+    opacity: 0.3; pointer-events: none;
+}
+.pch2-hero-map {
+    position: absolute; left: 0; right: 0; top: 24px; display: flex; align-items: flex-start; justify-content: center;
+}
+.pch2-hero-map .busanmap { width: min(40vw, 560px); }
+.pch2-hero-inner {
+    position: relative; max-width: 1320px; margin: 0 auto; height: 600px; padding: 0 24px;
+}
+
+/* 좌측 참여 현황 카드 */
+.pch2-stats {
+    position: absolute; left: 24px; top: 44px; width: 290px; z-index: 4;
+    background: #fff; border-radius: 20px; padding: 26px 24px; box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+}
+.pch2-stats-region { color: #23bdbb; font-size: 15px; font-weight: 800; }
+.pch2-stats-head h2 { margin: 4px 0 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #1a1a1b; }
+.pch2-stats-head p { margin: 6px 0 0; font-size: 13px; color: #8a8a8a; }
+.pch2-stats-total {
+    margin: 20px 0 14px; background: #23bdbb; border-radius: 16px;
+    padding: 16px 18px; color: #fff; display: flex; flex-direction: column; gap: 4px;
+}
+.pch2-stats-total span { font-size: 13px; opacity: 0.92; font-weight: 600; }
+.pch2-stats-total strong { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.pch2-stats-rows { display: flex; flex-direction: column; gap: 10px; }
+.pch2-stats-row {
+    display: flex; align-items: center; gap: 10px; width: 100%; border: 1px solid #eee; background: #fff;
+    border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: border-color .15s, background .15s;
+}
+.pch2-stats-row:hover { border-color: #23bdbb; background: #f4fbfb; }
+.pch2-stats-row-k { font-size: 14px; font-weight: 700; color: #333; }
+.pch2-stats-row-v { margin-left: auto; font-size: 15px; font-weight: 800; color: #23bdbb; }
+
+/* 우측 TOP5 카드 */
+.pch2-top5 {
+    position: absolute; right: 24px; top: 44px; width: 290px; z-index: 4;
+    background: #fff; border-radius: 20px; padding: 24px 22px; box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+}
+.pch2-top5 h3 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+.pch2-top5-sub { font-size: 13px; color: #9aa3ab; }
+.pch2-top5-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.pch2-top5-list li { display: flex; align-items: center; gap: 10px; }
+.pch2-rank { width: 24px; height: 24px; border-radius: 50%; color: #fff; font-size: 13px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pch2-rank-name { font-size: 14px; font-weight: 700; color: #333; width: 64px; flex-shrink: 0; }
+.pch2-rank-bar { flex: 1; height: 8px; background: #eef2f2; border-radius: 6px; overflow: hidden; }
+.pch2-rank-bar > div { height: 100%; border-radius: 6px; }
+.pch2-rank-cnt { font-size: 13px; font-weight: 800; color: #444; width: 64px; text-align: right; flex-shrink: 0; }
+.pch2-top5-empty { color: #9aa3ab; font-size: 13.5px; line-height: 1.6; text-align: center;
+    padding: 24px 8px; white-space: pre-line; }
+
+/* ===== 빠른 액션 ===== */
+.pch2-actions {
+    max-width: 1320px; margin: 0 auto; padding: 48px 24px 0;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.pch2-act {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; text-align: left;
+    border: none; border-radius: 18px; padding: 24px 22px; cursor: pointer; background: #f5f6f7;
+    min-height: 132px; transition: transform .15s, box-shadow .15s;
+}
+.pch2-act:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(0,0,0,0.08); }
+.pch2-act.plain { background: #f4f4f4; }
+.pch2-act.report { background: #f3edff; }
+.pch2-act.propose { background: #ffecf1; }
+.pch2-act .pch2-act-title { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: #1a1a1b; }
+.pch2-act.report .pch2-act-title { color: #542aa3; }
+.pch2-act.propose .pch2-act-title { color: #e6235a; }
+.pch2-act p { margin: 8px 0 0; font-size: 13px; color: #6b7280; line-height: 1.5; }
+.pch2-act img { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; }
+
+/* ===== 소식 + 가상시민 배너 ===== */
+.pch2-bottom {
+    max-width: 1320px; margin: 0 auto; padding: 36px 24px 64px;
+    display: grid; grid-template-columns: 552fr 743fr; gap: 20px;
+}
+.pch2-news { background: #fff; border: 1px solid #eee; border-radius: 18px; padding: 26px 28px; }
+.pch2-news h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+.pch2-news-divider { height: 2px; background: #1e1e1e; margin: 14px 0 6px; }
+.pch2-news ul { list-style: none; margin: 0; padding: 0; }
+.pch2-news li { display: flex; gap: 18px; padding: 14px 0; border-bottom: 1px solid #f1f1f1; }
+.pch2-news li:last-child { border-bottom: none; }
+.pch2-news-date { color: #9aa3ab; font-size: 14px; flex-shrink: 0; }
+.pch2-news-text { color: #333; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.pch2-aic {
+    position: relative; overflow: hidden; border: none; cursor: pointer; text-align: left;
+    border-radius: 18px; padding: 30px 0 30px 34px; min-height: 188px; display: flex; align-items: center;
+    background: #e2f1fd; transition: transform .15s, box-shadow .15s;
+}
+.pch2-aic:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+.pch2-aic-text { position: relative; z-index: 1; flex-shrink: 0; }
+.pch2-aic-text h3 { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -0.03em; color: #1a1a1b; line-height: 1.4; }
+.pch2-aic-text h3 span { color: #23bdbb; }
+.pch2-aic-text p { margin: 12px 0 0; font-size: 14px; color: #5b6b6a; line-height: 1.6; }
+.pch2-aic-img { position: absolute; right: 0; bottom: 0; top: 0; height: 100%; width: auto;
+    object-fit: contain; object-position: bottom right; }
+
+/* ===== Footer ===== */
+.pch2-footer { background: #1e1e1e; color: #cfcfcf; padding: 40px 0; }
+.pch2-footer-inner { max-width: 1280px; margin: 0 auto; padding: 0 max(24px, 4vw);
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+.pch2-footer-brand { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: 0.02em; }
+.pch2-footer-lines { display: flex; flex-direction: column; gap: 4px; margin: 14px 0 10px; font-size: 13px; color: #9a9a9a; }
+.pch2-footer-copy { font-size: 12px; color: #6f6f6f; }
+.pch2-footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 18px; }
+.pch2-footer-links { display: flex; gap: 10px; font-size: 13px; color: #b9b9b9; }
+.pch2-footer-links a { cursor: pointer; }
+.pch2-footer-links span { color: #555; }
+.pch2-faq { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #4a4a4a; background: transparent;
+    color: #fff; border-radius: 30px; padding: 12px 22px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.pch2-faq:hover { background: #2b2b2b; }
+
+@media (max-width: 1180px) {
+    .pch2-stats, .pch2-top5 { position: static; width: auto; margin: 16px; }
+    .pch2-hero { min-height: 0; padding-bottom: 24px; }
+    .pch2-hero-map { position: relative; inset: auto; padding: 12px; }
+    .pch2-hero-map .busanmap { width: min(80vw, 560px); }
+    .pch2-actions { grid-template-columns: repeat(2, 1fr); }
+    .pch2-bottom { grid-template-columns: 1fr; }
+}

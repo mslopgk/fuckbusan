@@ -1,0 +1,387 @@
+.m-prop-detail-page {
+    min-height: 100vh;
+    background: #fff;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* WDC Figma 0:12032: no border on topbar, category tag inside content area */
+.m-detail-topbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    background: #fff;
+    /* no border-bottom per WDC spec */
+}
+
+.m-detail-back {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+}
+
+/* Category tag in topbar row but part of content flow — below back arrow */
+.m-detail-cat-tag {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+}
+
+.m-detail-content {
+    padding: 0 20px 16px;
+}
+
+.m-detail-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #111;
+    margin: 0 0 6px;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
+}
+
+.m-detail-author {
+    font-size: 14px;
+    color: #1e1e1e;
+    margin: 0 0 18px;
+}
+
+.m-detail-body {
+    font-size: 16px;
+    font-weight: 500;
+    color: #242424;
+    line-height: 1.4;
+    margin-bottom: 16px;
+    letter-spacing: -0.04em;
+}
+
+.m-detail-body p { margin: 0 0 6px; }
+.m-detail-body li {
+    list-style: none;
+    margin: 4px 0;
+    padding-left: 18px;
+    position: relative;
+}
+.m-detail-body li::before {
+    content: '▸';
+    color: #E6235A;
+    position: absolute;
+    left: 0;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.m-detail-image {
+    width: 100%;
+    height: 199px;
+    border-radius: 10px;
+    background-color: #f4f4f4;
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 14px;
+    display: block;
+    object-fit: cover;
+}
+
+.m-detail-image-placeholder {
+    background: linear-gradient(135deg, #f5e6ff 0%, #e8d0f7 100%);
+}
+
+.m-detail-map {
+    width: 100%;
+    height: 80px;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.m-detail-coord-text {
+    font-size: 11px;
+    color: #888;
+    margin: 4px 0 10px;
+}
+
+.m-detail-attachment {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    color: #555;
+    padding: 8px 0 12px;
+    border-bottom: 1px solid #ececec;
+    margin-bottom: 8px;
+}
+
+.m-detail-attachment-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.m-detail-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #888;
+    padding: 10px 0 14px;
+    border-bottom: 1px solid #ececec;
+    margin-bottom: 14px;
+}
+
+.m-detail-meta-left { color: #1e1e1e; }
+
+.m-detail-meta-icons {
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.m-detail-meta-icons span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: #bfbfbf;
+}
+
+/* Comments */
+.m-detail-comments {
+    border-top: 1px solid #ececec;
+    padding-top: 16px;
+}
+
+.m-detail-comments-header {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin-bottom: 14px;
+}
+
+.m-detail-comments ul {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+}
+
+.m-detail-comments li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.m-comment-meta {
+    display: flex;
+    gap: 6px;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.m-comment-meta strong { color: #1a1a1b; }
+.m-comment-meta span  { color: #999; }
+
+.m-detail-comments p {
+    font-size: 16px;
+    color: #242424;
+    margin: 0 0 4px;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
+}
+
+.m-comment-reply {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-top: 4px;
+    color: #1e1e1e;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-comment-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    /* Figma: 댓글 입력창이 left:10px / w:373px — content 패딩(20px)에서 10px 빼서 edge 맞춤 */
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.m-comment-input {
+    flex: 1;
+    height: 41px;
+    border: 1px solid #dadada;
+    border-radius: 15px;
+    padding: 0 16px;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    color: #737373;
+    letter-spacing: -0.04em;
+}
+
+.m-comment-input:focus { border-color: #E6235A; outline: none; }
+
+.m-comment-send {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Footer 투표하기 — WDC: shadow on top, no border */
+.m-detail-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    padding: 18px 20px;
+    z-index: 50;
+}
+
+/* WDC Figma 0:12067: outlined button — border 2px #f74e7e, white bg */
+.m-vote-cta {
+    width: 100%;
+    height: 59px;
+    border-radius: 15px;
+    background: #fff;
+    color: #E6235A;
+    border: 2px solid #E6235A;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    font-family: inherit;
+    letter-spacing: -0.04em;
+    transition: transform 0.1s, opacity 0.1s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.m-vote-cta:active:not(:disabled) {
+    transform: scale(0.97);
+    opacity: 0.85;
+}
+
+.m-vote-cta.on {
+    background: #E6235A;
+    color: #fff;
+    border-color: #E6235A;
+}
+
+/* 투표 완료/취소확인 모달 — Figma 제안상세2/4 */
+.m-vote-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 36px;
+}
+
+.m-vote-modal {
+    width: 100%;
+    max-width: 300px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 24px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.m-vote-modal-title {
+    margin: 16px 0 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1b;
+    line-height: 1.45;
+    letter-spacing: -0.02em;
+}
+
+.m-vote-modal-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.m-vote-modal-btn {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 23px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.m-vote-modal-btn.primary {
+    background: #E6235A;
+    color: #fff;
+}
+
+.m-vote-modal-btn.ghost {
+    background: #FCDAE3;
+    color: #E6235A;
+}
+
+/* 답글 작성 표시 바 + 대댓글 들여쓰기 */
+.m-comment-reply-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f7f7f8;
+    border-radius: 10px;
+    padding: 7px 12px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #555;
+    letter-spacing: -0.02em;
+}
+
+.m-comment-reply-bar strong { color: #E6235A; font-weight: 700; }
+
+.m-comment-reply-bar button {
+    border: none;
+    background: none;
+    font-size: 16px;
+    line-height: 1;
+    color: #999;
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.m-comment-replies {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0 0 0 16px;
+    border-left: 2px solid #f0f0f0;
+}
+
+.m-comment-replies li { margin-bottom: 10px; }
+.m-comment-replies li:last-child { margin-bottom: 0; }

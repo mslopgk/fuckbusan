@@ -1,0 +1,29 @@
+/* 제보 지도 보라 테마 (#542aa3) — PCMap3.css 핑크를 제보맵에서만 오버라이드.
+   제안맵(PCProposeMap)은 영향 없음. WDC Figma: 제보=보라 */
+
+.pc-map3-page.report .pc-map3-cat-btn:hover { border-color: #542aa3; color: #542aa3; }
+.pc-map3-page.report .pc-map3-cat-btn.active { background: #542aa3; border-color: #542aa3; color: #fff; }
+
+.pc-map3-page.report .pc-map3-kind-card { border-color: #542aa3; }
+.pc-map3-page.report .pc-map3-kind-card div,
+.pc-map3-page.report .pc-map3-kind-card strong { color: #542aa3; }
+.pc-map3-page.report .pc-map3-kind-card:hover { background: #f3eefb; }
+.pc-map3-page.report .pc-map3-kind-card.active { background: #542aa3; border-color: #542aa3; }
+.pc-map3-page.report .pc-map3-kind-card.active div,
+.pc-map3-page.report .pc-map3-kind-card.active strong { color: #fff; }
+
+.pc-map3-page.report .pc-map3-list-count { color: #542aa3; }
+.pc-map3-page.report .pc-map3-sort button.active { color: #542aa3; }
+
+.pc-map3-page.report .pc-map3-cta:hover { background: #542aa3; border-color: #542aa3; color: #fff; }
+.pc-map3-page.report .pc-map3-policy-cta { background: #542aa3; }
+.pc-map3-page.report .pc-map3-policy-cta:hover { background: #3d1a7a; }
+
+/* 지역 태그(region) 보라 톤 */
+.pc-map3-page.report .pc-map3-pill.pink { background: #f3eefb; color: #542aa3; }
+
+/* 우측 툴바 (지도 토글·리스트) teal → 보라 */
+.pc-map3-page.report .pc-map3-tool--teal { background: #542aa3; color: #fff; }
+.pc-map3-page.report .pc-map3-tool--teal:hover { background: #3d1a7a; }
+.pc-map3-page.report .pc-map3-tool--teal-off { background: #fff; color: #542aa3; }
+.pc-map3-page.report .pc-map3-tool--teal-off:hover { background: #f3eefb; }

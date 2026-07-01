@@ -1,0 +1,114 @@
+/* MReportMap — 제보 지도 뷰 (Figma 215:10932 WDC) */
+/* Brand: #542aa3 (purple), matches WDC Figma spec */
+
+/* Page container override for report brand */
+.m-rmap-page {
+    background: #f7f7f8;
+}
+
+/* Region button inside the sheet (button variant of m-sheet-region) */
+.m-sheet-region-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a1a1b;
+    letter-spacing: -0.02em;
+    padding: 4px 0;
+}
+
+.m-sheet-region-btn .m-region-arrow {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #542aa3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* FAB: always visible (not scoped inside expanded sheet) */
+.m-rmap-fab {
+    position: fixed;
+    right: 16px;
+    bottom: 88px; /* above MobileBottomNav (≈76px) + gap */
+    z-index: 60;
+    background: #542aa3;
+    box-shadow: 0 4px 16px rgba(84, 42, 163, 0.25);
+    /* m-prop-fab base styles handle the rest */
+}
+
+/* Override chip active color to report purple */
+.m-rmap-page .m-cat-chip.on {
+    background: #542aa3;
+    color: #fff;
+    border-color: #542aa3;
+}
+
+/* Region pill arrow circle: report purple */
+.m-rmap-page .m-sheet-region-btn .m-region-arrow {
+    background: #542aa3;
+}
+
+/* Stage chip active: report purple (solid, matches MReportList) */
+.m-rmap-page .m-stage-chip.on {
+    background: #542aa3;
+    color: #fff;
+    border-color: #542aa3;
+}
+
+/* 2-state sheet heights (peek/half). full은 별도 list 페이지로 navigate */
+.m-rmap-page.sheet-peek .m-map-sheet { height: 80px; overflow: hidden; }
+.m-rmap-page.sheet-half .m-map-sheet { height: 48vh; overflow: hidden; }
+
+/* iOS-like spring + GPU 가속 (m-map-sheet 기본 transition은 MProposalMap.css에서 정의) */
+.m-rmap-page .m-map-sheet {
+    transition: height 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+                transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    will-change: height, transform;
+}
+
+.m-rmap-page .m-map-sheet.dragging {
+    transition: none;
+}
+
+/* peek: 칩 1행 가로 스크롤 */
+.m-rmap-page.sheet-peek .m-sheet-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* half: 칩 2행 wrap */
+.m-rmap-page.sheet-half .m-sheet-chips {
+    flex-wrap: wrap;
+    overflow-x: visible;
+}
+
+
+/* 내 위치 FAB — 시트 바로 위 지도 영역 우하단 */
+/* Figma 0:12150 — 배경 없는 크로스헤어 아이콘 (터치 타깃 44px 유지) */
+.m-locate-fab {
+    position: fixed;
+    right: 8px;
+    z-index: 40;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: bottom 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+    filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.9));
+}
+
+.m-rmap-page.sheet-peek .m-locate-fab { bottom: 172px; }
+.m-rmap-page.sheet-half .m-locate-fab { bottom: calc(48vh + 92px); }

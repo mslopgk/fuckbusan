@@ -1,31 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './Diagnosis.css';
-import { MapContainer, TileLayer, Marker, CircleMarker, Popup, useMap, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import { Map, MapMarker, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
 
-// Helper Component for Map Events
-const MapClickHandler = ({ onClick }) => {
-    useMapEvents({
-        click: (e) => {
-            onClick(e);
-        },
-    });
-    return null;
-};
-
-// Helper Component to Recenter Map
-const RecenterMap = ({ center }) => {
-    const map = useMap();
-    React.useEffect(() => {
-        if (center) {
-            map.flyTo(center, 16); // Zoom level 16
-        }
-    }, [center, map]);
-    return null;
+const buildPinDataUrl = (color) => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="${color}" stroke="#fff" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3" fill="#fff"/></svg>`;
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 };
 
 const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, initialMode, mapPins, onAddPin }) => {
+    useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services'] });
     const [diagnosisType, setDiagnosisType] = useState(initialMode || 'general'); // 'general' | 'expert'
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedPin, setSelectedPin] = useState(null); // ID of selected pin or 'custom'
@@ -48,7 +31,6 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
-                    console.log("Location found:", latitude, longitude);
 
                     // BUSAN BOUNDS CHECK (approx)
                     // Lat: 34.8 ~ 35.4
@@ -86,50 +68,33 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
         }
     }, []);
 
-    const fetchAddress = async (lat, lng) => {
-        setIsLoadingAddress(true);
-        try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=ko`);
-            const data = await response.json();
-
-            if (data && data.address) {
-                const addr = data.address;
-                // Construct Place Name (Building name or amenity or shop)
-                const place = data.name || addr.amenity || addr.building || addr.shop || addr.office || "지정된 위치";
-
-                // Construct Road Address
-                const road = `${addr.province || ''} ${addr.city || addr.district || ''} ${addr.road || ''} ${addr.house_number || ''}`.trim();
-
-                // Construct Jibun (Dong + House Number - simplified approximation as Nominatim doesn't always strictly separate Jibun)
-                // Often 'neighbourhood' or 'quarter' or 'hamlet' is the Dong.
-                const dong = addr.quarter || addr.neighbourhood || addr.hamlet || addr.village || '';
-                const jibun = `${dong} ${addr.house_number || ''}`.trim() || road; // Fallback to road if empty
-
-                setAddressInfo({
-                    placeName: place,
-                    road: road,
-                    jibun: jibun,
-                    zip: addr.postcode || '-'
-                });
-            } else {
-                setAddressInfo({
-                    placeName: "알 수 없는 위치",
-                    road: "주소 정보 없음",
-                    jibun: "-",
-                    zip: "-"
-                });
-            }
-        } catch (error) {
-            console.error("Geocoding error:", error);
-            setAddressInfo({
-                placeName: "네트워크 오류",
-                road: "주소를 불러올 수 없습니다",
-                jibun: "-",
-                zip: "-"
-            });
-        } finally {
-            setIsLoadingAddress(false);
+    const fetchAddress = (lat, lng) => {
+        if (!window.kakao?.maps?.services) {
+            setAddressInfo({ placeName: 'SDK 미로드', road: '주소를 불러올 수 없습니다', jibun: '-', zip: '-' });
+            return;
         }
+        setIsLoadingAddress(true);
+        const geocoder = new window.kakao.maps.services.Geocoder();
+        geocoder.coord2Address(lng, lat, (result, status) => {
+            try {
+                if (status === window.kakao.maps.services.Status.OK && result[0]) {
+                    const r = result[0];
+                    const road = r.road_address?.address_name || '';
+                    const jibun = r.address?.address_name || '';
+                    const place = r.road_address?.building_name || jibun.split(' ').slice(-2).join(' ') || '지정된 위치';
+                    setAddressInfo({
+                        placeName: place,
+                        road: road || jibun,
+                        jibun: jibun || road,
+                        zip: r.road_address?.zone_no || '-',
+                    });
+                } else {
+                    setAddressInfo({ placeName: '알 수 없는 위치', road: '주소 정보 없음', jibun: '-', zip: '-' });
+                }
+            } finally {
+                setIsLoadingAddress(false);
+            }
+        });
     };
 
     const primaryColor = diagnosisType === 'expert' ? '#542AA3' : '#E6235A';
@@ -189,22 +154,17 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
         }
     };
 
-    const createCustomIcon = (id, isSelected, color) => {
-        const fill = isSelected ? color : "#888";
-        const svgHtml = `
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="${fill}" stroke="#fff" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3" fill="#fff"></circle>
-            </svg>
-        `;
-        return L.divIcon({
-            className: 'custom-map-icon',
-            html: svgHtml,
-            iconSize: [40, 40],
-            iconAnchor: [20, 40],
-            popupAnchor: [0, -40]
-        });
-    };
+    const pinImageSelected = useMemo(() => ({
+        src: buildPinDataUrl(primaryColor),
+        size: { width: 40, height: 40 },
+        options: { offset: { x: 20, y: 40 } },
+    }), [primaryColor]);
+    const pinImageDefault = useMemo(() => ({
+        src: buildPinDataUrl('#888888'),
+        size: { width: 40, height: 40 },
+        options: { offset: { x: 20, y: 40 } },
+    }), []);
+    const pinImage = (isSelected) => (isSelected ? pinImageSelected : pinImageDefault);
 
     return (
         <div className={`diagnosis-container ${diagnosisType}`}>
@@ -233,10 +193,7 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
 
                 <div className="header-right">
                     <button className="header-action-btn" onClick={onList}>진단 목록</button>
-                    <button className="header-action-btn" onClick={() => {
-                        console.log("Diagnosis: My Activity Clicked");
-                        onMyActivity();
-                    }}>나의 활동</button>
+                    <button className="header-action-btn" onClick={onMyActivity}>나의 활동</button>
                 </div>
             </div>
 
@@ -260,76 +217,54 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
 
             {/* Map Area */}
             <div className="diagnosis-map-container" style={{ position: 'relative', zIndex: 0 }}>
-                <MapContainer
-                    center={[35.1631, 129.0529]} // Default Fallback center (Busanjin-gu)
-                    zoom={15}
+                <Map
+                    center={currentLocation || { lat: 35.1631, lng: 129.0529 }}
+                    level={3}
                     style={{ height: '100%', width: '100%', outline: 'none' }}
-                    zoomControl={false}
-                >
-                    {currentLocation && <RecenterMap center={[currentLocation.lat, currentLocation.lng]} />}
-
-                    <MapClickHandler onClick={(e) => {
+                    onClick={(_target, mouseEvent) => {
                         if (isDropdownOpen) {
                             setIsDropdownOpen(false);
                             return;
                         }
-                        // Create custom pin
-                        setCustomPin(e.latlng);
+                        const latlng = mouseEvent.latLng;
+                        const newPin = { lat: latlng.getLat(), lng: latlng.getLng() };
+                        setCustomPin(newPin);
                         setSelectedPin('custom');
-                        // Fetch Address
-                        fetchAddress(e.latlng.lat, e.latlng.lng);
-                    }} />
-
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-
-                    {/* Render Persistent Pins from App State */}
+                        fetchAddress(newPin.lat, newPin.lng);
+                    }}
+                >
+                    {/* Persistent Pins */}
                     {Object.values(mapPins)
                         .filter(pin => (pin.type || 'general') === diagnosisType)
                         .map((pin) => (
-                            <Marker
+                            <MapMarker
                                 key={pin.id}
-                                position={[pin.lat, pin.lng]}
-                                icon={createCustomIcon(pin.id, selectedPin == pin.id, primaryColor)}
-                                eventHandlers={{
-                                    click: (e) => {
-                                        L.DomEvent.stopPropagation(e.originalEvent);
-                                        handlePinClick(pin.id);
-                                    }
-                                }}
+                                position={{ lat: pin.lat, lng: pin.lng }}
+                                image={pinImage(selectedPin == pin.id)}
+                                onClick={() => handlePinClick(pin.id)}
                             />
                         ))}
 
-                    {/* Current Location Marker */}
+                    {/* Current Location Dot */}
                     {currentLocation && (
-                        <CircleMarker
-                            center={[currentLocation.lat, currentLocation.lng]}
-                            radius={8}
-                            fillColor="#4285F4"
-                            color="#fff"
-                            weight={2}
-                            fillOpacity={1}
-                        >
-                            <Popup>현재 위치</Popup>
-                        </CircleMarker>
+                        <CustomOverlayMap position={currentLocation} yAnchor={0.5} xAnchor={0.5}>
+                            <div style={{
+                                width: 16, height: 16, borderRadius: '50%',
+                                background: '#4285F4', border: '2px solid #fff',
+                                boxShadow: '0 0 0 2px rgba(66,133,244,0.3)',
+                            }} title="현재 위치" />
+                        </CustomOverlayMap>
                     )}
 
-                    {/* Custom Pin Marker */}
+                    {/* Custom Pin */}
                     {customPin && (
-                        <Marker
+                        <MapMarker
                             position={customPin}
-                            icon={createCustomIcon('custom', selectedPin === 'custom', primaryColor)}
-                            eventHandlers={{
-                                click: (e) => {
-                                    L.DomEvent.stopPropagation(e.originalEvent);
-                                    handlePinClick('custom');
-                                }
-                            }}
+                            image={pinImage(selectedPin === 'custom')}
+                            onClick={() => handlePinClick('custom')}
                         />
                     )}
-                </MapContainer>
+                </Map>
 
                 {/* GPS Button */}
                 <button
@@ -436,8 +371,6 @@ const Diagnosis = ({ onBack, onNext, onList, onMyActivity, onEdit, onResult, ini
                                         cursor: 'pointer'
                                     }}
                                     onClick={() => {
-                                        // Navigate to DiagnosisResult with correct type
-                                        console.log("View Result Clicked for", selectedPin);
                                         if (onResult) {
                                             onResult({
                                                 ...mapPins[selectedPin],

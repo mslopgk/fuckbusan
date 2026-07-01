@@ -5,13 +5,10 @@ const CheckList = lazy(() => import('./components/CheckList'));
 const Satisfaction = lazy(() => import('./components/Satisfaction'));
 const Review = lazy(() => import('./components/Review'));
 const CheckDone = lazy(() => import('./components/CheckDone'));
-const Survey = lazy(() => import('./components/Survey'));
 const Home = lazy(() => import('./components/Home'));
 const Login = lazy(() => import('./components/Login'));
 const Signup = lazy(() => import('./components/Signup'));
 const SignupDone = lazy(() => import('./components/SignupDone'));
-const Report = lazy(() => import('./components/Report'));
-const ReportForm = lazy(() => import('./components/ReportForm'));
 const Diagnosis = lazy(() => import('./components/Diagnosis'));
 const DiagnosisStep1 = lazy(() => import('./components/DiagnosisStep1'));
 const DiagnosisList = lazy(() => import('./components/DiagnosisList'));
@@ -21,7 +18,6 @@ const DiagnosisResult = lazy(() => import('./components/DiagnosisResult'));
 const ExpertDiagnosisResult = lazy(() => import('./components/ExpertDiagnosisResult'));
 const ExpertDiagnosisDetail = lazy(() => import('./components/ExpertDiagnosisDetail'));
 const DiagnosisDetail = lazy(() => import('./components/DiagnosisDetail'));
-const NewDiagnosis = lazy(() => import('./components/NewDiagnosis'));
 const ProposalForm = lazy(() => import('./components/ProposalForm'));
 const ProposalPreview = lazy(() => import('./components/ProposalPreview'));
 const ProposalDone = lazy(() => import('./components/ProposalDone'));
@@ -31,39 +27,139 @@ const ProposalList = lazy(() => import('./components/ProposalList'));
 const ChangePassword = lazy(() => import('./components/ChangePassword'));
 const MyPage = lazy(() => import('./components/MyPage'));
 const MyActivityHub = lazy(() => import('./components/MyActivityHub'));
+const MySurveys = lazy(() => import('./components/MySurveys'));
+const MNotifications = lazy(() => import('./components/MNotifications'));
+const MPlatformNews = lazy(() => import('./components/MPlatformNews'));
 const ReportPostForm = lazy(() => import('./components/ReportPostForm'));
 const ReportDone = lazy(() => import('./components/ReportDone'));
 const ReportList = lazy(() => import('./components/ReportList'));
 const ReportDetail = lazy(() => import('./components/ReportDetail'));
 const MyReports = lazy(() => import('./components/MyReports'));
 
-const AdminLogin = lazy(() => import('./admin/pages/Login'));
 const AdminLoginNew = lazy(() => import('./admin/pages/LoginNew'));
-const AdminSignup = lazy(() => import('./admin/pages/Signup'));
-const AdminDashboard = lazy(() => import('./admin/pages/Dashboard'));
 const AdminDashboardNew = lazy(() => import('./admin/pages/DashboardNew'));
 const MemberEdit = lazy(() => import('./admin/pages/MemberEdit'));
 const ExpertManagement = lazy(() => import('./admin/pages/ExpertManagement'));
 const ExpertEdit = lazy(() => import('./admin/pages/ExpertEdit'));
 const ProposalManagement = lazy(() => import('./admin/pages/ProposalManagement'));
 const ProposalEdit = lazy(() => import('./admin/pages/ProposalEdit'));
+const AdminMain = lazy(() => import('./admin/pages/AdminMain'));
+const AdminUserList = lazy(() => import('./admin/pages/AdminUserList'));
+const AdminRAGDashboard = lazy(() => import('./admin/pages/AdminRAGDashboard'));
+const AdminCitizenData = lazy(() => import('./admin/pages/AdminCitizenData'));
+const AdminCitizenPersonas = lazy(() => import('./admin/pages/AdminCitizenPersonas'));
+const AdminDiagnosisList = lazy(() => import('./admin/pages/AdminDiagnosisList'));
+const AdminPublicData = lazy(() => import('./admin/pages/AdminPublicData'));
+const AdminAnnouncements = lazy(() => import('./admin/pages/AdminAnnouncements'));
+const ReportManagement = lazy(() => import('./admin/pages/ReportManagement'));
+const SurveyManagement = lazy(() => import('./admin/pages/SurveyManagement'));
+const SurveyChatAnalytics = lazy(() => import('./admin/pages/SurveyChatAnalytics'));
+const AdminReportDetail = lazy(() => import('./admin/pages/ReportDetail'));
+const AdminProposalDetail = lazy(() => import('./admin/pages/AdminProposalDetail'));
+const SurveyEditor = lazy(() => import('./admin/pages/SurveyEditor'));
+const SurveyCreated = lazy(() => import('./admin/pages/SurveyCreated'));
+const SurveyResults = lazy(() => import('./admin/pages/SurveyResults'));
 
-import { fetchWithLogout } from './utils/api'
+// USER:PC pages (Figma node 845:4735 — 설문 series)
+const PCSurveyList = lazy(() => import('./components/PCSurveyList'));
+const PCSurveyDetail = lazy(() => import('./components/PCSurveyDetail'));
+const PCSurveyConsent = lazy(() => import('./components/PCSurveyConsent'));
+const PCSurveyJoin = lazy(() => import('./components/PCSurveyJoin'));
+const PCSurveyResults = lazy(() => import('./components/PCSurveyResults'));
+const PCSurveyDone = lazy(() => import('./components/PCSurveyDone'));
+const PCProposeMap = lazy(() => import('./components/PCProposeMap'));
+const PCProposeForm = lazy(() => import('./components/PCProposeForm'));
+const PCProposeDetail = lazy(() => import('./components/PCProposeDetail'));
+const PCReportMap = lazy(() => import('./components/PCReportMap'));
+const PCReportForm = lazy(() => import('./components/PCReportForm'));
+const PCReportDetail = lazy(() => import('./components/PCReportDetail'));
+
+// USER:MOBILE survey pages (Figma node 848:13553)
+const MSurveyList = lazy(() => import('./components/MSurveyList'));
+const SurveyChat = lazy(() => import('./components/SurveyChat'));
+const SurveyChatHistory = lazy(() => import('./components/SurveyChatHistory'));
+const MSurveyDetail1 = lazy(() => import('./components/MSurveyDetail1'));
+const MSurveyDetail2 = lazy(() => import('./components/MSurveyDetail2'));
+const MSurveyJoin = lazy(() => import('./components/MSurveyJoin'));
+const MSurveyDone = lazy(() => import('./components/MSurveyDone'));
+const MSurveyResults = lazy(() => import('./components/MSurveyResults'));
+const MProposalList = lazy(() => import('./components/MProposalList'));
+const MProposalMap = lazy(() => import('./components/MProposalMap'));
+const MProposalForm = lazy(() => import('./components/MProposalForm'));
+const MProposalDetail = lazy(() => import('./components/MProposalDetail'));
+const MProposalDone = lazy(() => import('./components/MProposalDone'));
+const MReportList = lazy(() => import('./components/MReportList'));
+const MReportMap = lazy(() => import('./components/MReportMap'));
+const MReportForm = lazy(() => import('./components/MReportForm'));
+const MReportDetail = lazy(() => import('./components/MReportDetail'));
+const MReportDone = lazy(() => import('./components/MReportDone'));
+
+// USER:MOBILE 진단(Diagnosis) pages (Figma node 941:5782 — 04/23 업데이트)
+const MDiagnosisList = lazy(() => import('./components/MDiagnosisList'));
+const MDiagnosisMap = lazy(() => import('./components/MDiagnosisMap'));
+const MDiagnosisForm = lazy(() => import('./components/MDiagnosisForm'));
+const MDiagnosisResult = lazy(() => import('./components/MDiagnosisResult'));
+const MDiagnosisDone = lazy(() => import('./components/MDiagnosisDone'));
+
+// USER:PC 진단(Diagnosis) pages (Figma node 941:5782 — 04/23 업데이트)
+const PCDiagnosisMap = lazy(() => import('./components/PCDiagnosisMap'));
+
+// USER: AI 가상시민 (Figma file TCuOzEqNhoLKjhF0reBDks — Phase 1)
+const PCAICitizen = lazy(() => import('./components/PCAICitizen'));
+const PCPublicData = lazy(() => import('./components/PCPublicData'));
+const MAICitizen = lazy(() => import('./components/MAICitizen'));
+const MAICitizenDetail = lazy(() => import('./components/MAICitizenDetail'));
+
+// USER 04/01 업데이트 — 마이페이지 제보 (Figma node 830:4381)
+const MMyReportDetail = lazy(() => import('./components/MMyReportDetail'));
+const MMyReportEdit = lazy(() => import('./components/MMyReportEdit'));
+const PCMyReportList = lazy(() => import('./components/PCMyReportList'));
+const PCMyReportEdit = lazy(() => import('./components/PCMyReportEdit'));
+const PCMyProposalDetail = lazy(() => import('./components/PCMyProposalDetail'));
+
+import { fetchWithLogout, API_URL } from './utils/api'
 import PCHeader from './components/PCHeader'
+
+// JWT payload의 sub가 'admin'인지 확인 (일반 시민 토큰으로 /admin 진입 차단)
+function isAdminToken(token) {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        return payload?.sub === 'admin';
+    } catch {
+        return false;
+    }
+}
 
 function App() {
     // Initialize view from sessionStorage to support page refresh
     // For adminLogin and adminSignup, force redirect to 'home' on refresh as per user request
     const [view, setView] = useState(() => {
         const path = window.location.pathname;
-        if (path === '/admin' || path === '/admin/') return 'adminLoginNew';
+        if (path === '/admin' || path === '/admin/') {
+            const token = localStorage.getItem('access_token');
+            if (token && isAdminToken(token)) return 'adminMain';
+            return 'adminLoginNew';
+        }
 
         const stored = sessionStorage.getItem('current_view');
         // If path is not /admin, but stored view is an admin view, reset to home
-        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit'].includes(stored);
+        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos', 'surveyChatAnalytics'].includes(stored);
         if (path === '/' && isAdminView) return 'home';
 
-        if (stored === 'adminLogin' || stored === 'adminSignup') return 'home';
+        if (['adminLogin', 'adminSignup', 'adminDashboard'].includes(stored)) return 'home';
+
+        // Auth guard for protected views: if no token, redirect stored auth-required view to home
+        const AUTH_REQUIRED_VIEWS = [
+            'mDiagnosisForm', 'diagnosisStep1', 'diagnosisStep2', 'diagnosisStep3', 'diagnosisEdit',
+            'myActivity', 'mMyActivity', 'myActivityHub', 'myReportList', 'myReports',
+            'myProposals', 'mMyReportDetail', 'mMyReportEdit',
+            'mProposalForm', 'mReportForm',
+            'mPage', 'myPage', 'mySurveys', 'changePassword',
+        ];
+        if (stored && AUTH_REQUIRED_VIEWS.includes(stored) && !localStorage.getItem('access_token')) {
+            return 'home';
+        }
+
         return stored || 'home';
     });
 
@@ -100,6 +196,8 @@ function App() {
     });
     const [isProposalEdit, setIsProposalEdit] = useState(false); // [추가] 제안 수정 모드 여부
     const [proposalToEdit, setProposalToEdit] = useState(null); // [추가] 수정할 제안 데이터
+    const [proposalEditReturn, setProposalEditReturn] = useState('proposalDetail'); // 제안 수정 후 복귀 뷰
+    const [selectedChatSession, setSelectedChatSession] = useState(null); // AI 대화형 설문 이전 대화내역 보기용
 
     const [selectedReport, setSelectedReport] = useState(() => {
         const stored = sessionStorage.getItem('selectedReport');
@@ -110,6 +208,13 @@ function App() {
     });
     const [isReportEdit, setIsReportEdit] = useState(false);
     const [reportToEdit, setReportToEdit] = useState(null);
+    const [selectedSurvey, setSelectedSurvey] = useState(() => {
+        const stored = sessionStorage.getItem('selectedSurvey');
+        if (stored) {
+            try { return JSON.parse(stored); } catch (e) { return null; }
+        }
+        return null;
+    });
 
     const updateDiagnosisPayload = (key, value) => {
         setDiagnosisPayload(prev => ({
@@ -137,32 +242,31 @@ function App() {
     };
 
 
-    const rawApiUrl = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
-    const VITE_API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
-
-    // Fetch data whenever diagnosisMode changes
+    // Fetch diagnosis catalog (general/expert) from backend; fallback to static JSON for offline dev.
     useEffect(() => {
+        const ctrl = new AbortController();
         const fetchData = async () => {
             setLoading(true);
+            const mode = diagnosisMode === 'expert' ? 'expert' : 'general';
             try {
-                const fileName = diagnosisMode === 'expert'
-                    ? '/assets/data/expert_diagnosis.json'
-                    : '/assets/data/general_diagnosis.json';
-
-                const response = await fetch(fileName);
+                let response = await fetch(`${API_URL}/checklist/templates?mode=${mode}`, { signal: ctrl.signal });
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch ${fileName}`);
+                    response = await fetch(`/assets/data/${mode}_diagnosis.json`, { signal: ctrl.signal });
                 }
+                if (!response.ok) throw new Error(`Failed to fetch ${mode} catalog`);
                 const jsonData = await response.json();
-                setData(jsonData);
+                if (!ctrl.signal.aborted) setData(jsonData);
             } catch (error) {
+                // 컴포넌트 unmount 또는 view 전환으로 abort된 fetch는 무시
+                if (ctrl.signal.aborted || error.name === 'AbortError' || error.name === 'TypeError') return;
                 console.error("Failed to load diagnosis data:", error);
             } finally {
-                setLoading(false);
+                if (!ctrl.signal.aborted) setLoading(false);
             }
         };
 
         fetchData();
+        return () => ctrl.abort();
     }, [diagnosisMode]);
 
     // Fetch user's diagnosis pins from backend
@@ -172,7 +276,7 @@ function App() {
             if (!token) return; // Not logged in, keep default pins or clear? Maybe keep default mock for non-users?
 
             try {
-                const res = await fetchWithLogout(`${VITE_API_URL}/checklist/my`, {
+                const res = await fetchWithLogout(`${API_URL}/checklist/my`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (res.ok) {
@@ -206,8 +310,8 @@ function App() {
                         }
                     }
                 }
-            } catch (error) {
-                console.error("Failed to fetch user pins:", error);
+            } catch {
+                // backend unreachable or aborted — keep existing pins, no console noise
             }
         };
 
@@ -219,6 +323,11 @@ function App() {
     // Sync state with browser history for back button support
     useEffect(() => {
         const handlePopState = (event) => {
+            // 폼 페이지가 자체적으로 popstate를 가로채려고 pushState(null,'')로 트랩을 설치한 경우
+            // App.jsx가 먼저 'home'으로 보내버리면 폼의 leave-confirm 모달이 영영 안 뜸 → skip
+            if (event.state && event.state.formGuard) {
+                return;
+            }
             if (event.state && event.state.view) {
                 setView(event.state.view);
             } else {
@@ -240,9 +349,8 @@ function App() {
         window.scrollTo(0, 0);
         sessionStorage.setItem('current_view', view);
 
-        const newPath = (view === 'adminLoginNew' || view === 'adminDashboardNew' || view === 'expertManagement' || view === 'proposalManagement' || view === 'memberEdit' || view === 'expertEdit' || view === 'proposalEdit') 
-            ? '/admin' 
-            : '/';
+        const adminViews = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'proposalManagement', 'memberEdit', 'expertEdit', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos', 'surveyChatAnalytics'];
+        const newPath = adminViews.includes(view) ? '/admin' : '/';
         
         if (window.history.state?.view !== view || window.location.pathname !== newPath) {
             window.history.pushState({ view: view }, '', newPath);
@@ -359,20 +467,6 @@ function App() {
             setView('signup');
         } else if (target === 'signupDone') {
             setView('signupDone');
-        } else if (target === 'report') {
-            if (!localStorage.getItem('access_token')) {
-                alert('로그인이 필요한 서비스입니다.');
-                setView('login');
-                return;
-            }
-            setView('report');
-        } else if (target === 'survey') {
-            if (!localStorage.getItem('access_token')) {
-                alert('로그인이 필요한 서비스입니다.');
-                setView('login');
-                return;
-            }
-            setView('survey');
         } else if (target === 'diagnosisResult') {
             if (isExpert) {
                 setDiagnosisMode('expert');
@@ -385,12 +479,8 @@ function App() {
             // Keep direct access for testing/buttons
             setDiagnosisMode('expert');
             setView('expertDiagnosisResult');
-        } else if (target === 'adminLogin') {
-            setView('adminLogin');
         } else if (target === 'adminLoginNew') {
             setView('adminLoginNew');
-        } else if (target === 'adminDashboard') {
-            setView('adminDashboard');
         } else if (target === 'adminDashboardNew') {
             setView('adminDashboardNew');
         } else if (target === 'memberEdit') {
@@ -403,14 +493,51 @@ function App() {
             setView('expertEdit');
         } else if (target === 'proposalManagement') {
             setView('proposalManagement');
+        } else if (target === 'adminMain') {
+            setView('adminMain');
+        } else if (target === 'adminRAG') {
+            setView('adminRAG');
+        } else if (target === 'adminCitizenData') {
+            setView('adminCitizenData');
+        } else if (target === 'adminCitizenPersonas') {
+            setView('adminCitizenPersonas');
+        } else if (target === 'adminDiagnosis') {
+            setView('adminDiagnosis');
+        } else if (target === 'adminPublicData') {
+            setView('adminPublicData');
+        } else if (target === 'adminNotices') {
+            setView('adminNotices');
+        } else if (target === 'adminPromos') {
+            setView('adminPromos');
+        } else if (target === 'adminUserList') {
+            setView('adminUserList');
+        } else if (target === 'reportManagement') {
+            setView('reportManagement');
+        } else if (target === 'adminReportDetail') {
+            setSelectedMember(data);
+            setView('adminReportDetail');
+        } else if (target === 'surveyManagement') {
+            setView('surveyManagement');
+        } else if (target === 'surveyChatAnalytics') {
+            setView('surveyChatAnalytics');
+        } else if (target === 'surveyEditor') {
+            setSelectedSurvey(data || null);
+            setView('surveyEditor');
+        } else if (target === 'surveyCreated') {
+            setView('surveyCreated');
+        } else if (target === 'surveyResults') {
+            setSelectedSurvey(data || null);
+            setView('surveyResults');
+        } else if (target === 'adminProposalDetail') {
+            setSelectedMember(data);
+            setView('adminProposalDetail');
         } else if (target === 'proposalEdit') {
             setSelectedMember(data); // Reusing selectedMember state for proposal context
             setView('proposalEdit');
-        } else if (target === 'newDiagnosis') {
-            setView('proposalList');
         } else if (target === 'proposalForm') {
             setIsProposalEdit(!!data?.isEdit); // 데이터로 수정 모드 판단
             setProposalToEdit(data?.proposal || null);
+            setProposalEditReturn(data?.returnView || 'proposalDetail'); // 수정 후 복귀할 뷰(진입점)
             setView('proposalForm');
         } else if (target === 'proposalPreview') {
             setView('proposalPreview');
@@ -438,16 +565,25 @@ function App() {
             setView('reportList');
         } else if (target === 'reportDetail') {
             setPreviousView(view);
-            setSelectedReport(data);
             if (data) {
-                sessionStorage.setItem('selectedReport', JSON.stringify(data));
-                // Set showActions based on where we are coming from
-                setSelectedReport(prev => ({ 
-                    ...prev, 
-                    showActions: data.showActions || (view === 'myReportList' || view === 'myReports')
-                }));
+                const merged = { ...data, showActions: data.showActions ?? (view === 'myReportList' || view === 'myReports') };
+                setSelectedReport(merged);
+                sessionStorage.setItem('selectedReport', JSON.stringify(merged));
+            } else {
+                setSelectedReport(null);
             }
             setView('reportDetail');
+        } else if (target === 'mNotifications') {
+            setView('mNotifications');
+        } else if (target === 'mPlatformNews') {
+            setView('mPlatformNews');
+        } else if (target === 'mySurveys') {
+            if (!localStorage.getItem('access_token')) { alert('로그인이 필요한 서비스입니다.'); setView('login'); return; }
+            setView('mySurveys');
+        } else if (target === 'surveyChatHistory') {
+            if (!localStorage.getItem('access_token')) { alert('로그인이 필요한 서비스입니다.'); setView('login'); return; }
+            if (data) setSelectedChatSession(data);
+            setView('surveyChatHistory');
         } else if (target === 'myActivityHub') {
             if (!localStorage.getItem('access_token')) {
                 alert('로그인이 필요한 서비스입니다.');
@@ -455,13 +591,161 @@ function App() {
                 return;
             }
             setView('myActivityHub');
-        } else if (target === 'myReportList') {
+        } else if (target === 'mMyActivity') {
+            if (!localStorage.getItem('access_token')) {
+                alert('로그인이 필요한 서비스입니다.');
+                setView('login');
+                return;
+            }
+            setView('mMyActivity');
+        } else if (target === 'myReportList' || target === 'myReports') {
             if (!localStorage.getItem('access_token')) {
                 alert('로그인이 필요한 서비스입니다.');
                 setView('login');
                 return;
             }
             setView('myReportList');
+        } else if (target === 'pcSurveyList') {
+            setView('pcSurveyList');
+        } else if (target === 'pcSurveyDetail') {
+            setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            setView('pcSurveyDetail');
+        } else if (target === 'pcSurveyConsent') {
+            setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            setView('pcSurveyConsent');
+        } else if (target === 'pcSurveyJoin') {
+            setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            setView('pcSurveyJoin');
+        } else if (target === 'pcSurveyResults') {
+            setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            setView('pcSurveyResults');
+        } else if (target === 'pcSurveyDone') {
+            if (data) {
+                setSelectedSurvey(data);
+                sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            }
+            setView('pcSurveyDone');
+        } else if (target === 'pcProposeMap') {
+            setView('pcProposeMap');
+        } else if (target === 'pcProposeForm') {
+            setView('pcProposeForm');
+        } else if (target === 'pcProposeDetail') {
+            setSelectedProposal(data);
+            if (data) sessionStorage.setItem('selectedProposal', JSON.stringify(data));
+            setView('pcProposeDetail');
+        } else if (target === 'pcReportMap') {
+            setView('pcReportMap');
+        } else if (target === 'pcReportForm') {
+            setView('pcReportForm');
+        } else if (target === 'pcReportDetail') {
+            setSelectedReport(data);
+            if (data) sessionStorage.setItem('selectedReport', JSON.stringify(data));
+            setView('pcReportDetail');
+        } else if (target === 'mSurveyList') {
+            setView('mSurveyList');
+        } else if (target === 'mSurveyDetail1') {
+            setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            setView('mSurveyDetail1');
+        } else if (target === 'mSurveyDetail2') {
+            setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            setView('mSurveyDetail2');
+        } else if (target === 'mSurveyJoin') {
+            setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            setView('mSurveyJoin');
+        } else if (target === 'mSurveyDone') {
+            if (data) {
+                setSelectedSurvey(data);
+                sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            }
+            setView('mSurveyDone');
+        } else if (target === 'mSurveyResults') {
+            setSelectedSurvey(data);
+            if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
+            setView('mSurveyResults');
+        } else if (target === 'mProposalList') {
+            setView('mProposalList');
+        } else if (target === 'mProposalMap') {
+            setView('mProposalMap');
+        } else if (target === 'mProposalForm') {
+            setView('mProposalForm');
+        } else if (target === 'mProposalDetail') {
+            setSelectedProposal(data);
+            setPreviousView(view);
+            setView('mProposalDetail');
+        } else if (target === 'mProposalDone') {
+            setView('mProposalDone');
+        } else if (target === 'mReportList') {
+            setView('mReportList');
+        } else if (target === 'mReportMap') {
+            setView('mReportMap');
+        } else if (target === 'mReportForm') {
+            setView('mReportForm');
+        } else if (target === 'mReportDetail') {
+            setSelectedReport(data);
+            setView('mReportDetail');
+        } else if (target === 'mReportDone') {
+            setView('mReportDone');
+        } else if (target === 'mDiagnosisList') {
+            setView('mDiagnosisList');
+        } else if (target === 'mDiagnosisMap') {
+            setView('mDiagnosisMap');
+        } else if (target === 'mDiagnosisForm') {
+            if (!localStorage.getItem('access_token')) {
+                alert('로그인이 필요한 서비스입니다.');
+                setView('login');
+                return;
+            }
+            if (data) setSelectedReport(data);
+            setView('mDiagnosisForm');
+        } else if (target === 'mDiagnosisDetail') {
+            if (data) setSelectedReport(data);
+            setView('mDiagnosisDetail');
+        } else if (target === 'mDiagnosisResult') {
+            if (data) setSelectedReport(data);
+            setView('mDiagnosisResult');
+        } else if (target === 'mDiagnosisDone') {
+            setView('mDiagnosisDone');
+        } else if (target === 'pcAICitizen') {
+            setView('pcAICitizen');
+        } else if (target === 'pcPublicData') {
+            setView('pcPublicData');
+        } else if (target === 'mAICitizen') {
+            setView('mAICitizen');
+        } else if (target === 'mAICitizenDetail') {
+            if (data) setSelectedReport(data);
+            setView('mAICitizenDetail');
+        } else if (target === 'pcDiagnosisMap') {
+            setView('pcDiagnosisMap');
+        } else if (target === 'pcDiagnosisForm') {
+            setView('pcDiagnosisForm');
+        } else if (target === 'pcDiagnosisDetail') {
+            setSelectedReport(data);
+            setView('pcDiagnosisDetail');
+        } else if (target === 'pcDiagnosisDone') {
+            setView('pcDiagnosisDone');
+        } else if (target === 'mMyReportDetail') {
+            setSelectedReport(data);
+            setView('mMyReportDetail');
+        } else if (target === 'mMyReportEdit') {
+            setSelectedReport(data || selectedReport);
+            setView('mMyReportEdit');
+        } else if (target === 'pcMyReportList') {
+            setView('pcMyReportList');
+        } else if (target === 'pcMyReportEdit') {
+            setSelectedReport(data || selectedReport);
+            setView('pcMyReportEdit');
+        } else if (target === 'pcMyProposalDetail') {
+            const proposalData = data || selectedProposal;
+            setSelectedProposal(proposalData);
+            if (proposalData) sessionStorage.setItem('selectedProposal', JSON.stringify(proposalData));
+            setView('pcMyProposalDetail');
         }
     };
 
@@ -474,9 +758,25 @@ function App() {
 
     if (loading && view !== 'home') return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
 
-    // PC 헤더를 표시할 뷰 목록
-    const pcHeaderViews = ['home', 'proposalForm', 'proposalList', 'proposalDetail', 'myProposals', 'report', 'reportForm', 'myPage', 'reportPostForm', 'reportList', 'reportDetail', 'myActivityHub', 'myReportList'];
-    const showPCHeader = pcHeaderViews.includes(view);
+    // 어드민·인증 뷰, UserPCLayout 자체 헤더 보유 PC 뷰에서는 PCHeader 숨김
+    const noHeaderViews = [
+        // login/signup/signupDone는 PC에서 공용 PCHeader 노출 (모바일은 PCHeader가 CSS로 숨김)
+        'changePassword',
+        'adminLogin', 'adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'adminRAG',
+        'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos',
+        'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyEditor',
+        'surveyCreated', 'surveyResults', 'surveyChatAnalytics', 'expertManagement', 'memberEdit', 'expertEdit',
+        'proposalManagement', 'proposalEdit', 'adminProposalDetail',
+        // UserPCLayout 자체 헤더를 가진 PC 전용 뷰 (PCHeader 중복 방지)
+        'pcSurveyList', 'pcSurveyDetail', 'pcSurveyConsent', 'pcSurveyJoin', 'pcSurveyResults', 'pcSurveyDone',
+        'pcProposeMap', 'pcProposeForm', 'pcProposeDetail',
+        'pcReportMap', 'pcReportForm', 'pcReportDetail',
+        'pcMyReportList', 'pcMyReportEdit', 'pcMyProposalDetail',
+        'myActivityHub', 'mySurveys', 'surveyChatHistory',
+        'pcAICitizen', 'pcPublicData',
+        'pcDiagnosisMap', 'pcDiagnosisForm', 'pcDiagnosisDetail', 'pcDiagnosisDone',
+    ];
+    const showPCHeader = !noHeaderViews.includes(view);
 
     return (
         <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#16B5B0', fontWeight: 'bold' }}>화면을 불러오는 중입니다...</div>}>
@@ -493,6 +793,8 @@ function App() {
                         onBack={() => {
                             if (sessionStorage.getItem('pw_change_required') === '1') {
                                 setView('changePassword');
+                            } else if (localStorage.getItem('district_code') === 'admin') {
+                                setView('adminMain');
                             } else {
                                 setView('home');
                             }
@@ -510,15 +812,6 @@ function App() {
                     <SignupDone
                         onLogin={() => setView('login')}
                     />
-                )}
-                {view === 'report' && (
-                    <Report
-                        onBack={() => setView('home')}
-                        onNext={(type) => setView('reportForm')}
-                    />
-                )}
-                {view === 'reportForm' && (
-                    <ReportForm onBack={() => setView('report')} />
                 )}
                 {view === 'diagnosis' && (
                     <Diagnosis
@@ -737,23 +1030,15 @@ function App() {
                         onGoHome={() => setView('home')}
                     />
                 )}
-                {view === 'survey' && (
-                    <Survey
-                        onBack={() => setView('home')}
-                        onComplete={() => setView('surveyDone')}
-                    />
-                )}
                 {view === 'proposalForm' && (
                     <ProposalForm
-                        onBack={() => setView(isProposalEdit ? 'proposalDetail' : 'proposalList')}
+                        onBack={() => setView(isProposalEdit ? proposalEditReturn : 'proposalList')}
                         onNavigate={onNavigate}
                         isEdit={isProposalEdit}
                         initialData={proposalToEdit}
                         onComplete={async (formData) => {
                             try {
                                 const token = localStorage.getItem('access_token');
-                                const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
-    
                                 // [1] 신규 파일 업로드 처리
                                 const uploadNewFiles = async (files) => {
                                     const uploadedNames = [];
@@ -763,7 +1048,7 @@ function App() {
                                         // 인코딩 파싱 에러(500)를 방지하기 위해 파일명을 URL 인코딩하여 전송합니다.
                                         uploadData.append('file', file, encodeURIComponent(file.name));
                                         
-                                        const uploadRes = await fetch(`${VITE_API_URL}/api/reports/upload`, {
+                                        const uploadRes = await fetch(`${API_URL}/api/reports/upload`, {
                                             method: 'POST',
                                             body: uploadData,
                                             // FormData 전송 시 Content-Type 헤더를 명시하지 않아야 브라우저가 boundary를 자동으로 설정함
@@ -784,7 +1069,7 @@ function App() {
     
                                 if (isProposalEdit) {
                                     // [수정 모드] PUT 요청
-                                    const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${formData.id}`, {
+                                    const response = await fetch(`${API_URL}/api/reports/proposals/${formData.id}`, {
                                         method: 'PUT',
                                         headers: { 
                                             'Content-Type': 'application/json',
@@ -818,7 +1103,7 @@ function App() {
                                             return updatedProposal;
                                         });
 
-                                        setView('proposalDetail');
+                                        setView(proposalEditReturn);
                                     } else {
                                         alert('수정에 실패했습니다.');
                                     }
@@ -833,7 +1118,7 @@ function App() {
                                         files: finalFilenames
                                     };
                                     
-                                    const response = await fetch(`${VITE_API_URL}/api/reports/new-proposal`, {
+                                    const response = await fetch(`${API_URL}/api/reports/new-proposal`, {
                                         method: 'POST',
                                         headers: { 
                                             'Content-Type': 'application/json',
@@ -897,10 +1182,37 @@ function App() {
                 {view === 'myPage' && (
                     <MyPage onBack={() => setView('home')} />
                 )}
+                {view === 'mNotifications' && (
+                    <MNotifications onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mPlatformNews' && (
+                    <MPlatformNews onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mySurveys' && (
+                    <MySurveys onBack={() => setView('myActivityHub')} onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'surveyChatHistory' && (
+                    <SurveyChatHistory
+                        isPC={typeof window !== 'undefined' && window.innerWidth >= 1024}
+                        sessionId={selectedChatSession?.session_id}
+                        title={selectedChatSession?.title}
+                        onBack={() => setView('mySurveys')}
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
                 {view === 'myActivityHub' && (
-                    <MyActivityHub 
-                        onBack={() => setView('home')} 
+                    <MyActivityHub
+                        onBack={() => setView('home')}
                         onNavigate={onNavigate}
+                    />
+                )}
+                {view === 'mMyActivity' && (
+                    <MyActivity
+                        onBack={() => setView('myActivityHub')}
+                        onEdit={(item) => {
+                            setEditData(item);
+                            setView('mDiagnosisList');
+                        }}
                     />
                 )}
                 {view === 'myReportList' && (
@@ -980,23 +1292,8 @@ function App() {
                 {view === 'changePassword' && (
                     <ChangePassword onBack={() => setView('home')} />
                 )}
-                {view === 'adminLogin' && (
-                    <AdminLogin
-                        onNavigate={(target) => setView(target)}
-                    />
-                )}
                 {view === 'adminLoginNew' && (
                     <AdminLoginNew
-                        onNavigate={(target) => setView(target)}
-                    />
-                )}
-                {view === 'adminSignup' && (
-                    <AdminSignup
-                        onNavigate={(target) => setView(target)}
-                    />
-                )}
-                {view === 'adminDashboard' && (
-                    <AdminDashboard
                         onNavigate={(target) => setView(target)}
                     />
                 )}
@@ -1031,6 +1328,271 @@ function App() {
                     <ProposalEdit
                         proposal={selectedMember}
                         onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminMain' && (
+                    <AdminMain
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminUserList' && (
+                    <AdminUserList
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminRAG' && (
+                    <AdminRAGDashboard
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminCitizenData' && (
+                    <AdminCitizenData
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminCitizenPersonas' && (
+                    <AdminCitizenPersonas
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminDiagnosis' && (
+                    <AdminDiagnosisList onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'adminPublicData' && (
+                    <AdminPublicData onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'adminNotices' && (
+                    <AdminAnnouncements kind="notice" onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'adminPromos' && (
+                    <AdminAnnouncements kind="promo" onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'reportManagement' && (
+                    <ReportManagement
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminReportDetail' && (
+                    <AdminReportDetail
+                        report={selectedMember}
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'adminProposalDetail' && (
+                    <AdminProposalDetail
+                        proposal={selectedMember}
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'surveyEditor' && (
+                    <SurveyEditor
+                        surveyData={selectedSurvey}
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'surveyCreated' && (
+                    <SurveyCreated
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'surveyResults' && (
+                    <SurveyResults
+                        survey={selectedSurvey}
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'surveyManagement' && (
+                    <SurveyManagement
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                    />
+                )}
+                {view === 'surveyChatAnalytics' && (
+                    <SurveyChatAnalytics onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcSurveyList' && (
+                    <SurveyChat isPC onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcSurveyDetail' && (
+                    <PCSurveyDetail onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'pcSurveyConsent' && (
+                    <PCSurveyConsent onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'pcSurveyJoin' && (
+                    <PCSurveyJoin onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'pcSurveyResults' && (
+                    <PCSurveyResults onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'pcSurveyDone' && (
+                    <PCSurveyDone onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'pcProposeMap' && (
+                    <PCProposeMap onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcProposeForm' && (
+                    <PCProposeForm onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcProposeDetail' && (
+                    <PCProposeDetail onNavigate={(target, data) => onNavigate(target, data)} proposal={selectedProposal} />
+                )}
+                {view === 'pcReportMap' && (
+                    <PCReportMap onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcReportForm' && (
+                    <PCReportForm onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcReportDetail' && (
+                    <PCReportDetail onNavigate={(target, data) => onNavigate(target, data)} report={selectedReport} />
+                )}
+                {view === 'mSurveyList' && (
+                    <SurveyChat onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mSurveyDetail1' && (
+                    <MSurveyDetail1 onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'mSurveyDetail2' && (
+                    <MSurveyDetail2 onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'mSurveyJoin' && (
+                    <MSurveyJoin onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'mSurveyDone' && (
+                    <MSurveyDone onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'mSurveyResults' && (
+                    <MSurveyResults onNavigate={(target, data) => onNavigate(target, data)} survey={selectedSurvey} />
+                )}
+                {view === 'mProposalList' && (
+                    <MProposalList onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mProposalMap' && (
+                    <MProposalMap onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mProposalForm' && (
+                    <MProposalForm onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mProposalDetail' && (
+                    <MProposalDetail onNavigate={(target, data) => onNavigate(target, data)} proposal={selectedProposal} sourceView={previousView} />
+                )}
+                {view === 'mProposalDone' && (
+                    <MProposalDone onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mReportList' && (
+                    <MReportList onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mReportMap' && (
+                    <MReportMap onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mReportForm' && (
+                    <MReportForm onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mReportDetail' && (
+                    <MReportDetail onNavigate={(target, data) => onNavigate(target, data)} report={selectedReport} />
+                )}
+                {view === 'mReportDone' && (
+                    <MReportDone onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mDiagnosisList' && (
+                    <MDiagnosisList onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mDiagnosisMap' && (
+                    <MDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mDiagnosisForm' && (
+                    <MDiagnosisForm onNavigate={(target, data) => onNavigate(target, data)} location={selectedReport} />
+                )}
+                {(view === 'mDiagnosisResult' || view === 'mDiagnosisDetail') && (
+                    <MDiagnosisResult
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        address={selectedReport?.region || selectedReport?.address || '부산 부산진구 초연로 6'}
+                        date={selectedReport?.date || '2024/05/16'}
+                        activeCategory={selectedReport?.categoryKey || 'traffic'}
+                        photo={selectedReport?.thumb || null}
+                        district={selectedReport?.region || null}
+                        resultId={selectedReport?.id || null}
+                        big={selectedReport?.big || null}
+                        mid={selectedReport?.mid || null}
+                    />
+                )}
+                {view === 'mDiagnosisDone' && (
+                    <MDiagnosisDone onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcAICitizen' && (
+                    <PCAICitizen onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcPublicData' && (
+                    <PCPublicData onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mAICitizen' && (
+                    <MAICitizen onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mAICitizenDetail' && (
+                    <MAICitizenDetail citizen={selectedReport} onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'pcDiagnosisMap' && (
+                    <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} initialPanel="list" />
+                )}
+                {view === 'pcDiagnosisForm' && (
+                    <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} initialPanel="form" />
+                )}
+                {view === 'pcDiagnosisDetail' && (
+                    <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} initialPanel="detail" initialItem={selectedReport} />
+                )}
+                {view === 'pcDiagnosisDone' && (
+                    <PCDiagnosisMap onNavigate={(target, data) => onNavigate(target, data)} initialPanel="done" />
+                )}
+                {view === 'mMyReportDetail' && (
+                    <MMyReportDetail
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        report={selectedReport}
+                        onDelete={handleReportDelete}
+                        onEdit={(rep) => onNavigate('mMyReportEdit', rep)}
+                    />
+                )}
+                {view === 'mMyReportEdit' && (
+                    <MMyReportEdit
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        report={selectedReport}
+                        onComplete={(updated) => {
+                            if (updated && selectedReport) {
+                                setUpdatedReportsMap((prev) => ({
+                                    ...prev,
+                                    [selectedReport.id]: { ...selectedReport, ...updated },
+                                }));
+                                setSelectedReport((prev) => ({ ...prev, ...updated }));
+                            }
+                        }}
+                    />
+                )}
+                {view === 'pcMyReportList' && (
+                    <PCMyReportList
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        deletedIds={deletedReportIds}
+                        likedIds={likedReportIds}
+                        userCreatedReports={userCreatedReports}
+                        updatedReportsMap={updatedReportsMap}
+                    />
+                )}
+                {view === 'pcMyReportEdit' && (
+                    <PCMyReportEdit
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        report={selectedReport}
+                        onComplete={(updated) => {
+                            if (updated && selectedReport) {
+                                setUpdatedReportsMap((prev) => ({
+                                    ...prev,
+                                    [selectedReport.id]: { ...selectedReport, ...updated },
+                                }));
+                                setSelectedReport((prev) => ({ ...prev, ...updated }));
+                            }
+                        }}
+                    />
+                )}
+                {view === 'pcMyProposalDetail' && (
+                    <PCMyProposalDetail
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        proposal={selectedProposal}
                     />
                 )}
             </div>

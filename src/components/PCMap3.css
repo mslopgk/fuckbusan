@@ -1,0 +1,587 @@
+/* 3-column propose/report map layout matching Figma */
+
+.pc-map3-page {
+    position: relative;
+    height: calc(100vh - 60px);
+    background: #f7f7f8;
+    min-height: 700px;
+    overflow: hidden;
+}
+
+/* LEFT FILTER (floating) — legacy single card 호환용 */
+.pc-map3-filter {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 280px;
+    max-height: calc(100% - 32px);
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px 18px;
+    overflow-y: auto;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+    z-index: 5;
+}
+
+/* LEFT FILTER STACK — 3 separate cards (구역별/생활정보/유형) */
+.pc-map3-filter-stack {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 305px;
+    max-height: calc(100% - 32px);
+    overflow-y: auto;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scrollbar-width: none;
+}
+.pc-map3-filter-stack::-webkit-scrollbar { display: none; }
+
+/* 카드 기본 */
+.pc-map3-filter-card {
+    background: #fff;
+    padding: 16px;
+}
+
+/* 1. 구역별 */
+.pc-map3-filter-card:nth-child(1) {
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* 2. 생활정보 */
+.pc-map3-filter-card:nth-child(2) {
+    border-radius: 19px;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.25);
+}
+
+/* 3. 유형 */
+.pc-map3-filter-card:nth-child(3) {
+    border-radius: 10px;
+}
+
+.pc-map3-section {
+    margin-bottom: 24px;
+}
+
+.pc-map3-section-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #737373;
+    margin-bottom: 10px;
+}
+
+/* 생활정보 카드 제목은 bold/dark */
+.pc-map3-filter-card:nth-child(2) .pc-map3-section-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #242424;
+    letter-spacing: -0.04em;
+}
+
+.pc-map3-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid #242424;
+    border-radius: 8px;
+    padding: 0 4px 0 12px;
+    background: #fff;
+    height: 46px;
+}
+
+.pc-map3-dropdown select {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 13px;
+    color: #1a1a1b;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 22px;
+}
+
+.pc-map3-dropdown-x {
+    border: none;
+    background: none;
+    color: #aaa;
+    font-size: 16px;
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pc-map3-dropdown-x:hover { background: #f1f1f1; color: #555; }
+
+/* Living info icon grid */
+.pc-map3-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.pc-map3-cat-btn {
+    border: 1px solid #ececec;
+    background: #fff;
+    border-radius: 12px;
+    padding: 8px 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s;
+}
+
+.pc-map3-cat-btn:hover {
+    border-color: #E6235A;
+    color: #E6235A;
+}
+
+.pc-map3-cat-btn.active {
+    background: #E6235A;
+    border-color: #E6235A;
+    color: #fff;
+}
+
+.pc-map3-cat-icon {
+    color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pc-map3-cat-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: inherit;
+    text-align: center;
+    line-height: 1.35;
+}
+
+/* Type cards */
+.pc-map3-kind-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.pc-map3-kind-card {
+    border: 1.5px solid #E6235A;
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+}
+
+.pc-map3-kind-card div {
+    font-size: 16px;
+    font-weight: 700;
+    color: #E6235A;
+    margin-bottom: 6px;
+}
+
+.pc-map3-kind-card strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 800;
+    color: #E6235A;
+}
+
+.pc-map3-kind-card:hover {
+    background: #fff5f7;
+}
+
+.pc-map3-kind-card.active {
+    background: #E6235A;
+    border-color: #E6235A;
+}
+
+.pc-map3-kind-card.active div {
+    color: #fff;
+}
+
+.pc-map3-kind-card.active strong {
+    color: #fff;
+}
+
+/* CENTER MAP — fills entire area */
+.pc-map3-canvas {
+    position: absolute;
+    inset: 0;
+    background: #ebe5d4;
+}
+
+.pc-map3-canvas > div:first-child {
+    width: 100%;
+    height: 100%;
+}
+
+/* Right toolbar — 3개 분리 카드 구조 (Figma 22:3522) */
+.pc-map3-toolbar {
+    position: absolute;
+    top: 16px;
+    right: 425px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 6;
+    transition: right 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pc-map3-sidebar-closed .pc-map3-toolbar {
+    right: 16px;
+}
+
+.pc-map3-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 48px;
+}
+
+.pc-map3-tool {
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: #fff;
+    color: #555;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    transition: background 0.15s, color 0.15s;
+}
+
+.pc-map3-tool:hover {
+    background: #f3f4f6;
+}
+
+.pc-map3-tool--sep {
+    border-top: 1px solid #e6e6e6;
+}
+
+.pc-map3-tool--teal {
+    background: #23bdbb;
+    color: #fff;
+}
+
+.pc-map3-tool--teal:hover {
+    background: #1faaaa;
+}
+
+.pc-map3-tool--teal-off {
+    background: #fff;
+    color: #23bdbb;
+}
+.pc-map3-tool--teal-off:hover {
+    background: #f0fafa;
+}
+
+/* Floating policy info card */
+.pc-map3-policy {
+    position: absolute;
+    top: 50%;
+    left: calc(50% - 20px);
+    transform: translate(-50%, -50%);
+    width: 380px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    overflow: hidden;
+    z-index: 7;
+}
+
+.pc-map3-policy-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #ececec;
+}
+
+.pc-map3-policy-head strong {
+    font-size: 13px;
+    color: #1a1a1b;
+    font-weight: 800;
+}
+
+.pc-map3-policy-close {
+    border: none;
+    background: none;
+    color: #888;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pc-map3-policy-close:hover {
+    background: #f1f1f1;
+    color: #1a1a1b;
+}
+
+.pc-map3-policy-actions {
+    padding: 12px 16px;
+    border-top: 1px solid #ececec;
+    display: flex;
+    justify-content: center;
+}
+
+.pc-map3-policy-cta {
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    padding: 8px 24px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.pc-map3-policy-cta:hover { background: #c61d4d; }
+
+.pc-map3-policy-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.pc-map3-policy-table th,
+.pc-map3-policy-table td {
+    padding: 9px 14px;
+    text-align: left;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.pc-map3-policy-table th {
+    width: 84px;
+    color: #888;
+    font-weight: 600;
+    background: #fafafa;
+}
+
+.pc-map3-policy-table td {
+    color: #1a1a1b;
+}
+
+/* Bottom CTA */
+.pc-map3-cta {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    color: #1a1a1b;
+    border: 1px solid #d6d6d8;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 14px 60px;
+    border-radius: 32px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.10);
+    transition: all 0.15s;
+    z-index: 5;
+}
+
+.pc-map3-cta:hover {
+    background: #E6235A;
+    color: #fff;
+    border-color: #E6235A;
+}
+
+/* RIGHT LIST (floating) */
+.pc-map3-list {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 395px;
+    max-height: calc(100% - 32px);
+    background: #fff;
+    border-radius: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 20px rgba(0,0,0,0.25);
+    z-index: 5;
+    transition: translate 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: translate;
+}
+
+.pc-map3-sidebar-closed .pc-map3-list {
+    translate: calc(100% + 32px) 0;
+    pointer-events: none;
+    user-select: none;
+}
+
+
+.pc-map3-list-head {
+    padding: 14px 18px;
+    border-bottom: 1px solid #ececec;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-radius: 20px 20px 0 0;
+}
+
+.pc-map3-list-count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #E6235A;
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.pc-map3-sort {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.pc-map3-sort button {
+    border: none;
+    background: none;
+    color: #888;
+    cursor: pointer;
+    padding: 0 2px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.pc-map3-sort button.active {
+    color: #1a1a1b;
+    font-weight: 800;
+}
+
+.pc-map3-sort span {
+    color: #ccc;
+}
+
+.pc-map3-list-items {
+    list-style: none;
+    margin: 0;
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pc-map3-list-items li {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 14px 16px;
+    cursor: pointer;
+    display: flex;
+    gap: 14px;
+    transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.pc-map3-list-items li:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+}
+
+.pc-map3-list-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.pc-map3-list-tags {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.pc-map3-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.pc-map3-pill.pink { background: #fef0f5; color: #E6235A; }
+.pc-map3-pill.green { background: #e7f8ed; color: #2b8a3e; }
+
+.pc-map3-list-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #111;
+    margin-bottom: 4px;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pc-map3-list-sub {
+    font-size: 13px;
+    color: #737373;
+    margin-bottom: 0;
+}
+
+.pc-map3-list-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.pc-map3-list-stats {
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+    color: #bfbfbf;
+}
+
+.pc-map3-list-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.pc-map3-list-thumb {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    border-radius: 15px;
+    background-color: #eee;
+    background-size: cover;
+    background-position: center;
+}

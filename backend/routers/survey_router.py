@@ -1,0 +1,466 @@
+"""Survey endpoints — DB 기반."""
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from typing import List, Optional
+from collections import Counter
+import json
+
+from database import get_db
+import models, schemas
+from .user_router import get_current_user, get_current_user_optional, require_admin as _require_admin
+
+router = APIRouter(prefix="/api/surveys", tags=["surveys"])
+
+
+def _format_period(s: Optional[models.Survey]) -> str:
+    if not s:
+        return ""
+    if s.period_start and s.period_end:
+        return f"{s.period_start.strftime('%Y-%m-%d')} ~ {s.period_end.strftime('%Y-%m-%d')}"
+    if s.period_end:
+        return f"~{s.period_end.strftime('%Y-%m-%d')}"
+    return ""
+
+
+@router.get("/list")
+def list_surveys(tab: Optional[str] = None, db: Session = Depends(get_db)):
+    """tab=active → 진행중, tab=result → 종료/결과, 미지정 → 전체."""
+    from sqlalchemy import func
+    q = db.query(models.Survey)
+    if tab == "active":
+        q = q.filter(models.Survey.status == "active")
+    elif tab == "result":
+        q = q.filter(models.Survey.status.in_(["result", "closed"]))
+    rows = q.order_by(models.Survey.created_at.desc()).all()
+    ids = [s.id for s in rows]
+    actual_counts = {}
+    if ids:
+        for sid, cnt in db.query(models.SurveyResponse.survey_id, func.count(models.SurveyResponse.id)).filter(models.SurveyResponse.survey_id.in_(ids)).group_by(models.SurveyResponse.survey_id).all():
+            actual_counts[sid] = cnt
+    return [
+        {
+            "id": s.id,
+            "title": s.title,
+            "minutes": s.minutes or 10,
+            "period": _format_period(s),
+            "status": s.status,
+            "response_count": actual_counts.get(s.id, 0),
+        }
+        for s in rows
+    ]
+
+
+# =============================================================================
+# Admin CRUD — 관리자만 호출. /admin 하위 prefix로 정적 경로 우선 매칭 보장.
+# 참고: /{survey_id} 와일드카드 라우트는 파일 맨 아래에 등록해야
+#       /admin 정적 경로와 충돌하지 않음.
+# =============================================================================
+
+@router.post("/admin", status_code=201)
+def admin_create_survey(
+    payload: schemas.SurveyCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    s = models.Survey(
+        title=payload.title,
+        description=payload.description,
+        minutes=payload.minutes,
+        status=payload.status,
+        period_start=payload.period_start,
+        period_end=payload.period_end,
+        author_id=current_user.user_id if current_user.user_id != 999999 else None,
+        response_count=0,
+    )
+    db.add(s)
+    db.flush()
+    for idx, q in enumerate(payload.questions):
+        db.add(models.SurveyQuestion(
+            survey_id=s.id,
+            order_no=q.order_no if q.order_no is not None else idx,
+            qtype=q.qtype,
+            text=q.text,
+            options=q.options,
+        ))
+    db.commit()
+    return {"id": s.id, "message": "설문이 생성되었습니다."}
+
+
+@router.put("/admin/{survey_id}")
+def admin_update_survey(
+    survey_id: int,
+    payload: schemas.SurveyUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    for k in ("title", "description", "minutes", "status", "period_start", "period_end"):
+        v = getattr(payload, k, None)
+        if v is not None:
+            setattr(s, k, v)
+    if payload.questions is not None:
+        # 질문지 전체 교체
+        db.query(models.SurveyQuestion).filter(models.SurveyQuestion.survey_id == survey_id).delete()
+        for idx, q in enumerate(payload.questions):
+            db.add(models.SurveyQuestion(
+                survey_id=survey_id,
+                order_no=q.order_no if q.order_no is not None else idx,
+                qtype=q.qtype,
+                text=q.text,
+                options=q.options,
+            ))
+    db.commit()
+    return {"message": "수정되었습니다."}
+
+
+@router.delete("/admin/{survey_id}")
+def admin_delete_survey(
+    survey_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    # 응답·답변·질문 cascade 삭제
+    qids = [q.id for q in db.query(models.SurveyQuestion).filter(models.SurveyQuestion.survey_id == survey_id).all()]
+    rids = [r.id for r in db.query(models.SurveyResponse).filter(models.SurveyResponse.survey_id == survey_id).all()]
+    if qids:
+        db.query(models.SurveyAnswer).filter(models.SurveyAnswer.question_id.in_(qids)).delete(synchronize_session=False)
+    if rids:
+        db.query(models.SurveyAnswer).filter(models.SurveyAnswer.response_id.in_(rids)).delete(synchronize_session=False)
+    db.query(models.SurveyResponse).filter(models.SurveyResponse.survey_id == survey_id).delete()
+    db.query(models.SurveyQuestion).filter(models.SurveyQuestion.survey_id == survey_id).delete()
+    db.delete(s)
+    db.commit()
+    return {"message": "삭제되었습니다."}
+
+
+@router.post("/admin/{survey_id}/close")
+def admin_close_survey(
+    survey_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """설문 종료 → status=result로 전환."""
+    _require_admin(current_user)
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    s.status = "result"
+    db.commit()
+    return {"message": "설문이 종료되었습니다.", "status": s.status}
+
+
+@router.post("/admin/{survey_id}/duplicate", status_code=201)
+def admin_duplicate_survey(
+    survey_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """설문 복제 — 응답은 제외, 질문만 복사."""
+    _require_admin(current_user)
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    new_s = models.Survey(
+        title=f"{s.title} (복사본)",
+        description=s.description,
+        minutes=s.minutes,
+        period_start=s.period_start,
+        period_end=s.period_end,
+        status="active",
+        response_count=0,
+        author_id=s.author_id,
+    )
+    db.add(new_s)
+    db.flush()
+    questions = db.query(models.SurveyQuestion).filter(models.SurveyQuestion.survey_id == survey_id).all()
+    for q in questions:
+        db.add(models.SurveyQuestion(
+            survey_id=new_s.id,
+            order_no=q.order_no,
+            qtype=q.qtype,
+            text=q.text,
+            options=q.options,
+        ))
+    db.commit()
+    return {"id": new_s.id, "message": "설문이 복제되었습니다."}
+
+
+# ----- 개별 질문 CRUD -----
+
+@router.post("/admin/{survey_id}/questions", status_code=201)
+def admin_add_question(
+    survey_id: int,
+    payload: schemas.SurveyQuestionCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    next_order = (
+        db.query(models.SurveyQuestion).filter(models.SurveyQuestion.survey_id == survey_id).count()
+    )
+    q = models.SurveyQuestion(
+        survey_id=survey_id,
+        order_no=payload.order_no if payload.order_no is not None else next_order,
+        qtype=payload.qtype,
+        text=payload.text,
+        options=payload.options,
+    )
+    db.add(q)
+    db.commit()
+    db.refresh(q)
+    return {"id": q.id, "message": "질문이 추가되었습니다."}
+
+
+@router.put("/admin/{survey_id}/questions/{qid}")
+def admin_update_question(
+    survey_id: int,
+    qid: int,
+    payload: schemas.SurveyQuestionCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    q = db.query(models.SurveyQuestion).filter(
+        models.SurveyQuestion.id == qid, models.SurveyQuestion.survey_id == survey_id
+    ).first()
+    if not q:
+        raise HTTPException(status_code=404, detail="질문을 찾을 수 없습니다.")
+    q.qtype = payload.qtype
+    q.text = payload.text
+    q.options = payload.options
+    if payload.order_no is not None:
+        q.order_no = payload.order_no
+    db.commit()
+    return {"message": "질문이 수정되었습니다."}
+
+
+@router.delete("/admin/{survey_id}/questions/{qid}")
+def admin_delete_question(
+    survey_id: int,
+    qid: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    _require_admin(current_user)
+    q = db.query(models.SurveyQuestion).filter(
+        models.SurveyQuestion.id == qid, models.SurveyQuestion.survey_id == survey_id
+    ).first()
+    if not q:
+        raise HTTPException(status_code=404, detail="질문을 찾을 수 없습니다.")
+    db.query(models.SurveyAnswer).filter(models.SurveyAnswer.question_id == qid).delete(synchronize_session=False)
+    db.delete(q)
+    db.commit()
+    return {"message": "질문이 삭제되었습니다."}
+
+
+# =============================================================================
+# 내가 참여한 설문 — /{survey_id} 와일드카드보다 먼저 등록 (정적 경로 우선)
+# =============================================================================
+
+@router.get("/my-participations")
+def my_survey_participations(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """현재 로그인 사용자가 응답한 설문 목록.
+    일반(폼) 설문 + AI 대화형 설문(survey_chat) 참여를 함께 반환 (최근 참여 우선)."""
+    from sqlalchemy import func
+    out = []
+
+    # 1) 일반 폼 설문: 설문별 최근 제출 시각
+    rows = (
+        db.query(
+            models.SurveyResponse.survey_id,
+            func.max(models.SurveyResponse.submitted_at).label("participated_at"),
+        )
+        .filter(models.SurveyResponse.user_id == current_user.user_id)
+        .group_by(models.SurveyResponse.survey_id)
+        .all()
+    )
+    if rows:
+        participated = {sid: ts for sid, ts in rows}
+        surveys = db.query(models.Survey).filter(models.Survey.id.in_(list(participated.keys()))).all()
+        surveys_by_id = {s.id: s for s in surveys}
+        for sid, ts in participated.items():
+            s = surveys_by_id.get(sid)
+            at = ts or (s.created_at if s else None)
+            out.append({
+                "id": sid,
+                "survey_id": sid,
+                "kind": "form",
+                "title": s.title if s else "",
+                "status": "완료",
+                "approval_status": "승인",
+                "participated_at": at,
+            })
+
+    # 2) AI 대화형 설문: 세션별 1건 (제목/대화내역은 survey_chat_sessions)
+    ai_rows = (
+        db.query(models.SurveyChatSession)
+        .filter(models.SurveyChatSession.user_id == current_user.user_id)
+        .all()
+    )
+    for r in ai_rows:
+        out.append({
+            "id": f"ai-{r.session_id}",
+            "session_id": r.session_id,
+            "survey_id": None,
+            "kind": "ai",
+            "title": r.title or "AI 대화형 설문",
+            "status": "완료",
+            "approval_status": "승인",
+            "issue_count": r.issue_count or 0,
+            "participated_at": r.created_at,
+        })
+
+    # 최근 참여 우선 정렬 후 직렬화
+    out.sort(key=lambda x: (x["participated_at"] is None, x["participated_at"]), reverse=True)
+    for item in out:
+        at = item["participated_at"]
+        item["participated_at"] = at.isoformat() if at else None
+    return out
+
+
+# =============================================================================
+# 공개 설문 상세 / 응답 제출 / 결과 — 반드시 admin 정적 경로 다음에 등록
+# =============================================================================
+
+@router.get("/{survey_id}")
+def get_survey_detail(survey_id: int, db: Session = Depends(get_db)):
+    from sqlalchemy import func
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    questions = db.query(models.SurveyQuestion).filter(
+        models.SurveyQuestion.survey_id == survey_id
+    ).order_by(models.SurveyQuestion.order_no.asc()).all()
+    actual_count = db.query(func.count(models.SurveyResponse.id)).filter(models.SurveyResponse.survey_id == survey_id).scalar() or 0
+    return {
+        "id": s.id,
+        "title": s.title,
+        "description": s.description,
+        "minutes": s.minutes or 10,
+        "period": _format_period(s),
+        "status": s.status,
+        "response_count": actual_count,
+        "questions": [
+            {
+                "id": q.id,
+                "order_no": q.order_no,
+                "qtype": q.qtype,
+                "text": q.text,
+                "options": q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else []),
+            }
+            for q in questions
+        ],
+    }
+
+
+@router.post("/{survey_id}/responses", status_code=201)
+def submit_survey_response(
+    survey_id: int,
+    payload: schemas.SurveyResponseSubmit,
+    db: Session = Depends(get_db),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
+):
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    # 관리자(user_id >= 999990)는 FK 제약 위반 방지를 위해 None 처리
+    safe_user_id = None
+    if current_user:
+        safe_user_id = current_user.user_id if current_user.user_id < 999990 else None
+    if safe_user_id is not None:
+        existing = db.query(models.SurveyResponse).filter(
+            models.SurveyResponse.survey_id == survey_id,
+            models.SurveyResponse.user_id == safe_user_id,
+        ).first()
+        if existing:
+            raise HTTPException(status_code=409, detail="이미 참여한 설문입니다.")
+    resp = models.SurveyResponse(
+        survey_id=survey_id,
+        user_id=safe_user_id,
+        demographics=payload.demographics,
+    )
+    db.add(resp)
+    db.flush()
+    for ans in payload.answers:
+        v = ans.value
+        if isinstance(v, (list, dict)):
+            v = json.dumps(v, ensure_ascii=False)
+        else:
+            v = str(v) if v is not None else ""
+        db.add(models.SurveyAnswer(response_id=resp.id, question_id=ans.question_id, value=v))
+    s.response_count = (s.response_count or 0) + 1
+    db.commit()
+    return {"message": "응답이 제출되었습니다.", "response_id": resp.id}
+
+
+@router.get("/{survey_id}/results")
+def get_survey_results(survey_id: int, db: Session = Depends(get_db)):
+    """질문별 응답 분포 집계."""
+    from sqlalchemy import func as sqlfunc
+    s = db.query(models.Survey).filter(models.Survey.id == survey_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="설문을 찾을 수 없습니다.")
+    actual_count = db.query(sqlfunc.count(models.SurveyResponse.id)).filter(models.SurveyResponse.survey_id == survey_id).scalar() or 0
+    questions = db.query(models.SurveyQuestion).filter(
+        models.SurveyQuestion.survey_id == survey_id
+    ).order_by(models.SurveyQuestion.order_no.asc()).all()
+
+    qids = [q.id for q in questions]
+    answers_by_q: dict = {}
+    if qids:
+        all_answers = db.query(models.SurveyAnswer).filter(
+            models.SurveyAnswer.question_id.in_(qids)
+        ).all()
+        for a in all_answers:
+            answers_by_q.setdefault(a.question_id, []).append(a)
+
+    out = []
+    for q in questions:
+        answers = answers_by_q.get(q.id, [])
+        opts = q.options if isinstance(q.options, list) else (json.loads(q.options) if q.options else [])
+        if q.qtype in ("single", "agree"):
+            counter = Counter([a.value for a in answers if a.value])
+            total_sel = sum(counter.values()) or 1
+            distribution = [
+                {"label": opt, "count": counter.get(opt, 0), "pct": round(counter.get(opt, 0) / total_sel * 100)}
+                for opt in opts
+            ]
+            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
+        elif q.qtype == "multi":
+            counter = Counter()
+            for a in answers:
+                try:
+                    vals = json.loads(a.value)
+                    if isinstance(vals, list):
+                        counter.update(vals)
+                except Exception:
+                    pass
+            total_sel = sum(counter.values()) or 1
+            distribution = [
+                {"label": opt, "count": counter.get(opt, 0), "pct": round(counter.get(opt, 0) / total_sel * 100)}
+                for opt in opts
+            ]
+            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "distribution": distribution, "total": sum(counter.values())})
+        else:
+            samples = [a.value for a in answers[:5] if a.value]
+            out.append({"id": q.id, "text": q.text, "qtype": q.qtype, "samples": samples, "total": len(answers)})
+    return {
+        "id": s.id,
+        "title": s.title,
+        "response_count": actual_count,
+        "questions": out,
+    }

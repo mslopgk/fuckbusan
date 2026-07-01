@@ -22,9 +22,15 @@ const labelOffsets = {
     '해운대구': [-0.015, -0.005]
 };
 
-const InteractiveMap = () => {
+const InteractiveMap = ({ defaultDistrict = null, selectedDistrict: controlledDistrict, onDistrictChange } = {}) => {
     const [geoJsonData, setGeoJsonData] = useState(null);
-    const [selectedDistrict, setSelectedDistrict] = useState('부산진구');
+    const [internalDistrict, setInternalDistrict] = useState(defaultDistrict);
+    const isControlled = controlledDistrict !== undefined;
+    const selectedDistrict = isControlled ? controlledDistrict : internalDistrict;
+    const setSelectedDistrict = (name) => {
+        if (!isControlled) setInternalDistrict(name);
+        if (onDistrictChange) onDistrictChange(name);
+    };
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
     useEffect(() => {
@@ -81,10 +87,16 @@ const InteractiveMap = () => {
     const BoundsFitter = ({ data }) => {
         const map = useMap();
         useEffect(() => {
-            if (data) {
-                const geoJsonLayer = L.geoJSON(data);
-                map.fitBounds(geoJsonLayer.getBounds(), { padding: [5, 5] });
-            }
+            if (!data) return undefined;
+            const bounds = L.geoJSON(data).getBounds();
+            const fit = () => {
+                // flex 컨테이너에서 leaflet이 stale 크기로 초기화되는 문제 보정
+                map.invalidateSize();
+                map.fitBounds(bounds, { padding: [5, 5] });
+            };
+            fit();
+            const t = setTimeout(fit, 200);
+            return () => clearTimeout(t);
         }, [data, map]);
         return null;
     };
@@ -112,7 +124,7 @@ const InteractiveMap = () => {
             width: '100%',
             height: '100%',
             borderRadius: '20px',
-            overflow: 'visible'
+            overflow: 'hidden'
         }}>
             <style>
                 {`
@@ -123,15 +135,14 @@ const InteractiveMap = () => {
                         background: transparent !important;
                         border: none !important;
                         box-shadow: none !important;
-                        color: #1a1a1a !important; /* Default Black */
+                        color: #1a1a1a !important;
                         font-family: 'GmarketSans', sans-serif !important;
                         font-weight: 500 !important;
-                        font-size: ${isMobile ? '10px' : '12px'} !important;
+                        font-size: ${isMobile ? '4px' : '13px'} !important;
                         text-shadow: 0px 0px 4px #fff, 0px 0px 4px #fff !important;
                         white-space: nowrap !important;
-                        pointer-events: auto !important;
-                        cursor: pointer !important;
-                        opacity: 1 !important; /* Ensure no transparency */
+                        pointer-events: none !important;
+                        opacity: 1 !important;
                         display: flex !important;
                         flex-direction: column !important;
                         align-items: center !important;
@@ -150,7 +161,8 @@ const InteractiveMap = () => {
                         height: auto !important;
                         margin-bottom: 4px !important;
                         filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2));
-                        opacity: 1 !important; /* Ensure icon is fully opaque */
+                        opacity: 1 !important;
+                        pointer-events: none !important;
                     }
                     .invisible-marker {
                         opacity: 0;
@@ -163,6 +175,7 @@ const InteractiveMap = () => {
             <MapContainer
                 center={[35.1795543, 129.0756416]}
                 zoom={11}
+                zoomSnap={0}
                 scrollWheelZoom={false}
                 zoomControl={false}
                 doubleClickZoom={false}
@@ -192,7 +205,6 @@ const InteractiveMap = () => {
                             icon={L.divIcon({ className: 'invisible-marker' })}
                             eventHandlers={{
                                 click: (e) => {
-                                    console.log(`Marker clicked for district: ${name}`);
                                     L.DomEvent.stopPropagation(e);
                                     setSelectedDistrict(name);
                                 },
@@ -203,7 +215,7 @@ const InteractiveMap = () => {
                                 direction="center"
                                 offset={isSelected ? [0, isMobile ? -26 : -35] : [0, 0]}
                                 className={`district-label-tooltip ${isSelected ? 'selected' : ''}`}
-                                interactive={true}
+                                interactive={false}
                             >
                                 {isSelected && (
                                     <img
@@ -212,16 +224,7 @@ const InteractiveMap = () => {
                                         className="selected-person-icon"
                                     />
                                 )}
-                                <span
-                                    onClick={(e) => {
-                                        console.log(`Text label clicked: ${name}`);
-                                        e.stopPropagation();
-                                        setSelectedDistrict(name);
-                                    }}
-                                    style={{ cursor: 'pointer', pointerEvents: 'auto' }}
-                                >
-                                    {name}
-                                </span>
+                                <span>{name}</span>
                             </Tooltip>
                         </Marker>
                     );

@@ -1,6 +1,7 @@
 /* ProposalDetail.jsx */
 import React, { useState, useEffect } from 'react';
 import './ProposalDetail.css';
+import { API_URL } from '../utils/api';
 
 const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
     const safeProposal = proposal || {};
@@ -8,7 +9,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
     const [hasVoted, setHasVoted] = useState(safeProposal.has_voted || false);
     const [currentLikes, setCurrentLikes] = useState(safeProposal.likes_count || safeProposal.likes || 0);
     const [currentViews, setCurrentViews] = useState(safeProposal.views_count || safeProposal.views || 0);
-    const [showVoteModal, setShowVoteModal] = useState(false);
+    const [voteModalType, setVoteModalType] = useState(null); // null | 'voted' | 'cancelled'
 
     // UI Modal States
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,10 +24,6 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
     const [currentUserId, setCurrentUserId] = useState(null);
 
     const isMine = safeProposal.is_mine === true || safeProposal.isMine === true;
-
-    // [중요] 127.0.0.1을 우선 사용하여 주소 충돌 방지
-    const rawApiUrl = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
-    const VITE_API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
     const parseAddress = (region) => {
         if (!region) return { district: '', formatted: '' };
@@ -51,31 +48,40 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
     }, []);
 
     useEffect(() => {
-        const incrementView = async () => {
-            if (!safeProposal.id) return;
-            const token = localStorage.getItem('access_token');
-            if (!token) return; // 비로그인은 무시
-            try {
-                const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/view`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (response.ok) {
-                    const result = await response.json();
-                    setCurrentViews(result.views_count);
-                }
-            } catch (error) {
-                console.error('View increment error:', error);
-            }
-        };
-        incrementView();
+        if (!safeProposal.id) return;
+        const token = localStorage.getItem('access_token');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+        // 최신 데이터 fetch (새로고침 후 상태 동기화)
+        fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}`, { headers })
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                if (!data) return;
+                setHasVoted(data.has_voted || false);
+                setCurrentLikes(data.likes_count || data.likes || 0);
+                setCurrentViews(data.views_count || data.views || 0);
+                // sessionStorage 갱신 (다음 새로고침도 최신 상태)
+                try { sessionStorage.setItem('selectedProposal', JSON.stringify(data)); } catch (e) {}
+            })
+            .catch(() => {});
+
+        // 조회수 증가
+        if (token) {
+            fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/view`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+                .then(r => r.ok ? r.json() : null)
+                .then(result => { if (result) setCurrentViews(result.views_count); })
+                .catch(() => {});
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [safeProposal.id]);
 
     const fetchComments = async () => {
         if (!safeProposal.id) return;
         try {
-            const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments`);
+            const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/comments`);
             if (response.ok) {
                 const data = await response.json();
                 if (Array.isArray(data)) {
@@ -104,7 +110,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         if (!window.confirm("정말로 이 댓글을 삭제하시겠습니까?")) return;
         const token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments/${commentId}`, {
+            const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/comments/${commentId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -138,7 +144,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         try {
             if (editingCommentId) {
                 // Edit existing
-                const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments/${editingCommentId}`, {
+                const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/comments/${editingCommentId}`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -153,7 +159,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                 }
             } else {
                 // Create new
-                const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/comments`, {
+                const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/comments`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -237,7 +243,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         }
 
         try {
-            const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}/vote`, {
+            const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}/vote`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -252,10 +258,8 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                 setHasVoted(nowVoted);
                 setCurrentLikes(result.likes_count);
 
-                if (nowVoted) {
-                    setShowVoteModal(true);
-                    setTimeout(() => setShowVoteModal(false), 2000);
-                }
+                setVoteModalType(nowVoted ? 'voted' : 'cancelled');
+                setTimeout(() => setVoteModalType(null), 2000);
             } else {
                 const errorData = await response.json();
                 alert(errorData.detail || "투표 처리에 실패했습니다.");
@@ -274,9 +278,9 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
         } else if (firstFile.startsWith('/assets/')) {
             imageUrl = firstFile;
         } else if (firstFile.startsWith('/uploads/')) {
-            imageUrl = `${VITE_API_URL}${firstFile}`;
+            imageUrl = `${API_URL}${firstFile}`;
         } else {
-            imageUrl = `${VITE_API_URL}/uploads/${firstFile}`;
+            imageUrl = `${API_URL}/uploads/${firstFile}`;
         }
     }
 
@@ -332,24 +336,6 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
 
             {/* Main Content */}
             <div className="pd-content">
-                {/* PC 전용 플로팅 투표 버튼 */}
-                {!isMine && (
-                    <div className="pd-pc-vote-float">
-                        <button
-                            className={`pd-pc-vote-circle ${hasVoted ? 'voted' : ''}`}
-                            onClick={handleVote}
-                        >
-                            <div className="pd-pc-vote-icon">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </div>
-                            <span className="pd-pc-vote-count">{currentLikes}</span>
-                            <span className="pd-pc-vote-label">{hasVoted ? '투표완료' : '투표하기'}</span>
-                        </button>
-                    </div>
-                )}
-
                 {/* 태그 행: 지역 + 카테고리 */}
                 <div className="pd-tags-row">
                     {proposal.region && (
@@ -373,83 +359,84 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                 </div>
 
                 <h1 className="pd-title">{proposal.title}</h1>
+
                 {/* 모바일 작성자 */}
                 <p className="pd-author">{proposal.nickname || proposal.author || '작성자 정보 없음'}</p>
 
-                {/* PC 작성자 + 메타 정보 행 */}
+                {/* PC: 작성자 왼쪽 | 날짜·조회수 오른쪽 */}
                 <div className="pd-meta-row">
                     <span className="pd-author-text">{proposal.nickname || proposal.author || '작성자 정보 없음'}</span>
-                    <div className="pd-meta-right">
-                        <span>{proposal.date}</span>
-                        <span>·</span>
-                        <span>조회수 {currentViews}</span>
-                    </div>
+                    <span className="pd-meta-right">
+                        {proposal.date}{proposal.date && ' · '}조회수 {currentViews}
+                    </span>
                 </div>
 
                 {/* PC 구분선 */}
                 <div className="pd-divider"></div>
 
-                {safeProposal.files && safeProposal.files.length > 0 ? (
-                    <div className="pd-main-image-wrapper pd-order-image">
-                        {safeProposal.files.map((file, idx) => {
+                {/* 이미지 섹션: 첫번째=사진(434px), 이후=지도(208px) */}
+                <div className="pd-main-image-wrapper">
+                    {safeProposal.files && safeProposal.files.length > 0 ? (
+                        safeProposal.files.map((file, idx) => {
                             let src = file;
                             if (!file.startsWith('http') && !file.startsWith('/assets/')) {
-                                src = file.startsWith('/uploads/') ? `${VITE_API_URL}${file}` : `${VITE_API_URL}/uploads/${file}`;
+                                src = file.startsWith('/uploads/') ? `${API_URL}${file}` : `${API_URL}/uploads/${file}`;
                             }
                             return (
                                 <img
                                     key={idx}
                                     src={src}
                                     alt={`Proposal ${idx + 1}`}
-                                    className="pd-main-image"
+                                    className={`pd-main-image ${idx === 0 ? 'pd-photo' : 'pd-map-img'}`}
                                     loading="lazy"
-                                    style={{ marginBottom: idx < safeProposal.files.length - 1 ? '8px' : '0' }}
                                     onError={(e) => { e.target.style.display = 'none'; }}
                                 />
                             );
-                        })}
-                        {(() => {
-                            const { district, formatted } = parseAddress(proposal.region);
-                            return (
-                                <div className="pd-address-badge">
-                                    <strong>{district}</strong>{formatted ? <> &nbsp;·&nbsp; {formatted}</> : ''}
-                                </div>
-                            );
-                        })()}
-                    </div>
-                ) : imageUrl ? (
-                    <div className="pd-main-image-wrapper pd-order-image">
+                        })
+                    ) : imageUrl ? (
                         <img
                             src={imageUrl}
                             alt="Proposal"
-                            className="pd-main-image"
+                            className="pd-main-image pd-photo"
                             loading="lazy"
                             onError={(e) => { e.target.style.display = 'none'; }}
                         />
-                        {(() => {
-                            const { district, formatted } = parseAddress(proposal.region);
-                            return (
-                                <div className="pd-address-badge">
-                                    <strong>{district}</strong>{formatted ? <> &nbsp;·&nbsp; {formatted}</> : ''}
+                    ) : null}
+                    {/* 모바일 주소 뱃지 */}
+                    {proposal.region && (() => {
+                        const { district, formatted } = parseAddress(proposal.region);
+                        return (
+                            <div className="pd-address-badge">
+                                <strong>{district}</strong>{formatted ? <> &nbsp;·&nbsp; {formatted}</> : ''}
+                            </div>
+                        );
+                    })()}
+                </div>
+
+                {/* 본문 + 투표하기 (PC: flex 2열) */}
+                <div className="pd-body-row">
+                    <p className="pd-description" style={{ whiteSpace: 'pre-wrap' }}>
+                        {proposal.description || proposal.content || '본문이 없습니다.'}
+                    </p>
+                    {!isMine && (
+                        <div className="pd-pc-vote-col">
+                            <button
+                                className={`pd-pc-vote-circle ${hasVoted ? 'voted' : ''}`}
+                                onClick={handleVote}
+                            >
+                                <div className="pd-pc-vote-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
                                 </div>
-                            );
-                        })()}
-                    </div>
-                ) : null}
+                                <span className="pd-pc-vote-count">{currentLikes}</span>
+                                <span className="pd-pc-vote-label">{hasVoted ? '투표완료' : '투표하기'}</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
 
-                <p className="pd-description pd-order-desc" style={{ whiteSpace: 'pre-wrap' }}>
-                    {proposal.description || proposal.content}
-                </p>
-
-                {proposal.region && (
-                    <div className="pd-pc-address">
-                        {(() => {
-                            const { district, formatted } = parseAddress(proposal.region);
-                            return <><strong>{district}</strong>{formatted ? <> &nbsp;·&nbsp; {formatted}</> : ''}</>;
-                        })()}
-                    </div>
-                )}
-
+                {/* 모바일 하단 통계 */}
                 <div className="pd-stats-row">
                     <div className="pd-stats-left">
                         <span>{proposal.date}</span>
@@ -537,16 +524,23 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                 </div>
             )}
 
-            {/* Vote Success Modal */}
-            {showVoteModal && (
-                <div className="pd-vote-modal-overlay">
+            {/* Vote Result Modal */}
+            {voteModalType && (
+                <div className="pd-vote-modal-overlay" onClick={() => setVoteModalType(null)}>
                     <div className="pd-vote-modal-box">
                         <div className="pd-vote-success-icon-container">
-                            <img src="/Union.svg" alt="Union" className="pd-union-icon" />
-                            <img src="/Vector.svg" alt="Vector" className="pd-vector-icon" />
+                            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="4" y="4" width="48" height="60" rx="6" fill="#F8F8F8" stroke="#E5E5E5" strokeWidth="2"/>
+                                <path d="M38 4 L52 18 L38 18 Z" fill="#EBEBEB"/>
+                                <line x1="13" y1="30" x2="43" y2="30" stroke="#E0E0E0" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="13" y1="39" x2="43" y2="39" stroke="#E0E0E0" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="13" y1="48" x2="30" y2="48" stroke="#E0E0E0" strokeWidth="2.5" strokeLinecap="round"/>
+                                <circle cx="58" cy="58" r="18" fill="#E6235A"/>
+                                <path d="M49 58 L55 64 L67 49" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                            </svg>
                         </div>
                         <h2 className="pd-vote-modal-text">
-                            투표가<br />완료되었습니다
+                            투표가<br />{voteModalType === 'voted' ? '완료되었습니다' : '취소되었습니다'}
                         </h2>
                     </div>
                 </div>
@@ -565,7 +559,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
                                 if (!safeProposal.id) return;
                                 try {
                                     const token = localStorage.getItem('access_token');
-                                    const response = await fetch(`${VITE_API_URL}/api/reports/proposals/${safeProposal.id}`, {
+                                    const response = await fetch(`${API_URL}/api/reports/proposals/${safeProposal.id}`, {
                                         method: 'DELETE',
                                         headers: {
                                             ...(token ? { 'Authorization': `Bearer ${token}` } : {})

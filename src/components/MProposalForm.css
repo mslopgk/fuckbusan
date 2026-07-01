@@ -1,0 +1,483 @@
+.m-prop-form-page {
+    min-height: 100vh;
+    background: #fff;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.m-form-topbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.m-form-back {
+    background: none;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+}
+
+.m-form-body {
+    padding: 20px 20px 24px;
+}
+
+.m-form-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #242424;
+    margin: 0 0 28px;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
+}
+
+.m-form-section {
+    margin-bottom: 26px;
+}
+
+.m-form-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #242424;
+    margin: 0 0 14px;
+    letter-spacing: -0.04em;
+}
+
+.m-form-type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 14px;
+    column-gap: 24px;
+}
+
+.m-form-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #1a1a1b;
+    cursor: pointer;
+    transition: color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.m-form-type input { display: none; }
+
+.m-form-type-dot {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #d0d0d0;
+    border-radius: 50%;
+    background: #fff;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    position: relative;
+    transition: all 0.15s;
+}
+
+.m-form-type input:checked + .m-form-type-dot {
+    border-color: #E6235A;
+    background: #E6235A;
+}
+
+.m-form-type input:checked + .m-form-type-dot::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 6px;
+    width: 6px;
+    height: 3px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg);
+    border-radius: 1px;
+}
+
+.m-form-type:has(input:checked) {
+    color: #E6235A;
+    font-weight: 700;
+}
+
+.m-form-input {
+    width: 100%;
+    height: 55px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    padding: 0 16px;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    background: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+    letter-spacing: -0.04em;
+    color: #242424;
+}
+
+.m-form-input:focus { border-color: #E6235A; }
+.m-form-input::placeholder { color: #a6a6a6; }
+
+.m-form-textarea {
+    width: 100%;
+    min-height: 147px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1.4;
+    resize: none;
+    outline: none;
+    background: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+    letter-spacing: -0.04em;
+    color: #242424;
+}
+
+.m-form-textarea:focus { border-color: #E6235A; }
+.m-form-textarea::placeholder {
+    color: #a6a6a6;
+    white-space: pre-line;
+}
+
+/* 위치정보 */
+.m-form-section-sub {
+    font-size: 12px;
+    color: #9aa0a6;
+    font-weight: 500;
+}
+
+.m-form-loc-btn {
+    width: 100%;
+    height: 55px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    padding: 0 18px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.m-form-loc-placeholder { font-size: 16px; color: #a6a6a6; letter-spacing: -0.04em; }
+.m-form-loc-text       { font-size: 16px; color: #242424; letter-spacing: -0.04em; }
+.m-form-loc-pin {
+    display: inline-flex;
+    align-items: center;
+    color: #b0b0b0;
+}
+
+.m-form-loc-detail {
+    margin-top: 8px;
+}
+
+/* 첨부자료 */
+.m-form-attach-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.m-form-attach-add {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.m-form-attach-thumb {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f1f3f5;
+    flex-shrink: 0;
+}
+
+.m-form-attach-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.m-form-attach-x {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.m-form-attach-help {
+    font-size: 11px;
+    color: #9aa0a6;
+    margin: 8px 0 0;
+}
+
+/* 위치 선택 picker (full overlay) */
+.m-loc-picker {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px 16px;
+}
+
+.m-loc-picker-top {
+    height: 48px;
+    display: flex;
+    align-items: center;
+}
+
+.m-loc-picker-title {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.4;
+    color: #1a1a1b;
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+}
+
+.m-loc-picker-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    padding: 0 12px;
+    margin-bottom: 12px;
+}
+
+.m-loc-picker-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.m-loc-picker-search button {
+    background: none;
+    border: none;
+    color: #9aa0a6;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.m-loc-picker-map {
+    flex: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f1f3f5;
+    margin-bottom: 8px;
+}
+
+.m-loc-picker-help {
+    text-align: center;
+    font-size: 12px;
+    color: #9aa0a6;
+    margin: 0 0 12px;
+}
+
+.m-loc-picker-confirm {
+    height: 50px;
+    border: none;
+    border-radius: 25px;
+    background: #E6235A;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.25);
+    font-family: inherit;
+}
+
+.m-form-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #ececec;
+    display: flex;
+    gap: 10px;
+    padding: 12px 20px;
+    z-index: 50;
+}
+
+.m-form-save {
+    height: 59px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 400;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.04em;
+    background: #e6e6e6;
+    color: #777;
+    border: none;
+    flex: 0 0 103px;
+}
+
+.m-form-submit {
+    height: 59px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.04em;
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    flex: 1;
+}
+
+/* 미충족 상태: 비활성 '스타일'만 — 클릭은 받아 인라인 에러를 노출 */
+.m-form-submit.disabled { background: #ffdde7; }
+
+/* 인라인 검증 에러 (Figma 오류멘트) */
+.m-form-error-msg {
+    margin: 6px 2px 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: #E6235A;
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+}
+.m-form-input.error,
+.m-form-textarea.error,
+.m-form-loc-btn.error { border-color: #E6235A; }
+
+.m-form-toast {
+    position: fixed;
+    bottom: 96px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(26, 26, 27, 0.92);
+    color: #fff;
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 22px;
+    z-index: 250;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+/* Shared keyframes for modal animations — used by draft/leave modals */
+@keyframes m-modal-fade-in {
+    from { background: rgba(0, 0, 0, 0); }
+    to   { background: rgba(0, 0, 0, 0.45); }
+}
+
+@keyframes m-result-modal-appear {
+    from { transform: scale(0.92) translateY(16px); opacity: 0; }
+    to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.m-draft-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+    animation: m-modal-fade-in 0.2s ease-out;
+}
+
+.m-draft-modal {
+    width: 100%;
+    max-width: 300px;
+    background: #fff;
+    border-radius: 22px;
+    padding: 28px 22px 24px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    animation: m-result-modal-appear 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.m-draft-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.m-draft-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0 0 8px;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+}
+
+.m-draft-meta {
+    font-size: 12px;
+    color: #555;
+    margin: 0 0 20px;
+}
+
+.m-draft-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.m-draft-btn {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 23px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-draft-btn-ghost {
+    background: #FCDAE3;
+    color: #E6235A;
+}
+
+.m-draft-btn-primary {
+    background: #E6235A;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.25);
+}

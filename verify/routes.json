@@ -1,0 +1,1150 @@
+{
+  "baseUrl": "http://localhost:8501",
+  "apiUrl": "http://localhost:8000",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "views": [
+    {
+      "id": "home",
+      "view": "home",
+      "path": "/",
+      "auth": false,
+      "waitFor": "body",
+      "assertions": []
+    },
+    {
+      "id": "login",
+      "view": "login",
+      "path": "/",
+      "auth": false,
+      "waitFor": "input"
+    },
+    {
+      "id": "signup",
+      "view": "signup",
+      "path": "/",
+      "auth": false,
+      "waitFor": "input"
+    },
+    {
+      "id": "pcLogin",
+      "view": "login",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pcauth",
+      "viewport": { "width": 1280, "height": 900 }
+    },
+    {
+      "id": "pcSignup",
+      "view": "signup",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pcauth",
+      "viewport": { "width": 1280, "height": 900 }
+    },
+    {
+      "id": "report",
+      "view": "report",
+      "path": "/",
+      "auth": true,
+      "waitFor": "body"
+    },
+    {
+      "id": "reportList",
+      "view": "reportList",
+      "path": "/",
+      "auth": false,
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "proposalList",
+      "view": "proposalList",
+      "path": "/",
+      "auth": false,
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "myPage",
+      "view": "myPage",
+      "path": "/",
+      "auth": true,
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "diagnosis",
+      "view": "diagnosis",
+      "path": "/",
+      "auth": true,
+      "waitFor": "body"
+    },
+    {
+      "id": "mDiagnosisList",
+      "view": "mDiagnosisList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-diag-list-only-page"
+    },
+    {
+      "id": "mDiagnosisForm",
+      "view": "mDiagnosisForm",
+      "path": "/",
+      "auth": true,
+      "waitFor": ".m-diagform-page"
+    },
+    {
+      "id": "mDiagnosisResult",
+      "view": "mDiagnosisResult",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-diagres-page"
+    },
+    {
+      "id": "mDiagnosisDone",
+      "view": "mDiagnosisDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".check-done-container"
+    },
+    {
+      "id": "pcSurveyList",
+      "view": "pcSurveyList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-list-page",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "pcSurveyDetail",
+      "view": "pcSurveyDetail",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-detail-page",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "sessionSeed": {
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
+      }
+    },
+    {
+      "id": "pcSurveyConsent",
+      "view": "pcSurveyConsent",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-consent-page",
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
+      "sessionSeed": {
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
+      }
+    },
+    {
+      "id": "pcSurveyJoin",
+      "view": "pcSurveyJoin",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-join-page",
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
+      "sessionSeed": {
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
+      }
+    },
+    {
+      "id": "pcSurveyDone",
+      "view": "pcSurveyDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-done-page",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "sessionSeed": {
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
+      }
+    },
+    {
+      "id": "pcSurveyResults",
+      "view": "pcSurveyResults",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-survey-results-page",
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
+      "sessionSeed": {
+        "selectedSurvey": {
+          "id": 3,
+          "title": "공공디자인 만족도 조사",
+          "minutes": 10,
+          "period": "2026-05-01 ~ 2026-05-18",
+          "status": "result",
+          "response_count": 79
+        }
+      }
+    },
+    {
+      "id": "pcDiagnosisMap",
+      "view": "pcDiagnosisMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-diag-page",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "pcReportMap",
+      "view": "pcReportMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-map3-page",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "pcProposeMap",
+      "view": "pcProposeMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-map3-page",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "pcDiagnosisForm",
+      "view": "pcDiagnosisForm",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-diagform-page",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "pcDiagnosisDone",
+      "view": "pcDiagnosisDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".check-done-container",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "mProposalList",
+      "view": "mProposalList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-list-page"
+    },
+    {
+      "id": "mProposalMap",
+      "view": "mProposalMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-map-page"
+    },
+    {
+      "id": "mProposalForm",
+      "view": "mProposalForm",
+      "path": "/",
+      "auth": true,
+      "waitFor": ".m-prop-form-page"
+    },
+    {
+      "id": "mProposalDetail",
+      "view": "mProposalDetail",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-detail-page",
+      "sessionSeed": {
+        "selectedProposal": {
+          "id": 1,
+          "category": "주거",
+          "title": "전기자전거 재고 불균형 해결 제안",
+          "content": "지역 시간별 수요 편차로 대여소마다 전기자전거 부족/과잉이 반복되고 있습니다.",
+          "author": "동래구 우리디자이너",
+          "created_at": "2026-01-02",
+          "views_count": 333,
+          "likes_count": 12,
+          "lat": 35.197,
+          "lng": 129.063
+        }
+      }
+    },
+    {
+      "id": "mProposalDone",
+      "view": "mProposalDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-done-page"
+    },
+    {
+      "id": "mNotifications",
+      "view": "mNotifications",
+      "path": "/",
+      "auth": true,
+      "waitFor": ".m-notif-page"
+    },
+    {
+      "id": "mDiagnosisMap",
+      "view": "mDiagnosisMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-diag-list-page"
+    },
+    {
+      "id": "mReportList",
+      "view": "mReportList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-report-list-page"
+    },
+    {
+      "id": "mReportMap",
+      "view": "mReportMap",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-map-page"
+    },
+    {
+      "id": "mReportForm",
+      "view": "mReportForm",
+      "path": "/",
+      "auth": true,
+      "waitFor": ".m-report-form-page"
+    },
+    {
+      "id": "mReportDetail",
+      "view": "mReportDetail",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-report-detail-page",
+      "sessionSeed": {
+        "selectedReport": {
+          "id": 1,
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "content": "골목쓰레기통 주변 안전 관리가 필요합니다.",
+          "category": "주거",
+          "sub_category": "골목쓰레기통",
+          "region": "동래구",
+          "author": "동래구 우리디자이너",
+          "authorRegion": "동래구 수안동",
+          "created_at": "2026.03.13",
+          "views": 333,
+          "likes": 12,
+          "comments": 12,
+          "lat": 35.197,
+          "lng": 129.063,
+          "progress_step": 2
+        }
+      }
+    },
+    {
+      "id": "mReportDone",
+      "view": "mReportDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-prop-done-page"
+    },
+    {
+      "id": "mMyReportDetail",
+      "view": "mMyReportDetail",
+      "path": "/",
+      "auth": true,
+      "waitFor": ".m-myreport-detail-page",
+      "sessionSeed": {
+        "selectedReport": {
+          "id": 1,
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "content": "골목쓰레기통 주변 안전 관리가 필요합니다.",
+          "category": "주거",
+          "sub_category": "골목쓰레기통",
+          "region": "동래구",
+          "author": "동래구 우리디자이너",
+          "authorRegion": "동래구 수안동",
+          "views": 333,
+          "likes": 12,
+          "comments": 12,
+          "lat": 35.197,
+          "lng": 129.063,
+          "progress_step": 2,
+          "date": "2026.03.13"
+        }
+      }
+    },
+    {
+      "id": "mMyReportEdit",
+      "view": "mMyReportEdit",
+      "path": "/",
+      "auth": true,
+      "waitFor": ".m-myrep-edit-page",
+      "sessionSeed": {
+        "selectedReport": {
+          "id": 1,
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "content": "골목쓰레기통 주변 안전 관리가 필요합니다.",
+          "category": "주거",
+          "sub_category": "골목쓰레기통",
+          "region": "동래구",
+          "location": "부산 동래구 수안동",
+          "lat": 35.197,
+          "lng": 129.063,
+          "progress_step": 2
+        }
+      }
+    },
+    {
+      "id": "pcMyReportList",
+      "view": "pcMyReportList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-myrep-page",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "pcMyReportEdit",
+      "view": "pcMyReportEdit",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-myrep-edit-page",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "pcReportForm",
+      "view": "pcReportForm",
+      "path": "/",
+      "auth": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "waitFor": ".pc-modal-backdrop"
+    },
+    {
+      "id": "pcReportDetail",
+      "view": "pcReportDetail",
+      "path": "/",
+      "auth": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "waitFor": ".pcd-page",
+      "sessionSeed": {
+        "selectedReport": {
+          "id": 1,
+          "title": "공원 쓰레기통이 안전조치가 필요해요",
+          "content": "골목쓰레기통 주변 안전 관리가 필요합니다.",
+          "category": "주거",
+          "sub_category": "골목쓰레기통",
+          "region": "동래구",
+          "author": "동래구 우리디자이너",
+          "status": "개선완료",
+          "created_at": "2026.03.13",
+          "views": 333,
+          "likes": 12,
+          "comments": 1,
+          "lat": 35.197,
+          "lng": 129.063,
+          "progress_step": 4
+        }
+      }
+    },
+    {
+      "id": "pcProposeDetail",
+      "view": "pcProposeDetail",
+      "path": "/",
+      "auth": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "waitFor": ".pcd-page",
+      "sessionSeed": {
+        "selectedProposal": {
+          "id": 1,
+          "title": "보행로 폭 개선 제안",
+          "content": "보행 환경 개선이 필요합니다.",
+          "category": "주거",
+          "region": "동래구",
+          "author": "동래구 우리디자이너",
+          "created_at": "2026.03.13",
+          "views": 120,
+          "likes": 8,
+          "comments": 2,
+          "lat": 35.197,
+          "lng": 129.063
+        }
+      }
+    },
+    {
+      "id": "mSurveyList",
+      "view": "mSurveyList",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-list-page"
+    },
+    {
+      "id": "mSurveyJoin",
+      "view": "mSurveyJoin",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-join-page",
+      "sessionSeed": {
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
+      }
+    },
+    {
+      "id": "mSurveyDone",
+      "view": "mSurveyDone",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-done-page",
+      "sessionSeed": {
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
+      }
+    },
+    {
+      "id": "mSurveyDetail1",
+      "view": "mSurveyDetail1",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-detail-page",
+      "sessionSeed": {
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
+      }
+    },
+    {
+      "id": "mSurveyDetail2",
+      "view": "mSurveyDetail2",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-detail-page",
+      "sessionSeed": {
+        "selectedSurvey": {
+          "id": 1,
+          "title": "사직구장 일대 보행환경 현황 조사",
+          "minutes": 10,
+          "period": "2026-04-24 ~ 2026-05-24",
+          "status": "active"
+        }
+      }
+    },
+    {
+      "id": "mSurveyResults",
+      "view": "mSurveyResults",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-survey-results-page",
+      "sessionSeed": {
+        "selectedSurvey": {
+          "id": 3,
+          "title": "공공디자인 만족도 조사",
+          "minutes": 10,
+          "period": "2026-05-01 ~ 2026-05-18",
+          "status": "result",
+          "response_count": 79
+        }
+      }
+    },
+    {
+      "id": "adminLoginNew",
+      "view": "adminLoginNew",
+      "path": "/admin",
+      "auth": false,
+      "waitFor": "input",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "adminMain",
+      "view": "adminMain",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "adminUserList",
+      "view": "adminUserList",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "reportManagement",
+      "view": "reportManagement",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "proposalManagement",
+      "view": "proposalManagement",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "surveyManagement",
+      "view": "surveyManagement",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "surveyEditor",
+      "view": "surveyEditor",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "surveyResults",
+      "view": "surveyResults",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "adminDashboardNew",
+      "view": "adminDashboardNew",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "expertManagement",
+      "view": "expertManagement",
+      "path": "/admin",
+      "auth": "admin",
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "pcAICitizen",
+      "view": "pcAICitizen",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pc-ai-citizen",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "id": "mAICitizen",
+      "view": "mAICitizen",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-ai-citizen"
+    },
+    {
+      "id": "mAICitizenDetail",
+      "view": "mAICitizenDetail",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".m-ai-detail",
+      "sessionSeed": {
+        "selectedReport": {
+          "id": 1,
+          "name": "이서연",
+          "age": 22,
+          "district": "해운대구",
+          "gender": "여성",
+          "tags": [
+            "#대학생",
+            "#카페탐방러",
+            "#야간도보족"
+          ]
+        }
+      }
+    }
+  ],
+  "apiChecks": [
+    {
+      "id": "health-root",
+      "method": "GET",
+      "path": "/",
+      "expectStatus": [
+        200,
+        404
+      ]
+    },
+    {
+      "id": "auth-login-options",
+      "method": "OPTIONS",
+      "path": "/auth/login",
+      "expectStatus": [
+        200,
+        405
+      ]
+    },
+    {
+      "id": "dashboard-summary",
+      "method": "GET",
+      "path": "/dashboard/summary",
+      "expectStatus": [
+        200,
+        401,
+        422
+      ]
+    },
+    {
+      "id": "checklist-categories",
+      "method": "GET",
+      "path": "/checklist/categories",
+      "expectStatus": [
+        200,
+        401,
+        404
+      ]
+    },
+    {
+      "id": "home-stats",
+      "method": "GET",
+      "path": "/api/home/stats",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "minLength": 30
+      }
+    },
+    {
+      "id": "home-citizens",
+      "method": "GET",
+      "path": "/api/home/citizens",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "home-archives",
+      "method": "GET",
+      "path": "/api/home/archives",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "reports-full",
+      "method": "GET",
+      "path": "/api/reports/full",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "reports-clusters",
+      "method": "GET",
+      "path": "/api/reports/clusters",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "reports-list",
+      "method": "GET",
+      "path": "/api/reports/full",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "proposals-list",
+      "method": "GET",
+      "path": "/api/reports/proposals",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "surveys-list",
+      "method": "GET",
+      "path": "/api/surveys/list",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "surveys-list-active",
+      "method": "GET",
+      "path": "/api/surveys/list?tab=active",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "surveys-list-result",
+      "method": "GET",
+      "path": "/api/surveys/list?tab=result",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "survey-detail",
+      "method": "GET",
+      "path": "/api/surveys/1",
+      "expectStatus": [
+        200,
+        404
+      ]
+    },
+    {
+      "id": "checklist-list",
+      "method": "GET",
+      "path": "/checklist/list",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    },
+    {
+      "id": "checklist-clusters",
+      "method": "GET",
+      "path": "/checklist/clusters",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "checklist-aggregate",
+      "method": "GET",
+      "path": "/checklist/aggregate",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "admin-stats",
+      "method": "GET",
+      "path": "/api/admin/stats",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-recent",
+      "method": "GET",
+      "path": "/api/admin/recent-activity",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-trends",
+      "method": "GET",
+      "path": "/api/admin/trends?metric=reports&period=month",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-category-distribution",
+      "method": "GET",
+      "path": "/api/admin/category-distribution?target=reports",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-leaderboard",
+      "method": "GET",
+      "path": "/api/admin/district-leaderboard",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-users",
+      "method": "GET",
+      "path": "/api/admin/users",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-proposals",
+      "method": "GET",
+      "path": "/api/admin/proposals",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "admin-activity-logs",
+      "method": "GET",
+      "path": "/api/admin/activity-logs",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "notifications-list",
+      "method": "GET",
+      "path": "/api/notifications",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "notifications-unread",
+      "method": "GET",
+      "path": "/api/notifications/unread-count",
+      "expectStatus": [
+        401,
+        403
+      ]
+    },
+    {
+      "id": "search-empty",
+      "method": "GET",
+      "path": "/api/search?q=",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "search-keyword",
+      "method": "GET",
+      "path": "/api/search?q=%EB%B6%80%EC%82%B0",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "search-suggest",
+      "method": "GET",
+      "path": "/api/search/suggest?q=%EA%B0%9C%EC%84%A0",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "checklist-summary",
+      "method": "GET",
+      "path": "/checklist/summary",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true
+      }
+    },
+    {
+      "id": "checklist-recommendations",
+      "method": "GET",
+      "path": "/checklist/recommendations",
+      "expectStatus": [
+        200
+      ]
+    },
+    {
+      "id": "checklist-template-general",
+      "method": "GET",
+      "path": "/checklist/templates?mode=general",
+      "expectStatus": [
+        200
+      ]
+    },
+    {
+      "id": "checklist-template-expert",
+      "method": "GET",
+      "path": "/checklist/templates?mode=expert",
+      "expectStatus": [
+        200
+      ]
+    },
+    {
+      "id": "comprehensive-survey",
+      "method": "GET",
+      "path": "/checklist/comprehensive-survey",
+      "expectStatus": [
+        200
+      ],
+      "expectBody": {
+        "isArray": true,
+        "minItems": 1
+      }
+    }
+  ]
+}

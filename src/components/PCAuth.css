@@ -1,0 +1,305 @@
+/* PCAuth — PC 로그인/회원가입/찾기 공용 스타일
+   Figma: TCuOzEqNhoLKjhF0reBDks 215:3447 (로그인/회원가입 섹션) */
+
+.pcauth {
+    --black: #242424;
+    --teal: #23bdbb;
+    --red: #e6235a;
+    --ok: #16b5b0;
+    --line: #bfbfbf;
+    --sub: #1e1e1e;
+    font-family: 'Pretendard Variable', sans-serif;
+    color: var(--black);
+    background: #fff;
+    min-height: calc(100vh - 60px);
+    padding: 60px 24px 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 타이틀 */
+.pcauth-title { text-align: center; margin-bottom: 24px; }
+.pcauth-title h1 {
+    font-family: 'Pretendard Variable', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.8px;
+    color: var(--black);
+    margin: 0;
+    line-height: 1.4;
+}
+/* Figma 269:8621: 로그인 title = #23bdbb, 32px, centered */
+.pcauth-title h1.accent { color: var(--teal); font-size: 32px; letter-spacing: -1.28px; }
+/* Figma 269:8314: 회원가입 title = #23bdbb, 28px */
+.pcauth-title h1.signup-accent { font-size: 28px; letter-spacing: -1.12px; }
+.pcauth-title p {
+    margin: 10px 0 0;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--sub);
+}
+.pcauth-title p.hero {
+    font-family: 'Pretendard Variable', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.8px;
+    color: #111;
+    margin-top: 14px;
+}
+.pcauth-title p.hero + p { margin-top: 6px; color: #111; font-size: 14px; }
+
+/* 카드 */
+.pcauth-card {
+    width: 635px;
+    max-width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 50px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.pcauth-card.compact { padding: 48px 0; }
+
+/* 폼 (카드 내부 343 고정폭) */
+.pcauth-form { width: 343px; max-width: 100%; }
+
+/* 필드 */
+.pcauth-field {
+    /* .pcauth 밖(모바일 찾기 등)에서도 PhoneVerify가 동작하도록 변수 자체 정의 */
+    --black: #242424; --teal: #23bdbb; --red: #e6235a; --ok: #16b5b0; --line: #bfbfbf; --sub: #1e1e1e;
+    margin-bottom: 20px;
+}
+.pcauth-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 2px;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--sub);
+    margin-bottom: 8px;
+}
+.pcauth-label .req { color: var(--red); font-size: 14px; line-height: 1; }
+.pcauth-input {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--black);
+    background: #fff;
+    outline: none;
+    box-sizing: border-box;
+}
+.pcauth-input::placeholder { color: #aaa; }
+.pcauth-input:focus { border-color: #111; }
+.pcauth-input:disabled { background: #f5f5f5; color: #999; }
+
+.pcauth-helper { margin-top: 8px; font-size: 14px; line-height: 1.35; color: var(--sub); }
+.pcauth-helper.err { color: var(--red); }
+.pcauth-helper.ok { color: var(--ok); }
+
+/* 주소 검색창: 클릭하면 우편번호 팝업 */
+.pcauth-input.clickable { cursor: pointer; caret-color: transparent; }
+
+/* input + 버튼 가로 결합 (주소검색/휴대폰인증) */
+.pcauth-row { display: flex; gap: 6px; align-items: stretch; }
+.pcauth-row .pcauth-input { flex: 1 0 0; min-width: 0; }
+/* 인증번호 칸은 짧게 */
+.pcauth-row .pcauth-input.otp { flex: 0 0 170px; }
+.pcauth-row .pcauth-otp-wrap.otp { flex: 0 0 200px; position: relative; }
+.pcauth-otp-wrap .pcauth-input { width: 100%; padding-right: 52px; box-sizing: border-box; }
+.pcauth-otp-timer {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    font-size: 13px; color: var(--red); font-variant-numeric: tabular-nums; pointer-events: none;
+}
+.pcauth-inline-btn {
+    flex: none;
+    min-width: 60px;
+    padding: 0 14px;
+    height: 46px;
+    border: none;
+    border-radius: 8px;
+    background: var(--line);
+    color: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.pcauth-inline-btn:hover { background: var(--teal); }
+.pcauth-inline-btn.active { background: var(--teal); }
+.pcauth-inline-btn.active:hover { background: #1aa9a7; }
+.pcauth-inline-btn:disabled { cursor: default; opacity: 0.7; }
+
+/* reCAPTCHA(보이는 체크박스) */
+.pcauth-recaptcha { margin-top: 10px; }
+.pcauth-recaptcha:empty { margin-top: 0; }
+
+/* 인증완료 뱃지 */
+.pcauth-verified { display: inline-flex; align-items: center; gap: 4px; color: var(--ok); font-size: 13px; margin-top: 8px; }
+
+/* 구분선 */
+.pcauth-divider { height: 1px; background: #eee; margin: 28px 0; width: 100%; }
+
+/* 제출 버튼 (카드 아래) — Figma: Pretendard Bold, 18px, -0.72px */
+.pcauth-submit {
+    width: 343px;
+    max-width: 100%;
+    height: 56px;
+    margin-top: 40px;
+    border: none;
+    border-radius: 8px;
+    background: var(--teal);
+    color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.72px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+.pcauth-submit:hover { background: #1aa9a7; }
+.pcauth-submit:disabled { background: #d9d9d9; cursor: default; }
+
+/* 카드 내부 제출(로그인) */
+.pcauth-form .pcauth-submit { margin-top: 8px; }
+
+/* 보조 링크 (회원가입 / 아이디·비번 찾기) */
+.pcauth-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+    width: 343px;
+    max-width: 100%;
+}
+.pcauth-link {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    color: #777;
+    cursor: pointer;
+    padding: 0;
+}
+.pcauth-link:hover { color: var(--black); }
+.pcauth-link-sep { width: 1px; height: 12px; background: #ddd; }
+
+/* 로그인 카드 내부 링크 (회원가입 | 아이디 찾기 | 비밀번호 찾기) */
+.pcauth-loginlinks { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 18px; }
+.pcauth-loginlinks .pcauth-link-sep { width: 1px; height: 12px; background: #ddd; flex: none; }
+
+/* 간편 회원가입 (검정 버튼) — Figma: #111, 18px, Pretendard Bold */
+.pcauth-simple {
+    width: 100%;
+    height: 56px;
+    margin-top: 16px;
+    border: none;
+    border-radius: 8px;
+    background: #111;
+    color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.72px;
+    cursor: pointer;
+}
+.pcauth-simple:hover { background: #000; }
+
+/* 본인인증 방법 선택 (찾기 1단계) */
+.pcauth-center-text { text-align: center; font-size: 14px; line-height: 1.5; color: var(--sub); margin-bottom: 16px; }
+.pcauth-method-row { display: flex; gap: 10px; justify-content: center; }
+.pcauth-method-btn {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 8px;
+    background: var(--teal);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+.pcauth-method-btn.ghost { background: #5fcfcd; }
+.pcauth-method-btn:hover { background: #1aa9a7; }
+
+/* 결과 강조 박스 */
+.pcauth-result {
+    text-align: center;
+    font-size: 16px;
+    color: var(--black);
+    line-height: 1.6;
+    margin: 8px 0 24px;
+}
+.pcauth-result strong { color: var(--teal); font-weight: 700; }
+
+/* 에러 메시지 */
+.pcauth-error { color: var(--red); font-size: 14px; text-align: center; margin-top: 12px; width: 343px; max-width: 100%; }
+
+/* 약관 동의 화면 */
+.pcauth-card.consent { width: 635px; padding: 36px 0; }
+.pcauth-form.wide { width: 480px; max-width: 100%; }
+
+.pcauth-check {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; flex: none;
+    border: 1.5px solid #cfcfcf; border-radius: 50%;
+    color: transparent; background: #fff; transition: all 0.12s ease;
+}
+.pcauth-check.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+/* 전체 동의 바 */
+.pcauth-agree-all {
+    display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+    background: #f2f3f5; border: none; border-radius: 8px; cursor: pointer; padding: 16px;
+    font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 15px; color: var(--black);
+}
+
+/* 약관 박스 */
+.pcauth-terms { margin-top: 22px; }
+.pcauth-terms-title { font-weight: 700; font-size: 14px; color: var(--black); margin-bottom: 8px; }
+.pcauth-terms-req { color: #999; font-weight: 500; }
+.pcauth-terms-body {
+    border: 1px solid #e2e2e2; border-radius: 8px;
+    height: 132px; overflow-y: auto; padding: 14px 16px;
+    font-size: 13px; line-height: 1.7; color: #666; white-space: pre-line;
+}
+.pcauth-terms-agree {
+    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    margin-top: 8px; padding: 13px; border: none; border-radius: 8px; cursor: pointer;
+    background: #f2f3f5; color: #999; font-size: 14px; transition: all 0.12s ease;
+}
+.pcauth-terms-agree.on { background: var(--teal); color: #fff; }
+.pcauth-terms-agree.on .pcauth-check { background: #fff; border-color: #fff; color: var(--teal); }
+
+/* 가입유형 카드 (관리자/전문가/시민) */
+.pcauth-typecards { display: flex; gap: 12px; justify-content: center; margin-top: 28px; }
+.pcauth-typecard {
+    width: 88px; height: 88px; border: 1px solid #e2e2e2; border-radius: 12px;
+    background: #fff; color: #8a8a8a; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    font-size: 13px; transition: all 0.12s ease;
+}
+.pcauth-typecard.selected { background: var(--teal); border-color: var(--teal); color: #fff; }
+.pcauth-typeicon { width: 32px; height: 32px; object-fit: contain; filter: brightness(0) invert(0.55); }
+.pcauth-typecard.selected .pcauth-typeicon { filter: brightness(0) invert(1); }
+
+/* 뒤로가기 */
+.pcauth-back {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 8px;
+}
+.pcauth-back:hover { color: var(--black); }

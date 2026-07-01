@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "talktofigma-desktop-mcp": {
+      "source": "aradotso/design-skills",
+      "sourceType": "github",
+      "skillPath": "skills/talktofigma-desktop-mcp/SKILL.md",
+      "computedHash": "b1709170aa013984c2450aad51e0f2c43f14627fabf1bc4b3902f1c7c8164fb0"
+    }
+  }
+}

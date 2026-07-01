@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Review.css';
-import { fetchWithLogout } from '../utils/api';
+import { fetchWithLogout, API_URL } from '../utils/api';
 
 const Review = ({ onPrev, onNext, color = '#E6235A', progressBarColor, diagnosisMode, diagnosisPayload }) => {
     // Expert step is 5, General is 4
@@ -32,7 +32,6 @@ const Review = ({ onPrev, onNext, color = '#E6235A', progressBarColor, diagnosis
         setIsSubmitting(true);
 
         try {
-            const API_URL = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
             let imageUrl = '';
 
             // 1. Upload Image if exists

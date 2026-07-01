@@ -1,0 +1,217 @@
+.m-prop-map-page {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    background: #f7f7f8;
+}
+
+/* 검색바 — Figma: h=55px, border-radius=15px, shadow 0 0 10px rgba(0,0,0,0.25) */
+.m-map-search-bar {
+    position: absolute;
+    top: 17px;
+    left: 20px;
+    right: 20px;
+    height: 55px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    z-index: 50;
+}
+
+.m-map-back {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.m-map-search {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+    color: #242424;
+    font-family: inherit;
+    letter-spacing: -0.04em;
+}
+
+.m-map-search::placeholder {
+    color: #242424;
+}
+
+.m-map-search-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 지도 캔버스 */
+.m-map-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+/* ─── 2-snap 바텀시트 (collapsed/mid) — full은 별도 list 페이지로 navigate ─── */
+/* Figma: border-radius 30px 30px 0 0, shadow 0 0 10px rgba(0,0,0,0.1) */
+.m-map-sheet {
+    position: absolute;
+    bottom: 76px;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 30px 30px 0 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    /* iOS-like spring + transform GPU 가속 */
+    transition: height 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+                transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    will-change: height, transform;
+}
+
+/* 드래그 중에는 transition 끄고 즉시 follow */
+.m-map-sheet.dragging {
+    transition: none;
+}
+
+.m-map-sheet[data-snap="collapsed"] {
+    height: 80px;
+    overflow: hidden;
+}
+
+.m-map-sheet[data-snap="mid"] {
+    height: 48vh;
+    overflow: hidden;
+}
+
+/* ─── 드래그 핸들 영역 ─── */
+.m-sheet-grab {
+    flex-shrink: 0;
+    padding: 10px 0 4px;
+    display: flex;
+    justify-content: center;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+}
+
+.m-sheet-grab:active { cursor: grabbing; }
+
+.m-sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: #d8d8d8;
+    border-radius: 100px;
+}
+
+/* ─── 스크롤 콘텐츠 영역 ─── */
+.m-sheet-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 지역 행 */
+.m-sheet-region-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 20px 8px;
+}
+
+/* Figma: font-size 22px bold */
+.m-sheet-region-btn {
+    background: none;
+    border: none;
+    padding: 4px 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #242424;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.04em;
+}
+
+/* 목록 펼치기 아이콘 버튼 */
+.m-sheet-list-btn {
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ─── 카테고리 칩 ─── */
+.m-sheet-chips {
+    padding: 4px 20px 12px;
+    background: #fff;
+    display: flex;
+    gap: 6px;
+}
+
+/* collapsed: 가로 스크롤 1행 */
+.m-map-sheet[data-snap="collapsed"] .m-sheet-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.m-sheet-chips::-webkit-scrollbar { display: none; }
+
+/* mid: 2행 wrap */
+.m-map-sheet[data-snap="mid"] .m-sheet-chips {
+    flex-wrap: wrap;
+    overflow-x: visible;
+}
+
+.m-sheet-chips .m-cat-chip {
+    flex-shrink: 0;
+}
+
+/* 내 위치 FAB — 시트 바로 위 지도 영역 우하단 */
+/* Figma 0:12150 — 배경 없는 크로스헤어 아이콘 (터치 타깃 44px 유지) */
+.m-locate-fab {
+    position: fixed;
+    right: 8px;
+    z-index: 40;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: bottom 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+    filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.9));
+}
+
+.m-locate-fab[data-snap="collapsed"] { bottom: 172px; }
+.m-locate-fab[data-snap="mid"]       { bottom: calc(48vh + 92px); }
+
+/* 카드 목록 */
+.m-sheet-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0 20px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

@@ -1,150 +1,223 @@
-import React, { useState } from 'react';
-import '../styles/dashboard_new.css'; // Borrowing sidebar/header styles
-import '../styles/proposal_management.css';
+import { useEffect, useState, useCallback } from 'react';
+import AdminLayout from '../components/AdminLayout';
+import '../styles/dashboard_new.css';
+import '../styles/admin_layout.css';
+import { API_BASE } from '../api';
+
+const SearchIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+);
 
 export default function ProposalManagement({ onNavigate }) {
-    const [isMemberMenuOpen, setIsMemberMenuOpen] = useState(false); // Collapsed by default when in Proposal view
-    
-    const handleLogout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user_info');
-        if (onNavigate) onNavigate('adminLoginNew');
+    const [proposals, setProposals] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [search, setSearch] = useState('');
+    const [authorSearch, setAuthorSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const itemsPerPage = 10;
+
+    const fetchProposals = useCallback(async (currentPage = 1) => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('access_token');
+            const params = new URLSearchParams({ page: currentPage, size: itemsPerPage });
+            const res = await fetch(`${API_BASE}/admin/proposals?${params}`, {
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data)) {
+                    const filtered = data.filter((p) =>
+                        (!search || (p.title || '').includes(search)) &&
+                        (!authorSearch || (p.author || p.nickname || '').includes(authorSearch))
+                    );
+                    setTotal(filtered.length);
+                    setProposals(filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
+                } else {
+                    const filtered = (data.items || []).filter((p) =>
+                        (!search || (p.title || '').includes(search)) &&
+                        (!authorSearch || (p.author || '').includes(authorSearch))
+                    );
+                    setTotal(data.total ?? filtered.length);
+                    setProposals(filtered);
+                }
+                return;
+            }
+            // fallback
+            const fb = await fetch(`${API_BASE}/reports/proposals`);
+            if (fb.ok) {
+                const arr = await fb.json();
+                const filtered = arr.filter((p) =>
+                    (!search || (p.title || '').includes(search)) &&
+                    (!authorSearch || (p.nickname || '').includes(authorSearch))
+                );
+                setTotal(filtered.length);
+                setProposals(filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
+            }
+        } catch (error) {
+            console.error('Failed to fetch proposals:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [search, authorSearch, itemsPerPage]);
+
+    useEffect(() => {
+        fetchProposals(page);
+    }, [page]);
+
+    const handleSearch = () => {
+        setPage(1);
+        fetchProposals(1);
     };
 
-    const [proposalData, setProposalData] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
-    const [username, setUsername] = useState('관리자');
-
-    React.useEffect(() => {
-        const storedUser = localStorage.getItem('user_info');
-        if (storedUser) {
-            setUsername(JSON.parse(storedUser).username || '관리자');
+    const handleDelete = async (id) => {
+        if (!confirm('정말 삭제하시겠습니까?')) return;
+        try {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}/admin/proposals/${id}`, {
+                method: 'DELETE',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            if (res.ok) fetchProposals(page);
+            else alert('삭제 실패');
+        } catch (e) {
+            alert('삭제 중 오류: ' + e.message);
         }
+    };
 
-        const fetchProposals = async () => {
-            try {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-                const response = await fetch(`${API_URL}/api/reports/proposals`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setProposalData(data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch proposals:", error);
-            }
-        };
-        fetchProposals();
-    }, []);
+    const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
     return (
-        <div className="proposal-mgmt-container">
-            {/* Sidebar */}
-            <aside className="admin-sidebar-new">
-                <div className="sidebar-logo-new">PDDP(가안)</div>
-                <nav className="sidebar-menu-new">
-                    <div 
-                        className="menu-item-new" 
-                        onClick={() => setIsMemberMenuOpen(!isMemberMenuOpen)}
-                    >
-                        회원 관리
-                        <svg 
-                            width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
-                            style={{ transform: isMemberMenuOpen ? 'rotate(0deg)' : 'rotate(180deg)' }}
-                        >
-                            <polyline points="18 15 12 9 6 15"></polyline>
-                        </svg>
+        <AdminLayout onNavigate={onNavigate} currentView="proposalManagement">
+            <div className="content-header-new">
+                <h2 className="content-title-new">제안</h2>
+                <div className="total-count-text">전체 제안 <span>{total}건</span></div>
+            </div>
+
+            <div className="search-box-new-col">
+                <div className="search-row">
+                    <div className="search-label-new">작성자</div>
+                    <div className="search-input-wrapper-new">
+                        <input
+                            type="text"
+                            className="search-input-new"
+                            placeholder="닉네임을 입력해 주세요"
+                            value={authorSearch}
+                            onChange={(e) => setAuthorSearch(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                        />
+                        <SearchIcon />
                     </div>
-                    {isMemberMenuOpen && (
-                        <div className="submenu-list-new">
-                            <div className="submenu-item-new" onClick={() => onNavigate && onNavigate('adminDashboardNew')}>시민</div>
-                            <div className="submenu-item-new" onClick={() => onNavigate && onNavigate('expertManagement')}>전문가</div>
-                            <div className="submenu-item-new">관리자</div>
-                        </div>
-                    )}
-                    <div className="menu-item-new active">제안</div>
-                </nav>
-            </aside>
-
-            {/* Main Content Area */}
-            <main className="proposal-mgmt-main">
-                {/* Header */}
-                <header className="admin-header-new">
-                    <div className="header-user-info">
-                        <div className="user-avatar-circle">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                            </svg>
-                        </div>
-                        <span>{username}님</span>
-                    </div>
-                    <button className="btn-logout-new" onClick={handleLogout}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
-                        </svg>
-                        로그아웃
-                    </button>
-                </header>
-
-                <div className="proposal-mgmt-content">
-                    <div className="proposal-mgmt-header">
-                        <h2 className="proposal-mgmt-title">제안현황</h2>
-                    </div>
-
-                    {/* Table Area */}
-                    <div className="proposal-table-container">
-                        <table className="proposal-table">
-                            <thead>
-                                <tr>
-                                    <th>제안제목</th>
-                                    <th>유형</th>
-                                    <th>위치</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {proposalData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item) => (
-                                    <tr key={item.id} onClick={() => onNavigate && onNavigate('proposalEdit', item)} style={{ cursor: 'pointer' }}>
-                                        <td>{item.title}</td>
-                                        <td>{item.category}</td>
-                                        <td>{item.region}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-
-                        {/* Pagination */}
-                        <div className="proposal-pagination">
-                             <svg 
-                                width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" 
-                                style={{ transform: 'rotate(180deg)', cursor: 'pointer', opacity: currentPage === 1 ? 0.3 : 1 }}
-                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                             >
-                                <polyline points="9 18 15 12 9 6"></polyline>
-                             </svg>
-                             
-                             {Array.from({ length: Math.ceil(proposalData.length / itemsPerPage) }, (_, i) => i + 1).map(num => (
-                                 <span 
-                                    key={num} 
-                                    className={`proposal-page-num ${currentPage === num ? 'active' : ''}`}
-                                    onClick={() => setCurrentPage(num)}
-                                 >
-                                    {num}
-                                 </span>
-                             ))}
-
-                             <svg 
-                                width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                                style={{ cursor: 'pointer', opacity: currentPage === Math.ceil(proposalData.length / itemsPerPage) || proposalData.length === 0 ? 0.3 : 1 }}
-                                onClick={() => setCurrentPage(prev => Math.min(Math.ceil(proposalData.length / itemsPerPage), prev + 1))}
-                             >
-                                <polyline points="9 18 15 12 9 6"></polyline>
-                             </svg>
-                        </div>
+                    <button className="btn-search-new" onClick={handleSearch}>검색</button>
+                </div>
+                <div className="search-row">
+                    <div className="search-label-new">제목</div>
+                    <div className="search-input-wrapper-new">
+                        <input
+                            type="text"
+                            className="search-input-new"
+                            placeholder="제목을 입력해 주세요"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                        />
+                        <SearchIcon />
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+
+            <div className="table-container-new">
+                <table className="admin-table-new">
+                    <thead>
+                        <tr>
+                            <th style={{ width: '35%', textAlign: 'left' }}>제안 제목</th>
+                            <th>작성자</th>
+                            <th>유형</th>
+                            <th>지역</th>
+                            <th>조회</th>
+                            <th>추천</th>
+                            <th>댓글</th>
+                            <th>작성일</th>
+                            <th>메뉴</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading ? (
+                            <tr><td colSpan={9} style={{ padding: '40px 0', color: '#999' }}>불러오는 중…</td></tr>
+                        ) : proposals.length === 0 ? (
+                            <tr><td colSpan={9} style={{ padding: '40px 0', color: '#999' }}>등록된 제안이 없습니다.</td></tr>
+                        ) : proposals.map((p) => {
+                            const createdAt = p.created_at ? String(p.created_at).slice(0, 10) : '-';
+                            return (
+                                <tr key={p.id}>
+                                    <td
+                                        style={{ textAlign: 'left', cursor: 'pointer' }}
+                                        onClick={() => onNavigate && onNavigate('adminProposalDetail', p)}
+                                    >
+                                        {p.title}
+                                    </td>
+                                    <td>{p.author || p.nickname || '-'}</td>
+                                    <td>{p.category || '-'}</td>
+                                    <td>{p.region || '-'}</td>
+                                    <td>{p.views ?? '-'}</td>
+                                    <td>{p.likes ?? '-'}</td>
+                                    <td>{p.comments_count ?? '-'}</td>
+                                    <td>{createdAt}</td>
+                                    <td>
+                                        <div className="action-btns-new">
+                                            <span
+                                                className="btn-action-text"
+                                                onClick={() => onNavigate && onNavigate('adminProposalDetail', p)}
+                                            >
+                                                상세
+                                            </span>
+                                            {' | '}
+                                            <span
+                                                className="btn-action-text"
+                                                onClick={() => handleDelete(p.id)}
+                                            >
+                                                삭제
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+
+                <div className="pagination-new">
+                    <svg
+                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ transform: 'rotate(180deg)', cursor: 'pointer', opacity: page === 1 ? 0.3 : 1 }}
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    >
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                    {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map((n) => (
+                        <span
+                            key={n}
+                            className={`page-num-new ${page === n ? 'active' : ''}`}
+                            onClick={() => setPage(n)}
+                        >
+                            {n}
+                        </span>
+                    ))}
+                    <svg
+                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ cursor: 'pointer', opacity: page === totalPages ? 0.3 : 1 }}
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    >
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </div>
+            </div>
+        </AdminLayout>
     );
 }

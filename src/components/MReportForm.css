@@ -1,0 +1,199 @@
+.m-photo-add {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.m-loc-input {
+    width: 100%;
+    height: 55px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    padding: 0 18px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    color: #a6a6a6;
+    cursor: pointer;
+    font-family: inherit;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.m-loc-input:focus {
+    border-color: #542aa3;
+}
+
+.m-loc-pin {
+    display: inline-flex;
+    align-items: center;
+    color: #b0b0b0;
+}
+
+/* Filled location text color */
+.m-form-loc-text {
+    color: #1a1a1b;
+    font-size: 16px;
+}
+
+/* Footer buttons: Figma 848:18955 — height 59px, border-radius 15px */
+.m-report-form-page .m-form-footer {
+    padding: 16px 20px;
+}
+
+.m-report-form-page .m-form-save,
+.m-report-form-page .m-form-submit {
+    height: 59px;
+    border-radius: 15px;
+    font-size: 18px;
+}
+
+.m-report-form-page .m-form-save {
+    flex: 0 0 103px;
+    background: #e6e6e6;
+    color: #777;
+}
+
+.m-report-form-page .m-form-submit {
+    background: #542aa3;
+}
+
+/* Disabled-look state (class, not HTML disabled — click still fires to show inline errors) */
+.m-report-form-page .m-form-submit.disabled {
+    background: rgba(84, 42, 163, 0.2);
+    color: #fff;
+    opacity: 1;
+}
+
+/* Section title override: Figma 848:18955 specifies 18px semi-bold */
+.m-report-form-page .m-form-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.m-rcat-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 16px;
+}
+
+.m-rcat-chips .m-cat-chip {
+    /* Figma 0:12713 — 회색 채움(#eee), 무테, border-radius 20px */
+    background: #eee;
+    border: none;
+    padding: 7px 14px;
+    font-size: 14px;
+}
+
+.m-rcat-chips .m-cat-chip.on {
+    background: #542aa3;
+    color: #fff;
+    font-weight: 600;
+}
+
+.m-row-with-suffix {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.m-select {
+    flex: 0 0 60%;
+    height: 55px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    padding: 0 14px;
+    font-size: 16px;
+    font-family: inherit;
+    background: #fff;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='8' viewBox='0 0 24 12' fill='none' stroke='%231a1a1b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='0 0 12 12 24 0'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    color: #1a1a1b;
+}
+
+.m-select:invalid { color: #b0b0b0; }
+.m-select option[value=""] { color: #b0b0b0; }
+.m-select option { color: #1a1a1b; }
+
+.m-row-suffix {
+    font-size: 16px;
+    font-weight: 400;
+    color: #1a1a1b;
+    flex-shrink: 0;
+}
+
+.m-row-input {
+    width: 100%;
+    height: 55px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    padding: 0 14px;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.m-row-input:focus { border-color: #542aa3; }
+
+/* Figma 오류멘트: 미충족 필드 인라인 에러 — 보라 계열 */
+.m-form-error-msg {
+    margin: 6px 2px 0;
+    font-size: 13px;
+    color: #542aa3;
+    line-height: 1.4;
+}
+
+.m-loc-input.error,
+.m-select.error,
+.m-row-input.error {
+    border-color: #542aa3;
+}
+
+/* Draft / leave modal: override proposal pink to report purple (Figma 215:11799) */
+.m-report-form-page .m-draft-btn-primary {
+    background: #542aa3;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(84, 42, 163, 0.25);
+}
+
+.m-report-form-page .m-draft-btn-ghost {
+    background: rgba(84, 42, 163, 0.2);
+    color: #542aa3;
+}
+
+/* Location picker confirm button — report purple */
+.m-loc-picker-confirm {
+    width: calc(100% - 40px);
+    margin: 0 20px 32px;
+    height: 59px;
+    background: #542aa3;
+    color: #fff;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: -0.02em;
+}
+
+.m-loc-picker-confirm:disabled {
+    background: rgba(84, 42, 163, 0.2);
+    color: #fff;
+}

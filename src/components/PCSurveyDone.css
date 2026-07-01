@@ -1,0 +1,41 @@
+.pc-survey-done-page {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f7f7f8;
+    padding: 60px 20px 120px;
+    text-align: center;
+}
+
+.pc-done-icon {
+    margin-bottom: 16px;
+}
+
+.pc-done-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #5B2EAB;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+}
+
+.pc-done-subtitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1b;
+    margin: 0 0 16px;
+}
+
+.pc-done-text {
+    font-size: 13px;
+    color: #777;
+    line-height: 1.7;
+    margin: 0 0 36px;
+}
+
+.pc-done-cta {
+    width: 359px;
+    padding: 18px 0;
+}

@@ -1,0 +1,110 @@
+.m-survey-list-page {
+    min-height: 100vh;
+    background: #f7f7f8;
+    padding-bottom: 80px;
+}
+
+.m-page-topbar {
+    height: 48px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+}
+
+.m-back {
+    background: none;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+    font-family: inherit;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    letter-spacing: -0.04em;
+}
+
+.m-survey-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px 12px;
+}
+
+.m-stab {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    height: 43px;
+    padding: 0 20px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #777;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-stab.on {
+    background: #542AA3;
+    border-color: #542AA3;
+    color: #fff;
+    font-weight: 700;
+}
+
+.m-survey-cards {
+    list-style: none;
+    margin: 0;
+    padding: 4px 20px 92px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.m-survey-card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px 20px 20px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.m-card-body { flex: 1; min-width: 0; }
+
+.m-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 4px;
+    letter-spacing: -0.04em;
+    line-height: 1.4;
+}
+
+.m-card-meta {
+    font-size: 16px;
+    color: #737373;
+    margin: 0;
+    line-height: 1.35;
+}
+
+.m-card-respondents {
+    color: #542AA3;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 4px !important;
+}
+
+.m-card-arrow {
+    width: 31px;
+    height: 31px;
+    border-radius: 50%;
+    background: #542AA3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}

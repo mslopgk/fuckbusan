@@ -78,12 +78,12 @@
     }
 
     .pc-nav-link:hover {
-        color: #EF4E7B;
-        background-color: #ffeef2;
+        color: #23BDBB;
+        background-color: #e6f8f8;
     }
 
     .pc-nav-link.active {
-        color: #EF4E7B;
+        color: #23BDBB;
     }
 
     /* 드롭다운 */
@@ -131,8 +131,8 @@
     }
 
     .pc-dropdown-item:hover {
-        background-color: #ffeef2;
-        color: #EF4E7B;
+        background-color: #e6f8f8;
+        color: #23BDBB;
     }
 
     /* 우측 액션 */
@@ -164,7 +164,7 @@
     }
 
     .pc-auth-link:hover {
-        color: #EF4E7B;
+        color: #23BDBB;
     }
 
     .pc-auth-divider {
@@ -193,8 +193,8 @@
     }
 
     .pc-bell-btn:hover {
-        color: #EF4E7B;
-        background-color: #ffeef2;
+        color: #23BDBB;
+        background-color: #e6f8f8;
     }
 
     /* 비활성화된 네비 아이템 (제보) */
@@ -234,4 +234,137 @@
         75%  { opacity: 1; transform: translateX(-50%) translateY(0); }
         100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
     }
+
+    /* 제보·제안 분기 chooser 모달 (PC) */
+    .pc-rp-chooser-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.50);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1500;
+        animation: pc-rp-fade 0.18s ease-out;
+    }
+
+    @keyframes pc-rp-fade {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    .pc-rp-chooser-modal {
+        background: #fff;
+        border-radius: 18px;
+        padding: 32px 36px 28px;
+        width: 480px;
+        max-width: 92%;
+        box-shadow: 0 14px 50px rgba(0,0,0,0.25);
+        animation: pc-rp-pop 0.20s ease-out;
+        font-family: 'Pretendard Variable', sans-serif;
+    }
+
+    @keyframes pc-rp-pop {
+        from { transform: scale(0.92); opacity: 0; }
+        to   { transform: scale(1); opacity: 1; }
+    }
+
+    .pc-rp-chooser-title {
+        margin: 0 0 6px;
+        font-size: 20px;
+        font-weight: 800;
+        color: #1a1a1b;
+        text-align: center;
+        letter-spacing: -0.02em;
+    }
+
+    .pc-rp-chooser-sub {
+        margin: 0 0 24px;
+        font-size: 13px;
+        color: #888;
+        text-align: center;
+    }
+
+    .pc-rp-chooser-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .pc-rp-chooser-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 24px 12px 20px;
+        border: 1.5px solid #ececec;
+        border-radius: 16px;
+        background: #fff;
+        color: #E6235A;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: inherit;
+    }
+
+    .pc-rp-chooser-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .pc-rp-chooser-icon {
+        display: inline-flex;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 6px;
+    }
+
+    /* 제보하기 = 보라 (WDC) */
+    .pc-rp-chooser-card.report { color: #542aa3; }
+    .pc-rp-chooser-card.report .pc-rp-chooser-icon { background: #ece4f7; color: #542aa3; }
+    .pc-rp-chooser-card.report:hover {
+        background: #f3eefb;
+        border-color: #542aa3;
+        box-shadow: 0 6px 16px rgba(84,42,163,0.15);
+    }
+
+    /* 제안하기 = 핑크 (WDC) */
+    .pc-rp-chooser-card.propose { color: #f74e7e; }
+    .pc-rp-chooser-card.propose .pc-rp-chooser-icon { background: #fde7ee; color: #f74e7e; }
+    .pc-rp-chooser-card.propose:hover {
+        background: #fde7ee;
+        border-color: #f74e7e;
+        box-shadow: 0 6px 16px rgba(247,78,126,0.15);
+    }
+
+    .pc-rp-chooser-card strong {
+        font-size: 15px;
+        font-weight: 800;
+        color: #1a1a1b;
+        letter-spacing: -0.02em;
+    }
+
+    .pc-rp-chooser-desc {
+        font-size: 12px;
+        color: #888;
+        line-height: 1.45;
+        text-align: center;
+    }
+
+    .pc-rp-chooser-cancel {
+        width: 100%;
+        background: #f3f4f5;
+        color: #444;
+        border: none;
+        padding: 12px 0;
+        border-radius: 24px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 8px;
+    }
+
+    .pc-rp-chooser-cancel:hover { background: #e5e7e8; color: #1a1a1b; }
 }

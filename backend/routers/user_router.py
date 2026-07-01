@@ -1,9 +1,12 @@
+import os
+from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
+from pydantic import BaseModel
 
 # 파일 경로에 맞게 import
 from database import get_db
@@ -13,12 +16,14 @@ from schemas import UserCreate, Token, UserOut, UserLogin, UserUpdate
 router = APIRouter(tags=["users"])
 
 # --- [비밀번호 및 토큰 설정] ---
-SECRET_KEY = "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"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = os.getenv("SECRET_KEY", "busan-public-design-secret-key-2026")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin1234")
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/users/login", auto_error=False)
 
 def get_password_hash(password):
     return pwd_context.hash(password)
@@ -52,19 +57,53 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
+def get_current_user_optional(token: Optional[str] = Depends(oauth2_scheme_optional), db: Session = Depends(get_db)):
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: Optional[str] = payload.get("sub")
+        if username is None:
+            return None
+    except JWTError:
+        return None
+
+    if username == "admin":
+        return User(user_id=999999, ID="admin", name="관리자", nickname="관리자", district_code="admin")
+
+    return db.query(User).filter(User.ID == username).first()
+
+
+def require_admin(user: Optional[User]):
+    if not user or user.ID != "admin":
+        raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
+
 # =============================================================================
 # [API - /api/users] 관리자용 엔드포인트
 # =============================================================================
 
 @router.get("/api/users", response_model=List[UserOut])
-def list_users(user_type: Optional[str] = None, db: Session = Depends(get_db)):
+def list_users(
+    user_type: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
     query = db.query(User)
     if user_type:
         query = query.filter(User.district_code == user_type)
     return query.all()
 
 @router.put("/api/users/{user_id}")
-def update_user(user_id: int, user_data: UserOut, db: Session = Depends(get_db)):
+def update_user(
+    user_id: int,
+    user_data: UserOut,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
     user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -76,7 +115,13 @@ def update_user(user_id: int, user_data: UserOut, db: Session = Depends(get_db))
     return {"message": "User updated successfully"}
 
 @router.delete("/api/users/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+def delete_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
     user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -90,6 +135,12 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 @router.post("/users/signup", status_code=status.HTTP_201_CREATED)
 def signup(user: UserCreate, db: Session = Depends(get_db)):
+    if len(user.ID) < 4:
+        raise HTTPException(status_code=400, detail="아이디는 4자 이상이어야 합니다.")
+    if len(user.PW) < 6:
+        raise HTTPException(status_code=400, detail="비밀번호는 6자 이상이어야 합니다.")
+    if user.ID == "admin":
+        raise HTTPException(status_code=400, detail="사용할 수 없는 아이디입니다.")
     existing_user = db.query(User).filter(User.ID == user.ID).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="이미 존재하는 아이디입니다.")
@@ -97,7 +148,8 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     new_user = User(
         ID=user.ID, PW=hashed_password, name=user.name,
         nickname=user.nickname, phone_num=user.phone_num,
-        district_code=user.district_code, birth_date=user.birth_date
+        district_code=user.district_code, birth_date=user.birth_date,
+        address=user.address, detailed_address=user.detailed_address
     )
     db.add(new_user)
     db.commit()
@@ -105,12 +157,16 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/users/login", response_model=Token)
 def login(user_input: UserLogin, db: Session = Depends(get_db)):
-    if user_input.ID == "admin" and user_input.PW == "1234":
+    if user_input.ID == "admin" and user_input.PW == ADMIN_PASSWORD:
         access_token = create_access_token(data={"sub": "admin"})
         return {"access_token": access_token, "token_type": "bearer", "user_name": "관리자", "district_code": "admin"}
     user = db.query(User).filter(User.ID == user_input.ID).first()
     if not user or not verify_password(user_input.PW, user.PW):
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 틀렸습니다.")
+    # 접속 시각 갱신: 직전 로그인(prev_login)을 "마지막 접속 일시"로 표시 → 이번 로그인 전 값 보존
+    user.prev_login = user.last_login or user.created_at
+    user.last_login = datetime.now()
+    db.commit()
     access_token = create_access_token(data={"sub": user.ID})
     return {"access_token": access_token, "token_type": "bearer", "user_name": user.name, "district_code": user.district_code}
 
@@ -123,7 +179,12 @@ def get_me(current_user: User = Depends(get_current_user)):
         "nickname": current_user.nickname,
         "phone_num": current_user.phone_num,
         "district_code": current_user.district_code,
-        "birth_date": current_user.birth_date or ""
+        "birth_date": current_user.birth_date or "",
+        "address": current_user.address or "",
+        "detailed_address": current_user.detailed_address or "",
+        # "마지막 접속 일시" = 직전 로그인(prev_login). 없으면 가입일(created_at) 폴백.
+        "last_login": (current_user.prev_login or current_user.last_login or current_user.created_at).isoformat()
+        if (current_user.prev_login or current_user.last_login or current_user.created_at) else None,
     }
 
 @router.put("/users/me", response_model=UserOut)
@@ -150,15 +211,32 @@ def reset_password(req: UserUpdate, db: Session = Depends(get_db), current_user:
     db.commit()
     return {"message": "비밀번호가 변경되었습니다."}
 
+class FindIdRequest(BaseModel):
+    name: str
+    phone_num: str
+
+class FindPwRequest(BaseModel):
+    ID: str
+    phone_num: str
+
+class VerifyUserRequest(BaseModel):
+    ID: str
+    phone_num: str
+
+class ResetPwByPhoneRequest(BaseModel):
+    ID: str
+    phone_num: str
+    new_pw: str
+
 @router.post("/users/find-id")
-def find_id(req: UserUpdate, db: Session = Depends(get_db)):
+def find_id(req: FindIdRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.name == req.name, User.phone_num == req.phone_num).first()
     if not user:
         raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")
     return {"ID": user.ID}
 
 @router.post("/users/find-pw")
-def find_pw(req: UserUpdate, db: Session = Depends(get_db)):
+def find_pw(req: FindPwRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.ID == req.ID, User.phone_num == req.phone_num).first()
     if not user:
         raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")
@@ -167,3 +245,23 @@ def find_pw(req: UserUpdate, db: Session = Depends(get_db)):
     user.PW = get_password_hash(temp_pw)
     db.commit()
     return {"temp_password": temp_pw}
+
+@router.post("/users/verify-user")
+def verify_user(req: VerifyUserRequest, db: Session = Depends(get_db)):
+    """ID + 휴대폰번호 일치 여부 확인 (비밀번호 재설정 전 본인확인용)"""
+    user = db.query(User).filter(User.ID == req.ID, User.phone_num == req.phone_num).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")
+    return {"verified": True}
+
+@router.post("/users/reset-password-by-phone")
+def reset_password_by_phone(req: ResetPwByPhoneRequest, db: Session = Depends(get_db)):
+    """ID + 휴대폰번호 검증 후 새 비밀번호로 재설정 (로그인 없이, 비번찾기 플로우용)"""
+    user = db.query(User).filter(User.ID == req.ID, User.phone_num == req.phone_num).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="일치하는 회원 정보가 없습니다.")
+    if not req.new_pw or len(req.new_pw) < 6:
+        raise HTTPException(status_code=400, detail="비밀번호는 6자 이상이어야 합니다.")
+    user.PW = get_password_hash(req.new_pw)
+    db.commit()
+    return {"message": "비밀번호가 재설정되었습니다."}

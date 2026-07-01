@@ -1,0 +1,57 @@
+/* MReportDone — 제보 완료 화면 (Figma WDC 0:647) */
+/* Overrides shared MProposalDone.css to match Figma spec */
+
+/* Two-layer illustration container */
+.m-report-done-illus {
+    position: relative;
+    width: 132px;
+    height: 132px;
+    margin: 0 auto 28px;
+}
+
+.m-report-done-scroll {
+    position: absolute;
+    inset: 0;
+    width: 132px;
+    height: 132px;
+}
+
+/* Figma: check overlay at left=40px (171-131), top=26px (245-219) relative to scroll container */
+.m-report-done-check {
+    position: absolute;
+    left: 40px;
+    top: 26px;
+    width: 54px;
+    height: 54px;
+}
+
+.m-report-done-page .m-prop-done-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+}
+
+.m-report-done-page .m-prop-done-actions {
+    max-width: 291px;
+}
+
+.m-report-done-page .m-prop-done-primary,
+.m-report-done-page .m-prop-done-secondary {
+    height: 59px;
+    border-radius: 15px;
+    font-size: 18px;
+}
+
+/* Figma 215:12108: primary = #542aa3, secondary = rgba(84,42,163,0.2) bg with #542aa3 text */
+.m-report-done-page .m-prop-done-primary {
+    background: #542aa3;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(84, 42, 163, 0.3);
+}
+
+.m-report-done-page .m-prop-done-secondary {
+    background: rgba(84, 42, 163, 0.2);
+    color: #542aa3;
+    font-size: 16px;
+    font-weight: 600;
+}

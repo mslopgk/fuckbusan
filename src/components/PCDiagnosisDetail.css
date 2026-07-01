@@ -1,0 +1,247 @@
+/* ───── 진단 상세 페이지 외부 레이아웃 ───── */
+.pc-detail-page {
+    position: relative;
+    height: calc(100vh - 60px);
+    width: 100%;
+    background: #f0f0f3;
+    overflow: hidden;
+}
+
+.pc-detail-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.pc-detail-bottom-cta {
+    position: absolute;
+    bottom: 24px;
+    right: 440px;
+    height: 48px;
+    padding: 0 32px;
+    border: none;
+    border-radius: 24px;
+    background: var(--diag-teal);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(35, 189, 187, 0.35);
+    z-index: 6;
+    font-family: inherit;
+}
+
+/* 좌측 필터 (간소화) */
+.pc-detail-filter {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 305px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: var(--diag-panel-shadow);
+    padding: 16px;
+    z-index: 5;
+    font-family: inherit;
+}
+
+.pc-detail-section { padding: 6px 0; }
+
+.pc-detail-section-label {
+    font-size: 14px;
+    color: var(--diag-text-muted);
+    margin-bottom: 6px;
+}
+
+.pc-detail-dropdown {
+    height: 46px;
+    border: 1px solid var(--diag-text);
+    border-radius: 8px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    color: var(--diag-text);
+}
+
+.pc-detail-dropdown-x {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: #efeff2;
+    border-radius: 50%;
+    color: #888;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.pc-detail-back {
+    margin-top: 12px;
+    width: 100%;
+    height: 38px;
+    border: 1px solid var(--diag-border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--diag-teal);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* ───────────────────────────────────────────
+   우측 진단 상세 패널 내부 (Figma 진단상세02)
+─────────────────────────────────────────── */
+
+/* 패널 전체 컨테이너 */
+.pc-diagpanel-detail {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+/* "시민 진단정보" 헤더 */
+.pc-diagpanel-title {
+    margin: 0 0 14px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #23bdbb;
+    letter-spacing: -0.72px;
+    line-height: 1.4;
+}
+
+/* ─── 정보 테이블 ─── */
+.pc-diagpanel-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+    overflow: hidden;
+    font-size: 12px;
+}
+
+.pc-diagpanel-table th,
+.pc-diagpanel-table td {
+    border-bottom: 1px solid #e6e6e6;
+    vertical-align: middle;
+}
+
+/* 왼쪽 레이블 셀 — #e6e6e6 회색 bg */
+.pc-diagpanel-table th {
+    width: 76px;
+    min-width: 76px;
+    background: #e6e6e6;
+    color: #242424;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    padding: 8px 12px;
+    border-right: 1px solid #f2f2f2;
+    white-space: nowrap;
+}
+
+/* 오른쪽 값 셀 */
+.pc-diagpanel-table td {
+    background: #fff;
+    color: #737373;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 8px 16px;
+    line-height: 1.35;
+}
+
+/* 사진 썸네일 */
+.pc-diagpanel-photo {
+    width: 83px;
+    height: 90px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #cde8f7, #b0cde0) center / cover no-repeat;
+}
+
+/* ─── 레이더 차트 카드 ─── */
+.pc-diagpanel-chart-card {
+    border: 0.728px solid #e6e6e6;
+    border-radius: 5.826px;
+    padding: 8.739px 11.652px 14.565px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.pc-diagpanel-chart-title {
+    margin: 0 0 8px;
+    font-size: 11.652px;
+    font-weight: 700;
+    color: #242424;
+    text-align: center;
+    letter-spacing: -0.4661px;
+    line-height: 1.4;
+}
+
+.pc-diagpanel-chart-canvas {
+    width: 100%;
+    height: 210px;
+}
+
+/* ─── 전문가 score 카드 ─── */
+.pc-diagpanel-expert-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.pc-diagpanel-score-card {
+    background: #ffe5e5;
+    border-radius: 4px;
+    padding: 6px 4px;
+    text-align: center;
+}
+
+.pc-diagpanel-score-card:nth-child(2) { background: #ffe0e0; }
+.pc-diagpanel-score-card:nth-child(3) { background: #dff5dc; }
+
+.pc-diagpanel-score-key {
+    font-size: 9px;
+    color: #737373;
+    font-weight: 600;
+}
+
+.pc-diagpanel-score-val {
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #242424;
+}
+
+/* ─── 진단하기 CTA ─── */
+.pc-diagpanel-cta-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0 24px;
+    flex-shrink: 0;
+}
+
+.pc-diagpanel-cta-btn {
+    width: 239px;
+    height: 67px;
+    background: var(--diag-teal);
+    border: none;
+    border-radius: 100px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 6px 16px rgba(35, 189, 187, 0.35);
+    transition: background 0.18s;
+}
+
+.pc-diagpanel-cta-btn:hover {
+    background: #1da9a7;
+}

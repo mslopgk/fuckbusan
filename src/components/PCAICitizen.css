@@ -1,0 +1,1524 @@
+.pc-ai-citizen {
+    position: relative;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+}
+
+/* ── Map: full-width background ── */
+.pc-ai-map-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+/* ── Left column: two stacked cards ── */
+.pc-ai-left {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    width: 270px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: calc(100% - 24px);
+    overflow-y: auto;
+}
+
+.pc-ai-left-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pc-ai-left__label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #737373;
+    letter-spacing: -0.02em;
+}
+
+.pc-ai-select-wrap {
+    position: relative;
+}
+
+.pc-ai-select {
+    width: 100%;
+    height: 46px;
+    border: 1px solid #242424;
+    border-radius: 8px;
+    padding: 0 36px 0 12px;
+    font-size: 16px;
+    color: #242424;
+    background: #fff;
+    appearance: none;
+    cursor: pointer;
+    letter-spacing: -0.02em;
+}
+
+.pc-ai-select-wrap::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #555;
+    pointer-events: none;
+}
+
+/* 생활정보 category grid: 3 cols */
+.pc-ai-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.pc-ai-cat-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 4px;
+    border: none;
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+    transition: background 0.15s;
+    min-height: 64px;
+}
+
+.pc-ai-cat-btn:hover {
+    background: #f0fdf9;
+}
+
+.pc-ai-cat-btn.active {
+    background: #23bdbb;
+}
+
+.pc-ai-cat-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #737373;
+}
+
+.pc-ai-cat-btn.active .pc-ai-cat-icon {
+    color: #fff;
+}
+
+.pc-ai-cat-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #737373;
+    text-align: center;
+    line-height: 1.35;
+    white-space: pre-line;
+    letter-spacing: -0.03em;
+}
+
+.pc-ai-cat-btn.active .pc-ai-cat-label {
+    color: #fff;
+}
+
+/* ── Mascot + speech bubble tutorial ── */
+@keyframes mascotSlideIn {
+    from { transform: translateY(110%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes mascotSlideOut {
+    from { transform: translateY(0);    opacity: 1; }
+    to   { transform: translateY(110%); opacity: 0; }
+}
+
+.pc-ai-mascot-wrap {
+    position: absolute;
+    bottom: 0;
+    left: 140px;
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+    z-index: 20;
+    pointer-events: none;
+    animation: mascotSlideIn 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.pc-ai-mascot-wrap--hiding {
+    animation: mascotSlideOut 0.38s ease-in forwards;
+}
+
+.pc-ai-mascot-img {
+    width: 260px;
+    height: auto;
+    display: block;
+    flex-shrink: 0;
+    pointer-events: none;
+    user-select: none;
+}
+
+.pc-ai-mascot-bubble {
+    position: relative;
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px 36px 28px 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    width: min(660px, calc(100vw - 140px - 260px - 420px));
+    min-width: 440px;
+    margin-bottom: 56px;
+    pointer-events: auto;
+}
+
+/* Left-pointing speech bubble tail */
+.pc-ai-mascot-bubble__tail {
+    position: absolute;
+    left: -18px;
+    bottom: 60px;
+    width: 0;
+    height: 0;
+    border-top: 18px solid transparent;
+    border-bottom: 18px solid transparent;
+    border-right: 20px solid #fff;
+    filter: drop-shadow(-3px 0 3px rgba(0,0,0,0.08));
+}
+
+.pc-ai-mascot-bubble__close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    opacity: 0.6;
+    transition: opacity 0.15s, background 0.15s;
+}
+
+.pc-ai-mascot-bubble__close:hover {
+    opacity: 1;
+    background: #f0f0f0;
+}
+
+.pc-ai-mascot-bubble__title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #23bdbb;
+    letter-spacing: -0.04em;
+    margin: 0 0 14px;
+    line-height: 1.4;
+}
+
+.pc-ai-mascot-bubble__sub {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.7;
+    margin: 0 0 22px;
+}
+
+.pc-ai-cta__btn {
+    display: inline-block;
+    background: #23bdbb;
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    padding: 11px 32px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.pc-ai-cta__btn:hover { background: #1da8a6; }
+
+/* ── Right citizen card panel ── */
+
+/* Outer wrapper: capped at Figma height → nav circle top:50% is stable */
+.pc-ai-right-wrap {
+    position: absolute;
+    right: 68px;
+    top: 12px;
+    width: 360px;
+    height: min(560px, calc(100% - 24px));
+    z-index: 10;
+}
+
+/* Inner white card */
+.pc-ai-right {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    padding: 20px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.pc-ai-right__header {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.pc-ai-right__title-teal { color: #23bdbb; }
+.pc-ai-right__title-black { color: #242424; }
+
+.pc-ai-right__sub {
+    font-size: 13px;
+    color: #737373;
+    line-height: 1.5;
+    margin: 0 0 20px;
+    flex-shrink: 0;
+}
+
+.pc-ai-right__loading,
+.pc-ai-right__empty {
+    font-size: 14px;
+    color: #888;
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* Citizen cards carousel */
+.pc-ai-cards-wrap {
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+}
+
+.pc-ai-cards-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+/* Citizen card */
+.pc-ai-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+    width: 308px;
+}
+
+.pc-ai-card--peek {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.pc-ai-card__avatar {
+    margin-bottom: 12px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.pc-ai-card__name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.pc-ai-card__name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #242424;
+    letter-spacing: -0.04em;
+}
+
+.pc-ai-card__age {
+    font-size: 18px;
+    font-weight: 400;
+    color: #777;
+    letter-spacing: -0.03em;
+}
+
+.pc-ai-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.pc-ai-card__tag {
+    border: 1px solid #23bdbb;
+    border-radius: 5px;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #23bdbb;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+}
+
+.pc-ai-card__divider {
+    width: 100%;
+    height: 1px;
+    background: #e0e0e0;
+    margin-bottom: 14px;
+}
+
+.pc-ai-card__quote {
+    font-size: 14px;
+    color: #242424;
+    line-height: 1.6;
+    text-align: center;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+/* Circle next button — positioned in pc-ai-right-wrap, stable Y regardless of card height */
+.pc-ai-nav-circle {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, opacity 0.15s;
+}
+
+.pc-ai-nav-circle:hover {
+    transform: translateY(-50%) scale(1.08);
+}
+
+.pc-ai-nav-circle--prev {
+    right: auto;
+    left: 6px;
+}
+
+/* ── Right-side icon control strip ── */
+.pc-ai-controls {
+    position: absolute;
+    right: 8px;
+    top: 12px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Top AI citizen toggle button */
+.pc-ai-ctrl-ai-btn {
+    width: 48px;
+    height: 52px;
+    border-radius: 12px;
+    background: #23bdbb;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.pc-ai-ctrl-ai-btn:hover { background: #1da8a6; }
+
+/* Grouped map controls card */
+.pc-ai-ctrl-group {
+    width: 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+}
+
+.pc-ai-ctrl-group-btn {
+    width: 48px;
+    height: 48px;
+    background: #fff;
+    border: none;
+    border-bottom: 1px solid #e6e6e6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.pc-ai-ctrl-group-btn:last-child {
+    border-bottom: none;
+}
+
+.pc-ai-ctrl-group-btn:hover { background: #f5f5f5; }
+
+.pc-ai-ctrl-group-btn--active {
+    background: #23bdbb;
+    color: #fff;
+}
+
+.pc-ai-ctrl-group-btn--active:hover { background: #1da8a6; }
+
+/* ── District citizen sidebar (right panel, shown on district click) ── */
+.pc-ai-district-sidebar {
+    position: absolute;
+    right: 68px;
+    top: 12px;
+    width: 483px;
+    height: calc(100% - 24px);
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.pc-ai-district-sidebar__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.pc-ai-district-sidebar__title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    margin: 0;
+}
+
+.pc-ai-district-sidebar__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    color: #888;
+    flex-shrink: 0;
+    border-radius: 50%;
+    transition: background 0.15s;
+}
+
+.pc-ai-district-sidebar__close:hover { background: #f5f5f5; }
+
+.pc-ai-district-sidebar__desc {
+    font-size: 13px;
+    color: #737373;
+    line-height: 1.5;
+    margin: 0 0 14px;
+    flex-shrink: 0;
+}
+
+.pc-ai-district-sidebar__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+    padding: 0 2px;
+}
+
+.pc-ai-district-sidebar__count {
+    font-size: 14px;
+    color: #737373;
+    letter-spacing: -0.02em;
+}
+
+.pc-ai-district-sidebar__sort-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #737373;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    letter-spacing: -0.02em;
+    padding: 0;
+}
+
+.pc-ai-district-sidebar__list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 4px;
+}
+
+/* Citizen list card */
+.pc-ai-list-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 10px;
+    padding: 12px 12px 12px 12px;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.pc-ai-list-card:hover {
+    border-color: #23bdbb;
+    box-shadow: 0 2px 8px rgba(35, 189, 187, 0.12);
+}
+
+.pc-ai-list-card__avatar {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.pc-ai-list-card__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pc-ai-list-card__name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.pc-ai-list-card__name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #242424;
+    letter-spacing: -0.04em;
+}
+
+.pc-ai-list-card__age {
+    font-size: 16px;
+    font-weight: 400;
+    color: #737373;
+    letter-spacing: -0.03em;
+}
+
+.pc-ai-list-card__divider {
+    height: 1px;
+    background: #e6e6e6;
+}
+
+.pc-ai-list-card__tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.pc-ai-list-card__tag {
+    border: 1px solid #23bdbb;
+    border-radius: 4px;
+    padding: 2px 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #23bdbb;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+}
+
+.pc-ai-list-card__quote {
+    font-size: 13px;
+    color: #242424;
+    line-height: 1.45;
+    letter-spacing: -0.02em;
+    margin: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.pc-ai-list-card__arrow {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #23bdbb;
+    display: flex;
+    align-items: center;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+}
+
+.pc-ai-list-card:hover .pc-ai-list-card__arrow { opacity: 1; }
+
+/* ── Citizen detail panel (overlay on map, left of district sidebar) ── */
+.pc-ai-detail-panel {
+    position: absolute;
+    top: 12px;
+    left: 294px;
+    right: 559px; /* 68px controls + 483px sidebar + 8px gap */
+    bottom: 12px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    padding: 20px 20px 12px;
+    overflow-y: auto;
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-sizing: border-box;
+}
+
+.pc-ai-detail-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+    z-index: 2;
+}
+.pc-ai-detail-close:hover { opacity: 1; background: #f5f5f5; }
+
+/* 가상시민과 채팅하기 버튼 */
+.pc-ai-detail-chat {
+    position: absolute;
+    top: 12px;
+    right: 52px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #23bdbb;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    font-family: 'Pretendard Variable', sans-serif;
+    box-shadow: 0 3px 10px rgba(35, 189, 187, 0.3);
+    transition: background 0.15s, transform 0.1s;
+    z-index: 2;
+}
+.pc-ai-detail-chat:hover { background: #1aa6a4; }
+.pc-ai-detail-chat:active { transform: translateY(1px); }
+
+/* ============================================================
+   리뉴얼 (Figma 215:3802) — 공공데이터 셸 + 페르소나 리스트/리포트
+   ============================================================ */
+.aic .pubdata-left { max-height: calc(100% - 40px); }
+
+/* AI 챗봇 버튼 (좌측 패널) */
+.aic-chatbot-btn {
+    margin-top: 16px;
+    width: 100%;
+    height: 46px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: #23bdbb; color: #fff; border: none; border-radius: 12px;
+    font-size: 14px; font-weight: 800; letter-spacing: -0.02em; cursor: pointer;
+    font-family: 'Pretendard Variable', sans-serif;
+    box-shadow: 0 4px 14px rgba(35,189,187,0.28);
+    transition: background 0.15s, transform 0.1s;
+}
+.aic-chatbot-btn:hover { background: #1aa6a4; }
+.aic-chatbot-btn:active { transform: translateY(1px); }
+
+/* 공용 아바타 */
+.aic-avatar { border-radius: 50%; overflow: hidden; flex: none; background: #eef1f2; display: inline-flex; align-items: center; justify-content: center; }
+.aic-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.aic-avatar-fb { font-size: 18px; font-weight: 800; color: #9aa3ab; }
+
+/* ── 우측 페르소나 리스트 ── */
+.aic-list {
+    position: absolute; top: 20px; right: 20px; bottom: 20px;
+    width: 384px; z-index: 5;
+    display: flex; flex-direction: column;
+    padding: 22px 20px 14px;
+    font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
+    letter-spacing: -0.02em;
+}
+/* 부산 지도 인트로: 지도는 그대로 보이고 위에 핀+점선 아크 애니메이션. 클릭하면 사라짐. */
+.aic-map-intro { position: absolute; inset: 0; z-index: 20; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    padding-bottom: 6%; background: rgba(255,255,255,0.04); animation: aicIntroIn 0.4s ease; }
+@keyframes aicIntroIn { from { opacity: 0; } to { opacity: 1; } }
+.aic-map-intro-text { text-align: center; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+.aic-map-intro-text strong { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #0f8f8c;
+    text-shadow: 0 1px 10px rgba(255,255,255,0.95); }
+.aic-map-intro-text span { font-size: 15px; color: #3f8b89; font-weight: 600;
+    text-shadow: 0 1px 10px rgba(255,255,255,0.95); }
+
+/* 지도 위 핀/아크 효과 (FigmaDistrictMap 1920×1080 좌표계 내부 SVG) */
+.aic-mapfx-arc { fill: none; stroke: #23bdbb; stroke-width: 4; stroke-linecap: round;
+    stroke-dasharray: 14 12; opacity: 0.85; animation: mapfxMarch 0.9s linear infinite; }
+@keyframes mapfxMarch { to { stroke-dashoffset: -26; } }
+.aic-mapfx-pin { transform-origin: 0 0; animation: mapfxDrop 0.6s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes mapfxDrop {
+    0% { transform: translateY(-36px) scale(0); opacity: 0; }
+    60% { opacity: 1; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.aic-mapfx-teardrop { fill: #23bdbb; }
+.aic-mapfx-pulse { fill: #23bdbb; transform-origin: 0 0; animation: mapfxPulse 1.9s ease-out infinite; }
+@keyframes mapfxPulse {
+    0% { transform: scale(0.5); opacity: 0.45; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+/* 페르소나 프로필+말풍선 등장(구 순회 시마다 리마운트되어 재생) */
+.aic-hovwrap { animation: aicHovIn 0.5s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes aicHovIn {
+    0% { opacity: 0; transform: translate(-50%, calc(-50% + 16px)) scale(0.7); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+.aic-list-title { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: #333; }
+.aic-list-title span { color: #23bdbb; }
+.aic-list-sub { margin: 0 0 16px; font-size: 14px; color: #1f1f1f; line-height: 1.35; }
+.aic-list-bar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; }
+.aic-list-count { font-size: 14px; font-weight: 400; color: #1f1f1f; }
+.aic-sort { position: relative; }
+.aic-sort-btn { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; font-size: 13px; font-weight: 600; color: #555; cursor: pointer; font-family: inherit; }
+.aic-sort-menu { position: absolute; top: 100%; right: 0; margin: 4px 0 0; padding: 4px; list-style: none; background: #fff; border: 1px solid #ececec; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 10; }
+.aic-sort-menu button { display: block; width: 100%; text-align: left; white-space: nowrap; padding: 8px 16px; border: none; background: none; font-size: 13px; color: #444; cursor: pointer; border-radius: 7px; font-family: inherit; }
+.aic-sort-menu button:hover, .aic-sort-menu button.sel { background: #e6f8f8; color: #1aa6a4; font-weight: 700; }
+
+.aic-cards { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 2px; }
+.aic-empty { color: #9aa3ab; font-size: 13px; text-align: center; padding: 30px 0; }
+.aic-card {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px; border: 1.5px solid #ececec; border-radius: 16px; background: #fff;
+    cursor: pointer; text-align: left; font-family: inherit; transition: all 0.13s; position: relative;
+}
+.aic-card:hover { border-color: #c8eceb; box-shadow: 0 4px 16px rgba(35,189,187,0.1); }
+.aic-card.active { border-color: #23bdbb; background: #f3fbfb; }
+.aic-card-body { flex: 1; min-width: 0; }
+.aic-card-name { font-size: 16px; font-weight: 700; color: #333; }
+.aic-card-name em { font-style: normal; font-size: 16px; font-weight: 400; color: #1f1f1f; margin-left: 4px; }
+.aic-card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 7px 0; }
+.aic-card-tags span { font-size: 12px; font-weight: 700; color: #23bdbb; background: none; border: 1px solid #23bdbb; border-radius: 4px; padding: 2px 5px; }
+.aic-card-quote { margin: 0; font-size: 13px; color: #333; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.aic-card-arrow { position: absolute; top: 16px; right: 14px; line-height: 0; }
+
+/* ── 페르소나 풀 상세 리포트 (Figma 215:5403 정확 토큰) ── */
+.aic-modal-backdrop {
+    position: fixed; inset: 0; z-index: 1800;
+    background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    animation: aic-fade 0.18s ease-out;
+    font-family: 'Pretendard', 'Pretendard Variable', 'Noto Sans KR', sans-serif; letter-spacing: -0.4px;
+    color: #111111;
+}
+@keyframes aic-fade { from { opacity: 0; } to { opacity: 1; } }
+.aic-modal {
+    width: 760px; max-width: 95vw; max-height: 92vh;
+    background: #fff; border-radius: 10px; overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 20px 70px rgba(0,0,0,0.3);
+    animation: aic-pop 0.2s ease-out;
+}
+@keyframes aic-pop { from { transform: scale(0.97); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.aic-modal-top { flex: none; display: flex; align-items: center; gap: 12px; padding: 14px 22px; border-bottom: 1px solid #f0f0f0; }
+.aic-modal-top-l { display: flex; align-items: center; gap: 10px; }
+.aic-modal-top-l strong { font-size: 16px; font-weight: 700; color: #242424; }
+.aic-modal-top-l button { width: 24px; height: 24px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fff; cursor: pointer; font-size: 14px; color: #555; line-height: 1; }
+.aic-modal-top-l button:hover { border-color: #23bdbb; color: #23bdbb; }
+.aic-report-chat { margin-left: auto; background: none; border: none; color: #23bdbb; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; letter-spacing: -0.4px; }
+.aic-report-chat:hover { opacity: 0.8; }
+.aic-report-x { width: 28px; height: 28px; border: none; background: none; cursor: pointer; font-size: 21px; color: #aaa; line-height: 1; }
+.aic-report-x:hover { color: #555; }
+.aic-modal-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 22px 18px 18px; }
+
+.aic-illust-fb { font-size: 40px; font-weight: 800; color: #9aa3ab; }
+
+/* 히어로 */
+.aic-rp-hero { display: grid; grid-template-columns: 147px 231px 1fr; gap: 0 11px; margin-bottom: 20px; align-items: start; }
+.aic-rp-illust { width: 147px; height: 184px; border-radius: 10px; overflow: hidden; background: linear-gradient(180deg,#dff1ef,#eef6f0); display: flex; align-items: center; justify-content: center; }
+.aic-rp-illust img { width: 100%; height: 100%; object-fit: cover; }
+.aic-rp-mid { display: flex; flex-direction: column; }
+.aic-rp-nameline { display: flex; align-items: baseline; gap: 8px; }
+.aic-rp-name { font-size: 20px; font-weight: 700; color: #242424; }
+.aic-rp-age { font-size: 16px; font-weight: 500; color: #737373; }
+.aic-rp-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 11px; }
+.aic-rp-tags span { font-size: 12px; font-weight: 500; color: #23bdbb; border: 1px solid #c5ecec; border-radius: 4px; padding: 3px 8px; }
+.aic-rp-right { display: flex; flex-direction: column; gap: 10px; }
+.aic-rp-prof-box { background: #f4f4f4; border-radius: 10px; padding: 12px 16px; }
+.aic-rp-prof-box.left { margin-top: auto; }
+.aic-rp-prow { display: grid; grid-template-columns: 66px 1fr; gap: 8px; padding: 3px 0; align-items: baseline; }
+.aic-rp-prow dt { font-size: 12px; font-weight: 600; color: #242424; }
+.aic-rp-prow dd { margin: 0; font-size: 12px; font-weight: 400; color: #737373; line-height: 1.4; }
+.aic-rp-similar { background: #dff8f8; border-radius: 10px; padding: 13px 16px; }
+.aic-rp-similar-head { display: flex; align-items: center; justify-content: space-between; }
+.aic-rp-similar-head span { font-size: 14px; font-weight: 600; color: #111111; }
+.aic-pr-icons { display: inline-flex; gap: 2px; }
+.aic-rp-similar p { margin: 6px 0 2px; font-size: 12px; font-weight: 400; color: #737373; line-height: 1.4; }
+.aic-rp-similar strong { font-size: 24px; font-weight: 700; color: #111111; }
+
+/* 3단 카드 */
+.aic-rp-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+.aic-rp-card { background: #f4f4f4; border-radius: 10px; padding: 13px 14px; }
+.aic-rp-card h4 { margin: 0 0 11px; font-size: 14px; font-weight: 600; color: #111111; }
+.aic-rp-sub8 { font-size: 11px; font-weight: 500; color: #888; }
+.aic-rp-feel { display: flex; flex-direction: column; align-items: center; font-size: 14px; font-weight: 400; color: #242424; line-height: 1.55; text-align: center; padding: 6px 2px; }
+.aic-rp-feel .aic-q { color: #c8c8c8; font-size: 18px; font-weight: 700; line-height: 1; }
+.aic-rp-feel .aic-q.open { align-self: flex-start; }
+.aic-rp-feel .aic-q.close { align-self: flex-end; }
+.aic-rp-feel span { margin: 4px 0; }
+.aic-rp-pills { display: flex; flex-direction: column; gap: 8px; }
+.aic-rp-pill { display: flex; gap: 10px; align-items: center; background: #fff; border-radius: 30px; padding: 9px 14px; min-height: 39px; box-sizing: border-box; }
+.aic-rp-pill b { color: #23bdbb; font-weight: 700; font-size: 20px; flex: none; line-height: 1; }
+.aic-rp-pill span { font-size: 12px; font-weight: 400; color: #111111; line-height: 1.35; }
+
+/* 여정지도 */
+.aic-rp-journey { background: #f4f4f4; border-radius: 10px; padding: 16px 18px; margin-bottom: 20px; }
+.aic-rp-journey h4 { margin: 0 0 14px; font-size: 14px; font-weight: 600; color: #111111; }
+.aic-jr-body { position: relative; padding-left: 36px; }
+.aic-jr-rowlabels { position: absolute; left: 0; top: 0; bottom: 30px; display: flex; flex-direction: column; justify-content: space-between; font-size: 10px; color: #111111; }
+.aic-jr-rowlabels span { line-height: 1; }
+.aic-jr-grid { display: grid; gap: 8px; }
+.aic-jr-step { background: #fff; border-radius: 10px; padding: 10px 6px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.aic-jr-num { display: inline-flex; align-items: center; justify-content: center; width: 19px; height: 19px; border-radius: 50%; color: #fff; font-size: 10px; font-weight: 900; }
+.aic-jr-emoji { font-size: 26px; margin: 6px 0 4px; line-height: 1; }
+.aic-jr-action { font-size: 10px; font-weight: 400; color: #111111; line-height: 1.3; }
+.aic-jr-time { font-size: 9.5px; color: #999; margin-top: 1px; }
+.aic-jr-feeling { font-size: 10px; color: #111111; line-height: 1.3; margin: 10px 0; min-height: 26px; }
+.aic-jr-face { font-size: 17px; line-height: 1; }
+.aic-jr-emotion { font-size: 10px; font-weight: 700; margin-top: 4px; }
+
+/* 정책 신호등 */
+.aic-rp-card.sig { background: #f4f4f4; }
+.aic-sig-legend { display: flex; gap: 10px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+.aic-sig-legend .high { color: #ff0000; } .aic-sig-legend .medium { color: #ff6200; } .aic-sig-legend .low { color: #039e50; }
+.aic-sig-list { display: flex; flex-direction: column; gap: 9px; }
+.aic-sig-row { display: flex; align-items: center; gap: 10px; }
+.aic-sig-light { display: inline-flex; gap: 3px; background: #575757; border-radius: 20px; padding: 4px 6px; flex: none; }
+.aic-sig-light i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.35); }
+.aic-sig-light.high i:nth-child(1) { background: #ff3b3b; }
+.aic-sig-light.medium i:nth-child(2) { background: #ff8a2b; }
+.aic-sig-light.low i:nth-child(3) { background: #36d97b; }
+.aic-sig-text { font-size: 12px; line-height: 1.3; font-weight: 600; }
+.aic-sig-text.high { color: #ff0000; } .aic-sig-text.medium { color: #e07700; } .aic-sig-text.low { color: #039e50; }
+.aic-voice-empty { color: #9aa3ab; font-size: 12px; }
+
+/* 참여 현황 */
+.aic-part-chart { display: flex; gap: 12px; align-items: flex-end; justify-content: center; height: 120px; padding: 8px 4px 0; }
+.aic-part-col { flex: 1; max-width: 40px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.aic-part-val { font-size: 12px; font-weight: 300; color: #111111; margin-bottom: 4px; }
+.aic-part-fill { width: 100%; border-radius: 6px 6px 0 0; background: #23bdbb; }
+.aic-part-label { font-size: 12px; font-weight: 400; color: #111111; margin-top: 6px; }
+.aic-part-cap { margin-top: 12px; background: #eaeaea; border-radius: 10px; padding: 10px 12px; font-size: 12px; font-weight: 300; color: #111111; line-height: 1.4; }
+
+/* 카테고리 8바 */
+.aic-cat-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.aic-cat-head h4 { margin: 0; }
+.aic-cat-toggle { width: 37px; height: 18px; border-radius: 100px; background: #fff; box-shadow: inset 0 0 0 1px #e0e0e0, 0 0 4px rgba(0,0,0,0.08); position: relative; flex: none; }
+.aic-cat-toggle::after { content: ''; position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%; background: #23bdbb; }
+.aic-hbars { display: flex; flex-direction: column; gap: 8px; }
+.aic-hbar-row { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 8px; }
+.aic-hbar-label { font-size: 12px; color: #111111; font-weight: 400; white-space: nowrap; }
+.aic-hbar-track { height: 8px; background: #e4e4e4; border-radius: 4px; overflow: hidden; }
+.aic-hbar-fill { height: 100%; background: #23bdbb; border-radius: 4px; }
+
+.aic-rp-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 20px; padding-top: 14px; border-top: 1px solid #f0f0f0; }
+.aic-rp-foot span { font-size: 12px; font-weight: 300; color: #111111; }
+.aic-rp-foot button { background: none; border: none; color: #111111; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
+
+@media (max-width: 1280px) { .aic-list { width: 340px; } }
+
+/* Header section */
+.pc-ai-detail-header {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.pc-ai-detail-avatar {
+    flex-shrink: 0;
+    width: 120px;
+    height: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.pc-ai-detail-identity {
+    flex: 1;
+    min-width: 0;
+}
+
+.pc-ai-detail-name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.pc-ai-detail-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: #242424;
+    letter-spacing: -0.04em;
+}
+
+.pc-ai-detail-age-gender {
+    font-size: 16px;
+    color: #737373;
+    letter-spacing: -0.02em;
+}
+
+.pc-ai-detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.pc-ai-detail-tag {
+    border: 1px solid #23bdbb;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #23bdbb;
+    letter-spacing: -0.02em;
+}
+
+.pc-ai-detail-info-boxes {
+    display: flex;
+    gap: 0;
+    margin-top: 6px;
+    background: #f4f4f4;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.pc-ai-detail-info-box {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.pc-ai-detail-info-box + .pc-ai-detail-info-box {
+    border-left: 1px solid #e0e0e0;
+}
+
+.pc-ai-detail-info-box .info-row {
+    display: flex;
+    gap: 5px;
+    font-size: 11px;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+    min-width: 0;
+    padding: 6px 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.pc-ai-detail-info-box .info-row:last-child {
+    border-bottom: none;
+}
+
+.pc-ai-detail-info-box .info-label {
+    font-weight: 700;
+    color: #444;
+    flex-shrink: 0;
+    min-width: 58px;
+}
+
+.pc-ai-detail-info-box .info-value {
+    color: #737373;
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* Ratio box */
+.pc-ai-detail-ratio-box {
+    flex-shrink: 0;
+    width: 148px;
+    background: #e6faf9;
+    border-radius: 12px;
+    padding: 10px 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-self: flex-start;
+}
+
+.ratio-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #23bdbb;
+    letter-spacing: -0.02em;
+}
+
+.ratio-desc {
+    font-size: 10px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.ratio-pct {
+    font-size: 26px;
+    font-weight: 700;
+    color: #23bdbb;
+    letter-spacing: -0.04em;
+    margin-top: 4px;
+}
+
+/* Voices row */
+.pc-ai-detail-voices-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+}
+
+.voice-card {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.voice-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111;
+    letter-spacing: -0.03em;
+    margin-bottom: 2px;
+}
+
+.voice-body-text {
+    font-size: 13px;
+    color: #333;
+    line-height: 1.65;
+    margin: 0;
+}
+
+.voice-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.voice-item-card {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid #eeeeee;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 12px;
+    color: #333;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+}
+
+.voice-item-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.voice-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: #23bdbb;
+    flex-shrink: 0;
+    line-height: 1.4;
+    min-width: 22px;
+}
+
+/* Journey map */
+.pc-ai-detail-journey {
+    flex-shrink: 0;
+}
+
+.journey-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+}
+
+.journey-table {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 3px;
+    align-items: center;
+}
+
+.journey-row-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #737373;
+    text-align: center;
+    writing-mode: horizontal-tb;
+    padding: 2px 0;
+}
+
+.journey-cells {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+    gap: 3px;
+}
+
+/* Step number circle row */
+.journey-step-circles-row {
+    align-items: center;
+    gap: 3px;
+}
+
+.journey-step-header-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 0;
+}
+
+.journey-step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.journey-cell {
+    background: #f4f4f4;
+    border-radius: 6px;
+    padding: 5px 7px;
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+    min-width: 0;
+}
+
+.journey-cell--feeling {
+    background: #fff;
+    border: 1px solid #e6e6e6;
+}
+
+.journey-time {
+    font-size: 9px;
+    color: #888;
+    margin-bottom: 2px;
+}
+
+.journey-action {
+    font-size: 10px;
+    font-weight: 600;
+    color: #242424;
+}
+
+.journey-feeling {
+    font-size: 10px;
+    color: #555;
+}
+
+.journey-graph-cell {
+    padding: 4px 0 2px;
+}
+
+/* Bottom row */
+.pc-ai-detail-bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.detail-bottom-card {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-bottom-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #111;
+    letter-spacing: -0.03em;
+    margin-bottom: 4px;
+}
+
+.policy-tabs-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.policy-tab-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+
+.policy-level-text {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+    margin: 0 0 3px;
+    padding-left: 8px;
+    position: relative;
+}
+
+.policy-level-text::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+/* Footer */
+.pc-ai-detail-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid #e6e6e6;
+    flex-shrink: 0;
+}
+
+.pc-ai-detail-footer p {
+    font-size: 11px;
+    color: #888;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.pc-ai-detail-more-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    color: #23bdbb;
+    letter-spacing: -0.03em;
+    padding: 0;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+}
+
+.pc-ai-detail-more-btn:hover { opacity: 0.7; }
+
+/* ── Person icons row (ratio box) ── */
+.person-icons-row {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    margin: 6px 0 4px;
+}
+
+/* ── Quote marks for 시민 체감 언어 ── */
+.voice-quote-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.voice-quote-open,
+.voice-quote-close {
+    font-size: 28px;
+    color: #23bdbb;
+    line-height: 0.6;
+    opacity: 0.5;
+    font-family: Georgia, serif;
+}
+
+.voice-quote-close {
+    text-align: right;
+}
+
+/* ── Journey emoji row ── */
+.journey-emoji-row {
+    gap: 3px;
+}
+
+.journey-emoji-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 0;
+}
+
+.journey-emoji {
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* ── Policy items (dot + text) ── */
+.policy-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.policy-item-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 11px;
+    color: #333;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+}
+
+.policy-item-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+
+/* ── Category horizontal bars ── */
+.cat-hbars {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 6px;
+}
+
+.cat-hbar-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cat-hbar-label {
+    font-size: 10px;
+    color: #555;
+    width: 56px;
+    flex-shrink: 0;
+    text-align: right;
+    letter-spacing: -0.02em;
+}
+
+.cat-hbar-track {
+    flex: 1;
+    height: 8px;
+    background: #e8e8e8;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.cat-hbar-fill {
+    height: 100%;
+    background: #23bdbb;
+    border-radius: 4px;
+}
+
+.cat-view-toggle {
+    background: none;
+    border: 1px solid #23bdbb;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #23bdbb;
+    padding: 3px 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+}
+
+.cat-view-toggle:hover {
+    background: #e6faf9;
+}
+
+/* ── Participation note ── */
+.participation-note {
+    font-size: 10px;
+    color: #737373;
+    line-height: 1.5;
+    margin: 6px 0 0;
+    letter-spacing: -0.02em;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 6px;
+}
+
+/* Select clear button */
+.pc-ai-select-clear {
+    position: absolute;
+    right: 38px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}

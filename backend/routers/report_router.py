@@ -1,16 +1,26 @@
 from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 import json
 import os
 import uuid
+import io
 import boto3
 from botocore.exceptions import ClientError
+
+try:
+    from PIL import Image as PilImage
+    _PIL_AVAILABLE = True
+except ImportError:
+    _PIL_AVAILABLE = False
 
 # [수정] 필요한 의존성 import
 from database import get_db
 import models, schemas
 from .user_router import get_current_user, get_current_user_optional
+from notification_utils import push_notification, log_activity
 
 router = APIRouter(
     prefix="/api/reports",
@@ -19,47 +29,311 @@ router = APIRouter(
 
 S3_BUCKET = os.getenv("MY_AWS_BUCKET_NAME", os.getenv("S3_BUCKET_NAME", "busan-promotion"))
 AWS_REGION = os.getenv("MY_AWS_REGION", "ap-northeast-2")
+_AWS_KEY = os.getenv("MY_AWS_ACCESS_KEY")
+IS_LAMBDA = bool(os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
 
 def get_s3_client():
     return boto3.client(
         "s3",
         region_name=AWS_REGION,
-        aws_access_key_id=os.getenv("MY_AWS_ACCESS_KEY"),
+        aws_access_key_id=_AWS_KEY,
         aws_secret_access_key=os.getenv("MY_AWS_SECRET_KEY"),
     )
 
+def _local_uploads_dir() -> str:
+    base = "/tmp/uploads" if IS_LAMBDA else os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "uploads")
+    os.makedirs(base, exist_ok=True)
+    return base
+
+def _make_thumbnail(img_bytes: bytes, size: int = 400, quality: int = 55) -> bytes | None:
+    if not _PIL_AVAILABLE:
+        return None
+    try:
+        img = PilImage.open(io.BytesIO(img_bytes))
+        img = img.convert('RGB')
+        img.thumbnail((size, size), PilImage.LANCZOS)
+        out = io.BytesIO()
+        img.save(out, 'JPEG', quality=quality, optimize=True)
+        return out.getvalue()
+    except Exception:
+        return None
+
+
+_ALLOWED_IMAGE_TYPES = {'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif'}
+_ALLOWED_IMAGE_EXTS = {'.jpg', '.jpeg', '.png', '.webp', '.gif', '.heic', '.heif'}
+_MAX_UPLOAD_BYTES = 15 * 1024 * 1024  # 15MB
+
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    try:
-        file_extension = os.path.splitext(file.filename)[1]
-        unique_filename = f"{uuid.uuid4()}{file_extension}"
-        contents = await file.read()
+    file_extension = os.path.splitext(file.filename or '')[1].lower()
+    content_type = (file.content_type or '').lower()
 
-        get_s3_client().put_object(
-            Bucket=S3_BUCKET,
-            Key=unique_filename,
-            Body=contents,
-            ContentType=file.content_type
-        )
+    # MIME + 확장자 양쪽 화이트리스트
+    if content_type not in _ALLOWED_IMAGE_TYPES and file_extension not in _ALLOWED_IMAGE_EXTS:
+        raise HTTPException(status_code=400, detail="이미지 파일만 업로드할 수 있습니다.")
 
-        url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{unique_filename}"
-        return {"filename": unique_filename, "url": url}
-    except ClientError as e:
-        raise HTTPException(status_code=500, detail=f"S3 업로드 실패: {str(e)}")
+    unique_filename = f"{uuid.uuid4()}{file_extension}"
+    contents = await file.read()
+
+    if len(contents) > _MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=400, detail="파일 크기는 15MB를 초과할 수 없습니다.")
+
+    # PIL로 디코딩 검증 — 실제 이미지가 아니면 거부
+    if _PIL_AVAILABLE:
+        try:
+            PilImage.open(io.BytesIO(contents)).verify()
+        except Exception:
+            raise HTTPException(status_code=400, detail="유효한 이미지 파일이 아닙니다.")
+
+    is_image = content_type.startswith('image/') or file_extension in _ALLOWED_IMAGE_EXTS
+    thumb_contents: bytes | None = None
+
+    if _PIL_AVAILABLE and is_image:
+        try:
+            img = PilImage.open(io.BytesIO(contents))
+            img = img.convert('RGB')
+            # 원본: 1200px, quality 82
+            img.thumbnail((1200, 1200), PilImage.LANCZOS)
+            out = io.BytesIO()
+            img.save(out, 'JPEG', quality=82, optimize=True)
+            contents = out.getvalue()
+            file_extension = '.jpg'
+            unique_filename = f"{uuid.uuid4()}{file_extension}"
+        except Exception:
+            pass
+
+        # 썸네일: 400px, quality 55
+        thumb_contents = _make_thumbnail(contents)
+
+    thumb_filename = f"thumb_{unique_filename}" if thumb_contents else None
+
+    if _AWS_KEY:
+        try:
+            s3 = get_s3_client()
+            s3.put_object(Bucket=S3_BUCKET, Key=unique_filename, Body=contents, ContentType='image/jpeg' if is_image else file.content_type)
+            url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{unique_filename}"
+            if thumb_contents and thumb_filename:
+                s3.put_object(Bucket=S3_BUCKET, Key=thumb_filename, Body=thumb_contents, ContentType='image/jpeg')
+                thumb_url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{thumb_filename}"
+            else:
+                thumb_url = url
+        except ClientError as e:
+            raise HTTPException(status_code=500, detail=f"S3 업로드 실패: {str(e)}")
+    else:
+        uploads = _local_uploads_dir()
+        with open(os.path.join(uploads, unique_filename), "wb") as f:
+            f.write(contents)
+        url = f"/uploads/{unique_filename}"
+        if thumb_contents and thumb_filename:
+            with open(os.path.join(uploads, thumb_filename), "wb") as f:
+                f.write(thumb_contents)
+            thumb_url = f"/uploads/{thumb_filename}"
+        else:
+            thumb_url = url
+
+    return {"filename": unique_filename, "url": url, "thumb_url": thumb_url}
+
+
+def _report_image_list(r):
+    """제보 이미지 URL 배열 — files(JSON) 우선, 없으면 image_url 단일로 폴백.
+    files 컬럼은 과거 json.dumps 문자열로 저장된 경우가 있어 둘 다 처리."""
+    raw = r.files
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except Exception:
+            raw = None
+    urls = [u for u in raw if u] if isinstance(raw, list) else []
+    if not urls and r.image_url:
+        urls = [r.image_url]
+    return urls
+
+
+def _serialize_report(r, comments=None):
+    """Convert Report ORM row to the shape the frontend expects."""
+    return {
+        "id": r.id,
+        "user_id": r.user_id,
+        "author": r.author_name,
+        "category": r.category,
+        "sub_category": r.sub_category,
+        "title": r.title,
+        "content": r.content,
+        "region": r.region,
+        "location": r.location,
+        "detailed_address": r.detailed_address,
+        "lat": float(r.lat) if r.lat is not None else None,
+        "lng": float(r.lng) if r.lng is not None else None,
+        "image": r.image_url,
+        "images": _report_image_list(r),
+        "status": r.status,
+        "progress_step": r.progress_step,
+        "views": r.views or 0,
+        "likes": r.likes_count or 0,
+        "comments": r.comments_count or 0,
+        "date": r.created_at.strftime("%Y.%m.%d") if r.created_at else None,
+        "result_details": r.result_details,
+        "comments_list": [
+            {
+                "id": c.id,
+                "author": c.author_name or (c.user.nickname if c.user else "익명"),
+                "content": c.content,
+                "date": c.created_at.strftime("%Y.%m.%d") if c.created_at else None,
+            }
+            for c in (comments or [])
+        ],
+    }
+
+
+@router.get("/full")
+def list_reports_full(
+    db: Session = Depends(get_db),
+    region: Optional[str] = None,
+    category: Optional[str] = None,
+    status: Optional[str] = None,
+    page: Optional[int] = None,
+    size: Optional[int] = None,
+    sort: str = "latest",
+):
+    """Return all reports with the full shape the frontend ReportList expects.
+
+    page/size 미지정시 전체 array 반환 (하위호환).
+    page/size 지정시 envelope {items,total,page,size} 반환.
+    """
+    q = db.query(models.Report)
+    if region and region != "부산 전 지역":
+        q = q.filter(models.Report.region == region)
+    if category and category != "전체":
+        q = q.filter(models.Report.category == category)
+    if status and status != "전체":
+        q = q.filter(models.Report.status == status)
+    if sort == "views":
+        q = q.order_by(models.Report.views.desc())
+    elif sort == "votes":
+        q = q.order_by(models.Report.likes_count.desc())
+    else:
+        q = q.order_by(models.Report.created_at.desc())
+
+    if page is not None or size is not None:
+        page = max(1, page or 1)
+        size = max(1, min(size or 20, 100))
+        total = q.count()
+        rows = q.offset((page - 1) * size).limit(size).all()
+        ids = [r.id for r in rows]
+        comments_by_report = {}
+        if ids:
+            for c in db.query(models.ReportComment).filter(models.ReportComment.report_id.in_(ids)).order_by(models.ReportComment.created_at.asc()).all():
+                comments_by_report.setdefault(c.report_id, []).append(c)
+        return {
+            "items": [_serialize_report(r, comments_by_report.get(r.id, [])) for r in rows],
+            "total": total,
+            "page": page,
+            "size": size,
+            "has_more": page * size < total,
+        }
+
+    rows = q.all()
+    ids = [r.id for r in rows]
+    comments_by_report = {}
+    if ids:
+        all_comments = db.query(models.ReportComment).filter(
+            models.ReportComment.report_id.in_(ids)
+        ).order_by(models.ReportComment.created_at.asc()).all()
+        for c in all_comments:
+            comments_by_report.setdefault(c.report_id, []).append(c)
+
+    return [_serialize_report(r, comments_by_report.get(r.id, [])) for r in rows]
+
+
+@router.get("/mine")
+def list_my_reports(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """Reports authored by the current user."""
+    rows = db.query(models.Report).filter(models.Report.user_id == current_user.user_id).order_by(models.Report.created_at.desc()).all()
+    ids = [r.id for r in rows]
+    comments_by_report = {}
+    if ids:
+        all_comments = db.query(models.ReportComment).filter(models.ReportComment.report_id.in_(ids)).all()
+        for c in all_comments:
+            comments_by_report.setdefault(c.report_id, []).append(c)
+    return [_serialize_report(r, comments_by_report.get(r.id, [])) for r in rows]
+
 
 @router.post("/report", status_code=status.HTTP_201_CREATED)
-def create_report(report: schemas.ReportCreate, db: Session = Depends(get_db)):
+def create_report(
+    report: schemas.ReportCreate,
+    db: Session = Depends(get_db),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
+):
+    safe_user = current_user if (current_user and getattr(current_user, 'user_id', 0) < 999990) else None
     new_report = models.Report(
+        user_id=safe_user.user_id if safe_user else None,
+        author_name=(safe_user.nickname or safe_user.name) if safe_user else None,
         type=report.type,
+        category=report.category,
+        sub_category=report.sub_category,
         location=report.location,
+        region=report.region,
+        detailed_address=report.detailed_address,
+        lat=report.lat,
+        lng=report.lng,
+        image_url=report.image_url,
         title=report.title,
         content=report.content,
-        files=json.dumps(report.files) # JSON 문자열로 저장
+        files=json.dumps(report.files),
+        status="개선예정",
+        progress_step=1,
     )
     db.add(new_report)
     db.commit()
     db.refresh(new_report)
     return {"message": "제보가 성공적으로 접수되었습니다.", "id": new_report.id}
+
+
+# --- 지도 클러스터 ---
+@router.get("/clusters")
+def get_report_clusters(db: Session = Depends(get_db)):
+    """region별 lat/lng 평균 + count 집계."""
+    from sqlalchemy import func
+    rows = (
+        db.query(
+            models.Report.region,
+            func.avg(models.Report.lat).label("lat"),
+            func.avg(models.Report.lng).label("lng"),
+            func.count(models.Report.id).label("count"),
+        )
+        .filter(models.Report.lat.isnot(None), models.Report.lng.isnot(None))
+        .group_by(models.Report.region)
+        .all()
+    )
+    return [
+        {"region": r.region, "lat": float(r.lat) if r.lat else None, "lng": float(r.lng) if r.lng else None, "count": r.count}
+        for r in rows
+    ]
+
+@router.get("/pins")
+def get_report_pins(db: Session = Depends(get_db)):
+    """지도 핀용 경량 엔드포인트 — 좌표 있는 제보만 id/lat/lng 반환."""
+    rows = (
+        db.query(models.Report.id, models.Report.lat, models.Report.lng, models.Report.category)
+        .filter(models.Report.lat.isnot(None), models.Report.lng.isnot(None))
+        .all()
+    )
+    return [{"id": r.id, "lat": float(r.lat), "lng": float(r.lng), "category": r.category} for r in rows]
+
+
+@router.get("/proposal-pins")
+def get_proposal_pins(db: Session = Depends(get_db)):
+    """지도 핀용 경량 엔드포인트 — 좌표 있는 제안만 id/lat/lng 반환."""
+    rows = (
+        db.query(models.NewProposal.id, models.NewProposal.lat, models.NewProposal.lng, models.NewProposal.category)
+        .filter(models.NewProposal.lat.isnot(None), models.NewProposal.lng.isnot(None))
+        .all()
+    )
+    return [{"id": r.id, "lat": float(r.lat), "lng": float(r.lng), "category": r.category} for r in rows]
+
 
 @router.post("/suggest", status_code=status.HTTP_201_CREATED)
 def create_suggestion(suggestion: schemas.SuggestionCreate, db: Session = Depends(get_db)):
@@ -78,18 +352,21 @@ def create_suggestion(suggestion: schemas.SuggestionCreate, db: Session = Depend
 
 @router.post("/new-proposal", status_code=status.HTTP_201_CREATED)
 def create_new_proposal(
-    proposal: schemas.NewProposalCreate, 
+    proposal: schemas.NewProposalCreate,
     db: Session = Depends(get_db),
-    current_user: Optional[models.User] = Depends(get_current_user) # 로그인 정보 가져오기
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
 ):
     try:
+        safe_user = current_user if (current_user and getattr(current_user, 'user_id', 0) < 999990) else None
         new_proposal = models.NewProposal(
-            user_id=current_user.user_id if current_user else None,
+            user_id=safe_user.user_id if safe_user else None,
             category=proposal.category,
             title=proposal.title,
             content=proposal.content,
             region=proposal.region,
             detailed_address=proposal.detailed_address,
+            lat=proposal.lat,
+            lng=proposal.lng,
             files=json.dumps(proposal.files) # 리스트를 JSON 문자열로 변환하여 저장
         )
         db.add(new_proposal)
@@ -98,67 +375,139 @@ def create_new_proposal(
         return {"message": "새로운 제안이 성공적으로 접수되었습니다.", "id": new_proposal.id}
     except Exception as e:
         db.rollback()
-        print(f"Error saving proposal: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # --- [추가] 전체 제안 목록 조회 API ---
-@router.get("/proposals", response_model=List[schemas.NewProposalRead])
+@router.get("/proposals")
 def get_all_proposals(
     db: Session = Depends(get_db),
-    current_user: Optional[models.User] = Depends(get_current_user_optional)
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    skip: int = 0,
+    limit: int = 25,
+    sort: str = "latest",
+    region: Optional[str] = None,
+    category: Optional[str] = None,
 ):
-    proposals = db.query(models.NewProposal).order_by(models.NewProposal.created_at.desc()).all()
-    for p in proposals:
-        p.nickname = p.creator.nickname if p.creator else "익명"
-        p.comments_count = db.query(models.ProposalComment).filter(models.ProposalComment.proposal_id == p.id).count()
+    q = (
+        db.query(models.NewProposal)
+        .options(joinedload(models.NewProposal.creator))
+    )
+    if region and region != "부산전체":
+        q = q.filter(models.NewProposal.region == region)
+    if category and category != "전체":
+        q = q.filter(models.NewProposal.category == category)
+    if sort == "views":
+        q = q.order_by(models.NewProposal.views_count.desc())
+    elif sort == "votes":
+        q = q.order_by(models.NewProposal.likes_count.desc())
+    else:
+        q = q.order_by(models.NewProposal.created_at.desc())
+    total = q.count()
+    proposals = q.offset(skip).limit(limit).all()
+    ids = [p.id for p in proposals]
+    comment_counts = {}
+    liked_ids: set = set()
+    if ids:
+        for pid, cnt in db.query(models.ProposalComment.proposal_id, func.count(models.ProposalComment.id)).filter(models.ProposalComment.proposal_id.in_(ids)).group_by(models.ProposalComment.proposal_id).all():
+            comment_counts[pid] = cnt
         if current_user:
-            if p.user_id == current_user.user_id:
-                p.is_mine = True
-            has_liked = db.query(models.ProposalLike).filter(
-                models.ProposalLike.proposal_id == p.id,
-                models.ProposalLike.user_id == current_user.user_id
-            ).first()
-            p.has_voted = True if has_liked else False
-    return proposals
+            for (pid,) in db.query(models.ProposalLike.proposal_id).filter(models.ProposalLike.user_id == current_user.user_id, models.ProposalLike.proposal_id.in_(ids)).all():
+                liked_ids.add(pid)
+    for p in proposals:
+        p.nickname = (p.creator.nickname if p.creator and p.creator.nickname else (p.creator.name if p.creator else "익명"))
+        p.comments_count = comment_counts.get(p.id, 0)
+        p.is_mine = current_user is not None and p.user_id == current_user.user_id
+        p.has_voted = p.id in liked_ids
+    from pydantic import TypeAdapter
+    ta = TypeAdapter(list[schemas.NewProposalRead])
+    return {
+        "items": ta.validate_python(proposals),
+        "total": total,
+        "has_more": skip + limit < total,
+    }
 
 # --- [추가] 나의 제안 목록 조회 API ---
 @router.get("/my-proposals", response_model=List[schemas.NewProposalRead])
 def get_my_proposals(
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
+    current_user: models.User = Depends(get_current_user),
 ):
-    proposals = db.query(models.NewProposal).filter(models.NewProposal.user_id == current_user.user_id).order_by(models.NewProposal.created_at.desc()).all()
+    proposals = (
+        db.query(models.NewProposal)
+        .filter(models.NewProposal.user_id == current_user.user_id)
+        .options(joinedload(models.NewProposal.creator))
+        .order_by(models.NewProposal.created_at.desc())
+        .all()
+    )
+    ids = [p.id for p in proposals]
+    comment_counts = {}
+    liked_ids: set = set()
+    if ids:
+        for pid, cnt in db.query(models.ProposalComment.proposal_id, func.count(models.ProposalComment.id)).filter(models.ProposalComment.proposal_id.in_(ids)).group_by(models.ProposalComment.proposal_id).all():
+            comment_counts[pid] = cnt
+        for (pid,) in db.query(models.ProposalLike.proposal_id).filter(models.ProposalLike.user_id == current_user.user_id, models.ProposalLike.proposal_id.in_(ids)).all():
+            liked_ids.add(pid)
     for p in proposals:
-        p.nickname = current_user.nickname
+        p.nickname = current_user.nickname or current_user.name
         p.is_mine = True
-        p.comments_count = db.query(models.ProposalComment).filter(models.ProposalComment.proposal_id == p.id).count()
-        has_liked = db.query(models.ProposalLike).filter(
-            models.ProposalLike.proposal_id == p.id,
-            models.ProposalLike.user_id == current_user.user_id
-        ).first()
-        p.has_voted = True if has_liked else False
+        p.comments_count = comment_counts.get(p.id, 0)
+        p.has_voted = p.id in liked_ids
     return proposals
 
 # --- [추가] 내가 투표한 제안 목록 조회 API ---
 @router.get("/voted-proposals", response_model=List[schemas.NewProposalRead])
 def get_voted_proposals(
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
+    current_user: models.User = Depends(get_current_user),
 ):
-    # ProposalLike 테이블을 조인하여 내가 투표한 글들만 가져옴
-    voted_proposals = db.query(models.NewProposal)\
-        .join(models.ProposalLike, models.NewProposal.id == models.ProposalLike.proposal_id)\
-        .filter(models.ProposalLike.user_id == current_user.user_id)\
-        .order_by(models.ProposalLike.created_at.desc()).all()
-    
+    voted_proposals = (
+        db.query(models.NewProposal)
+        .join(models.ProposalLike, models.NewProposal.id == models.ProposalLike.proposal_id)
+        .options(joinedload(models.NewProposal.creator))
+        .filter(models.ProposalLike.user_id == current_user.user_id)
+        .order_by(models.ProposalLike.created_at.desc())
+        .all()
+    )
+    ids = [p.id for p in voted_proposals]
+    comment_counts = {}
+    if ids:
+        for pid, cnt in db.query(models.ProposalComment.proposal_id, func.count(models.ProposalComment.id)).filter(models.ProposalComment.proposal_id.in_(ids)).group_by(models.ProposalComment.proposal_id).all():
+            comment_counts[pid] = cnt
     for p in voted_proposals:
-        p.nickname = p.creator.nickname if p.creator else "익명"
-        p.is_mine = (p.user_id == current_user.user_id)
+        p.nickname = (p.creator.nickname if p.creator and p.creator.nickname else (p.creator.name if p.creator else "익명"))
+        p.is_mine = p.user_id == current_user.user_id
         p.has_voted = True
-        
+        p.comments_count = comment_counts.get(p.id, 0)
     return voted_proposals
 
 # --- [추가] 제안 조회수 증가 API (본인 글 제외, 중복 방지) ---
+@router.post("/{report_id}/view")
+def increment_report_view(
+    report_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[models.User] = Depends(get_current_user_optional)
+):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+
+    # 비로그인은 카운트 안 함 (가벼운 정책 — ReportView 모델 없이 중복 방지를 위해)
+    if not current_user:
+        return {"views": r.views or 0, "counted": False}
+
+    # 관리자 또는 본인 글이면 조회수 증가 안 함
+    if current_user.user_id >= 999990 or r.user_id == current_user.user_id:
+        return {"views": r.views or 0, "counted": False}
+
+    try:
+        r.views = (r.views or 0) + 1
+        db.commit()
+        return {"views": r.views, "counted": True}
+    except Exception:
+        db.rollback()
+        return {"views": r.views or 0, "counted": False}
+
+
 @router.post("/proposals/{proposal_id}/view")
 def increment_proposal_view(
     proposal_id: int,
@@ -173,8 +522,8 @@ def increment_proposal_view(
     if not current_user:
         return {"views_count": proposal.views_count or 0, "counted": False}
 
-    # 본인 글이면 조회수 증가 안 함
-    if proposal.user_id == current_user.user_id:
+    # 관리자 또는 본인 글이면 조회수 증가 안 함
+    if current_user.user_id >= 999990 or proposal.user_id == current_user.user_id:
         return {"views_count": proposal.views_count or 0, "counted": False}
 
     # 이미 본 글인지 확인
@@ -188,15 +537,19 @@ def increment_proposal_view(
         return {"views_count": proposal.views_count or 0, "counted": False}
 
     try:
-        # 조회 기록 저장
         new_view = models.ProposalView(
             user_id=current_user.user_id,
             proposal_id=proposal_id
         )
         db.add(new_view)
+        db.flush()  # unique constraint 위반 즉시 감지
         proposal.views_count = (proposal.views_count or 0) + 1
         db.commit()
         return {"views_count": proposal.views_count, "counted": True}
+    except IntegrityError:
+        # 동시 요청으로 unique 제약 위반 → 이미 카운트됨
+        db.rollback()
+        return {"views_count": proposal.views_count or 0, "counted": False}
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
@@ -206,23 +559,26 @@ def increment_proposal_view(
 def get_proposal_detail(
     proposal_id: int,
     db: Session = Depends(get_db),
-    current_user: Optional[models.User] = Depends(get_current_user_optional)
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
 ):
-    proposal = db.query(models.NewProposal).filter(models.NewProposal.id == proposal_id).first()
+    proposal = (
+        db.query(models.NewProposal)
+        .options(joinedload(models.NewProposal.creator))
+        .filter(models.NewProposal.id == proposal_id)
+        .first()
+    )
     if not proposal:
         raise HTTPException(status_code=404, detail="제안을 찾을 수 없습니다.")
-    
-    proposal.nickname = proposal.creator.nickname if proposal.creator else "익명"
+
+    proposal.nickname = (proposal.creator.nickname if proposal.creator and proposal.creator.nickname else (proposal.creator.name if proposal.creator else "익명"))
+    proposal.comments_count = db.query(func.count(models.ProposalComment.id)).filter(models.ProposalComment.proposal_id == proposal_id).scalar() or 0
+    proposal.is_mine = current_user is not None and proposal.user_id == current_user.user_id
+    proposal.has_voted = False
     if current_user:
-        if proposal.user_id == current_user.user_id:
-            proposal.is_mine = True
-        # 투표 여부 확인
-        has_liked = db.query(models.ProposalLike).filter(
-            models.ProposalLike.proposal_id == proposal.id,
-            models.ProposalLike.user_id == current_user.user_id
-        ).first()
-        proposal.has_voted = True if has_liked else False
-        
+        proposal.has_voted = db.query(models.ProposalLike).filter(
+            models.ProposalLike.proposal_id == proposal_id,
+            models.ProposalLike.user_id == current_user.user_id,
+        ).first() is not None
     return proposal
 
 # --- [추가] 제안 투표(좋아요) 토글 API ---
@@ -235,12 +591,11 @@ def toggle_proposal_vote(
     proposal = db.query(models.NewProposal).filter(models.NewProposal.id == proposal_id).first()
     if not proposal:
         raise HTTPException(status_code=404, detail="제안을 찾을 수 없습니다.")
-    
-    # 본인 글 투표 방지 (선택 사항)
-    # if proposal.user_id == current_user.user_id:
-    #     raise HTTPException(status_code=400, detail="본인의 제안에는 투표할 수 없습니다.")
-    
-    # 이미 투표했는지 확인
+    if current_user.user_id >= 999990:
+        raise HTTPException(status_code=403, detail="관리자는 투표할 수 없습니다.")
+    if proposal.user_id == current_user.user_id:
+        raise HTTPException(status_code=403, detail="본인 글에는 투표할 수 없습니다.")
+
     existing_like = db.query(models.ProposalLike).filter(
         models.ProposalLike.proposal_id == proposal_id,
         models.ProposalLike.user_id == current_user.user_id
@@ -263,7 +618,19 @@ def toggle_proposal_vote(
             proposal.likes_count = (proposal.likes_count or 0) + 1
             message = "투표가 완료되었습니다."
             voted = True
-        
+            if proposal.user_id and proposal.user_id != current_user.user_id:
+                push_notification(
+                    db,
+                    user_id=proposal.user_id,
+                    actor_id=current_user.user_id,
+                    kind="vote",
+                    target_type="proposal",
+                    target_id=proposal.id,
+                    title=f"{current_user.nickname or current_user.name}님이 제안에 투표했습니다.",
+                    body=proposal.title or "",
+                )
+        log_activity(db, user_id=current_user.user_id, action="vote" if voted else "unvote",
+                     target_type="proposal", target_id=proposal.id)
         db.commit()
         return {
             "message": message,
@@ -339,13 +706,27 @@ def create_comment(
     if not proposal:
         raise HTTPException(status_code=404, detail="Proposal not found")
 
+    safe_uid = current_user.user_id if current_user.user_id < 999990 else None
     new_comment = models.ProposalComment(
         proposal_id=proposal_id,
-        user_id=current_user.user_id,
+        user_id=safe_uid,
         content=comment.content,
         parent_comment_id=comment.parent_comment_id
     )
     db.add(new_comment)
+    if proposal.user_id and proposal.user_id != current_user.user_id:
+        push_notification(
+            db,
+            user_id=proposal.user_id,
+            actor_id=current_user.user_id,
+            kind="comment",
+            target_type="proposal",
+            target_id=proposal.id,
+            title=f"{current_user.nickname or current_user.name}님이 제안에 댓글을 남겼습니다.",
+            body=comment.content,
+        )
+    log_activity(db, user_id=current_user.user_id, action="comment", target_type="proposal", target_id=proposal.id,
+                 meta={"snippet": (comment.content or "")[:80]})
     db.commit()
     db.refresh(new_comment)
 
@@ -444,3 +825,214 @@ def update_comment(
         created_at=comment.created_at,
         replies=[]
     )
+
+
+# =============================================================================
+# 제보 단건 — /{report_id} 패턴 라우트는 /proposals 라우트들보다 *뒤에* 등록.
+# FastAPI는 등록 순서대로 매칭하므로 위 proposals 정적 경로를 먼저 잡아야 함.
+# =============================================================================
+
+@router.get("/{report_id}", response_model=schemas.ReportRead)
+def get_report_detail(report_id: int, db: Session = Depends(get_db)):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    r.views = (r.views or 0) + 1
+    db.commit()
+    comments = db.query(models.ReportComment).filter(
+        models.ReportComment.report_id == report_id
+    ).order_by(models.ReportComment.created_at.asc()).all()
+    return _serialize_report(r, comments)
+
+
+@router.put("/{report_id}")
+def update_report(
+    report_id: int,
+    payload: schemas.ReportCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    if r.user_id != current_user.user_id and current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="본인의 제보만 수정할 수 있습니다.")
+    for k in ("title", "content", "category", "sub_category", "region", "location", "detailed_address", "lat", "lng", "image_url"):
+        v = getattr(payload, k, None)
+        if v is not None:
+            setattr(r, k, v)
+    if payload.files is not None:
+        r.files = json.dumps(payload.files)
+    db.commit()
+    return {"message": "수정되었습니다."}
+
+
+@router.delete("/{report_id}")
+def delete_report(
+    report_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    if r.user_id != current_user.user_id and current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="본인의 제보만 삭제할 수 있습니다.")
+    db.query(models.ReportComment).filter(models.ReportComment.report_id == report_id).delete()
+    db.query(models.ReportLike).filter(models.ReportLike.report_id == report_id).delete()
+    db.query(models.ReportImage).filter(models.ReportImage.report_id == report_id).delete()
+    db.delete(r)
+    db.commit()
+    return {"message": "삭제되었습니다."}
+
+
+@router.post("/{report_id}/like")
+def toggle_report_like(
+    report_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    if current_user.user_id >= 999990:
+        raise HTTPException(status_code=403, detail="관리자는 공감할 수 없습니다.")
+    if r.user_id == current_user.user_id:
+        raise HTTPException(status_code=403, detail="본인 글에는 공감할 수 없습니다.")
+    existing = db.query(models.ReportLike).filter(
+        models.ReportLike.report_id == report_id,
+        models.ReportLike.user_id == current_user.user_id,
+    ).first()
+    if existing:
+        db.delete(existing)
+        r.likes_count = max(0, (r.likes_count or 0) - 1)
+        liked = False
+    else:
+        db.add(models.ReportLike(user_id=current_user.user_id, report_id=report_id))
+        r.likes_count = (r.likes_count or 0) + 1
+        liked = True
+        # 알림 — 작성자에게
+        if r.user_id and r.user_id != current_user.user_id:
+            push_notification(
+                db,
+                user_id=r.user_id,
+                actor_id=current_user.user_id,
+                kind="like",
+                target_type="report",
+                target_id=r.id,
+                title=f"{current_user.nickname or current_user.name}님이 제보에 공감했습니다.",
+                body=r.title or "",
+            )
+    log_activity(db, user_id=current_user.user_id, action="like" if liked else "unlike",
+                 target_type="report", target_id=r.id)
+    db.commit()
+    return {"likes_count": r.likes_count, "liked": liked}
+
+
+@router.get("/{report_id}/comments", response_model=List[schemas.ReportCommentRead])
+def list_report_comments(report_id: int, db: Session = Depends(get_db)):
+    rows = db.query(models.ReportComment).filter(
+        models.ReportComment.report_id == report_id
+    ).order_by(models.ReportComment.created_at.asc()).all()
+    return [
+        {
+            "id": c.id,
+            "author": c.author_name or (c.user.nickname if c.user else "익명"),
+            "content": c.content,
+            "date": c.created_at.strftime("%Y.%m.%d") if c.created_at else None,
+        }
+        for c in rows
+    ]
+
+
+@router.post("/{report_id}/comments", response_model=schemas.ReportCommentRead, status_code=201)
+def create_report_comment(
+    report_id: int,
+    payload: schemas.ReportCommentCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="제보를 찾을 수 없습니다.")
+    safe_uid = current_user.user_id if current_user.user_id < 999990 else None
+    c = models.ReportComment(
+        report_id=report_id,
+        user_id=safe_uid,
+        author_name=current_user.nickname or current_user.name,
+        content=payload.content,
+    )
+    db.add(c)
+    r.comments_count = (r.comments_count or 0) + 1
+    # 알림 — 작성자에게
+    if r.user_id and r.user_id != current_user.user_id:
+        push_notification(
+            db,
+            user_id=r.user_id,
+            actor_id=current_user.user_id,
+            kind="comment",
+            target_type="report",
+            target_id=r.id,
+            title=f"{current_user.nickname or current_user.name}님이 제보에 댓글을 남겼습니다.",
+            body=payload.content,
+        )
+    log_activity(db, user_id=current_user.user_id, action="comment", target_type="report", target_id=r.id,
+                 meta={"snippet": (payload.content or "")[:80]})
+    db.commit()
+    db.refresh(c)
+    return {
+        "id": c.id,
+        "author": c.author_name,
+        "content": c.content,
+        "date": c.created_at.strftime("%Y.%m.%d") if c.created_at else None,
+    }
+
+
+@router.put("/{report_id}/comments/{comment_id}", response_model=schemas.ReportCommentRead)
+def update_report_comment(
+    report_id: int,
+    comment_id: int,
+    payload: schemas.ReportCommentUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    c = db.query(models.ReportComment).filter(
+        models.ReportComment.id == comment_id,
+        models.ReportComment.report_id == report_id,
+    ).first()
+    if not c:
+        raise HTTPException(status_code=404, detail="댓글을 찾을 수 없습니다.")
+    if c.user_id != current_user.user_id and current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="본인의 댓글만 수정할 수 있습니다.")
+    c.content = payload.content
+    db.commit()
+    db.refresh(c)
+    return {
+        "id": c.id,
+        "author": c.author_name,
+        "content": c.content,
+        "date": c.created_at.strftime("%Y.%m.%d") if c.created_at else None,
+    }
+
+
+@router.delete("/{report_id}/comments/{comment_id}")
+def delete_report_comment(
+    report_id: int,
+    comment_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    c = db.query(models.ReportComment).filter(
+        models.ReportComment.id == comment_id,
+        models.ReportComment.report_id == report_id,
+    ).first()
+    if not c:
+        raise HTTPException(status_code=404, detail="댓글을 찾을 수 없습니다.")
+    if c.user_id != current_user.user_id and current_user.ID != "admin":
+        raise HTTPException(status_code=403, detail="본인의 댓글만 삭제할 수 있습니다.")
+    r = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if r:
+        r.comments_count = max(0, (r.comments_count or 0) - 1)
+    db.delete(c)
+    db.commit()
+    return {"message": "삭제되었습니다."}

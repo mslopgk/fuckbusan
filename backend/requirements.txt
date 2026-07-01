@@ -13,3 +13,10 @@ python-jose[cryptography]
 httpx
 boto3==1.34.0
 mangum
+Pillow>=10.0.0
+
+# RAG (AI 가상시민) — shain1912/runway 이식
+qdrant-client>=1.10.0
+sentence-transformers>=2.2.0
+fastembed>=0.3.0
+anthropic>=0.25.0

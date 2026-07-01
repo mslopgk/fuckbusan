@@ -35,7 +35,7 @@
 .logo-icon {
     width: 24px;
     height: 24px;
-    background-color: #16B5B0;
+    background-color: #5B2EAB;
     border-radius: 50%;
 }
 
@@ -65,7 +65,7 @@
 }
 
 .btn-header.signup {
-    background-color: #16B5B0;
+    background-color: #5B2EAB;
     color: white;
     border-radius: 20px;
     padding: 8px 20px;
@@ -73,8 +73,7 @@
 }
 
 .btn-header.signup:hover {
-    background-color: #0F8581;
-    /* Darker Mint */
+    background-color: #491C9C;
 }
 
 .header-icons {
@@ -95,10 +94,8 @@
 .main-actions-container {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    /* Even tighter gap as requested */
+    gap: 10px;
     margin-top: -120px;
-    /* Enhanced pull-up */
     position: relative;
     z-index: 20;
 }
@@ -179,7 +176,7 @@
 }
 
 .card.diagnose {
-    background-color: #16B5B0;
+    background-color: #06AB69;
     color: white;
 }
 
@@ -598,22 +595,23 @@
 .hero-map-container {
     position: absolute;
     width: 100%;
-    /* Full width for responsiveness */
     min-width: 340px;
-    /* Prevent map from becoming too small on narrow screens */
     left: 50%;
-    /* Moved to strictly center (was 48%) */
     transform: translateX(-50%);
-    top: 28%;
-    /* Moved up significantly to sit on the background dividing line */
+    top: 45%;
     height: auto;
-    z-index: 10;
+    z-index: 4;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 0;
     pointer-events: none;
     overflow: visible;
+}
+
+/* 텍스트가 지도 위에 위치하도록 */
+.hero-text {
+    z-index: 10;
 }
 
 .hero-map-bg-wrapper {
@@ -652,7 +650,7 @@
 
 @media (max-width: 768px) {
     .hero-section {
-        height: 560px;
+        height: 640px;
         padding: 80px 15px 0;
         min-height: auto;
     }
@@ -661,27 +659,25 @@
         position: absolute;
         width: 100%;
         left: 50%;
-        top: 55%;
-        /* Raised further to 55% as requested */
-        /* Pure vertical center within the 750px hero */
+        top: 60%;
         transform: translate(-50%, -50%);
         display: flex;
         justify-content: center;
-        overflow: visible;
+        overflow: hidden;
         pointer-events: none;
-        z-index: 10;
+        z-index: 4;
         margin-top: 0;
     }
 
     .hero-map-overlay {
-        width: 95vw;
+        width: 100vw;
         max-width: none;
-        height: 550px;
+        height: 540px;
         margin-left: 0;
-        transform: scale(1.1);
-        /* Larger scale as requested */
+        transform: scale(1.35);
+        transform-origin: center center;
         pointer-events: auto;
-        filter: drop-shadow(0px 15px 30px rgba(0, 0, 0, 0.25));
+        filter: drop-shadow(0px 14px 28px rgba(0, 0, 0, 0.18));
     }
 
     .action-row {

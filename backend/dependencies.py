@@ -5,10 +5,7 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from database import get_db
 from models import User
-
-# 1. 설정 (user_router에 썼던 키와 똑같아야 합니다!)
-SECRET_KEY = "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"
-ALGORITHM = "HS256"
+from utils import SECRET_KEY, ALGORITHM
 
 # 2. 토큰을 어디서 가져올지 설정 (로그인 주소)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")

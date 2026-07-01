@@ -1,0 +1,424 @@
+/* ─── MProposalList — standalone 목록 페이지 ─── */
+.m-prop-list-page {
+    height: 100vh;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ─── 상단 topbar ─── */
+.m-prop-topbar {
+    height: 56px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    flex-shrink: 0;
+}
+
+.m-prop-back {
+    background: none;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 4px 0;
+    letter-spacing: -0.02em;
+}
+
+/* 지도보기 pill — 핑크 bg, 위치 핀 아이콘 */
+.m-map-btn {
+    background: #E6235A;
+    border: none;
+    border-radius: 20px;
+    padding: 0 14px;
+    height: 36px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+}
+
+/* ─── 지역 선택 행 ─── */
+.m-region-row {
+    padding: 14px 20px 4px;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+.m-region-btn {
+    background: none;
+    border: none;
+    padding: 4px 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #242424;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.04em;
+}
+
+/* 핑크 원 + 흰 화살표 */
+.m-region-arrow {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #E6235A;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ─── 카테고리 칩 ─── */
+.m-cat-chips {
+    background: #fff;
+    padding: 12px 20px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.m-cat-chip {
+    background: #e6e6e6;
+    border: none;
+    border-radius: 20px;
+    padding: 0 14px;
+    height: 33px;
+    font-size: 16px;
+    color: #242424;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    transition: background 0.15s, color 0.15s, font-weight 0.1s;
+}
+
+.m-cat-chip.on {
+    background: #E6235A;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ─── 정렬 행 ─── */
+.m-sort-row {
+    display: flex;
+    justify-content: flex-end;
+    padding: 4px 20px 4px;
+    flex-shrink: 0;
+}
+
+.m-sort-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: #242424;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.04em;
+}
+
+/* ─── 스크롤 가능한 카드 목록 영역 ─── */
+.m-prop-list-scroll {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ─── 태그·작성자 공용 ─── */
+.m-report-tags {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.m-report-author-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.m-report-author-stat-row .m-prop-author {
+    margin: 0;
+}
+
+.m-report-sub-tag {
+    background: #FCDAE3;
+    color: #C2456A;
+    padding: 3px 10px;
+    border-radius: 11px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ─── 카드 목록 ─── */
+.m-prop-cards {
+    list-style: none;
+    margin: 0;
+    padding: 4px 20px 92px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.m-prop-card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.m-prop-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.08);
+}
+
+.m-prop-card-text { flex: 1; min-width: 0; }
+
+/* 카테고리 태그 */
+.m-prop-cat-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.m-prop-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #111;
+    margin: 4px 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    letter-spacing: -0.02em;
+}
+
+.m-prop-author {
+    font-size: 14px;
+    color: #1e1e1e;
+    margin: 0;
+    letter-spacing: 0;
+    line-height: 1.35;
+}
+
+.m-prop-stats {
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+    color: #bfbfbf;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+}
+
+.m-prop-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+/* 썸네일 이미지 */
+.m-prop-card-img {
+    width: 55px;
+    height: 55px;
+    border-radius: 15px;
+    background: #f0f0f0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.m-prop-card-img.has-image {
+    background: linear-gradient(135deg, #1f2540 0%, #4a3070 60%, #d97a55 100%);
+}
+
+.m-prop-card-img.no-image {
+    background: #f0f1f4;
+    position: relative;
+    overflow: hidden;
+}
+
+.m-prop-card-img.no-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23c8c8c8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpolyline points='21 15 16 10 5 21'/%3E%3C/svg%3E") center / 22px 22px no-repeat;
+}
+
+/* ─── FAB ─── */
+.m-prop-fab {
+    position: fixed;
+    right: 20px;
+    bottom: 92px;
+    background: #E6235A;
+    color: #fff;
+    border: none;
+    border-radius: 26px;
+    height: 48px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 6px 18px rgba(230, 35, 90, 0.35);
+    font-family: inherit;
+    z-index: 60;
+    letter-spacing: -0.02em;
+    transition: transform 0.12s, box-shadow 0.12s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.m-prop-fab:active {
+    transform: scale(0.95);
+    box-shadow: 0 3px 10px rgba(230, 35, 90, 0.25);
+}
+
+/* ─── 바텀시트 모달 (RegionSheet / SortSheet 공용) ─── */
+.m-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    animation: m-modal-fade-in 0.2s ease-out;
+}
+
+@keyframes m-modal-fade-in {
+    from { background: rgba(0, 0, 0, 0); }
+    to   { background: rgba(0, 0, 0, 0.4); }
+}
+
+.m-modal-sheet {
+    width: 100%;
+    background: #fff;
+    border-radius: 18px 18px 0 0;
+    padding: 22px 20px 24px;
+    max-height: 76vh;
+    display: flex;
+    flex-direction: column;
+    animation: m-modal-slide-up 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes m-modal-slide-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+
+.m-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.m-modal-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.m-modal-close {
+    background: none;
+    border: none;
+    color: #1a1a1b;
+    cursor: pointer;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-region-list,
+.m-sort-list {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.m-region-item,
+.m-sort-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 4px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1b;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: color 0.12s;
+}
+
+.m-region-item .m-modal-chevron,
+.m-sort-item .m-modal-chevron {
+    color: #b0b0b0;
+    display: inline-flex;
+    align-items: center;
+}
+
+.m-region-item.on,
+.m-sort-item.on {
+    color: #E6235A;
+}
+
+.m-region-item.on .m-modal-chevron,
+.m-sort-item.on .m-modal-chevron {
+    color: #E6235A;
+}
+
+.m-modal-confirm {
+    height: 50px;
+    border: none;
+    border-radius: 25px;
+    background: #E6235A;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.25);
+    font-family: inherit;
+    margin-top: 8px;
+}

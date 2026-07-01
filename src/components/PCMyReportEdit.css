@@ -1,0 +1,156 @@
+/* PCMyReportEdit.css — PC 나의제보 수정 (Figma 215:3219) */
+
+/* 사진 등록 행 */
+.pc-myrep-edit-photo-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* 사진 썸네일 (Figma: size=80px, radius=10px) */
+.pc-myrep-edit-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #f1f3f5;
+    position: relative;
+}
+
+.pc-myrep-edit-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px;
+}
+
+/* + 사진 추가 버튼 (Figma: 80x80, border 1px #dcdcdc, radius=15px) */
+.pc-myrep-edit-photo-add {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s, background 0.15s;
+    flex-shrink: 0;
+}
+
+.pc-myrep-edit-photo-add:hover {
+    border-color: #b0b0b0;
+    background: #f7f7f7;
+}
+
+/* 위치정보 행 (주소 + 상세위치 나란히) */
+.pc-myrep-edit-loc-row {
+    display: flex;
+    gap: 12px;
+}
+
+/* 주소 input 래퍼 (Figma: border #dcdcdc, radius=15px, h=55px) */
+.pc-myrep-edit-loc-input {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    background: #fff;
+    padding: 0 16px;
+    height: 55px;
+    box-sizing: border-box;
+}
+
+.pc-myrep-edit-loc-input input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: #a6a6a6;
+    font-family: 'Pretendard Variable', sans-serif;
+    letter-spacing: -0.04em;
+}
+
+.pc-myrep-edit-loc-input input:focus { outline: none; }
+.pc-myrep-edit-loc-input input:not(:placeholder-shown) { color: #242424; }
+
+/* crosshair 핀 버튼 */
+.pc-myrep-edit-loc-pin {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* 상세위치 input (Figma 215:3219: border #542aa3 보라 — 입력 활성 상태) */
+.pc-myrep-edit-detail-input {
+    flex: 1;
+    height: 55px;
+    border-radius: 15px;
+    border: 1px solid #542aa3;
+    background: #fff;
+    padding: 0 18px;
+    font-size: 16px;
+    color: #242424;
+    font-family: 'Pretendard Variable', sans-serif;
+    letter-spacing: -0.04em;
+    box-sizing: border-box;
+}
+
+.pc-myrep-edit-detail-input:focus { outline: none; border-color: #542aa3; }
+
+/* 수정완료 버튼 래퍼 (Figma: 오른쪽 정렬, w=301px) */
+.pc-myrep-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ececec;
+}
+
+/* 수정완료 버튼 (Figma 215:3226: bg #542aa3 보라, h=59px, w=301px, radius=15px) */
+.pc-myrep-edit-actions .pc-btn-purple {
+    width: 301px;
+    height: 59px;
+    background: #542aa3;
+    color: #fff;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Pretendard Variable', sans-serif;
+    letter-spacing: -0.04em;
+    transition: opacity 0.15s;
+}
+
+.pc-myrep-edit-actions .pc-btn-purple:hover { opacity: 0.9; }
+.pc-myrep-edit-actions .pc-btn-purple:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* ── 카테고리 chip: PCFormShared의 핑크 active를 보라로 덮어씀 ── */
+/* Figma 215:3219: active chip = bg #542aa3 (보라) */
+.pc-myrep-edit-page .pc-form-chip.active {
+    background: #542aa3 !important;
+    color: #fff !important;
+}
+
+/* 에러 */
+.pc-myrep-edit-error {
+    color: #d12247;
+    font-size: 13px;
+    margin: 16px 0 0;
+    text-align: center;
+}

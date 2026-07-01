@@ -1,0 +1,507 @@
+/* ============================================================
+   MSurveyResults — Figma-aligned design + entrance animations
+   ============================================================ */
+
+.m-survey-results-page {
+    min-height: 100vh;
+    background: #f4f4f4;
+    padding-bottom: 80px;
+}
+
+/* ── 히어로 ─────────────────────────────────────────────────── */
+.m-results-hero {
+    background: #5B2EAB;
+    padding: 0 20px;
+    color: #fff;
+    min-height: 211px;
+}
+
+.m-hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0 4px;
+}
+
+.m-hero-back {
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.m-hero-copy {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 13px;
+    letter-spacing: -0.02em;
+    transition: background 0.2s;
+}
+.m-hero-copy:hover { background: rgba(255,255,255,0.3); }
+
+.m-results-title {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.45;
+    margin: 32px 0 20px;
+    letter-spacing: -0.02em;
+    text-align: center;
+    white-space: pre-wrap;
+    word-break: keep-all;
+}
+
+/* Figma: 날짜 좌측 + 인원 우측 정렬, 구분선 없음 */
+.m-results-meta-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #fff;
+    border-radius: 30px;
+    padding: 11px 22px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+    font-size: 13px;
+    color: #111;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: -27px;  /* 콘텐츠 영역 위로 올라오게 (Figma: pill은 hero 아래 31px 걸침) */
+    position: relative;
+    z-index: 2;
+}
+
+.m-results-period {
+    color: #555;
+}
+
+.m-results-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    color: #5B2EAB;
+}
+
+/* ── 콘텐츠 영역 ─────────────────────────────────────────────── */
+.m-results-content {
+    background: #fff;
+    padding-top: 42px;   /* pill 카드가 올라온 만큼 여백 확보 */
+    margin-top: 0;
+}
+
+.m-section-divider {
+    height: 5px;
+    background: #f4f4f4;
+}
+
+.m-results-section {
+    padding: 22px 20px 26px;
+}
+
+.m-results-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 18px;
+    letter-spacing: -0.02em;
+}
+
+.m-q-result-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111;
+    margin: 0 0 16px;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+}
+
+.m-results-empty {
+    text-align: center;
+    color: #aaa;
+    padding: 44px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    font-size: 14px;
+}
+
+/* ── 로딩 스피너 ──────────────────────────────────────────────── */
+.m-results-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #f0f0f0;
+    border-top-color: #5B2EAB;
+    border-radius: 50%;
+    animation: srSpin 0.8s linear infinite;
+}
+@keyframes srSpin { to { transform: rotate(360deg); } }
+
+/* ── 레이더 차트 ─────────────────────────────────────────────── */
+.m-radar-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.m-radar-svg {
+    width: 268px;
+    max-width: 100%;
+    height: auto;
+    opacity: 0;
+}
+.m-radar-svg.animated {
+    animation: srFadeScale 0.7s ease-out 0.1s both;
+}
+
+.m-radar-polygon {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0.4);
+}
+.m-radar-polygon.animated {
+    animation: radarExpand 0.9s cubic-bezier(0.34, 1.4, 0.64, 1) 0.3s both;
+}
+.m-radar-dot { opacity: 0; }
+.m-radar-dot.animated { animation: srFadeUp 0.4s ease-out 0.7s both; }
+@keyframes radarExpand {
+    from { opacity: 0; transform: scale(0.4); }
+    to   { opacity: 1; transform: scale(1); }
+}
+@keyframes srFadeScale {
+    from { opacity: 0; transform: scale(0.88); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* 자세히보기 버튼 */
+.m-results-detail-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-size: 14px;
+    color: #666;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    letter-spacing: -0.02em;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.m-results-detail-btn:hover { background: #f8f8f8; box-shadow: 0 3px 14px rgba(0,0,0,0.12); }
+.m-results-detail-btn.expanded { color: #5B2EAB; border-color: #d5c8f0; }
+
+/* 레이더 상세 리스트 */
+.m-radar-detail-list {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    animation: srFadeUp 0.4s ease-out both;
+}
+@keyframes srFadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.m-radar-detail-list li {
+    display: grid;
+    grid-template-columns: 68px 1fr 32px;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+.m-radar-detail-list li > span { color: #666; }
+.m-radar-detail-bar {
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.m-radar-detail-fill {
+    height: 100%;
+    background: #5B2EAB;
+    border-radius: 4px;
+}
+.m-radar-detail-list strong { color: #5B2EAB; font-size: 13px; text-align: right; }
+
+/* ── 도넛 차트 (범례 가운데) ─────────────────────────────────── */
+.m-donut-row {
+    display: flex;
+    justify-content: center;
+}
+.m-donut-chart {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    opacity: 0;
+}
+.m-donut-chart.animated {
+    animation: donutPop 0.6s cubic-bezier(0.34, 1.36, 0.64, 1) 0.1s both;
+}
+@keyframes donutPop {
+    from { opacity: 0; transform: scale(0.65); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.m-donut-svg { display: block; }
+
+/* 도넛 중앙 범례 */
+.m-donut-legend {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.m-donut-legend li {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+.m-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.m-legend-pct {
+    color: #1a1a1a;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: -0.02em;
+    min-width: 32px;
+}
+.m-legend-label {
+    color: #9aa0a6;
+    font-size: 12px;
+    letter-spacing: -0.02em;
+}
+
+/* ── 가로 바 차트 (둥근 막대, 라벨 안쪽 / % 바깥) ───────────────── */
+.m-hbars { display: flex; flex-direction: column; gap: 12px; }
+
+.m-hbar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.m-hbar-track {
+    flex: 1;
+    min-width: 0;
+}
+
+.m-hbar-fill {
+    height: 34px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    box-sizing: border-box;
+    min-width: 70px;
+    transform: scaleX(0);
+    transform-origin: left;
+}
+.m-hbar-fill.animated {
+    animation: barSlide 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes barSlide {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+.m-hbar-inner-label {
+    font-size: 13px;
+    color: #fff;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.02em;
+}
+
+.m-hbar-pct {
+    font-size: 15px;
+    font-weight: 800;
+    width: 42px;
+    text-align: left;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+}
+
+/* ── 버블 클라우드 ───────────────────────────────────────────── */
+.m-bubble-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0 4px;
+    min-height: 200px;
+}
+
+.m-bubble-item {
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6px;
+    box-sizing: border-box;
+    transform: scale(0);
+    opacity: 0;
+}
+.m-bubble-item.animated {
+    animation: bubblePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes bubblePop {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+.m-bubble-item.is-light { color: #3d1b6b; }
+.m-bubble-text {
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    word-break: keep-all;
+}
+.m-bubble-pct {
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 1px;
+    opacity: 0.92;
+}
+
+/* ── 세로 바 히스토그램 (Y축 눈금 + 격자) ─────────────────────── */
+.m-col-chart { padding: 8px 0 0; }
+
+.m-col-grid {
+    display: flex;
+    align-items: stretch;
+    height: 210px;
+}
+
+/* Y축 눈금: 위→아래 0 정렬, space-between */
+.m-col-yaxis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-right: 10px;
+    padding-top: 18px;   /* 막대 위 값 라벨 공간 */
+}
+.m-col-ytick {
+    font-size: 11px;
+    color: #b5b5bd;
+    line-height: 1;
+    transform: translateY(50%);   /* 격자선에 눈금 정렬 */
+}
+.m-col-ytick:first-child { transform: none; }
+
+/* 플롯 영역 */
+.m-col-plot {
+    position: relative;
+    flex: 1;
+    padding-top: 18px;
+}
+
+.m-col-gridline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #efeff2;
+}
+
+.m-col-bars {
+    position: absolute;
+    left: 0; right: 0; top: 18px; bottom: 0;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    padding: 0 6px;
+}
+
+.m-col-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+}
+
+.m-col-bar-area {
+    width: 100%;
+    max-width: 38px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+}
+
+.m-col-val {
+    font-size: 12px;
+    font-weight: 700;
+    color: #2a2a2a;
+    margin-bottom: 5px;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+.m-col-bar {
+    width: 100%;
+    background: #5B2EAB;
+    border-radius: 6px 6px 0 0;
+    min-height: 4px;
+    transform: scaleY(0);
+    transform-origin: bottom;
+}
+.m-col-bar.animated {
+    animation: colRise 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes colRise {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+}
+
+/* X축 라벨 (1~5) — Y축 폭만큼 들여쓰기 */
+.m-col-xaxis {
+    display: flex;
+    gap: 10px;
+    padding: 8px 6px 0;
+    margin-left: 34px;   /* y축 눈금 + padding 폭 보정 */
+}
+.m-col-x-label {
+    flex: 1;
+    font-size: 12px;
+    color: #8a8a92;
+    text-align: center;
+    max-width: 38px;
+    margin: 0 auto;
+}

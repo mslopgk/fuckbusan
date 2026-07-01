@@ -5,9 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "backend": "cd backend && python3 -m uvicorn main:app --reload --host 0.0.0.0 --port 8000",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify": "node verify/cli.mjs",
+    "verify:fe": "node verify/cli.mjs --only=frontend",
+    "verify:api": "node verify/cli.mjs --only=api"
   },
   "repository": {
     "type": "git",
@@ -22,13 +26,17 @@
   "homepage": "https://github.com/cherryrenee/design#readme",
   "description": "",
   "dependencies": {
+    "firebase": "^12.14.0",
     "framer-motion": "^12.23.26",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.561.0",
+    "plotly.js-gl3d-dist-min": "^3.6.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
+    "react-kakao-maps-sdk": "^1.2.1",
     "react-leaflet": "^5.0.0",
     "react-leaflet-cluster": "^4.0.0",
+    "react-plotly.js": "^3.0.0",
     "react-router-dom": "^7.10.1",
     "recharts": "^3.5.1",
     "xlsx": "^0.18.5"
@@ -37,6 +45,7 @@
     "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.23",
     "localtunnel": "^2.0.2",
+    "playwright": "^1.59.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "vite": "^7.2.7"

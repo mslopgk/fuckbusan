@@ -1,222 +1,60 @@
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap, Pane, GeoJSON } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
-import 'leaflet/dist/leaflet.css';
-import { useEffect, useState, useMemo, memo, useCallback } from 'react';
-import { Loader2 } from 'lucide-react';
-import L from 'leaflet';
+import { Map, Polygon, MarkerClusterer, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
+import { useEffect, useState, useMemo, memo, useCallback, useRef } from 'react';
 import '../../styles/admin.css';
 
-// 부산 중심 좌표
-const BUSAN_CENTER = [35.1795543, 129.0756416];
-// 부산 경계 (Max Bounds)
-const BUSAN_BOUNDS = [
-    [34.8, 128.7], // SouthWest
-    [35.4, 129.4]  // NorthEast
-];
+const BUSAN_CENTER = { lat: 35.1795543, lng: 129.0756416 };
 
-// 지도 컨트롤러 (크기 변경 감지 및 리렌더링)
-function MapController() {
-    const map = useMap();
+const Loader2 = ({ className }) => (
+    <svg className={className} width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+);
 
-    useEffect(() => {
-        // 초기 로드 시 리사이즈
-        const timer = setTimeout(() => {
-            map.invalidateSize();
-        }, 100);
-
-        // ResizeObserver로 컨테이너 크기 변경 감지
-        const resizeObserver = new ResizeObserver(() => {
-            map.invalidateSize();
-        });
-
-        resizeObserver.observe(map.getContainer());
-
-        return () => {
-            clearTimeout(timer);
-            resizeObserver.disconnect();
-        };
-    }, [map]);
-
-    return null;
-}
-
-// 전체화면 버튼 (오른쪽으로 이동)
-function FullscreenControl() {
-    const map = useMap();
-    const handleFullscreen = () => {
-        const mapContainer = map.getContainer();
-        if (!document.fullscreenElement) {
-            mapContainer.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
-    };
-
-    return (
-        <div className="leaflet-top leaflet-right custom-control-wrapper">
-            <div className="leaflet-control leaflet-bar">
-                <a role="button" title="전체화면" href="#" onClick={(e) => { e.preventDefault(); handleFullscreen(); }} className="custom-control-btn">
-                    ⛶
-                </a>
-            </div>
-        </div>
-    );
-}
-
-// 줌 초기화 버튼
-function ResetViewControl() {
-    const map = useMap();
-    const handleReset = () => {
-        map.setView(BUSAN_CENTER, 11);
-    };
-
-    return (
-        <div className="leaflet-top leaflet-right custom-control-wrapper" style={{ marginTop: '48px' }}>
-            <div className="leaflet-control leaflet-bar">
-                <a role="button" title="시점 초기화" href="#" onClick={(e) => { e.preventDefault(); handleReset(); }} className="custom-control-btn">
-                    ⟲
-                </a>
-            </div>
-        </div>
-    );
-}
-
-
-// Mock Data Points (Detailed Rich Data)
-// Adding images, proposers, dates for richer popups
-
-
-
-// Region Focus Component
-const RegionFocus = ({ selectedCodes, data }) => {
-    const map = useMap();
-
-    useEffect(() => {
-        if (!data || !selectedCodes) return;
-
-        if (selectedCodes.length === 0) {
-            map.flyTo(BUSAN_CENTER, 11);
-            return;
-        }
-
-        const features = data.features.filter(f => selectedCodes.includes(f.properties.code));
-
-        if (features.length > 0) {
-            // Create a temporary FeatureGroup to get bounds of all selected features
-            const group = L.featureGroup(features.map(f => L.geoJSON(f)));
-            try {
-                map.flyToBounds(group.getBounds(), { padding: [50, 50] });
-            } catch (e) {
-                // Fallback to center if bounds calc fails
-                console.warn("Bounds calc failed, resetting view");
-                map.setView(BUSAN_CENTER, 11);
-            }
-        }
-    }, [selectedCodes, data, map]);
-
-    return null;
+const toPath = (coords) => coords.map(([lng, lat]) => ({ lat, lng }));
+const featureToPaths = (feature) => {
+    const g = feature.geometry;
+    if (g.type === 'Polygon') return [toPath(g.coordinates[0])];
+    if (g.type === 'MultiPolygon') return g.coordinates.map(poly => toPath(poly[0]));
+    return [];
 };
 
-// Mask for Outside Busan
-const OutsideMask = ({ data }) => {
-    const map = useMap();
-
-    useEffect(() => {
-        if (!data) return;
-
-        // World Bounds
-        const world = [[-90, -180], [-90, 180], [90, 180], [90, -180]];
-
-        // Extract coordinates from all districts to create holes
-        const holes = [];
-        data.features.forEach(feature => {
-            const geometry = feature.geometry;
-            if (geometry.type === 'Polygon') {
-                const coords = geometry.coordinates[0].map(c => [c[1], c[0]]);
-                holes.push(coords);
-            } else if (geometry.type === 'MultiPolygon') {
-                geometry.coordinates.forEach(poly => {
-                    const coords = poly[0].map(c => [c[1], c[0]]);
-                    holes.push(coords);
-                });
-            }
-        });
-
-        // Create Mask Polygon (World - Holes)
-        const mask = L.polygon([world, ...holes], {
-            color: 'transparent',
-            fillColor: '#0f172a', // Slate-900
-            fillOpacity: 0.6,
-            interactive: false
-        }).addTo(map);
-
-        return () => {
-            map.removeLayer(mask);
-        }
-    }, [data, map]);
-
-    return null;
+const getSeverityFill = (severity) => {
+    switch (severity) {
+        case 'high': return '#f87171';
+        case 'medium': return '#fb923c';
+        case 'low': return '#4ade80';
+        default: return '#60a5fa';
+    }
 };
+const getMarkerColor = (severity) => severity === 'high' ? '#dc2626' : (severity === 'medium' ? '#f59e0b' : '#3b82f6');
 
-// Safe Pane Creation (Fix for ReferenceError)
-const CustomPane = ({ name, zIndex, children }) => {
-    const map = useMap();
-    const [isReady, setIsReady] = useState(false);
-
-    useEffect(() => {
-        if (!map.getPane(name)) {
-            const pane = map.createPane(name);
-            pane.style.zIndex = zIndex;
-            pane.style.pointerEvents = 'none'; // Critical: Allow clicks to pass through empty pane areas
-        }
-        setIsReady(true);
-    }, [map, name, zIndex]);
-
-    if (!isReady) return null;
-
-    return <>{children}</>;
-};
-
-// MapCanvas Component
 const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDistricts = [], onSelectDistricts, insights = [], analysisData = [], onViewDetail }) => {
+    useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_MAP_KEY, libraries: ['services', 'clusterer'] });
     const [geoJsonData, setGeoJsonData] = useState(null);
-    const [viewState, setViewState] = useState({ center: BUSAN_CENTER, zoom: 11 }); // eslint-disable-line no-unused-vars
     const [isLoading, setIsLoading] = useState(true);
+    const [openPopupId, setOpenPopupId] = useState(null);
+    const mapRef = useRef(null);
 
     useEffect(() => {
         setIsLoading(true);
-        // Correct path to Public Assets
         fetch('/assets/busan_districts_high.json')
-            .then(res => {
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                return res.json();
-            })
-            .then(data => {
-                setGeoJsonData(data);
-                setIsLoading(false);
-            })
-            .catch(err => {
-                console.error("Failed to load GeoJSON:", err);
-                setIsLoading(false);
-            });
+            .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
+            .then(data => { setGeoJsonData(data); setIsLoading(false); })
+            .catch(err => { console.error('Failed to load GeoJSON:', err); setIsLoading(false); });
     }, []);
 
-    // Helper: Determine severity color (Lighter Palette)
-    const getSeverityColor = (severity) => {
-        switch (severity) {
-            case 'high': return '#f87171'; // red-400 (was red-500)
-            case 'medium': return '#fb923c'; // orange-400 (was orange-500)
-            case 'low': return '#4ade80'; // green-400 (was green-500)
-            default: return '#60a5fa'; // blue-400
-        }
-    };
+    const features = useMemo(() => {
+        if (!geoJsonData) return [];
+        return geoJsonData.features.map(f => ({
+            code: f.properties.code,
+            name: f.properties.name,
+            paths: featureToPaths(f),
+        }));
+    }, [geoJsonData]);
 
-    // Helper: Get Severity for District (Mock or Real)
     const getSeverity = useCallback((code) => {
-        // Find if we have analysis data for this district
         const analysis = analysisData.find(a => a.name === code || a.district_code === code);
         if (analysis) {
-            // Simple logic: Low safety score (<75) = High Severity
             if (analysis.safety < 75) return 'high';
             if (analysis.safety < 85) return 'medium';
             return 'low';
@@ -224,75 +62,61 @@ const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDis
         return 'low';
     }, [analysisData]);
 
-    // Style for GeoJSON
-    const districtStyle = useCallback((feature) => {
-        const code = feature.properties.code;
-        const severity = getSeverity(code);
-
-        const isSelected = selectedDistricts.includes(code);
-        const isDimmed = selectedDistricts.length > 0 && !isSelected;
-
-        return {
-            fillColor: getSeverityColor(severity),
-            weight: isSelected ? 2 : 1, // Thinner border
-            opacity: 1,
-            color: isSelected ? '#334155' : 'white', // Border color
-            fillOpacity: isDimmed ? 0.1 : 0.35 // Much lighter opacity (was 0.2 / 0.6)
-        };
-    }, [selectedDistricts, getSeverity]);
-
-    // Filter Data Points
     const filteredData = useMemo(() => {
         if (!insights) return [];
         return insights.filter(item => {
-            // Apply Category Filter
-            if (selectedCategories.length > 0 && !selectedCategories.includes(item.category)) {
-                return false;
-            }
-            // Apply District Filter (Only show points in selected districts if filtered)
-            if (selectedDistricts.length > 0 && !selectedDistricts.includes(item.district_code)) {
-                return false;
-            }
+            if (selectedCategories.length > 0 && !selectedCategories.includes(item.category)) return false;
+            if (selectedDistricts.length > 0 && !selectedDistricts.includes(item.district_code)) return false;
             return true;
         }).map(item => ({
             id: item.id,
             lat: item.latitude,
             lng: item.longitude,
-            severity: item.severity, // high, medium, low
+            severity: item.severity,
             category: item.category,
             label: item.title,
             date: item.date,
             proposer: item.proposer,
-            proposerRole: '시민', // Mock
+            proposerRole: '시민',
             type: 'citizen',
-            image: item.image_url || 'https://placehold.co/300x200?text=No+Image'
+            image: item.image_url || 'https://placehold.co/300x200?text=No+Image',
         }));
     }, [insights, selectedCategories, selectedDistricts]);
 
-    // Interactions for GeoJSON
-    const onEachDistrict = (feature, layer) => {
-        layer.on({
-            click: (e) => {
-                L.DomEvent.stopPropagation(e); // Prevent map click
-                if (onSelectDistricts) {
-                    const code = feature.properties.code;
-                    // Toggle selection logic:
-                    // If clicked district is already selected, unselect it.
-                    // Otherwise, select ONLY this district (Focus mode).
-                    if (selectedDistricts.includes(code)) {
-                        onSelectDistricts(selectedDistricts.filter(c => c !== code));
-                    } else {
-                        // Exclusive select for cleaner UX on map interactions
-                        onSelectDistricts([code]);
-                    }
-                }
-            }
-        });
+    // RegionFocus: when selectedDistricts change, fit bounds via mapRef
+    useEffect(() => {
+        if (!mapRef.current || !geoJsonData || !window.kakao?.maps) return;
+        const map = mapRef.current;
+        if (selectedDistricts.length === 0) {
+            map.setCenter(new window.kakao.maps.LatLng(BUSAN_CENTER.lat, BUSAN_CENTER.lng));
+            map.setLevel(8);
+            return;
+        }
+        const selectedFeatures = geoJsonData.features.filter(f => selectedDistricts.includes(f.properties.code));
+        if (!selectedFeatures.length) return;
+        const bounds = new window.kakao.maps.LatLngBounds();
+        selectedFeatures.forEach(f => featureToPaths(f).forEach(path => path.forEach(p => bounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)))));
+        map.setBounds(bounds);
+    }, [selectedDistricts, geoJsonData]);
+
+    const handleDistrictClick = (code) => {
+        if (!onSelectDistricts) return;
+        if (selectedDistricts.includes(code)) onSelectDistricts(selectedDistricts.filter(c => c !== code));
+        else onSelectDistricts([code]);
     };
 
-    // --------------------------------------------------------------------------------
-    // Region Focus & Mask & CustomPane (Moved outside)
-    // --------------------------------------------------------------------------------
+    const handleFullscreen = () => {
+        const el = mapRef.current?.getNode?.() || document.querySelector('.map-canvas-container');
+        if (!document.fullscreenElement) el?.requestFullscreen?.();
+        else document.exitFullscreen();
+    };
+
+    const handleReset = () => {
+        if (!mapRef.current) return;
+        mapRef.current.setCenter(new window.kakao.maps.LatLng(BUSAN_CENTER.lat, BUSAN_CENTER.lng));
+        mapRef.current.setLevel(8);
+        if (onSelectDistricts) onSelectDistricts([]);
+    };
 
     return (
         <div className="map-canvas-container">
@@ -305,168 +129,119 @@ const MapCanvas = memo(({ selectedCategories = [], userType = 'all', selectedDis
                 </div>
             )}
 
-            <MapContainer
+            <Map
                 center={BUSAN_CENTER}
-                zoom={11}
-                maxZoom={22}
-                scrollWheelZoom={true}
+                level={8}
                 className="mapbox"
-                zoomControl={false}
-                preferCanvas={false}
-                minZoom={10}
-                maxBounds={BUSAN_BOUNDS}
-                maxBoundsViscosity={1.0}
+                style={{ width: '100%', height: '100%' }}
+                onCreate={(map) => { mapRef.current = map; }}
+                onClick={() => setOpenPopupId(null)}
             >
-                <MapController />
-                <RegionFocus selectedCodes={selectedDistricts} data={geoJsonData} />
-                <OutsideMask data={geoJsonData} />
+                {/* Choropleth */}
+                {features.map(({ code, name, paths }) => {
+                    const severity = getSeverity(code);
+                    const isSelected = selectedDistricts.includes(code);
+                    const isDimmed = selectedDistricts.length > 0 && !isSelected;
+                    return paths.map((path, pi) => (
+                        <Polygon
+                            key={`${code}-${pi}-${isSelected}`}
+                            path={path}
+                            fillColor={getSeverityFill(severity)}
+                            fillOpacity={isDimmed ? 0.1 : 0.35}
+                            strokeWeight={isSelected ? 2 : 1}
+                            strokeColor={isSelected ? '#334155' : '#ffffff'}
+                            strokeOpacity={1}
+                            onClick={() => handleDistrictClick(code)}
+                        />
+                    ));
+                })}
 
-                <TileLayer
-                    attribution='&copy; VWorld'
-                    url="https://xdworld.vworld.kr/2d/Base/service/{z}/{x}/{y}.png"
-                    maxZoom={22}
-                    maxNativeZoom={18}
-                />
+                {/* Data Points with Clusterer */}
+                {filteredData.length > 0 && (
+                    <MarkerClusterer averageCenter minLevel={6} disableClickZoom={false}>
+                        {filteredData.map((d) => (
+                            <CustomOverlayMap key={d.id} position={{ lat: d.lat, lng: d.lng }} yAnchor={0.5} xAnchor={0.5}>
+                                <div
+                                    onClick={(e) => { e.stopPropagation(); setOpenPopupId(d.id); }}
+                                    style={{
+                                        width: d.severity === 'high' ? 24 : 16,
+                                        height: d.severity === 'high' ? 24 : 16,
+                                        borderRadius: '50%',
+                                        background: getMarkerColor(d.severity),
+                                        border: '2px solid white',
+                                        opacity: 0.9,
+                                        cursor: 'pointer',
+                                    }}
+                                />
+                            </CustomOverlayMap>
+                        ))}
+                    </MarkerClusterer>
+                )}
 
-                {/* Choropleth Layer */}
-                {!isLoading && geoJsonData &&
-                    <GeoJSON
-                        key={`${selectedDistricts.join(',')}-${analysisData.length}`}
-                        data={geoJsonData}
-                        style={districtStyle}
-                        onEachFeature={onEachDistrict}
-                        interactive={true}
-                    />
-                }
-
-                {/* Custom High Z-Index Pane for Popups to avoid overlapping */}
-                <CustomPane name="custom-popup-pane" zIndex={1000} />
-
-                {/* Data Points - Using Pane to bring them to front (z-index 500 > overlay 400) */}
-                <CustomPane name="top-markers" zIndex={500}>
-                    <MarkerClusterGroup
-                        chunkedLoading
-                        showCoverageOnHover={false}
-                        maxClusterRadius={40}
-                        spiderfyOnMaxZoom={false}
-                        zoomToBoundsOnClick={true}
-                        disableClusteringAtZoom={16}
-                        // Pass pane to the cluster group so its icons rendering in this pane
-                        clusterPane="top-markers"
-                        iconCreateFunction={(cluster) => {
-                            const count = cluster.getChildCount();
-                            const sizeClass = count > 99 ? 'cluster-lg' : 'cluster-sm';
-
-                            return L.divIcon({
-                                html: `<div class="cluster-marker-inner ${sizeClass}">
-                                          ${count > 99 ? '99+' : count}
-                                       </div>`,
-                                className: 'custom-cluster-marker',
-                                iconSize: L.point(40, 40, true),
-                            });
-                        }}
-                    >
-                        {filteredData.map((data) => (
-                            <CircleMarker
-                                key={data.id}
-                                center={[data.lat, data.lng]}
-                                radius={data.severity === 'high' ? 12 : 8}
-                                pane="top-markers"
-                                eventHandlers={{
-                                    click: (e) => {
-                                        // Critical: Stop bubble to prevent map/district click handlers
-                                        L.DomEvent.stopPropagation(e);
-                                    }
-                                }}
-                                pathOptions={{
-                                    color: 'white',
-                                    weight: 2,
-                                    fillOpacity: 0.9,
-                                    fillColor: data.severity === 'high' ? '#dc2626' : (data.severity === 'medium' ? '#f59e0b' : '#3b82f6')
-                                }}
-                            >
-                                <Popup className="custom-popup" offset={[0, -10]} closeButton={false} pane="custom-popup-pane">
-                                    <div className="popup-card">
-                                        {/* Image Section */}
-                                        <div className="popup-image-area">
-                                            <img src={data.image} alt="현장 사진" className="popup-img" loading="lazy" />
-                                            <div className="popup-badge">
-                                                <span className={`badge-text ${data.severity === 'high' ? 'severity-high' : (data.severity === 'medium' ? 'severity-medium' : 'severity-low')}`}>
-                                                    {data.severity === 'high' ? '위험' : (data.severity === 'medium' ? '주의' : '양호')}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* Content Section */}
-                                        <div className="popup-content">
-                                            <h4 className="popup-title">{data.label}</h4>
-                                            <p className="popup-category">{data.category.toUpperCase()} 이슈</p>
-
-                                            <div className="popup-meta-row">
-                                                <div className="popup-proposer">
-                                                    <div className="proposer-avatar">
-                                                        {data.type === 'expert' ? '🤖' : '🧑'}
-                                                    </div>
-                                                    <div className="proposer-info">
-                                                        <span className="proposer-name">{data.proposer}</span>
-                                                        <span className="proposer-role">{data.proposerRole}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="popup-date">
-                                                    <span className="date-label">등록일</span>
-                                                    <span className="date-value">{data.date}</span>
-                                                </div>
-                                            </div>
-
-                                            <button
-                                                onClick={(e) => {
-                                                    // React event stop
-                                                    e.stopPropagation();
-                                                    e.preventDefault();
-
-                                                    // Native DOM event stop (Critical for Leaflet)
-                                                    if (e.nativeEvent) {
-                                                        e.nativeEvent.stopImmediatePropagation();
-                                                        e.nativeEvent.stopPropagation();
-                                                    }
-
-                                                    onViewDetail && onViewDetail(data);
-                                                }}
-                                                className="popup-btn"
-                                            >
-                                                자세히 보기
-                                            </button>
+                {/* Popup */}
+                {openPopupId && (() => {
+                    const d = filteredData.find(x => x.id === openPopupId);
+                    if (!d) return null;
+                    return (
+                        <CustomOverlayMap position={{ lat: d.lat, lng: d.lng }} yAnchor={1.2} xAnchor={0.5} zIndex={1000}>
+                            <div className="custom-popup" onClick={(e) => e.stopPropagation()}>
+                                <div className="popup-card">
+                                    <div className="popup-image-area">
+                                        <img src={d.image} alt="현장 사진" className="popup-img" loading="lazy" />
+                                        <div className="popup-badge">
+                                            <span className={`badge-text ${d.severity === 'high' ? 'severity-high' : (d.severity === 'medium' ? 'severity-medium' : 'severity-low')}`}>
+                                                {d.severity === 'high' ? '위험' : (d.severity === 'medium' ? '주의' : '양호')}
+                                            </span>
                                         </div>
                                     </div>
-                                </Popup>
-                            </CircleMarker>
-                        ))}
-                    </MarkerClusterGroup>
-                </CustomPane>
-                <FullscreenControl />
-                <ResetViewControl />
-            </MapContainer>
+                                    <div className="popup-content">
+                                        <h4 className="popup-title">{d.label}</h4>
+                                        <p className="popup-category">{d.category.toUpperCase()} 이슈</p>
+                                        <div className="popup-meta-row">
+                                            <div className="popup-proposer">
+                                                <div className="proposer-avatar">{d.type === 'expert' ? '🤖' : '🧑'}</div>
+                                                <div className="proposer-info">
+                                                    <span className="proposer-name">{d.proposer}</span>
+                                                    <span className="proposer-role">{d.proposerRole}</span>
+                                                </div>
+                                            </div>
+                                            <div className="popup-date">
+                                                <span className="date-label">등록일</span>
+                                                <span className="date-value">{d.date}</span>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onViewDetail && onViewDetail(d); }}
+                                            className="popup-btn"
+                                        >
+                                            자세히 보기
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </CustomOverlayMap>
+                    );
+                })()}
+            </Map>
 
-            {/* Legend Overlay */}
+            {/* Custom Controls */}
+            <div className="custom-control-wrapper" style={{ position: 'absolute', top: 12, right: 12, zIndex: 100, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <button onClick={handleFullscreen} title="전체화면" className="custom-control-btn">⛶</button>
+                <button onClick={handleReset} title="시점 초기화" className="custom-control-btn">⟲</button>
+            </div>
+
+            {/* Legend */}
             <div className="map-legend">
                 <div className="legend-list">
-                    <div className="legend-header">
-                        <span>지역 위험도 (히트맵)</span>
-                    </div>
+                    <div className="legend-header"><span>지역 위험도 (히트맵)</span></div>
                     {selectedDistricts && selectedDistricts.length > 0 && (
                         <div className="legend-item" style={{ color: '#f43f5e' }}>
                             <span>* 선정 지역 상세 분석 중</span>
                         </div>
                     )}
-                    <div className="legend-item">
-                        <div className="legend-color bg-red-500"></div><span>위험 (다수 신고)</span>
-                    </div>
-                    <div className="legend-item">
-                        <div className="legend-color bg-orange-500"></div><span>주의</span>
-                    </div>
-                    <div className="legend-item">
-                        <div className="legend-color bg-green-500"></div><span>양호</span>
-                    </div>
+                    <div className="legend-item"><div className="legend-color bg-red-500"></div><span>위험 (다수 신고)</span></div>
+                    <div className="legend-item"><div className="legend-color bg-orange-500"></div><span>주의</span></div>
+                    <div className="legend-item"><div className="legend-color bg-green-500"></div><span>양호</span></div>
                 </div>
             </div>
         </div>

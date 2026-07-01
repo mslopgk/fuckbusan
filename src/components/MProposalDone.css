@@ -1,0 +1,82 @@
+.m-prop-done-page {
+    min-height: 100vh;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Figma: 일러스트 top:219px / 852px 화면 → 상단 25% 위치. justify-content 제거하고 상단 여백으로 조정 */
+    justify-content: flex-start;
+    padding-top: min(219px, 25vh);
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 100px;
+    text-align: center;
+}
+
+/* Illustration container — scroll + check circle layered */
+.m-prop-done-illus {
+    position: relative;
+    width: 132px;
+    height: 132px;
+    margin-bottom: 28px;
+    flex-shrink: 0;
+}
+
+/* Scroll document SVG fills the container */
+.m-prop-done-scroll {
+    width: 132px;
+    height: 132px;
+    display: block;
+}
+
+/* Pink check circle — WDC Figma 0:14119: left=40px, top=26px within 132px scroll container */
+.m-prop-done-check {
+    position: absolute;
+    width: 54px;
+    height: 54px;
+    left: 40px;
+    top: 26px;
+}
+
+.m-prop-done-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #242424;
+    margin: 0 0 36px;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
+    text-align: center;
+}
+
+.m-prop-done-actions {
+    width: 291px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.m-prop-done-primary {
+    height: 59px;
+    border-radius: 15px;
+    border: none;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.04em;
+    background: #E6235A;
+    color: #fff;
+}
+
+.m-prop-done-secondary {
+    height: 59px;
+    border-radius: 15px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.04em;
+    background: #FCDAE3;
+    color: #E6235A;
+}

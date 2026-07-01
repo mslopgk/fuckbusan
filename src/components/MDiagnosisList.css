@@ -1,0 +1,792 @@
+/* Figma 22:5960 — MDiagnosisList 리디자인 */
+
+.m-diag-list-page {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+    background: #fff;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    color: #242424;
+}
+
+/* ──── 지도 영역 ──── */
+.m-diag-map-area {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ──── 헤더 ──── */
+.m-diag-header {
+    flex-shrink: 0;
+    background: #fff;
+    padding: 0 16px 10px;
+    z-index: 20;
+}
+
+.m-diag-header-top {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 44px;
+}
+
+.m-diag-back-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* (deprecated) 헤더 내 모드 탭 — 시트로 이동됨. m-diag-mode-tabs 사용 */
+
+/* 지역 배지 — Figma: compact inline badge with right chevron */
+.m-diag-district-row {
+    margin-top: 2px;
+    padding-left: 32px;
+}
+
+.m-diag-district-badge-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.m-diag-district-badge {
+    height: 32px;
+    min-width: 90px;
+    border: none;
+    border-radius: 6px;
+    padding: 0 28px 0 10px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    color: #242424;
+    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    outline: none;
+    box-sizing: border-box;
+    letter-spacing: -0.03em;
+}
+
+.m-diag-district-chevron {
+    position: absolute;
+    right: 4px;
+    pointer-events: none;
+}
+
+/* 카테고리 칩 바 (지도 위 플로팅, 수평 스크롤) */
+.m-diag-cats-bar {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    gap: 8px;
+    padding: 0 18px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    /* 우측 스크롤 가능 힌트 — 흰색→투명 그라데이션으로 fade-out */
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+}
+
+.m-diag-cats-bar::-webkit-scrollbar {
+    display: none;
+}
+
+.m-diag-cat-chip {
+    flex-shrink: 0;
+    height: 33px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 20px;
+    background: #e6e6e6;
+    color: #242424;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+}
+
+.m-diag-cat-chip.active {
+    background: #23BDBB;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* 지도 플레이스홀더 */
+.m-diag-map-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #e6efe7 0%, #f0e9d9 100%);
+}
+
+/* 현위치 버튼 */
+.m-diag-locate {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* 핀 — Figma: #23BDBB green */
+.m-diag-pin {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    height: 32px;
+    padding: 0 12px;
+    background: #23BDBB;
+    border: none;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    color: #fff;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 1;
+}
+
+.m-diag-pin::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -2px) rotate(45deg);
+    width: 10px;
+    height: 10px;
+    background: #23BDBB;
+    border-bottom-right-radius: 2px;
+}
+
+.m-diag-pin.focus {
+    box-shadow: 0 0 0 6px rgba(35, 189, 187, 0.20);
+}
+
+.m-diag-pin-count {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+}
+
+/* ──── 하단 시트 ──── */
+.m-diag-sheet {
+    position: relative;
+    flex-shrink: 0;
+    height: 350px;
+    background: #fff;
+    border-radius: 30px 30px 0 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 12px 18px 0;
+    overflow: hidden;
+}
+
+.m-diag-sheet-handle {
+    width: 36px;
+    height: 4px;
+    border-radius: 4px;
+    background: #cfd2d6;
+    margin: 0 auto 10px;
+    border: none;
+    padding: 0;
+    display: block;
+}
+
+/* 시민/전문가 탭 */
+.m-diag-mode-tabs {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.m-diag-mode-tab {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 16px;
+    font-family: inherit;
+    color: #777;
+    cursor: pointer;
+    letter-spacing: -0.04em;
+    line-height: 1.4;
+}
+
+.m-diag-mode-tab.active {
+    font-size: 20px;
+    font-weight: 700;
+    color: #23BDBB;
+    letter-spacing: -0.05em;
+}
+
+/* 카드 목록 */
+.m-diag-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    max-height: 210px;
+}
+
+.m-diag-cards::-webkit-scrollbar {
+    width: 3px;
+}
+
+.m-diag-cards::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 2px;
+}
+
+.m-diag-card {
+    display: flex;
+    gap: 12px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 14px 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    align-items: stretch;
+    min-height: 117px;
+}
+
+.m-diag-card-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    justify-content: space-between;
+}
+
+.m-diag-card-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.m-diag-tag {
+    height: 24px;
+    padding: 0 10px;
+    background: #e6e6e6;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #242424;
+    display: inline-flex;
+    align-items: center;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+.m-diag-card-name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.m-diag-card-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #23BDBB;
+    letter-spacing: -0.04em;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 0 1 auto;
+}
+
+/* 점수 — Figma: 검정 bold */
+.m-diag-card-score {
+    font-size: 20px;
+    font-weight: 800;
+    color: #242424;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    flex-shrink: 0;
+}
+
+/* author line — Figma: gray #737373 14px regular */
+.m-diag-card-author {
+    margin: 0;
+    font-size: 14px;
+    color: #737373;
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* right section: thumb + stats */
+.m-diag-card-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* stats row: likes + comments */
+.m-diag-card-stats {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    align-self: flex-end;
+    margin-top: auto;
+}
+
+.m-diag-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #bfbfbf;
+    letter-spacing: -0.02em;
+}
+
+.m-diag-card-thumb {
+    flex-shrink: 0;
+    width: 55px;
+    height: 55px;
+    border-radius: 15px;
+    background: #d9d9d9;
+    background-size: cover;
+    background-position: center;
+}
+
+/* 진단하기 FAB — Figma: #23BDBB */
+.m-diag-fab {
+    position: absolute;
+    right: 18px;
+    bottom: 78px;
+    height: 36px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 20px;
+    background: #23BDBB;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(35, 189, 187, 0.4);
+    z-index: 5;
+    letter-spacing: -0.03em;
+}
+
+.m-diag-fab:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.m-diag-fab.disabled,
+.m-diag-fab:disabled {
+    background: #b0bec5;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.m-diag-fab-addr {
+    background: #23BDBB;
+    box-shadow: 0 2px 6px rgba(35, 189, 187,0.3);
+}
+
+.m-diag-fab-hint {
+    position: absolute;
+    right: 18px;
+    bottom: 118px;
+    font-size: 12px;
+    color: #555;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 6px 10px;
+    z-index: 5;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* 중앙 고정 십자선 */
+.m-diag-crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 6;
+    pointer-events: none;
+}
+
+/* 선택된 위치 핀 (CSS 절대 포지션, crosshair보다 위) */
+.m-diag-selected-marker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    z-index: 7;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 6px rgba(35,189,187,0.45));
+}
+
+/* 선택된 주소 표시 */
+.m-diag-fab-addr {
+    position: absolute;
+    right: 18px;
+    bottom: 118px;
+    font-size: 11px;
+    color: #fff;
+    background: #23BDBB;
+    border-radius: 8px;
+    padding: 4px 10px;
+    z-index: 5;
+    white-space: nowrap;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 2px 6px rgba(35,189,187,0.3);
+}
+
+/* 선택된 위치 핀 */
+.m-diag-selected-pin {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 32px;
+    height: 44px;
+}
+
+.m-diag-selected-pin-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    background: #23BDBB;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(35,189,187,0.5);
+}
+
+/* 빈 상태 */
+.m-diag-empty {
+    padding: 20px 16px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    line-height: 1.6;
+    list-style: none;
+}
+
+.m-diag-empty p {
+    margin: 0;
+}
+
+.m-diag-empty-sub {
+    margin-top: 4px !important;
+    font-size: 12px;
+    color: #aaa;
+}
+
+@media (min-width: 1024px) {
+    .m-diag-list-page { display: none; }
+}
+
+/* ─── 단독 목록 페이지 (Figma 진단 목록3/4) ─── */
+.m-diag-list-only-page {
+    min-height: 100vh;
+    background: #fff;
+    padding-bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+}
+
+.m-diag-list-topbar {
+    height: 56px;
+    padding: 0 16px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Figma 269:26746 — 헤더 타이틀 */
+.m-diag-list-topbar-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #242424;
+    letter-spacing: -0.03em;
+    line-height: 1.4;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Figma 22:8219 — 헤더 타이틀: "일반 진단 ⊙" */
+.m-diag-list-header-title {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.m-diag-list-header-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #23BDBB;
+    letter-spacing: -0.04em;
+    line-height: 1.4;
+}
+
+.m-diag-list-back {
+    background: none;
+    border: none;
+    padding: 8px 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-diag-list-mode-tabs {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 16px 4px;
+}
+
+.m-diag-list-mode-tab {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 16px;
+    font-family: inherit;
+    color: #777;
+    cursor: pointer;
+    letter-spacing: -0.04em;
+}
+
+.m-diag-list-mode-tab.active {
+    font-size: 20px;
+    font-weight: 700;
+    color: #23BDBB;
+    letter-spacing: -0.05em;
+}
+
+.m-diag-list-district-row {
+    padding: 12px 16px 6px;
+}
+
+.m-diag-list-district-btn {
+    background: none;
+    border: none;
+    padding: 4px 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a1b;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.02em;
+}
+
+.m-diag-list-district-arrow {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #23BDBB;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-diag-list-cats {
+    padding: 8px 16px 12px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.m-diag-list-cats::-webkit-scrollbar {
+    display: none;
+}
+
+.m-diag-list-cat-chip {
+    flex-shrink: 0;
+    background: #e6e6e6;
+    border: none;
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-size: 14px;
+    color: #242424;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.m-diag-list-cat-chip.active {
+    background: #23BDBB;
+    color: #fff;
+    font-weight: 600;
+}
+
+.m-diag-list-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.m-diag-list-empty {
+    padding: 56px 16px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+}
+
+.m-diag-list-fab {
+    position: fixed;
+    right: 16px;
+    bottom: 88px;
+    background: #23BDBB;
+    color: #fff;
+    border: none;
+    border-radius: 26px;
+    height: 48px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 6px 18px rgba(35, 189, 187, 0.35);
+    font-family: inherit;
+    z-index: 60;
+}
+
+/* ─── 지역 모달 (m-modal-* 공용 패턴) ─── */
+/* MProposalList.css와 동일 구조. MDiagnosisList는 MProposalList를 import하지 않으므로 여기서 정의. */
+.m-diag-list-only-page .m-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+}
+
+.m-diag-list-only-page .m-modal-sheet {
+    width: 100%;
+    background: #fff;
+    border-radius: 18px 18px 0 0;
+    padding: 22px 20px 24px;
+    max-height: 76vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.m-diag-list-only-page .m-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.m-diag-list-only-page .m-modal-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a1a1b;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.m-diag-list-only-page .m-modal-close {
+    background: none;
+    border: none;
+    color: #1a1a1b;
+    cursor: pointer;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-diag-list-only-page .m-region-list {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.m-diag-list-only-page .m-region-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 4px;
+    border-bottom: 1px solid #f0f0f3;
+    cursor: pointer;
+    font-size: 16px;
+    color: #1a1a1b;
+    letter-spacing: -0.02em;
+}
+
+.m-diag-list-only-page .m-region-item:last-child {
+    border-bottom: none;
+}
+
+.m-diag-list-only-page .m-region-item.on {
+    color: #23BDBB;
+    font-weight: 700;
+}
+
+@media (min-width: 1024px) {
+    .m-diag-list-only-page { display: none; }
+}

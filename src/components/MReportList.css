@@ -1,0 +1,191 @@
+/* MReportList — 제보 단독 목록 페이지 (Figma 848:19157) */
+
+/* Page root */
+.m-report-list-page {
+    height: 100vh;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Topbar: reuse .m-prop-topbar from MProposalList.css */
+
+/* Region row — tighter padding than proposal list */
+.m-rlist-region-row {
+    padding: 10px 16px 6px;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+/* Scrollable content area */
+.m-rlist-scroll {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    background: #f7f7f8;
+    padding-bottom: 80px; /* space for FAB + nav */
+}
+
+/* Category chips area — white bg, 2-row wrap */
+.m-rlist-cats {
+    background: #fff;
+    padding: 12px 16px 16px;
+    flex-wrap: wrap;
+    display: flex;
+    gap: 6px;
+}
+
+/* Sort row — white bg */
+.m-report-list-page .m-sort-row {
+    background: #fff;
+    padding: 4px 16px 8px;
+    justify-content: flex-end;
+    display: flex;
+}
+
+/* Stage chips — base layout */
+.m-stage-chips {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 12px;
+    background: #fff;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.m-stage-chips::-webkit-scrollbar {
+    display: none;
+}
+
+.m-stage-chip {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    height: 43px;
+    min-width: 72px;
+    padding: 0 16px;
+    font-size: 16px;
+    color: #777;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: inherit;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.m-stage-chip.on {
+    background: #542aa3;
+    border-color: #542aa3;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* Stage chips — white bg for report list context */
+.m-report-list-page .m-stage-chips {
+    background: #fff;
+    padding: 0 16px 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Stage chip active: report purple (WDC Figma #542aa3) */
+.m-report-list-page .m-stage-chip.on {
+    background: #542aa3;
+    border-color: #542aa3;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* Cat chip active: report purple (WDC Figma #542aa3) */
+.m-report-list-page .m-cat-chip.on {
+    background: #542aa3;
+    color: #fff;
+    border-color: #542aa3;
+}
+
+/* Card list */
+.m-rlist-cards {
+    padding: 12px 16px 92px;
+    background: #f7f7f8;
+}
+
+/* Report tags: cat + sub tag in a row */
+.m-report-tags {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.m-report-tags .m-prop-cat-tag {
+    margin-bottom: 0;
+}
+
+/* Sub tag — Figma: #FFC9C9 bg, #242424 text (시설물... tag) */
+.m-report-sub-tag {
+    background: #FFC9C9;
+    color: #242424;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Author + stats on same row */
+.m-report-author-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.m-report-author-stat-row .m-prop-author {
+    margin: 0;
+}
+
+/* Title size in list context */
+.m-report-list-page .m-prop-title {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+}
+
+/* FAB positioned above bottom nav */
+.m-rlist-fab {
+    bottom: 80px;
+}
+
+/* Region arrow circle — WDC Figma report purple #542aa3 */
+.m-report-list-page .m-region-arrow {
+    background: #542aa3;
+}
+
+/* 지도보기 button override — WDC Figma #542aa3 */
+.m-report-list-page .m-map-btn {
+    background: #542aa3;
+}
+
+/* FAB override — WDC Figma #542aa3 */
+.m-report-list-page .m-prop-fab {
+    background: #542aa3;
+    box-shadow: 0 6px 18px rgba(84, 42, 163, 0.35);
+}
+
+/* Sort/region modal confirm button — WDC Figma #542aa3 (overrides proposal pink) */
+/* Modal is rendered inside .m-report-list-page as a child with position:fixed */
+.m-report-list-page .m-modal-confirm {
+    background: #542aa3;
+    box-shadow: 0 4px 12px rgba(84, 42, 163, 0.25);
+}
+
+/* Sort item active chevron/text color */
+.m-report-list-page .m-sort-item.on {
+    color: #542aa3;
+}
+
+/* Region item active color */
+.m-report-list-page .m-region-item.on {
+    color: #542aa3;
+}

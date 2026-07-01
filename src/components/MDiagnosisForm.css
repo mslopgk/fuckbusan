@@ -1,0 +1,408 @@
+.m-diagform-page {
+    /* 토큰은 src/styles/diagnosis-tokens.css 에서 정의됨 */
+    min-height: 100vh;
+    background: #fff;
+    padding-bottom: 96px;
+    color: var(--diag-text);
+    font-family: inherit;
+}
+
+/* ───── 헤더 ───── */
+.m-diagform-topbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+
+.m-diagform-back {
+    background: none;
+    border: none;
+    padding: 6px 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--diag-text);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.m-diagform-mode-badge {
+    margin-left: auto;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: #5B2EAB;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* ───── 본문 ───── */
+.m-diagform-body {
+    padding: 0 20px;
+}
+
+.m-diagform-subtitle {
+    margin: 8px 0 20px;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
+    color: #242424;
+    padding: 0;
+}
+
+.m-diagform-title {
+    margin: 4px 0 24px;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
+    color: #E6235A;
+}
+
+.m-diagform-section {
+    padding: 18px 0;
+    border-bottom: 1px solid #f0f0f3;
+}
+
+.m-diagform-section:last-of-type {
+    border-bottom: none;
+}
+
+.m-diagform-label {
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #242424;
+    letter-spacing: -0.04em;
+}
+
+.m-diagform-sublabel {
+    margin: -4px 0 16px;
+    font-size: 13px;
+    color: var(--diag-text-sub);
+}
+
+.m-diagform-hint {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--diag-text-mute);
+}
+
+/* ───── 사진 등록 ───── */
+.m-diagform-photo {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    padding: 0;
+    font-family: inherit;
+}
+
+.m-diagform-photo.has-photo {
+    background: transparent;
+}
+
+.m-diagform-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 플레이스홀더 + 아이콘 — Figma: 둥근 박스 안 작은 + (cover 규칙에 덮이지 않게 고정) */
+.m-diagform-photo .m-diagform-photo-add {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+/* ───── 공공/시설물 입력 ───── */
+.m-diagform-facility-input {
+    width: 100%;
+    height: 52px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    padding: 0 17px;
+    font-size: 16px;
+    color: #4d4d4d;
+    font-family: inherit;
+    outline: none;
+    margin-bottom: 10px;
+}
+
+.m-diagform-facility-input:focus {
+    border-color: #23BDBB;
+}
+
+.m-diagform-facility-input::placeholder {
+    color: var(--diag-text-mute);
+}
+
+.m-diagform-sub-row {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.m-diagform-sub-chip {
+    height: 33px;
+    padding: 0 14px;
+    border-radius: 16.5px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 16px;
+    color: #bfbfbf;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.04em;
+}
+
+.m-diagform-sub-chip.on {
+    background: #23BDBB;
+    border-color: #23BDBB;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ───── 만족도 평가 ───── */
+.m-diagform-questions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.m-diagform-question {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.m-diagform-q-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.m-diagform-q-num {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #242424;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    letter-spacing: -0.04em;
+}
+
+.m-diagform-q-text {
+    margin: 0;
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--diag-text);
+}
+
+.m-diagform-scale {
+    position: relative;
+    height: 36px;
+    padding: 0 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.m-diagform-scale-track {
+    position: absolute;
+    left: 30px;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 2px;
+    background: #e3e5e8;
+    border-radius: 1px;
+}
+
+.m-diagform-scale-dot {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.m-diagform-scale-dot::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #d4d6da;
+    box-shadow: 0 0 0 4px #fff;
+    transition: background 140ms;
+}
+
+.m-diagform-scale-dot.on::before {
+    background: #23BDBB;
+}
+
+/* 얼굴 레이블 행 — 1·3·5번 위치에만 표시 */
+.m-diagform-scale-faces {
+    padding: 6px 22px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.m-diagform-face-slot {
+    width: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.m-diagform-face-img {
+    width: 24px;
+    height: 24px;
+    filter: grayscale(0.5);
+    opacity: 0.5;
+    transition: filter 140ms, opacity 140ms;
+}
+
+.m-diagform-face-img.on {
+    filter: grayscale(0);
+    opacity: 1;
+}
+
+/* ───── 리뷰 ───── */
+.m-diagform-review {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px 17px;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    font-size: 16px;
+    color: #242424;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 117px;
+    outline: none;
+}
+
+.m-diagform-review::placeholder {
+    color: #bfbfbf;
+}
+
+/* ───── 푸터 CTA ───── */
+.m-diagform-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: #fff;
+    border-top: 1px solid #efeff2;
+    display: flex;
+    gap: 8px;
+    z-index: 5;
+}
+
+.m-diagform-cta-secondary,
+.m-diagform-cta-primary {
+    flex: 1;
+    height: 56px;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.04em;
+}
+
+/* Figma 269:25059 — 임시저장: #e6e6e6 bg, #777 text, regular weight */
+.m-diagform-cta-secondary {
+    background: #e6e6e6;
+    color: #777;
+    font-weight: 400;
+    flex: 0 0 103px;
+}
+
+.m-diagform-cta-primary {
+    background: #23BDBB;
+    color: #fff;
+}
+
+.m-diagform-cta-primary:disabled {
+    background: #a0dede;
+    cursor: not-allowed;
+}
+
+.m-diagform-location-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f0faf6;
+    border: 1px solid #b2dfc8;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #2a7a55;
+}
+
+.m-diagform-location-badge span {
+    flex: 1;
+    font-weight: 500;
+}
+
+.m-diagform-location-empty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fafafa;
+    border: 1px dashed #d0d0d0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #888;
+}
+
+.m-diagform-location-change {
+    background: none;
+    border: none;
+    color: #23BDBB;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+}

@@ -17,14 +17,3 @@ export const DISTRICTS = [
     { id: '21020', name: '서구' },
     { id: '21010', name: '중구' }
 ];
-
-export const MENU_ITEMS = [
-    { id: 'housing', label: '주거', color: 'text-blue-400' },
-    { id: 'environment', label: '환경', color: 'text-green-400' },
-    { id: 'transport', label: '교통', color: 'text-red-400' },
-    { id: 'safety', label: '안전', color: 'text-yellow-400' },
-    { id: 'education', label: '교육', color: 'text-purple-400' },
-    { id: 'industry', label: '산업/일자리', color: 'text-pink-400' },
-    { id: 'culture', label: '문화/여가', color: 'text-orange-400' },
-    { id: 'welfare', label: '보건/복지', color: 'text-teal-400' },
-];

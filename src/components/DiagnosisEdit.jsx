@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './DiagnosisEdit.css';
-import { fetchWithLogout } from '../utils/api';
+import { fetchWithLogout, API_URL } from '../utils/api';
 
 const DiagnosisEdit = ({ data, onBack, onComplete }) => {
     // Determine type from data (passed from MyActivity)
@@ -28,19 +28,16 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // 1. Load Questions Structure
-                const fileName = type === 'expert'
-                    ? '/assets/data/expert_diagnosis.json'
-                    : '/assets/data/general_diagnosis.json';
-
-                const response = await fetch(fileName);
+                // 1. Load Questions Structure (DB 우선, 정적 JSON fallback)
+                const mode = type === 'expert' ? 'expert' : 'general';
+                let response = await fetch(`${API_URL}/checklist/templates?mode=${mode}`);
+                if (!response.ok) response = await fetch(`/assets/data/${mode}_diagnosis.json`);
                 const json = await response.json();
                 setFullData(json);
 
                 // 2. Load Checklist Detail if ID exists
                 if (data && data.id) {
                     const token = localStorage.getItem('access_token');
-                    const API_URL = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
                     const res = await fetchWithLogout(`${API_URL}/checklist/${data.id}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
@@ -128,7 +125,6 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
 
         try {
             const token = localStorage.getItem('access_token');
-            const API_URL = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
 
             const payload = {
                 "대분류": selectedBig,

@@ -69,7 +69,7 @@
 }
 
 .edit-form-input:focus {
-    border-color: #16B5B0;
+    border-color: #23BDBB;
 }
 
 .edit-form-input.wide {
@@ -112,7 +112,7 @@
 }
 
 .btn-confirm-edit {
-    background-color: #16B5B0;
+    background-color: #23BDBB;
     color: white;
     border: none;
     padding: 0 60px;

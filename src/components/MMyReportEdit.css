@@ -1,0 +1,109 @@
+/* 나의활동 — 제보 수정하기 (Figma 215:14305) */
+
+/* 사진 등록: 80px 둥근 테두리 박스 (Figma: size=80px, radius=15px) */
+.m-myrep-edit-photo-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.m-myrep-edit-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #f4f4f4;
+}
+
+.m-myrep-edit-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px;
+}
+
+/* + 사진 추가 박스 (Figma: border 1px #dcdcdc, radius 15px) */
+.m-myrep-edit-photo-add {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+/* 위치정보: crosshair 아이콘을 주소 input 내부 우측에 오버레이 (Figma) */
+.m-myrep-edit-loc {
+    position: relative;
+    margin-bottom: 14px;
+}
+
+.m-myrep-edit-loc .m-row-input {
+    padding-right: 46px;
+}
+
+.m-myrep-edit-loc-pin {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* 상세위치 input — Figma: border #f74e7e (보라색이 아닌 핑크 — 입력 포커스 상태 표시) */
+.m-myrep-edit-detail-input {
+    margin-bottom: 0;
+    border-color: #542aa3 !important;  /* Figma 215:14319: 상세위치 선택 상태 — 보라 테두리 */
+}
+
+/* 에러 텍스트 */
+.m-myrep-edit-error {
+    color: #d12247;
+    font-size: 12px;
+    margin: 12px 0 0;
+}
+
+/* ── 수정완료 버튼 (Figma 215:14349: bg #542aa3 보라, h=59px, radius=15px) ── */
+/* 보라색으로 오버라이드 — MReportForm의 핑크 기본값을 덮어씀 */
+.m-myrep-edit-page .m-form-submit,
+.m-myrep-edit-page .m-report-form-page .m-form-submit {
+    background: #542aa3 !important;
+    height: 59px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.m-myrep-edit-page .m-form-submit:disabled,
+.m-myrep-edit-page .m-form-submit.disabled {
+    background: #c4a8e8 !important;
+}
+
+/* 푸터 영역 */
+.m-myrep-edit-footer {
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* 본문 입력 — 여러 줄 textarea (Figma: 자유 작성 영역) */
+.m-myrep-textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.5;
+    padding-top: 12px;
+    font-family: inherit;
+}

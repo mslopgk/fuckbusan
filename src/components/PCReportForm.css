@@ -1,0 +1,139 @@
+/* PCReportForm — report-specific overrides (purple theme per Figma node 215:1329) */
+
+/* ── Form label: Figma shows 18px semibold (not shared 14px bold) ── */
+.pc-form-page .pc-form-label {
+    font-size: 18px;
+    font-weight: 600;
+    color: #242424;
+    letter-spacing: -0.72px;
+    margin-bottom: 14px;
+}
+
+/* ── Photo upload button: Figma = 80×80, border-radius 15px ── */
+.pc-form-page .pc-photo-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 15px;
+}
+
+/* ── Form input/dropdown height: Figma = 54px ── */
+.pc-form-page .pc-form-input {
+    height: 54px;
+    padding: 0 18px;
+    font-size: 16px;
+    border-radius: 15px;
+}
+
+/* ── Form title: Figma = 30px bold black ── */
+.pc-form-page .pc-form-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: #000;
+    letter-spacing: 0;
+}
+
+
+/* Category chips: active = purple (#542aa3) instead of shared pink */
+.pcrf-chip.active {
+    background: #542aa3;
+    color: #fff;
+}
+
+/* "작성완료" primary action button: purple */
+.pcrf-btn-purple {
+    background: #542aa3;
+    color: #fff;
+    border: none;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 0 40px;
+    height: 59px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.72px;
+    transition: background 0.15s;
+}
+.pcrf-btn-purple:hover:not(.disabled):not(:disabled) {
+    background: #3e1f8a;
+}
+.pcrf-btn-purple.disabled,
+.pcrf-btn-purple:disabled {
+    background: #a98dd6;
+    cursor: not-allowed;
+}
+
+/* "임시저장" soft version — light purple bg + purple text */
+.pcrf-btn-purple-soft {
+    background: rgba(84, 42, 163, 0.2);
+    color: #542aa3;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    height: 59px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.64px;
+    transition: background 0.15s;
+}
+.pcrf-btn-purple-soft:hover {
+    background: rgba(84, 42, 163, 0.28);
+}
+
+/* Done modal (제보 작성 완료) — Figma: 491×587, rounded-40, shadow */
+.pcrf-done-modal {
+    background: #fff;
+    border-radius: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 491px;
+    max-width: 94vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 52px 40px 48px;
+    gap: 0;
+    text-align: center;
+}
+
+/* Icon container — scroll behind, check overlapping */
+.pcrf-done-icons {
+    position: relative;
+    width: 132px;
+    height: 132px;
+    margin-bottom: 24px;
+}
+
+.pcrf-done-scroll {
+    width: 132px;
+    height: 132px;
+    object-fit: contain;
+    display: block;
+}
+
+.pcrf-done-check {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+}
+
+.pcrf-done-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #242424;
+    letter-spacing: -0.96px;
+    line-height: 1.4;
+    margin: 0 0 32px;
+}
+
+.pcrf-done-cta {
+    width: 291px;
+    margin-bottom: 8px;
+}
+
+.pcrf-done-sub {
+    width: 291px;
+}

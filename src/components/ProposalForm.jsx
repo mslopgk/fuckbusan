@@ -1,7 +1,9 @@
 /* ProposalForm.jsx */
 import React, { useState, useEffect } from 'react';
+import { formatDraftDate } from '../utils/format';
 import './ProposalForm.css';
 import LocationSelector from './common/LocationSelector';
+import { API_URL } from '../utils/api';
 
 const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialData = null }) => {
     const categories = ['주거', '환경', '교육', '안전', '산업 및 고용', '모빌리티', '문화 및 레저', '보건 및 복지'];
@@ -26,9 +28,8 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
     // 수정 모드 시 기존 이미지 로드
     useEffect(() => {
         if (isEdit && initialData && initialData.files) {
-            const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
             const existingFiles = initialData.files.map(filename => {
-                const url = filename.startsWith('http') ? filename : `${VITE_API_URL}/uploads/${filename}`;
+                const url = filename.startsWith('http') ? filename : `${API_URL}/uploads/${filename}`;
                 return {
                     file: null, // 기존 파일은 File 객체 없음
                     preview: url,
@@ -398,12 +399,7 @@ const ProposalForm = ({ onBack, onComplete, onNavigate, isEdit = false, initialD
                         </div>
                         <h2 className="pf-load-text">임시저장된 내용을<br/>불러올까요?</h2>
                         <p className="pf-load-subtext">
-                            {savedDraftData && savedDraftData.savedAt ? (
-                                (() => {
-                                    const d = new Date(savedDraftData.savedAt);
-                                    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 작성됨`;
-                                })()
-                            ) : ""}
+                            {savedDraftData?.savedAt ? formatDraftDate(savedDraftData.savedAt) : ""}
                         </p>
                         <div className="pf-load-btns">
                             <button className="pf-btn-load" onClick={handleLoadDraft}>불러오기</button>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './DiagnosisList.css';
 import DiagnosisCard from './DiagnosisCard';
 
-import { fetchWithLogout } from '../utils/api';
+import { fetchWithLogout, API_URL } from '../utils/api';
 
 const DiagnosisList = ({ onBack, onNavigate }) => {
     // 'all' | 'general' | 'expert'
@@ -11,7 +11,6 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
     const [isSortOpen, setIsSortOpen] = useState(false);
 
     const [listData, setListData] = useState([]);
-    const API_URL = import.meta.env.VITE_API_URL || 'https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws';
 
     React.useEffect(() => {
         const fetchList = async () => {
@@ -24,7 +23,6 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
 
                 if (res.ok) {
                     const data = await res.json();
-                    console.log("Diagnosis List Loaded, count:", data.length);
                     // Map to card format
                     const mapped = data.map(item => {
                         let dateStr = '23.01.01';
@@ -178,7 +176,7 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
                             key={item.id}
                             item={item}
                             onBookmark={toggleBookmark}
-                            onClick={() => console.log('Card clicked', item.id)}
+                            onClick={() => {}}
                         />
                     ))}
             </div>

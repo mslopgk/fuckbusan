@@ -1,0 +1,338 @@
+/* Figma 1005:15469 진단결과1_시민 — 테이블 스타일 레이아웃 */
+
+.m-diagres-page {
+    min-height: 100vh;
+    background: #fff;
+    padding-bottom: 92px;
+    color: #242424;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+}
+
+/* ───── 상단 네비 바 ───── */
+.m-diagres-topbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.m-diagres-iconbtn {
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.m-diagres-topbar-title {
+    flex: 1;
+    text-align: left;
+    font-size: 20px;
+    font-weight: 700;
+    color: #23BDBB;
+    letter-spacing: -0.04em;
+    line-height: 1.4;
+}
+
+/* ───── 본문 ───── */
+.m-diagres-body {
+    padding: 0;
+}
+
+/* ───── 테이블 스타일 레이아웃 (Figma Frame 494 구조) ───── */
+.m-diagres-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.m-diagres-table-row {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.m-diagres-table-row--photo {
+    align-items: flex-start;
+    min-height: 106px;
+}
+
+.m-diagres-table-label {
+    flex-shrink: 0;
+    width: 100px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #242424;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-right: 1px solid #f2f2f2;
+    background: #e6e6e6;
+}
+
+.m-diagres-table-value {
+    flex: 1;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: #737373;
+    font-weight: 400;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+}
+
+/* ───── 썸네일 사진 (Figma 22:8368 — 200x215px) ───── */
+.m-diagres-thumb {
+    width: 200px;
+    height: 215px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f1f2f4;
+}
+
+.m-diagres-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.m-diagres-thumb-btn {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: zoom-in;
+    display: block;
+}
+
+.m-diagres-thumb-btn:active {
+    opacity: 0.85;
+}
+
+.m-diagres-thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ───── 사진 확대 모달 ───── */
+.m-diagres-photo-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+    animation: m-diagres-fade-in 0.18s ease-out;
+}
+
+@keyframes m-diagres-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.m-diagres-photo-zoom {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.m-diagres-photo-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.m-diagres-photo-close:active {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+/* ───── 섹션 행 (레이더차트 포함 행) ───── */
+.m-diagres-section-row {
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid #e6e6e6;
+    min-height: 290px;
+}
+
+.m-diagres-section-label {
+    flex-shrink: 0;
+    width: 100px;
+    padding: 12px;
+    font-size: 12px;
+    color: #242424;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    border-right: 1px solid #f2f2f2;
+    background: #e6e6e6;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.m-diagres-section-content {
+    flex: 1;
+    padding: 8px 16px;
+}
+
+/* ───── 레이더 카드 ───── */
+.m-diagres-radar-card {
+    width: 100%;
+}
+
+.m-diagres-radar-card--disabled {
+    opacity: 0.6;
+}
+
+.m-diagres-radar-card-title {
+    margin: 0 0 4px;
+    font-size: 13px;
+    color: #555;
+    letter-spacing: -0.02em;
+}
+
+.m-diagres-card-head {
+    margin: 0 0 4px;
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+    letter-spacing: -0.02em;
+}
+
+.m-diagres-avg {
+    font-size: 18px;
+    font-weight: 800;
+    color: #242424;
+    margin-right: 4px;
+}
+
+.m-diagres-chart {
+    width: 100%;
+    height: 250px;
+}
+
+.m-diagres-tick-label {
+    fill: #555;
+    font-size: 10px;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+}
+
+.m-diagres-tick-value {
+    fill: #242424;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+}
+
+/* ───── 좋아요·댓글 섹션 — Figma 22:6387 ───── */
+.m-diagres-reactions {
+    padding: 16px 16px 32px;
+    border-top: 1px solid #e6e6e6;
+}
+
+.m-diagres-reaction-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.m-diagres-reaction-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+}
+
+.m-diagres-comments {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Figma 22:6387 — 연회색 둥근 말풍선 카드 */
+.m-diagres-comment {
+    background: #f4f4f6;
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.m-diagres-comment-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.m-diagres-comment-user {
+    font-size: 13px;
+    font-weight: 700;
+    color: #242424;
+    letter-spacing: -0.02em;
+}
+
+.m-diagres-comment-date {
+    margin-left: auto;
+    font-size: 12px;
+    color: #aaa;
+    letter-spacing: -0.01em;
+}
+
+.m-diagres-comment-del {
+    background: none;
+    border: none;
+    padding: 2px;
+    margin-left: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+}
+
+.m-diagres-comment-text {
+    margin: 0;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.55;
+    letter-spacing: -0.02em;
+}

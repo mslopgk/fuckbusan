@@ -1,4 +1,3 @@
-import React from 'react';
 import './CheckDone.css'; // Reuse styles
 
 const SignupDone = ({ onLogin }) => {

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './Login.css';
+import { API_URL } from '../utils/api';
 
 const ChangePassword = ({ onBack }) => {
-    const VITE_API_URL = import.meta.env.VITE_API_URL || "https://ke7eh3ev2j33nj76skhv6n2tom0yzwim.lambda-url.ap-northeast-2.on.aws";
     const [form, setForm] = useState({ next: '', confirm: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -14,7 +14,7 @@ const ChangePassword = ({ onBack }) => {
         setLoading(true); setError('');
         try {
             const token = localStorage.getItem('access_token');
-            const res = await fetch(`${VITE_API_URL}/users/reset-password`, {
+            const res = await fetch(`${API_URL}/users/reset-password`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ new_pw: form.next })

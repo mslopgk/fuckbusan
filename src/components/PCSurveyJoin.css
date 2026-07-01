@@ -1,0 +1,203 @@
+.pc-survey-join-page {
+    background: #f7f7f8;
+    min-height: calc(100vh - 60px);
+    padding-bottom: 100px;
+}
+
+.pc-join-card {
+    width: 720px;
+    margin: -120px auto 0;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(34, 12, 80, 0.10);
+    padding: 32px 40px;
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+}
+
+/* 각 질문 사이 5px 두꺼운 구분 밴드 (Figma: #f4f4f4, 5px) */
+.pc-question {
+    padding: 24px 0;
+    position: relative;
+}
+
+.pc-question:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -40px;
+    right: -40px;
+    height: 5px;
+    background: #f4f4f4;
+}
+
+.pc-question-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #242424;
+    margin: 0 0 16px;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+}
+
+/* Q1 옵션: 2열 그리드, 각 half-width (Figma: 243px each in 495px inner) */
+.pc-question-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.pc-option-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 15px;
+    color: #737373;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.15s;
+}
+
+.pc-option-pill input {
+    accent-color: #5B2EAB;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.pc-option-pill.active {
+    background: #5B2EAB;
+    color: #fff;
+    border-color: #5B2EAB;
+}
+
+.pc-option-pill.active input {
+    accent-color: #fff;
+}
+
+/* Q4 체크박스 그리드: Figma와 동일하게 2열 full-width */
+.pc-checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 9px;
+}
+
+/* Scale slider (Q2, Q3) */
+.pc-scale-row {
+    width: 100%;
+}
+
+.pc-scale-track {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 24px;
+}
+
+.pc-scale-track::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 50%;
+    height: 3px;
+    background: #e6e6e6;
+    transform: translateY(-50%);
+}
+
+.pc-scale-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #e6e6e6;
+    border: none;
+    cursor: pointer;
+    z-index: 1;
+    transition: all 0.15s;
+}
+
+.pc-scale-dot.active {
+    background: #5B2EAB;
+    width: 19px;
+    height: 19px;
+    box-shadow: 0 0 0 3px rgba(91, 46, 171, 0.20);
+}
+
+.pc-scale-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #737373;
+    text-align: center;
+}
+
+.pc-scale-labels span {
+    width: 60px;
+    line-height: 1.35;
+    white-space: pre-line;
+}
+
+/* Textarea (Q5) */
+.pc-textarea-wrapper {
+    position: relative;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.pc-textarea-wrapper textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 12px 14px 28px;
+    font-size: 14px;
+    line-height: 1.6;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 92px;
+    background: transparent;
+    color: #242424;
+    box-sizing: border-box;
+}
+
+.pc-textarea-wrapper textarea::placeholder {
+    color: #bfbfbf;
+}
+
+.pc-textarea-count {
+    position: absolute;
+    right: 12px;
+    bottom: 8px;
+    font-size: 14px;
+    color: #737373;
+}
+
+/* 이전/다음 버튼 (Figma: 130px + 205px, height 56px, border-radius 8px) */
+.pc-join-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 32px;
+}
+
+.pc-join-actions .pc-btn-secondary {
+    width: 130px;
+    height: 56px;
+    padding: 0;
+    border-radius: 8px;
+    color: #737373;
+    border-color: #d9d9d9;
+}
+
+.pc-join-actions .pc-btn-primary {
+    width: 205px;
+    height: 56px;
+    padding: 0;
+    border-radius: 8px;
+}

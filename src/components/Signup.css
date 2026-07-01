@@ -124,3 +124,87 @@
 .signup-submit-btn.active:hover {
     background-color: #0F8581; /* Darker Mint */
 }
+
+/* ===== 모바일 회원가입 (Figma 215:12408 / 215:12454) ===== */
+.msignup {
+    min-height: 100vh;
+    background: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    color: #242424;
+    padding: 0 0 40px;
+    display: flex;
+    flex-direction: column;
+}
+.msignup-topbar { height: 72px; display: flex; align-items: center; padding: 0 16px; }
+.msignup-body { padding: 0 18px; flex: 1; }
+.msignup-foot { padding: 24px 18px calc(env(safe-area-inset-bottom) + 8px); }
+.msignup-foot .login-submit-btn { width: 100%; }
+
+/* 체크 */
+.msignup-check {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 1.5px solid #cfcfcf; background: #fff; color: transparent;
+    display: inline-flex; align-items: center; justify-content: center; flex: none;
+}
+.msignup-check.on { background: #23bdbb; border-color: #23bdbb; color: #fff; }
+
+/* 모든 약관 동의 */
+.msignup-all {
+    width: 100%; height: 45px; border: none; border-radius: 10px; background: #f4f4f4;
+    display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
+    font-family: 'Pretendard Variable'; font-weight: 500; font-size: 16px; letter-spacing: -0.64px; color: #242424;
+}
+
+/* 약관 박스 */
+.msignup-terms-block { margin-top: 24px; }
+.msignup-terms-title { font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: -0.56px; color: #242424; margin-bottom: 8px; }
+.msignup-terms-title .req { color: #777; font-weight: 400; }
+.msignup-terms-box {
+    height: 154px; overflow-y: auto; white-space: pre-wrap;
+    border: 1px solid #ddd; border-radius: 10px 10px 0 0;
+    padding: 12px 14px; font-size: 13px; line-height: 1.5; color: #242424; background: #fff;
+}
+.msignup-agree {
+    width: 100%; height: 42px; border: none; border-radius: 0 0 10px 10px; background: #23bdbb;
+    display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+    font-size: 14px; letter-spacing: -0.56px; color: #fff;
+}
+.msignup-agree .msignup-check { width: 18px; height: 18px; border-color: rgba(255,255,255,0.7); background: transparent; }
+.msignup-agree.on .msignup-check { background: #fff; border-color: #fff; color: #23bdbb; }
+
+/* 가입유형 카드 */
+.msignup-pick-label { margin-top: 24px; font-size: 13px; color: #777; text-align: center; }
+.msignup-typehint { margin-top: 10px; font-size: 13px; color: #e6235a; text-align: center; }
+.msignup-typecards { display: flex; gap: 8px; margin-top: 10px; }
+.msignup-typecard {
+    flex: 1; height: 114px; border: 1px solid #ddd; border-radius: 20px; background: #fff;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
+    font-size: 14px; letter-spacing: -0.56px; color: #242424;
+}
+.msignup-typecard.selected { background: #23bdbb; border-color: #23bdbb; color: #fff; }
+.msignup-typeicon { width: 38px; height: 38px; object-fit: contain; }
+.msignup-typecard.selected .msignup-typeicon { filter: brightness(0) invert(1); }
+
+/* 정보 입력 폼 */
+.msignup-intro { margin: 8px 0 28px; }
+.msignup-intro h1 { font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.8px; color: #242424; line-height: 1.4; word-break: keep-all; }
+.msignup-intro p { margin-top: 8px; font-size: 14px; color: #777; }
+.msignup-form { display: flex; flex-direction: column; gap: 20px; }
+.msignup .input-group { gap: 8px; }
+.msignup .input-label { display: inline-flex; align-items: flex-start; gap: 3px; font-size: 14px; color: #1e1e1e; font-weight: 400; }
+.req-dot { width: 4px; height: 4px; border-radius: 50%; background: #23bdbb; display: inline-block; margin-top: 2px; }
+.msignup-helper { font-size: 12px; line-height: 1.4; color: #888; margin-top: 6px; }
+.msignup-helper.ok { color: #23bdbb; }
+.msignup-helper.err { color: #e6235a; }
+
+/* 인라인 버튼 행 (주소검색/휴대폰인증) */
+.msignup-row { display: flex; gap: 6px; }
+.msignup-row .login-input { flex: 1; }
+.login-input.clickable { cursor: pointer; background: #fff; }
+.msignup-inline-btn {
+    flex: none; width: 60px; height: 48px; border: 1px solid #d9d9d9; border-radius: 8px;
+    background: #f4f4f4; color: #888; font-size: 14px; font-weight: 500; cursor: pointer;
+}
+.msignup-inline-btn.active { background: #23bdbb; border-color: #23bdbb; color: #fff; }
+.msignup-verified { margin-top: 6px; font-size: 13px; color: #23bdbb; font-weight: 600; }
+.msignup-error { margin-top: 14px; color: #e6235a; font-size: 14px; text-align: center; }

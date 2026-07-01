@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
 import '../../styles/admin.css';
 
 export default function MultiSelectDropdown({ label, options, selectedValues, onChange, color = 'bg-primary' }) {
@@ -46,7 +45,7 @@ export default function MultiSelectDropdown({ label, options, selectedValues, on
                             ? '전체 선택됨'
                             : `${selectedValues.length}개 선택됨`}
                 </span>
-                <ChevronDown className={`dropdown-icon ${isOpen ? 'open' : ''}`} />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`dropdown-icon ${isOpen ? 'open' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
             </button>
 
             {isOpen && (
@@ -56,7 +55,7 @@ export default function MultiSelectDropdown({ label, options, selectedValues, on
                         onClick={handleSelectAll}
                     >
                         <div className={`checkbox-box ${selectedValues.length === options.length ? 'checked' : ''}`}>
-                            {selectedValues.length === options.length && <Check className="checkbox-icon" />}
+                            {selectedValues.length === options.length && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="checkbox-icon"><polyline points="20 6 9 17 4 12"/></svg>}
                         </div>
                         <span className="dropdown-item-text font-medium">전체 선택</span>
                     </div>
@@ -69,7 +68,7 @@ export default function MultiSelectDropdown({ label, options, selectedValues, on
                                 onClick={() => toggleOption(option.value)}
                             >
                                 <div className={`checkbox-box ${isSelected ? 'checked' : ''}`}>
-                                    {isSelected && <Check className="checkbox-icon" />}
+                                    {isSelected && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="checkbox-icon"><polyline points="20 6 9 17 4 12"/></svg>}
                                 </div>
                                 <span className={`dropdown-item-text ${isSelected ? 'selected' : ''}`}>
                                     {option.label}

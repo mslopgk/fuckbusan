@@ -1,4 +1,3 @@
-import React from 'react';
 import './ReportDone.css';
 
 const ReportDone = ({ onMyReports, onOthers }) => {

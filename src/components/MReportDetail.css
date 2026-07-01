@@ -1,0 +1,474 @@
+.m-report-detail-page {
+    padding-bottom: 120px;
+}
+
+/* Figma 0:1328: sub-tag in detail topbar uses #ffc9c9 bg / #242424 text (different from list) */
+.m-report-detail-page .m-report-sub-tag {
+    background: #ffc9c9;
+    color: #242424;
+}
+
+/* "결과안내" 단계 미표시 시(기본 stage bar만)에는 70px로 복원 */
+.m-report-detail-page.stage-bar-compact {
+    padding-bottom: 70px;
+}
+
+.m-rdetail-tags {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+    align-items: center;
+}
+
+/* Figma 0:1328: cat tag in detail topbar — 14px bold (vs list 12px) */
+.m-rdetail-tags .m-prop-cat-tag {
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.m-rdetail-region-tag {
+    background: #dff8f8;
+    color: #242424;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* Divider between author area and title */
+.m-rdetail-divider {
+    height: 1px;
+    background: #ddd;
+    margin: 8px 0 12px;
+}
+
+.m-rdetail-body {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.5;
+    margin: 8px 0 16px;
+    word-break: keep-all;
+    letter-spacing: -0.02em;
+}
+
+.m-rdetail-author-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: #737373;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+/* Two-line author block matching Figma 848:19789 */
+.m-rdetail-author-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 10px;
+}
+
+.m-rdetail-author-sub {
+    font-size: 14px;
+    color: #737373;
+}
+
+.m-rdetail-author {
+    color: #1a1a1b;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+}
+
+.m-rdetail-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ececec;
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 14px;
+}
+
+.m-rdetail-stat-meta {
+    font-size: 11px;
+    color: #999;
+}
+
+.m-rdetail-stat-icons {
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.m-rdetail-stat-icons span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: #888;
+}
+
+.m-rdetail-comments {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+}
+
+.m-rdetail-comments li {
+    padding: 12px 0;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.m-rdetail-comments p {
+    font-size: 12px;
+    color: #444;
+    margin: 0 0 4px;
+    line-height: 1.5;
+}
+
+.m-rdetail-comment-content {
+    font-size: 16px;
+    color: #242424;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+    margin: 2px 0 4px;
+}
+
+/* Figma 0:12760 — 각 댓글 하단 "답글쓰기" 링크 */
+.m-comment-reply {
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 2px 0 0;
+    font-family: inherit;
+    font-size: 12px;
+    color: #9a9a9a;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+}
+
+/* Stage tracker bar (fixed bottom) */
+.m-rdetail-stage-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    box-shadow: 0 -4px 10px 0 rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px 16px;
+    min-height: 95px;
+    z-index: 50;
+}
+
+/* Figma: pills connected by a thin horizontal line running behind them */
+.m-rstage-pills-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+}
+
+/* The continuous connector line behind all pills */
+.m-rstage-connector {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 1px;
+    background: #ddd;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.m-rstage-result-btn {
+    width: 100%;
+    max-width: 320px;
+    background: #542aa3;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.m-rstage-result-btn:hover,
+.m-rstage-result-btn:active {
+    background: #3d1a7a;
+}
+
+.m-rstage-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Figma: pills sit on top of connector line; z-index ensures they're above the line */
+.m-rstage-pill {
+    border: none;
+    border-radius: 10px;
+    height: 25px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #777;
+    background: #ddd;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.m-rstage-pill.done {
+    color: #777;
+    background: #ddd;
+}
+
+.m-rstage-pill.active {
+    background: #542aa3;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* m-rstage-sep no longer rendered (replaced by m-rstage-connector line) */
+.m-rstage-sep {
+    display: none;
+}
+
+/* Detail image: Figma 848:19789 — border-radius 15px */
+.m-report-detail-page .m-detail-image {
+    border-radius: 15px;
+    height: 199px;
+}
+
+/* Map preview: Figma 848:19789 — 80px height, radius 15px */
+.m-report-detail-page .m-detail-map {
+    height: 80px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+/* Detail title: Figma shows 18px medium weight */
+.m-report-detail-page .m-detail-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #242424;
+    letter-spacing: -0.02em;
+    margin: 8px 0 6px;
+}
+
+/* Comment author: Figma shows SemiBold 14px */
+.m-report-detail-page .m-comment-meta strong {
+    font-size: 14px;
+    font-weight: 600;
+    color: #242424;
+}
+
+/* Comment input: Figma 848:19789 — height 41px, radius 15px, border #dadada */
+.m-report-detail-page .m-comment-input {
+    height: 41px;
+    border: 1px solid #dadada;
+    border-radius: 15px;
+    font-size: 16px;
+    color: #737373;
+}
+
+.m-report-detail-page .m-comment-input::placeholder {
+    color: #737373;
+}
+
+/* Comment send button: override proposal default to report pink */
+.m-report-detail-page .m-comment-send {
+    background: #542aa3;
+}
+
+.m-report-detail-page .m-comment-input:focus {
+    border-color: #542aa3;
+}
+
+/* Like button */
+.m-rdetail-like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #888;
+    font: inherit;
+    font-size: 11px;
+    transition: color 0.15s;
+}
+
+.m-rdetail-like-btn.liked { color: #542aa3; }
+
+/* Shared modal animation keyframes — also defined in MProposalList.css / MProposalForm.css */
+@keyframes m-modal-fade-in {
+    from { background: rgba(0, 0, 0, 0); }
+    to   { background: rgba(0, 0, 0, 0.45); }
+}
+
+@keyframes m-result-modal-appear {
+    from { transform: scale(0.92) translateY(16px); opacity: 0; }
+    to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* 개선 결과보기 모달 */
+/* Figma: modal positioned at y≈229 on 852px screen — use flex center for responsive */
+.m-result-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 250;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 45px;
+    animation: m-modal-fade-in 0.2s ease-out;
+}
+
+.m-result-modal {
+    width: 303px;
+    background: #fff;
+    border-radius: 30px;
+    padding: 24px 24px 28px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    position: relative;
+    animation: m-result-modal-appear 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes m-result-modal-appear {
+    from { transform: scale(0.92) translateY(16px); opacity: 0; }
+    to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Figma: header has centered title + close button on right */
+.m-result-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+/* Figma: title "개선 결과보기" — 20px bold, centered */
+.m-result-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #242424;
+    margin: 0;
+    letter-spacing: -0.04em;
+    text-align: center;
+    flex: 1;
+}
+
+.m-result-close {
+    background: none;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Figma: result image is 95px tall (matches map preview ratio), radius 15px */
+.m-result-image {
+    width: 100%;
+    height: 95px;
+    border-radius: 15px;
+    margin-bottom: 14px;
+    display: block;
+}
+
+.m-result-image--actual {
+    object-fit: cover;
+}
+
+.m-result-image--placeholder {
+    background: linear-gradient(135deg, #e8f4fb 0%, #c6e4f5 60%, #9ecde8 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.m-result-image--placeholder span {
+    font-size: 11px;
+    color: #7aaec8;
+}
+
+/* Figma: body text 16px regular, color #242424 */
+.m-result-body {
+    font-size: 16px;
+    color: #242424;
+    line-height: 1.4;
+    margin: 0 0 14px;
+    word-break: keep-all;
+    letter-spacing: -0.02em;
+}
+
+.m-result-divider {
+    height: 1px;
+    background: #ececec;
+    margin: 0 0 12px;
+}
+
+/* Figma: 담당자 코멘트 label — 18px bold, pink #542aa3 */
+.m-result-comment-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #542aa3;
+    margin: 0 0 4px;
+    letter-spacing: -0.02em;
+}
+
+.m-result-comment-content {
+    font-size: 16px;
+    color: #242424;
+    line-height: 1.4;
+    margin: 0 0 8px;
+    word-break: keep-all;
+    letter-spacing: -0.02em;
+}
+
+.m-result-comment-content--empty {
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Figma: date below 담당자 코멘트 label — 16px regular, gray #737373 */
+.m-result-date {
+    font-size: 16px;
+    color: #737373;
+    margin: 0;
+    line-height: 1.35;
+}
