@@ -173,14 +173,15 @@
     background: var(--ai-bg);
     color: #333;
     border-color: var(--line);
-    border-top-left-radius: 6px;
+    /* Figma 269:20000 — 모서리 20px 균일, 말꼬리 없음 */
 }
 
 .surveychat-bubble.user {
     background: var(--teal);
     color: #fff;
     border: none;
-    border-top-right-radius: 6px;
+    /* Figma 269:20013 — 유저 말풍선은 pill(100px), 말꼬리 없음 */
+    border-radius: 100px;
 }
 
 /* 입력 중(타이핑) 표시 */
@@ -365,6 +366,17 @@
 }
 
 .surveychat-textfield::placeholder { color: #777; }
+
+/* ===== 모바일 입력바 = 라운드 pill (Figma 269:19972: #f4f4f4, radius 30px, 좌우 여백) ===== */
+.surveychat:not(.pc) .surveychat-inputbar {
+    margin: 4px 11px 10px;
+    padding: 5px 14px;
+    background: #f4f4f4;
+    border: none;
+    border-top: none;
+    border-radius: 30px;
+    box-sizing: border-box;
+}
 
 .surveychat-send {
     flex: 0 0 auto;
