@@ -12,6 +12,26 @@ const LABEL_OFFSETS = {
     '해운대구': [-0.015, -0.005],
 };
 
+// 생활정보 카테고리 칩 (val = persona.categories 라벨과 일치, backend CATEGORY_MAP 값)
+const CATS = [
+    { label: '전체', val: null },
+    { label: '주거', val: '주거' },
+    { label: '환경', val: '환경' },
+    { label: '교통', val: '교통' },
+    { label: '안전', val: '안전' },
+    { label: '교육', val: '교육' },
+    { label: '산업·일자리', val: '산업일자리' },
+    { label: '문화·여가', val: '문화여가' },
+    { label: '보건·복지', val: '보건복지' },
+];
+
+// 지역 지표 카드 (Figma 269:26854 상단 산업·일자리 섹션). 값은 공공데이터 백엔드 연동 전까지 준비중 표시.
+const STAT_CARDS = [
+    { label: '청년층 순 이동율', icon: '/assets/aicitizen/stat_move.png' },
+    { label: '고용율', icon: '/assets/aicitizen/stat_employ.png' },
+    { label: '실업율', icon: '/assets/aicitizen/stat_jobless.png' },
+];
+
 function BoundsFitter({ data }) {
     const map = useMap();
     useEffect(() => {
@@ -106,6 +126,7 @@ export default function MAICitizen({ onNavigate }) {
     const [sort, setSort] = useState('importance');
     const [quoteCitizen, setQuoteCitizen] = useState(null);
     const [search, setSearch] = useState('');
+    const [cat, setCat] = useState(null);
 
     useEffect(() => {
         fetch('/assets/busan_districts_high.json')
@@ -142,11 +163,13 @@ export default function MAICitizen({ onNavigate }) {
         setSelectedDistrict(null);
     };
 
+    const byCat = cat ? citizens.filter(c => (c.categories || []).includes(cat)) : citizens;
     const filtered = search
-        ? citizens.filter(c => c.name?.includes(search) || c.district?.includes(search) || (c.tags || []).some(t => t.includes(search)))
-        : citizens;
+        ? byCat.filter(c => c.name?.includes(search) || c.district?.includes(search) || (c.tags || []).some(t => t.includes(search)))
+        : byCat;
 
     const titleDistrict = selectedDistrict || null;
+    const catLabel = CATS.find(c => c.val === cat)?.label || '전체';
 
     return (
         <div className="m-ai-citizen">
@@ -162,38 +185,13 @@ export default function MAICitizen({ onNavigate }) {
                 .m-ai-district-label.selected { color: #fff !important; font-weight: 700 !important; }
             `}</style>
 
-            {/* 검색바 — Figma 22:7438: 헤더 행 없이 검색바만 */}
-            <div className="m-ai-search-wrap">
-                <input
-                    className="m-ai-search"
-                    type="text"
-                    placeholder="지역 검색"
-                    value={search}
-                    onChange={e => {
-                        setSearch(e.target.value);
-                        if (!e.target.value) setSelectedDistrict(null);
-                    }}
-                />
-                {search && (
-                    <button
-                        className="m-ai-search-clear"
-                        type="button"
-                        onClick={handleClearSearch}
-                        aria-label="검색 초기화"
-                    >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
-                )}
-            </div>
+            {/* 뒤로가기 — Figma 269:27184 */}
+            <button className="m-ai-back" type="button" onClick={() => onNavigate?.('home')} aria-label="뒤로">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
 
             {/* Map section */}
             <div className="m-ai-map-section">
-                {quoteCitizen && (
-                    <div className="m-ai-quote-bubble">
-                        <p>{quoteCitizen.quote.slice(0, 55)}{quoteCitizen.quote.length > 55 ? '…' : ''}</p>
-                        <div className="m-ai-quote-bubble__tail" />
-                    </div>
-                )}
                 <MiniMap
                     geoData={geoData}
                     selectedDistrict={selectedDistrict}
@@ -205,31 +203,58 @@ export default function MAICitizen({ onNavigate }) {
             <div className="m-ai-sheet">
                 <div className="m-ai-sheet__grip" />
 
-                <div className="m-ai-sheet__header">
-                    <div className="m-ai-sheet__title">
-                        {titleDistrict ? (
-                            <>
-                                <span className="m-ai-title-teal">{titleDistrict}</span>
-                                <span className="m-ai-title-black"> AI 가상시민</span>
-                            </>
-                        ) : (
-                            <>
-                                <span className="m-ai-title-teal">부산대표</span>
-                                <span className="m-ai-title-black"> AI 가상시민</span>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                <div className="m-ai-sheet__meta">
-                    <span className="m-ai-count">총 {filtered.length}명</span>
-                    <button className="m-ai-sort-btn" type="button" onClick={() => setSort(s => s === 'importance' ? 'age' : 'importance')}>
-                        {sort === 'importance' ? '중요도순' : '나이순'}
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
+                {/* 지역 타이틀 + 부산전체 초기화 */}
+                <div className="m-ai-region-row">
+                    <button className="m-ai-region-title" type="button" onClick={handleClearSearch}>
+                        <span>{titleDistrict || '부산전체'}</span>
+                        <span className="m-ai-region-chevron" aria-hidden="true">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </span>
+                    </button>
+                    <button className="m-ai-region-reset" type="button" onClick={handleClearSearch} aria-label="부산전체 보기">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="1.6"><circle cx="12" cy="12" r="6.5"/><line x1="12" y1="1.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22.5" y2="12"/></svg>
                     </button>
                 </div>
 
-                <div className="m-ai-list">
+                {/* 생활정보 카테고리 칩 */}
+                <div className="m-ai-chips">
+                    {CATS.map(c => (
+                        <button
+                            key={c.label}
+                            type="button"
+                            className={`m-ai-chip${cat === c.val ? ' active' : ''}`}
+                            onClick={() => setCat(c.val)}
+                        >{c.label}</button>
+                    ))}
+                </div>
+
+                <div className="m-ai-scroll">
+                    {/* 지역 지표 (Figma 상단 산업·일자리 섹션 — 공공데이터 연동 전 준비중) */}
+                    <div className="m-ai-section-head">
+                        <span className="m-ai-section-title">{catLabel}</span>
+                    </div>
+                    <div className="m-ai-stat-grid">
+                        {STAT_CARDS.map(s => (
+                            <div className="m-ai-stat-card" key={s.label}>
+                                <span className="m-ai-stat-label">{s.label}</span>
+                                <img className="m-ai-stat-icon" src={s.icon} alt="" />
+                                <span className="m-ai-stat-value">데이터 준비중</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* 가상시민 목록 */}
+                    <div className="m-ai-section-head m-ai-section-head--persona">
+                        <span className="m-ai-section-title">
+                            <span className="m-ai-title-teal">{titleDistrict || '부산대표'}</span> AI 가상시민
+                        </span>
+                        <button className="m-ai-sort-btn" type="button" onClick={() => setSort(s => s === 'importance' ? 'age' : 'importance')}>
+                            {sort === 'importance' ? '중요도순' : '나이순'}
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                    </div>
+
+                    <div className="m-ai-list">
                     {loading && <div className="m-ai-loading">불러오는 중...</div>}
                     {!loading && filtered.length === 0 && (
                         <div className="m-ai-empty">해당 조건의 가상시민이 없습니다.</div>
@@ -265,6 +290,7 @@ export default function MAICitizen({ onNavigate }) {
                             </div>
                         </div>
                     ))}
+                    </div>
                 </div>
             </div>
 
