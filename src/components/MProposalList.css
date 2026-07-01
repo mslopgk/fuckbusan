@@ -34,7 +34,7 @@
 
 /* 지도보기 pill — 핑크 bg, 위치 핀 아이콘 */
 .m-map-btn {
-    background: #E6235A;
+    background: #f74e7e;
     border: none;
     border-radius: 20px;
     padding: 0 14px;
@@ -77,7 +77,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: #E6235A;
+    background: #f74e7e;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -113,7 +113,7 @@
 }
 
 .m-cat-chip.on {
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
     font-weight: 600;
 }
@@ -168,8 +168,8 @@
 }
 
 .m-report-sub-tag {
-    background: #FCDAE3;
-    color: #C2456A;
+    background: #fce4ed;
+    color: #f74e7e;
     padding: 3px 10px;
     border-radius: 11px;
     font-size: 11px;
@@ -285,7 +285,7 @@
     position: fixed;
     right: 20px;
     bottom: 92px;
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
     border: none;
     border-radius: 26px;
@@ -297,7 +297,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    box-shadow: 0 6px 18px rgba(230, 35, 90, 0.35);
+    box-shadow: 0 6px 18px rgba(247, 78, 126, 0.35);
     font-family: inherit;
     z-index: 60;
     letter-spacing: -0.02em;
@@ -307,7 +307,7 @@
 
 .m-prop-fab:active {
     transform: scale(0.95);
-    box-shadow: 0 3px 10px rgba(230, 35, 90, 0.25);
+    box-shadow: 0 3px 10px rgba(247, 78, 126, 0.25);
 }
 
 /* ─── 바텀시트 모달 (RegionSheet / SortSheet 공용) ─── */
@@ -401,24 +401,24 @@
 
 .m-region-item.on,
 .m-sort-item.on {
-    color: #E6235A;
+    color: #f74e7e;
 }
 
 .m-region-item.on .m-modal-chevron,
 .m-sort-item.on .m-modal-chevron {
-    color: #E6235A;
+    color: #f74e7e;
 }
 
 .m-modal-confirm {
     height: 50px;
     border: none;
     border-radius: 25px;
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
     font-size: 15px;
     font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(230, 35, 90, 0.25);
+    box-shadow: 0 4px 12px rgba(247, 78, 126, 0.25);
     font-family: inherit;
     margin-top: 8px;
 }

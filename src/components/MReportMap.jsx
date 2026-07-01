@@ -189,9 +189,9 @@ export default function MReportMap({ onNavigate }) {
             <MMapSearchBar
                 value={search}
                 onChange={setSearch}
-                onBack={() => onNavigate?.('home')}
-                placeholder="전체"
-                showBack={false}
+                onBack={() => onNavigate?.('mReportList')}
+                placeholder="제목·내용으로 검색"
+                showBack={true}
             />
 
             <div className="m-map-canvas">

@@ -189,8 +189,8 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
 
                 <div className="m-detail-map">
                     <PCMapCanvas
-                        pins={[{ id: 'this', lat: data.lat, lng: data.lng, color: '#E6235A', title: data.title }]}
-                        accentColor="#E6235A"
+                        pins={[{ id: 'this', lat: data.lat, lng: data.lng, color: '#f74e7e', title: data.title }]}
+                        accentColor="#f74e7e"
                     />
                 </div>
                 {(proposal?.files?.length > 0) && (
@@ -211,8 +211,8 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                     <span className="m-detail-meta-left">{data.date} · 조회수 {views}</span>
                     <span className="m-detail-meta-icons">
                         {/* WDC: heart icon for votes — 투표 시 핑크 (Figma 제안상세3) */}
-                        <span style={voted ? { color: '#E6235A' } : undefined}>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill={voted ? '#E6235A' : 'none'} stroke={voted ? '#E6235A' : '#bfbfbf'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        <span style={voted ? { color: '#f74e7e' } : undefined}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill={voted ? '#f74e7e' : 'none'} stroke={voted ? '#f74e7e' : '#bfbfbf'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                             {votes}
                         </span>
                         <span>
@@ -330,7 +330,7 @@ function VoteBallotIcon() {
             {/* 문서 형태 (Figma Union path) */}
             <path d="M77.168 0.367C79.545 0.38 81.115 2.262 81.106 4.537L80.881 53.171C80.875 54.324 80.456 55.296 79.648 56.1L55.831 79.705C54.924 80.603 53.934 80.992 52.662 80.986L4.498 80.746C2.864 80.738 1.736 80.222 0.686 79.095L0 77.417L0.41 3.979C0.422 1.87 2.029 -0.012 4.262 0.0001L77.168 0.367ZM7.961 72.883L48.979 73.1L49.104 52.992C49.117 50.798 50.945 49.199 53.144 49.181L73.027 49.263L73.204 8.228L8.273 7.898L7.961 72.883ZM56.926 67.506L67.428 57.126L56.931 57.075L56.926 67.506Z" fill="#1a1a1b"/>
             {/* 핑크 체크박스 */}
-            <rect x="33" y="34" width="28" height="28" rx="6" fill="#E6235A"/>
+            <rect x="33" y="34" width="28" height="28" rx="6" fill="#f74e7e"/>
             {/* 흰 체크마크 */}
             <path d="M40 48 l5 5 10-12" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>

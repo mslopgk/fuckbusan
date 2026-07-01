@@ -5,11 +5,28 @@
     background: #f7f7f8;
 }
 
-/* 검색바 — Figma: h=55px, border-radius=15px, shadow 0 0 10px rgba(0,0,0,0.25) */
+/* 맵 페이지 뒤로가기 버튼 — Figma: standalone at left:20, top:25 */
+.m-prop-map-back {
+    position: absolute;
+    left: 20px;
+    top: 17px;
+    width: 34px;
+    height: 34px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 51;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+/* 검색바 — Figma: h=55px, left=63px (back arrow가 별도 배치), border-radius=15px, shadow 0 0 10px rgba(0,0,0,0.25) */
 .m-map-search-bar {
     position: absolute;
-    top: 17px;
-    left: 20px;
+    top: 9px;
+    left: 63px;
     right: 20px;
     height: 55px;
     background: #fff;

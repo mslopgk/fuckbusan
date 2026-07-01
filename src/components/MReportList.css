@@ -157,6 +157,12 @@
     bottom: 80px;
 }
 
+/* Back button: icon-only in report list (no "홈으로" text per Figma 269:21366) */
+.m-rlist-back {
+    gap: 0;
+    padding: 4px;
+}
+
 /* Region arrow circle — WDC Figma report purple #542aa3 */
 .m-report-list-page .m-region-arrow {
     background: #542aa3;

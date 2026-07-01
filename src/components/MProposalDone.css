@@ -64,7 +64,7 @@
     cursor: pointer;
     font-family: inherit;
     letter-spacing: -0.04em;
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
 }
 
@@ -77,6 +77,6 @@
     cursor: pointer;
     font-family: inherit;
     letter-spacing: -0.04em;
-    background: #FCDAE3;
-    color: #E6235A;
+    background: #fce4ed;
+    color: #f74e7e;
 }

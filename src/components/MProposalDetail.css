@@ -73,7 +73,7 @@
 }
 .m-detail-body li::before {
     content: '▸';
-    color: #E6235A;
+    color: #f74e7e;
     position: absolute;
     left: 0;
     font-size: 11px;
@@ -229,13 +229,13 @@
     letter-spacing: -0.04em;
 }
 
-.m-comment-input:focus { border-color: #E6235A; outline: none; }
+.m-comment-input:focus { border-color: #f74e7e; outline: none; }
 
 .m-comment-send {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
     border: none;
     cursor: pointer;
@@ -262,8 +262,8 @@
     height: 59px;
     border-radius: 15px;
     background: #fff;
-    color: #E6235A;
-    border: 2px solid #E6235A;
+    color: #f74e7e;
+    border: 2px solid #f74e7e;
     font-size: 18px;
     font-weight: 800;
     cursor: pointer;
@@ -280,9 +280,9 @@
 }
 
 .m-vote-cta.on {
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
-    border-color: #E6235A;
+    border-color: #f74e7e;
 }
 
 /* 투표 완료/취소확인 모달 — Figma 제안상세2/4 */
@@ -341,13 +341,13 @@
 }
 
 .m-vote-modal-btn.primary {
-    background: #E6235A;
+    background: #f74e7e;
     color: #fff;
 }
 
 .m-vote-modal-btn.ghost {
-    background: #FCDAE3;
-    color: #E6235A;
+    background: #fce4ed;
+    color: #f74e7e;
 }
 
 /* 답글 작성 표시 바 + 대댓글 들여쓰기 */
@@ -364,7 +364,7 @@
     letter-spacing: -0.02em;
 }
 
-.m-comment-reply-bar strong { color: #E6235A; font-weight: 700; }
+.m-comment-reply-bar strong { color: #f74e7e; font-weight: 700; }
 
 .m-comment-reply-bar button {
     border: none;

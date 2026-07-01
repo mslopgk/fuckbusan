@@ -15,10 +15,10 @@ export const CAT_STYLES = {
 export const MY_CAT_STYLES = {
     '주거':       { bg: '#FFF6CC', color: '#C49A12' },
     '환경':       { bg: '#E0F4F1', color: '#2C9A8F' },
-    '교통':       { bg: '#FCDAE3', color: '#E6235A' },
+    '교통':       { bg: '#fce4ed', color: '#f74e7e' },
     '안전':       { bg: '#FFE2D6', color: '#E2742C' },
-    '교육':       { bg: '#FCDAE3', color: '#E6235A' },
-    '산업·일자리': { bg: '#FCDAE3', color: '#E6235A' },
+    '교육':       { bg: '#fce4ed', color: '#f74e7e' },
+    '산업·일자리': { bg: '#fce4ed', color: '#f74e7e' },
     '문화·여가':   { bg: '#E0F4F1', color: '#2C9A8F' },
     '보건·복지':   { bg: '#FFE2D6', color: '#E2742C' },
 };

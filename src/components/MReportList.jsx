@@ -146,12 +146,14 @@ export default function MReportList({ onNavigate }) {
     return (
         <div className="m-report-list-page">
             <header className="m-prop-topbar">
-                <button className="m-prop-back" onClick={() => onNavigate && onNavigate('home')}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                    <span>홈으로</span>
+                <button className="m-prop-back m-rlist-back" onClick={() => onNavigate && onNavigate('home')}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
                 <button className="m-map-btn" onClick={() => onNavigate && onNavigate('mReportMap')}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    {/* Figma: location pin icon */}
+                    <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 0C4.13 0 1 3.13 1 7c0 5.25 7 11 7 11s7-5.75 7-11c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S6.62 4.5 8 4.5s2.5 1.12 2.5 2.5S9.38 9.5 8 9.5z" fill="currentColor"/>
+                    </svg>
                     <span>지도보기</span>
                 </button>
             </header>

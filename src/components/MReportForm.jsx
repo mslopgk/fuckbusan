@@ -230,7 +230,6 @@ export default function MReportForm({ onNavigate }) {
             <header className="m-form-topbar">
                 <button className="m-form-back" onClick={handleBackClick}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                    <span>홈으로</span>
                 </button>
             </header>
 

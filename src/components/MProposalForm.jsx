@@ -212,9 +212,8 @@ export default function MProposalForm({ onNavigate }) {
     return (
         <div className="m-prop-form-page">
             <header className="m-form-topbar">
-                <button className="m-form-back" onClick={() => onNavigate && onNavigate('mProposalList')}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                    <span>홈으로</span>
+                <button className="m-form-back" onClick={() => onNavigate && onNavigate('mProposalList')} aria-label="뒤로">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
             </header>
 
@@ -330,9 +329,9 @@ export default function MProposalForm({ onNavigate }) {
                             <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
                                 <path d="M14 8 H32 L42 18 V46 a2 2 0 0 1 -2 2 H14 a2 2 0 0 1 -2 -2 V10 a2 2 0 0 1 2 -2 z" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="#fff"/>
                                 <path d="M32 8 V18 H42" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="none"/>
-                                <line x1="20" y1="28" x2="34" y2="28" stroke="#E6235A" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="34" x2="34" y2="34" stroke="#E6235A" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="40" x2="28" y2="40" stroke="#E6235A" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="20" y1="28" x2="34" y2="28" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="20" y1="34" x2="34" y2="34" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
+                                <line x1="20" y1="40" x2="28" y2="40" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
                             </svg>
                         </div>
                         <h3 className="m-draft-title">임시 저장된 내용을<br/>불러올까요?</h3>
@@ -366,7 +365,7 @@ export default function MProposalForm({ onNavigate }) {
                     <div className="m-loc-picker-map">
                         <PCMapCanvas
                             pins={[]}
-                            accentColor="#E6235A"
+                            accentColor="#f74e7e"
                             selectedPoint={{ lat: pickedLat, lng: pickedLng }}
                             onMapClick={({ lat, lng }) => {
                                 setPickedLat(lat);

@@ -103,17 +103,41 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
 
     const body = (
         <div className={`surveychat${isPC ? ' pc' : ''}`}>
+            {!isPC && (
+                <div className="surveychat-topbar">
+                    <button type="button" className="surveychat-back" onClick={() => nav('home')} aria-label="뒤로">
+                        <img src="/figma-assets/icons/icon_back_arrow.svg" alt="" width="8" height="14" />
+                    </button>
+                    <h1 className="surveychat-title-inline">무엇을 도와드릴까요?</h1>
+                </div>
+            )}
             <div className="surveychat-card">
-                <div className="surveychat-scroll" ref={scrollRef}>
-                    <h1 className="surveychat-title">무엇을 도와드릴까요?</h1>
+                <div className={`surveychat-scroll${isPC ? '' : ' mobile'}`} ref={scrollRef}>
+                    {isPC && <h1 className="surveychat-title">무엇을 도와드릴까요?</h1>}
 
-                    <div className="surveychat-intro">
-                        {INTRO.map((c) => (
-                            <button key={c.key} type="button" className="surveychat-introchip" onClick={() => onIntro(c.key)}>
-                                <span className="surveychat-introemoji">{c.emoji}</span>{c.label}
-                            </button>
-                        ))}
-                    </div>
+                    {!isPC && (
+                        <div className="surveychat-intro mobile">
+                            {INTRO.map((c) => (
+                                <button key={c.key} type="button" className="surveychat-introchip" onClick={() => onIntro(c.key)}>
+                                    <span className="surveychat-introemoji">{c.emoji}</span>{c.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                    {isPC && (
+                        <div className="surveychat-pc-body">
+                            <div className="surveychat-pc-left">
+                                <p className="surveychat-pc-desc">생활 속에서 느낀 불편이나<br />개선이 필요한 공간에 대해 이야기해주세요.</p>
+                            </div>
+                            <div className="surveychat-intro pc">
+                                {INTRO.map((c) => (
+                                    <button key={c.key} type="button" className="surveychat-introchip" onClick={() => onIntro(c.key)}>
+                                        <span className="surveychat-introemoji">{c.emoji}</span>{c.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {messages.map((m, i) => (
                         <div key={i} className={`surveychat-row ${m.role}`}>
@@ -185,9 +209,11 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                     )}
                 </div>
 
-                {/* 입력바 (PC는 Figma 없음 — 자체 디자인) */}
+                {/* 입력바 */}
                 <div className="surveychat-inputbar">
-                    <button type="button" className="surveychat-attach" aria-label="첨부">📎</button>
+                    <button type="button" className="surveychat-attach" aria-label="첨부">
+                        <img src="/figma-assets/icons/attach_icon.png" alt="" width="22" height="22" />
+                    </button>
                     <input
                         className="surveychat-textfield"
                         placeholder={complete ? '설문이 완료되었습니다' : '질문하기'}

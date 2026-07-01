@@ -29,6 +29,12 @@
     font-size: 24px;
     font-weight: 700;
     letter-spacing: -0.04em;
+    /* Figma 269:22490: gap from illustration is 27px, buttons 18px below title */
+    margin: 0 0 18px;
+}
+
+.m-report-done-page .m-report-done-illus {
+    margin-bottom: 27px;
 }
 
 .m-report-done-page .m-prop-done-actions {
