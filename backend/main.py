@@ -60,6 +60,9 @@ async def lifespan(app: FastAPI):
                 # AI 대화형 설문 세션: 어드민 처리상태 + 수정일시
                 "ALTER TABLE survey_chat_sessions ADD COLUMN status VARCHAR(20) DEFAULT '신규'",
                 "ALTER TABLE survey_chat_sessions ADD COLUMN updated_at DATETIME NULL",
+                # 공공데이터(테마 지표): 단위 + 등록일 컬럼
+                "ALTER TABLE public_theme_stats ADD COLUMN unit VARCHAR(20) NULL",
+                "ALTER TABLE public_theme_stats ADD COLUMN created_at DATETIME NULL",
             ]:
                 try:
                     conn.execute(text(stmt))

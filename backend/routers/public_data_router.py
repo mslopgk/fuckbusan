@@ -46,7 +46,8 @@ def overview(region: str = "부산진구", db: Session = Depends(get_db)):
         "pop_trend": [{"year": t.year, "value": t.value} for t in trend],
         "theme_stats": [{
             "theme": s.theme, "region": s.region, "metric": s.metric,
-            "value_text": s.value_text, "year": s.year, "note": s.note, "source": s.source,
+            "value_text": s.value_text, "unit": s.unit, "year": s.year,
+            "note": s.note, "source": s.source,
         } for s in stats],
         "layers": [{
             "key": l.key, "label": l.label, "region": l.region,
@@ -68,8 +69,9 @@ def overview(region: str = "부산진구", db: Session = Depends(get_db)):
 
 def _stat_ser(s: "models.PublicThemeStat") -> dict:
     return {"id": s.id, "theme": s.theme, "region": s.region, "metric": s.metric,
-            "value_text": s.value_text, "year": s.year, "note": s.note,
-            "source": s.source, "sort_order": s.sort_order or 0}
+            "value_text": s.value_text, "unit": s.unit, "year": s.year, "note": s.note,
+            "source": s.source, "sort_order": s.sort_order or 0,
+            "created_at": s.created_at.isoformat() if getattr(s, "created_at", None) else None}
 
 
 class ThemeStatIn(BaseModel):
@@ -77,6 +79,7 @@ class ThemeStatIn(BaseModel):
     region: Optional[str] = "부산"
     metric: str
     value_text: Optional[str] = ""
+    unit: Optional[str] = None
     year: Optional[str] = None
     note: Optional[str] = None
     source: Optional[str] = None
@@ -88,10 +91,26 @@ class ThemeStatPatch(BaseModel):
     region: Optional[str] = None
     metric: Optional[str] = None
     value_text: Optional[str] = None
+    unit: Optional[str] = None
     year: Optional[str] = None
     note: Optional[str] = None
     source: Optional[str] = None
     sort_order: Optional[int] = None
+
+
+class ThemeStatBulkEntry(BaseModel):
+    year: str
+    value: Optional[str] = ""
+
+
+class ThemeStatBulkIn(BaseModel):
+    theme: Optional[str] = "공공데이터"
+    metric: str
+    region: Optional[str] = "부산"
+    unit: Optional[str] = None
+    note: Optional[str] = None
+    source: Optional[str] = None
+    entries: list[ThemeStatBulkEntry] = []
 
 
 @router.get("/admin/stats")
@@ -142,6 +161,47 @@ def admin_delete_stat(sid: int, _=Depends(_admin), db: Session = Depends(get_db)
     return {"ok": True, "deleted": sid}
 
 
+@router.post("/admin/stats/bulk")
+def admin_bulk_stats(body: ThemeStatBulkIn, _=Depends(_admin), db: Session = Depends(get_db)):
+    """데이터추가(다년도) — (theme, metric, region, unit) 공유 + 연도별 값.
+    동일 (theme, metric, region, year) 는 값/단위/비고/출처만 갱신, 없으면 신규 생성."""
+    if not (body.metric or "").strip():
+        raise HTTPException(status_code=400, detail="데이터명(metric)은 필수입니다.")
+    theme = (body.theme or "공공데이터").strip()
+    metric = body.metric.strip()
+    region = (body.region or "부산").strip()
+    created = updated = 0
+    result_ids = []
+    for e in body.entries:
+        year = (e.year or "").strip()
+        if not year:
+            continue
+        s = (db.query(models.PublicThemeStat)
+             .filter(models.PublicThemeStat.theme == theme,
+                     models.PublicThemeStat.metric == metric,
+                     models.PublicThemeStat.region == region,
+                     models.PublicThemeStat.year == year)
+             .first())
+        value_text = (e.value or "").strip()
+        if s:
+            s.value_text = value_text
+            s.unit = body.unit
+            s.note = body.note
+            s.source = body.source
+            updated += 1
+        else:
+            s = models.PublicThemeStat(
+                theme=theme, metric=metric, region=region, year=year,
+                value_text=value_text, unit=body.unit, note=body.note,
+                source=body.source, sort_order=0)
+            db.add(s)
+            created += 1
+        db.flush()
+        result_ids.append(s.id)
+    db.commit()
+    return {"ok": True, "created": created, "updated": updated, "ids": result_ids}
+
+
 # ── 어드민: CSV 업로드로 테마 지표 일괄 upsert ────────────────────────────────
 #
 # CSV 형식 (헤더 필수, utf-8 또는 utf-8-sig/엑셀):
@@ -157,6 +217,7 @@ _CSV_ALIASES = {
     "region": ["region", "지역"],
     "metric": ["metric", "지표", "지표명", "지표키"],
     "value_text": ["value_text", "value", "값", "표시값"],
+    "unit": ["unit", "단위"],
     "year": ["year", "연도", "년도"],
     "note": ["note", "비고", "부가"],
     "source": ["source", "출처"],
@@ -172,23 +233,52 @@ def _norm_header(name: str) -> Optional[str]:
     return None
 
 
+def _parse_xlsx_rows(raw: bytes):
+    """xlsx(첫 시트) → 행 리스트(list[list[str]]). openpyxl 필요."""
+    import openpyxl  # 지연 임포트 (미설치 시 상위에서 CSV 폴백)
+    wb = openpyxl.load_workbook(io.BytesIO(raw), read_only=True, data_only=True)
+    ws = wb.active
+    rows = []
+    for r in ws.iter_rows(values_only=True):
+        rows.append(["" if c is None else str(c) for c in r])
+    wb.close()
+    return rows
+
+
 @router.post("/admin/upload-csv")
 async def admin_upload_csv(file: UploadFile = File(...), _=Depends(_admin),
                            db: Session = Depends(get_db)):
-    """공공데이터(테마 지표) CSV 업로드 → (theme, region, metric) 기준 upsert."""
+    """공공데이터(테마 지표) 파일 업로드 → (theme, region, metric) 기준 upsert.
+    CSV 및 XLSX(openpyxl 설치 시) 지원. Figma "엑셀 업로드" 대응."""
     raw = await file.read()
     if not raw:
         raise HTTPException(status_code=400, detail="빈 파일입니다.")
-    # utf-8-sig 로 BOM 제거(엑셀 대비), 실패 시 cp949(한글 엑셀) 폴백
-    try:
-        text_data = raw.decode("utf-8-sig")
-    except UnicodeDecodeError:
-        try:
-            text_data = raw.decode("cp949")
-        except UnicodeDecodeError:
-            raise HTTPException(status_code=400, detail="인코딩을 해석할 수 없습니다. UTF-8 또는 엑셀(CSV)로 저장하세요.")
 
-    reader = csv.reader(io.StringIO(text_data))
+    fname = (file.filename or "").lower()
+    # xlsx 시그니처(PK zip) 또는 확장자 → 엑셀 파싱 시도
+    is_xlsx = fname.endswith(".xlsx") or raw[:2] == b"PK"
+    all_rows = None
+    if is_xlsx:
+        try:
+            all_rows = _parse_xlsx_rows(raw)
+        except ModuleNotFoundError:
+            raise HTTPException(status_code=400,
+                                detail="엑셀(xlsx) 파싱 라이브러리(openpyxl)가 없습니다. CSV로 저장 후 업로드하세요.")
+        except Exception as e:  # noqa: BLE001
+            raise HTTPException(status_code=400, detail=f"엑셀 파일을 읽을 수 없습니다: {e}")
+
+    if all_rows is None:
+        # CSV: utf-8-sig 로 BOM 제거(엑셀 대비), 실패 시 cp949(한글 엑셀) 폴백
+        try:
+            text_data = raw.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            try:
+                text_data = raw.decode("cp949")
+            except UnicodeDecodeError:
+                raise HTTPException(status_code=400, detail="인코딩을 해석할 수 없습니다. UTF-8 CSV 또는 엑셀(xlsx)로 저장하세요.")
+        all_rows = list(csv.reader(io.StringIO(text_data)))
+
+    reader = iter(all_rows)
     try:
         header = next(reader)
     except StopIteration:
@@ -233,6 +323,7 @@ async def admin_upload_csv(file: UploadFile = File(...), _=Depends(_admin),
             sort_order = 0
         fields = {
             "value_text": cell(row, "value_text") or "",
+            "unit": cell(row, "unit"),
             "year": cell(row, "year"),
             "note": cell(row, "note"),
             "source": cell(row, "source"),

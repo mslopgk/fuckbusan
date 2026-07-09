@@ -61,3 +61,24 @@
 .acd-csv-result-x { position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
     border: none; background: none; font-size: 20px; line-height: 1; cursor: pointer; color: inherit; opacity: .6; }
 .acd-csv-result-x:hover { opacity: 1; }
+
+/* ===== 공공데이터 데이터추가 폼 (Figma 302-28599/28664) ===== */
+.acp-form-card { background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 26px 28px; gap: 18px; }
+.acx-frow { display: flex; align-items: center; gap: 20px; }
+.acx-frow-top { align-items: flex-start; }
+.acx-flabel { flex: 0 0 92px; font-size: 14px; font-weight: 600; color: #555; padding-top: 2px; }
+.acx-finput { flex: 1; max-width: 340px; height: 42px; }
+.acx-finput-sm { flex: 0 0 130px; max-width: 130px; height: 42px; }
+.acp-entries { display: flex; flex-direction: column; gap: 10px; }
+.acp-entry-row { display: flex; align-items: center; gap: 10px; }
+.acp-entry-row .acx-finput { max-width: 240px; }
+.acp-unit-suffix { min-width: 14px; font-size: 13px; color: #888; }
+.acp-entry-add { width: 34px; height: 34px; flex: 0 0 34px; border: 1px solid #d5d5d5; border-radius: 8px;
+    background: #fff; color: #444; font-size: 18px; line-height: 1; cursor: pointer; }
+.acp-entry-add:hover { border-color: #23bdbb; color: #199; background: #f5fbfb; }
+.acp-file { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.acp-file-chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px;
+    background: #f2f2f2; font-size: 13px; color: #555; }
+.acp-file-chip button { border: none; background: none; cursor: pointer; font-size: 15px; color: #999; line-height: 1; }
+.acp-file-chip button:hover { color: #333; }
+.acp-form-foot { display: flex; justify-content: space-between; margin-top: 22px; }

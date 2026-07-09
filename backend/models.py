@@ -447,10 +447,12 @@ class PublicThemeStat(Base):
     region = Column(String(30))
     metric = Column(String(100))             # 지표명
     value_text = Column(String(60))          # 표시값 (예: "1,130대")
+    unit = Column(String(20), nullable=True)  # 단위 (예: "%", "개", "건")
     year = Column(String(20), nullable=True)
     note = Column(String(60), nullable=True) # 부가(예: "부산 내 3위")
     source = Column(String(255), nullable=True)
     sort_order = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)  # 등록일
 
 
 class PublicLayer(Base):
