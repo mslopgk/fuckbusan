@@ -15,9 +15,11 @@
     background: #fff; border: none; border-bottom: 1px solid #e6e6e6; cursor: pointer; padding: 0; }
 .pubd-tool-group .pubd-tool-btn:last-child { border-bottom: none; }
 .pubd-tool-btn img { width: 24px; height: 24px; object-fit: contain; }
-.pubd-tool-btn.active { background: #23bdbb; }
-/* map/analytics 아이콘은 export 시 teal → active(teal bg) 위에서 흰색으로 반전 */
-.pubd-tool-btn.active img { filter: brightness(0) invert(1); }
+/* active 아이콘 PNG는 Figma export 자체가 '청록 사각형+흰 글리프' 완성본 —
+   버튼 배경/반전 필터를 또 입히면 글리프가 사라져 빈 청록 네모로 보임(QA 지적).
+   → 배경은 흰색 유지, 아이콘을 버튼 풀사이즈로 그대로 노출 */
+.pubd-tool-btn.active { background: #fff; }
+.pubd-tool-btn.active img { width: 48px; height: 48px; filter: none; }
 
 /* 좌측 구역별 필터 카드 */
 .pubd-region-card { position: absolute; left: 32px; top: 24px; width: 300px; z-index: 5;
