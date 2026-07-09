@@ -127,6 +127,7 @@ export default function MAICitizen({ onNavigate }) {
     const [quoteCitizen, setQuoteCitizen] = useState(null);
     const [search, setSearch] = useState('');
     const [cat, setCat] = useState(null);
+    const [expanded, setExpanded] = useState(false); // [1-5] 더보기
 
     useEffect(() => {
         fetch('/assets/busan_districts_high.json')
@@ -167,6 +168,19 @@ export default function MAICitizen({ onNavigate }) {
     const filtered = search
         ? byCat.filter(c => c.name?.includes(search) || c.district?.includes(search) || (c.tags || []).some(t => t.includes(search)))
         : byCat;
+
+    // [2-5] 안내문구: 가장 문제로 꼽힌 영역 = 카테고리 최빈값
+    const REP_VISIBLE = 6;
+    const LIFE_AREAS = ['안전', '교통', '주거', '산업·일자리', '교육', '환경', '문화·여가', '보건·복지'];
+    const topArea = (() => {
+        const tally = {};
+        filtered.forEach(c => (c.categories || []).forEach(k => { tally[k] = (tally[k] || 0) + 1; }));
+        const s = Object.entries(tally).sort((a, b) => b[1] - a[1]);
+        return s.length ? s[0][0] : null;
+    })();
+    const visible = expanded ? filtered : filtered.slice(0, REP_VISIBLE);
+    const hiddenCount = filtered.length - visible.length;
+    useEffect(() => { setExpanded(false); }, [selectedDistrict, cat, search]);
 
     const titleDistrict = selectedDistrict || null;
     const catLabel = CATS.find(c => c.val === cat)?.label || '전체';
@@ -254,12 +268,19 @@ export default function MAICitizen({ onNavigate }) {
                         </button>
                     </div>
 
+                    {!loading && filtered.length > 0 && (
+                        <p className="m-ai-guide">
+                            {titleDistrict || '부산'}에서 {LIFE_AREAS.length}개 생활영역 중
+                            {topArea ? <> 가장 문제로 꼽힌 <b>‘{topArea}’</b> 등을</> : ' 주요 이슈를'} 대표하는
+                            가상시민 <b>{filtered.length}명</b>이에요.
+                        </p>
+                    )}
                     <div className="m-ai-list">
                     {loading && <div className="m-ai-loading">불러오는 중...</div>}
                     {!loading && filtered.length === 0 && (
                         <div className="m-ai-empty">해당 조건의 가상시민이 없습니다.</div>
                     )}
-                    {!loading && filtered.map(c => (
+                    {!loading && visible.map(c => (
                         <div
                             key={c.id}
                             className="m-ai-card"
@@ -267,6 +288,7 @@ export default function MAICitizen({ onNavigate }) {
                         >
                             <div className="m-ai-card__body">
                                 <div className="m-ai-card__top-row">
+                                    {(c.importance ?? 100) === 0 && <span className="m-ai-card__rep">대표</span>}
                                     <span className="m-ai-card__name">{c.name}</span>
                                     <span className="m-ai-card__age">{c.age}세</span>
                                     <button
@@ -290,6 +312,11 @@ export default function MAICitizen({ onNavigate }) {
                             </div>
                         </div>
                     ))}
+                    {!loading && hiddenCount > 0 && (
+                        <button type="button" className="m-ai-more-btn" onClick={() => setExpanded(true)}>
+                            가상시민 {hiddenCount}명 더보기
+                        </button>
+                    )}
                     </div>
                 </div>
             </div>

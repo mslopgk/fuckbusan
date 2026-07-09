@@ -951,6 +951,16 @@
 .aic-list-title { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: #333; }
 .aic-list-title span { color: #23bdbb; }
 .aic-list-sub { margin: 0 0 16px; font-size: 14px; color: #1f1f1f; line-height: 1.35; }
+/* [2-5] 구별 대표 가상시민 안내문구 */
+.aic-list-guide { margin: 0 0 16px; padding: 11px 14px; background: #e6f7f7; border-radius: 10px;
+    font-size: 13px; color: #14807e; line-height: 1.45; }
+.aic-list-guide b { font-weight: 800; color: #0f6b69; }
+/* [1-5] 대표 배지 + 더보기 */
+.aic-card-rep { display: inline-block; margin-right: 6px; padding: 1px 7px; border-radius: 6px;
+    background: #f0a500; color: #fff; font-size: 11px; font-weight: 800; vertical-align: middle; }
+.aic-more-btn { width: 100%; margin-top: 10px; padding: 12px 0; border: 1px solid #d8e8e8;
+    background: #f4fbfb; color: #23807e; font-size: 14px; font-weight: 700; border-radius: 10px; cursor: pointer; }
+.aic-more-btn:hover { background: #e8f6f6; }
 .aic-list-bar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; }
 .aic-list-count { font-size: 14px; font-weight: 400; color: #1f1f1f; }
 .aic-sort { position: relative; }

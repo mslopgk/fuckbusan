@@ -89,7 +89,7 @@ def _serialize_persona(p: "models.Persona", include_detail: bool = False) -> dic
         "categories": p.categories or [],
         "quote": p.quote,
         "avatar_initial": p.avatar_initial or (p.name[0] if p.name else ""),
-        "importance": p.importance or 100,
+        "importance": p.importance if p.importance is not None else 100,  # 0=대표(최상위)이므로 `or` 금지
     }
     if include_detail:
         # detail에 풍부한 본문(voices/journey/policy_signals 등) 포함

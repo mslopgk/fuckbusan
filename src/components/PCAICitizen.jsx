@@ -210,12 +210,39 @@ function FilterPanel({ region, setRegion, cat, setCat, onChat }) {
 }
 
 /* ── 우측 페르소나 리스트 ── */
+// 8개 생활영역 — [2-5] 안내문구용
+const LIFE_AREAS = ['안전', '교통', '주거', '산업·일자리', '교육', '환경', '문화·여가', '보건·복지'];
+const REP_VISIBLE = 6; // [1-5] 초기 노출 인원 (더보기로 전체)
+
 function PersonaList({ region, citizens, avatars, sort, setSort, onSelect, selectedId }) {
     const [sortOpen, setSortOpen] = useState(false);
+    const [expanded, setExpanded] = useState(false);
+
+    // 지역/필터가 바뀌면 다시 접기
+    useEffect(() => { setExpanded(false); }, [region, citizens.length]);
+
+    // [2-5] 가장 문제로 꼽힌 영역 = 가상시민 카테고리 최빈값
+    const topArea = useMemo(() => {
+        const tally = {};
+        citizens.forEach((c) => (c.categories || []).forEach((k) => { tally[k] = (tally[k] || 0) + 1; }));
+        const sorted = Object.entries(tally).sort((a, b) => b[1] - a[1]);
+        return sorted.length ? sorted[0][0] : null;
+    }, [citizens]);
+
+    const visible = expanded ? citizens : citizens.slice(0, REP_VISIBLE);
+    const hiddenCount = citizens.length - visible.length;
+
     return (
         <aside className="pubdata-panel aic-list">
             <h2 className="aic-list-title"><span>{region || '부산대표'}</span> AI 가상시민</h2>
             <p className="aic-list-sub">{region || '부산'} 시민 의견과 데이터를 바탕으로 만든 AI 가상시민입니다. 서로 다른 삶과 시선을 통해 우리 동네의 고민과 바람을 한눈에 볼 수 있어요.</p>
+            {citizens.length > 0 && (
+                <p className="aic-list-guide">
+                    {region || '부산'}에서 {LIFE_AREAS.length}개 생활영역 중
+                    {topArea ? <> 가장 문제로 꼽힌 <b>‘{topArea}’</b> 등을</> : ' 주요 이슈를'} 대표하는
+                    가상시민 <b>{citizens.length}명</b>이에요.
+                </p>
+            )}
             <div className="aic-list-bar">
                 <span className="aic-list-count">총 {citizens.length}명</span>
                 <div className={`aic-sort${sortOpen ? ' open' : ''}`}>
@@ -234,13 +261,16 @@ function PersonaList({ region, citizens, avatars, sort, setSort, onSelect, selec
             </div>
             <div className="aic-cards">
                 {citizens.length === 0 && <p className="aic-empty">해당 지역의 가상시민이 아직 없어요.</p>}
-                {citizens.map((c) => (
+                {visible.map((c) => (
                     <button key={c.id} type="button"
                         className={`aic-card${selectedId === c.id ? ' active' : ''}`}
                         onClick={() => onSelect(c)}>
                         <Avatar url={avatarSrc(avatars[c.id])} initial={c.avatar_initial} size={62} />
                         <div className="aic-card-body">
-                            <div className="aic-card-name">{c.name} <em>{c.age}세</em></div>
+                            <div className="aic-card-name">
+                                {(c.importance ?? 100) === 0 && <span className="aic-card-rep">대표</span>}
+                                {c.name} <em>{c.age}세</em>
+                            </div>
                             <div className="aic-card-tags">{(c.tags || []).slice(0, 3).map((t) => <span key={t}>{t}</span>)}</div>
                             <p className="aic-card-quote">{c.quote}</p>
                         </div>
@@ -249,6 +279,11 @@ function PersonaList({ region, citizens, avatars, sort, setSort, onSelect, selec
                         </span>
                     </button>
                 ))}
+                {hiddenCount > 0 && (
+                    <button type="button" className="aic-more-btn" onClick={() => setExpanded(true)}>
+                        가상시민 {hiddenCount}명 더보기
+                    </button>
+                )}
             </div>
         </aside>
     );
@@ -300,7 +335,8 @@ export default function PCAICitizen({ onNavigate }) {
     const citizens = useMemo(() => {
         let list = region ? all.filter((c) => c.district === region) : [...all];
         if (cat !== 'all') list = list.filter((c) => (c.categories || []).includes(cat));
-        list = [...list].sort((a, b) => (sort === 'age' ? b.age - a.age : (a.importance || 99) - (b.importance || 99)));
+        list = [...list].sort((a, b) => (sort === 'age' ? b.age - a.age
+            : (a.importance ?? 99) - (b.importance ?? 99)));
         return list;
     }, [all, region, cat, sort]);
 

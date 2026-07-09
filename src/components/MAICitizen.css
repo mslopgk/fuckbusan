@@ -288,6 +288,38 @@
     gap: 6px;
 }
 
+/* [2-5] 안내문구 / [1-5] 대표 배지·더보기 */
+.m-ai-guide {
+    margin: 0 16px 12px;
+    padding: 10px 13px;
+    background: #e6f7f7;
+    border-radius: 10px;
+    font-size: 12.5px;
+    color: #14807e;
+    line-height: 1.45;
+}
+.m-ai-guide b { font-weight: 800; color: #0f6b69; }
+.m-ai-card__rep {
+    padding: 1px 7px;
+    border-radius: 6px;
+    background: #f0a500;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+}
+.m-ai-more-btn {
+    width: calc(100% - 32px);
+    margin: 6px 16px 4px;
+    padding: 13px 0;
+    border: 1px solid #d8e8e8;
+    background: #f4fbfb;
+    color: #23807e;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
 .m-ai-card__name {
     font-size: 18px;
     font-weight: 700;
