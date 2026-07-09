@@ -29,7 +29,8 @@ const auth = () => {
         : { 'Content-Type': 'application/json' };
 };
 const rowKey = (r) => `${r.kind}:${r.id}`;
-const fmtDate = (s) => (s ? s.replace('T', ' ').slice(0, 19) : '-');
+// 등록시간은 분까지만 표기(초 제거) — 문의사항 답변서 [2-6]②
+const fmtDate = (s) => (s ? s.replace('T', ' ').slice(0, 16) : '-');
 
 export default function AdminCitizenData({ onNavigate }) {
     const [region, setRegion] = useState('');
@@ -239,6 +240,7 @@ export default function AdminCitizenData({ onNavigate }) {
                                 <th className="acd-th-check"><input type="checkbox" checked={allChecked} onChange={toggleAll} /></th>
                                 <th className="acd-th-type">유형</th>
                                 <th className="acd-th-title">제목 / 내용</th>
+                                <th>지역</th>
                                 <th>카테고리</th>
                                 <th>제출자</th>
                                 <th>연령</th>
@@ -246,8 +248,8 @@ export default function AdminCitizenData({ onNavigate }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {loading && <tr><td colSpan={7} className="acd-empty">불러오는 중…</td></tr>}
-                            {!loading && data.rows.length === 0 && <tr><td colSpan={7} className="acd-empty">데이터가 없습니다.</td></tr>}
+                            {loading && <tr><td colSpan={8} className="acd-empty">불러오는 중…</td></tr>}
+                            {!loading && data.rows.length === 0 && <tr><td colSpan={8} className="acd-empty">데이터가 없습니다.</td></tr>}
                             {!loading && data.rows.map((r) => {
                                 const k = rowKey(r);
                                 return (
@@ -255,6 +257,7 @@ export default function AdminCitizenData({ onNavigate }) {
                                         <td className="acd-td-check"><input type="checkbox" checked={!!selected[k]} readOnly /></td>
                                         <td><span className="acd-badge" style={{ background: (TYPE_STYLE[r.type] || {}).bg }}>{r.type}</span></td>
                                         <td className="acd-td-title">{r.title || '—'}</td>
+                                        <td>{r.region || '—'}</td>
                                         <td>{r.category || '—'}</td>
                                         <td>{r.author || '익명'}</td>
                                         <td>{r.age || '-'}</td>
