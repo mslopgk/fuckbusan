@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 import models
 from survey_chat.engine import get_engine
-from .user_router import get_current_user, get_current_user_optional
+from .user_router import get_current_user, get_current_user_optional, require_admin
 
 router = APIRouter(prefix="/api/survey-chat", tags=["survey-chat"])
 
@@ -317,6 +317,237 @@ def clusters(db: Session = Depends(get_db), k: Optional[int] = None, force: bool
     _cluster_cache["sig"] = sig
     _cluster_cache["data"] = data
     return data
+
+
+# =============================================================================
+# 어드민: AI 대화형 설문 "응답" 관리 (Figma 설문목록 302-29426 / 설문현황 302-28185)
+# =============================================================================
+import io
+import json as _json
+import re
+
+# 설문유형/진입유형 — AI 대화형 설문 엔진은 "불편사항 수집" 단일 플로우이므로 세션 공통값.
+_SURVEY_KIND = "불편사항"
+# 제출유형 — 이 세션들은 AI 대화형 설문 참여분.
+_SUBMIT_KIND = "설문"
+
+# 문제유형(primary_category): 엔진 config.py REQUIRED_FIELDS 의 옵션 id → 한글 라벨
+_CATEGORY_LABEL = {
+    "safety": "안전",
+    "accessibility": "접근성",
+    "wayfinding": "길찾기",
+    "comfort": "쾌적성/미관",
+    "other": "기타",
+}
+# 시급도(severity_score 0~4) → Figma 어휘(낮음/보통/높음)
+_SEVERITY_LABEL = {0: "낮음", 1: "낮음", 2: "보통", 3: "높음", 4: "높음"}
+
+
+# 부산 16개 구·군 (지역 추출 화이트리스트 — '출구/입구' 같은 오탐 방지)
+_BUSAN_DISTRICTS = [
+    "강서구", "금정구", "남구", "동구", "동래구", "부산진구", "북구", "사상구",
+    "사하구", "서구", "수영구", "연제구", "영도구", "중구", "해운대구", "기장군",
+]
+
+
+def _region_from_location(loc: Optional[str]) -> Optional[str]:
+    """location_bucket 문자열에서 부산 구·군 지역명을 추출. (예: '부산 해운대구 ...' → '해운대구')
+    알려진 구·군이 없으면 None (랜드마크/오탐을 지역으로 지어내지 않음)."""
+    if not loc:
+        return None
+    for d in _BUSAN_DISTRICTS:
+        if d in loc:
+            return d
+    return None
+
+
+def _cat_label(cat: Optional[str]) -> Optional[str]:
+    if not cat:
+        return None
+    return _CATEGORY_LABEL.get(cat, cat)
+
+
+def _primary_interview(db: Session, session_id: str):
+    """세션의 대표 이슈 1건(가장 먼저 수집된 것). 다중 이슈 세션도 대표값으로 표시."""
+    return (db.query(models.SurveyChatInterview)
+            .filter_by(session_id=session_id)
+            .order_by(models.SurveyChatInterview.id.asc())
+            .first())
+
+
+def _attachment_urls(interview) -> List[str]:
+    """대화형 설문은 텍스트 기반이라 첨부 이미지가 없는 것이 일반적.
+    raw_log 안에 image/photo/attachment url 이 있으면 추출(추후 이미지 첨부 지원 대비)."""
+    if not interview or not interview.raw_log:
+        return []
+    urls: List[str] = []
+    rl = interview.raw_log if isinstance(interview.raw_log, dict) else {}
+    for k in ("image_url", "image", "images", "photo", "attachment", "attachments"):
+        v = rl.get(k)
+        if isinstance(v, str) and v.startswith("http"):
+            urls.append(v)
+        elif isinstance(v, list):
+            urls += [x for x in v if isinstance(x, str) and x.startswith("http")]
+    return urls
+
+
+@router.get("/admin/list")
+def admin_list(q: Optional[str] = None, region: Optional[str] = None,
+               page: int = 1, size: int = 10,
+               db: Session = Depends(get_db),
+               current_user: models.User = Depends(get_current_user)):
+    """AI 대화형 설문 응답(세션) 목록 — 어드민 설문목록.
+    컬럼: 지역 / 수정(일시) / 설문유형 / 메뉴. region·q 검색, 페이지네이션."""
+    require_admin(current_user)
+    sessions = (db.query(models.SurveyChatSession)
+                .order_by(models.SurveyChatSession.created_at.desc())
+                .all())
+
+    # 세션별 대표 이슈(지역 추출용)를 한 번에 로드
+    prim: dict = {}
+    for iv in (db.query(models.SurveyChatInterview)
+               .order_by(models.SurveyChatInterview.id.asc()).all()):
+        prim.setdefault(iv.session_id, iv)
+
+    items = []
+    for s in sessions:
+        iv = prim.get(s.session_id)
+        region_name = _region_from_location(iv.location_bucket if iv else None)
+        items.append({
+            "id": s.session_id,
+            "session_id": s.session_id,
+            "region": region_name or "-",
+            "survey_type": _SURVEY_KIND,
+            "title": s.title or "AI 대화형 설문",
+            "status": s.status or "신규",
+            "issue_count": s.issue_count or 0,
+            "updated_at": (s.updated_at or s.created_at).isoformat()
+                          if (s.updated_at or s.created_at) else None,
+            "created_at": s.created_at.isoformat() if s.created_at else None,
+        })
+
+    # 검색 필터
+    if region:
+        items = [it for it in items if region in (it["region"] or "")]
+    if q:
+        items = [it for it in items if q in (it["title"] or "") or q in (it["survey_type"] or "")]
+
+    total = len(items)
+    page = max(1, page)
+    start = (page - 1) * size
+    return {"items": items[start:start + size], "total": total,
+            "page": page, "size": size}
+
+
+@router.get("/admin/{session_id}")
+def admin_detail(session_id: str, db: Session = Depends(get_db),
+                 current_user: models.User = Depends(get_current_user)):
+    """AI 대화형 설문 응답 1건 상세 — 어드민 설문현황.
+    접수일시/진입유형/제출유형/장소/문제유형/시급도/처리상태/첨부 + 대화 transcript."""
+    require_admin(current_user)
+    s = db.query(models.SurveyChatSession).filter_by(session_id=session_id).first()
+    if s is None:
+        raise HTTPException(status_code=404, detail="설문 응답을 찾을 수 없습니다.")
+    iv = _primary_interview(db, session_id)
+
+    transcript = s.transcript or []
+    msgs = [{"role": m.get("role"), "content": m.get("content", "")}
+            for m in transcript if m.get("role") in ("user", "assistant") and m.get("content")]
+
+    sev = iv.severity_score if iv else None
+    return {
+        "id": s.session_id,
+        "session_id": s.session_id,
+        "title": s.title or "AI 대화형 설문",
+        "received_at": s.created_at.isoformat() if s.created_at else None,   # 접수일시
+        "entry_type": _SURVEY_KIND,                                          # 진입유형
+        "submit_type": _SUBMIT_KIND,                                         # 제출유형
+        "location": (iv.location_bucket if iv else None) or "-",            # 장소
+        "problem_type": _cat_label(iv.primary_category if iv else None) or "-",  # 문제유형
+        "severity": _SEVERITY_LABEL.get(sev, "-") if sev is not None else "-",   # 시급도
+        "severity_score": sev,
+        "status": s.status or "신규",                                        # 처리상태
+        "attachments": _attachment_urls(iv),                                # 첨부(이미지 url)
+        "issue_text": (iv.issue_text if iv else None) or "-",
+        "issue_count": s.issue_count or 0,
+        "messages": msgs,                                                    # 대화 transcript
+    }
+
+
+class SurveyAdminUpdate(BaseModel):
+    status: Optional[str] = None
+
+
+@router.put("/admin/{session_id}")
+def admin_update(session_id: str, body: SurveyAdminUpdate,
+                 db: Session = Depends(get_db),
+                 current_user: models.User = Depends(get_current_user)):
+    """처리상태 등 수정 ('수정하기' 버튼)."""
+    require_admin(current_user)
+    s = db.query(models.SurveyChatSession).filter_by(session_id=session_id).first()
+    if s is None:
+        raise HTTPException(status_code=404, detail="설문 응답을 찾을 수 없습니다.")
+    if body.status is not None:
+        s.status = body.status.strip() or "신규"
+    db.commit()
+    return {"ok": True, "session_id": s.session_id, "status": s.status,
+            "updated_at": s.updated_at.isoformat() if s.updated_at else None}
+
+
+@router.delete("/admin/{session_id}")
+def admin_delete(session_id: str, db: Session = Depends(get_db),
+                 current_user: models.User = Depends(get_current_user)):
+    """설문 응답 삭제 (목록 메뉴). 세션 + 관련 인터뷰 이슈 함께 삭제."""
+    require_admin(current_user)
+    s = db.query(models.SurveyChatSession).filter_by(session_id=session_id).first()
+    if s is None:
+        raise HTTPException(status_code=404, detail="설문 응답을 찾을 수 없습니다.")
+    db.query(models.SurveyChatInterview).filter_by(session_id=session_id).delete()
+    db.delete(s)
+    db.commit()
+    return {"ok": True, "deleted": session_id}
+
+
+@router.get("/admin/{session_id}/export")
+def admin_export(session_id: str, fmt: str = "txt",
+                 db: Session = Depends(get_db),
+                 current_user: models.User = Depends(get_current_user)):
+    """대화 내보내기 — 대화 transcript 를 텍스트/JSON 로 반환(프론트에서 파일 다운로드)."""
+    require_admin(current_user)
+    from fastapi.responses import StreamingResponse
+    s = db.query(models.SurveyChatSession).filter_by(session_id=session_id).first()
+    if s is None:
+        raise HTTPException(status_code=404, detail="설문 응답을 찾을 수 없습니다.")
+    transcript = s.transcript or []
+    msgs = [{"role": m.get("role"), "content": m.get("content", "")}
+            for m in transcript if m.get("role") in ("user", "assistant") and m.get("content")]
+
+    if fmt == "json":
+        payload = {
+            "session_id": s.session_id,
+            "title": s.title,
+            "created_at": s.created_at.isoformat() if s.created_at else None,
+            "messages": msgs,
+        }
+        data = _json.dumps(payload, ensure_ascii=False, indent=2)
+        media, ext = "application/json", "json"
+    else:
+        lines = [f"[AI 대화형 설문 내보내기]",
+                 f"제목: {s.title or 'AI 대화형 설문'}",
+                 f"세션: {s.session_id}",
+                 f"접수일시: {s.created_at.isoformat() if s.created_at else '-'}",
+                 "-" * 40]
+        for m in msgs:
+            who = "사용자" if m["role"] == "user" else "AI"
+            lines.append(f"{who}: {m['content']}")
+        data = "\n".join(lines)
+        media, ext = "text/plain; charset=utf-8", "txt"
+
+    buf = io.BytesIO(data.encode("utf-8"))
+    filename = f"survey_chat_{s.session_id}.{ext}"
+    return StreamingResponse(
+        buf, media_type=media,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'})
 
 
 @router.get("/results")

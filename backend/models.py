@@ -401,7 +401,9 @@ class SurveyChatSession(Base):
     title = Column(String(255), nullable=True)
     transcript = Column(JSON, nullable=True)   # [{"role": "user|assistant", "content": "..."}]
     issue_count = Column(Integer, default=0)
+    status = Column(String(20), nullable=True, default="신규")  # 어드민 처리상태: 신규/확인/처리중/완료 등
     created_at = Column(DateTime, default=datetime.now, index=True)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)  # 어드민 수정일시
 
 
 # =============================================================================

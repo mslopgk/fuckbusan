@@ -77,6 +77,7 @@ const VIEW_TO_PATH = {
     proposalManagement: ['reportSuggest', 'proposals'],
     proposalEdit: ['reportSuggest', 'proposals'],
     surveyManagement: ['survey', 'surveyList'],
+    surveyStatusDetail: ['survey', 'surveyList'],
     surveyChatAnalytics: ['survey', 'surveyChatAnalytics'],
     surveyEditor: ['survey', 'surveyList'],
     surveyCreated: ['survey', 'surveyList'],
