@@ -19,6 +19,7 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
 
     const [comment, setComment] = useState('');
     const [commenting, setCommenting] = useState(false);
+    const submittingRef = useRef(false); // 동기 가드: state는 비동기라 연타 시 중복 POST 발생
     const [replyTo, setReplyTo] = useState(null);
     const commentInputRef = useRef(null);
     const [voted, setVoted] = useState(!!proposal?.has_voted);
@@ -65,12 +66,13 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
     }, [proposal?.id]);
 
     const submitComment = async () => {
-        if (!comment.trim() || !proposal?.id || commenting) return;
+        if (!comment.trim() || !proposal?.id || submittingRef.current) return;
         const token = localStorage.getItem('access_token');
         if (!token) {
             alert('로그인이 필요합니다.');
             return;
         }
+        submittingRef.current = true;
         setCommenting(true);
         try {
             const res = await fetch(`${API_URL}/api/reports/proposals/${proposal.id}/comments`, {
@@ -93,6 +95,7 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
         } catch (e) {
             console.error(e);
         } finally {
+            submittingRef.current = false;
             setCommenting(false);
         }
     };

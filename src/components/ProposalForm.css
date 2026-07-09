@@ -51,7 +51,7 @@
 }
 
 .pf-my-status {
-    background-color: #16B5B0;
+    background-color: #f74e7e;
     color: white;
     font-size: 0.85rem;
     font-weight: 700;
@@ -62,7 +62,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    box-shadow: 0 4px 8px rgba(22, 181, 176, 0.2);
+    box-shadow: 0 4px 8px rgba(247, 78, 126, 0.2);
 }
 
 .pf-status-icon {
@@ -133,7 +133,7 @@
 }
 
 .pf-category-item.active .pf-category-icon {
-    background-color: #16B5B0;
+    background-color: #f74e7e;
 }
 
 .pf-category-name {
@@ -435,7 +435,7 @@
 .pf-btn-submit {
     flex: 1;
     height: 60px;
-    background-color: #B5E7E5;
+    background-color: #f9a8c0;
     color: white;
     border: none;
     border-radius: 15px;
@@ -445,11 +445,11 @@
 }
 
 .pf-btn-submit:not(:disabled) {
-    background-color: #16B5B0;
+    background-color: #f74e7e;
 }
 
 .pf-btn-submit:disabled {
-    background-color: #B5E7E5;
+    background-color: #f9a8c0;
     opacity: 0.8;
 }
 
@@ -497,7 +497,7 @@
 }
 
 .pf-take-photo {
-    background-color: #16B5B0;
+    background-color: #f74e7e;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -559,7 +559,7 @@
     width: 40px;
     height: 40px;
     border: 3px solid #f3f3f3;
-    border-top: 3px solid #16B5B0;
+    border-top: 3px solid #f74e7e;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -917,11 +917,11 @@
     }
 
     .pf-btn-submit:not(:disabled) {
-        background-color: #23BDBB;
+        background-color: #f74e7e;
     }
 
     .pf-btn-submit:disabled {
-        background-color: #B5E7E5;
+        background-color: #f9a8c0;
         opacity: 0.8;
     }
 }

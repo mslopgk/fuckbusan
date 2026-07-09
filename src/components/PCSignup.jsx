@@ -51,7 +51,7 @@ const TermsBox = ({ title, body, agreed, onToggle }) => (
     </div>
 );
 
-const ConsentStep = ({ onNext, onNavigate }) => {
+const ConsentStep = ({ onNext }) => {
     const [service, setService] = useState(false);
     const [privacy, setPrivacy] = useState(false);
     const [userType, setUserType] = useState(null);
@@ -62,18 +62,13 @@ const ConsentStep = ({ onNext, onNavigate }) => {
     return (
         <div className="pcauth">
             <div className="pcauth-title">
-                <h1>약관 동의</h1>
-                <p>서비스 이용을 위해 약관에 동의하고 가입 유형을 선택해주세요.</p>
+                <h1 className="accent">약관 동의</h1>
             </div>
+
+            {/* 권한선택 (Figma 302:3453) */}
             <div className="pcauth-card consent">
-                <div className="pcauth-form wide">
-                    <button type="button" className={`pcauth-agree-all${allOn ? ' on' : ''}`} onClick={toggleAll}>
-                        <Check on={allOn} /> <span>모든 약관에 동의합니다</span>
-                    </button>
-
-                    <TermsBox title="이용약관" body={TERMS_SERVICE} agreed={service} onToggle={() => setService((v) => !v)} />
-                    <TermsBox title="개인정보처리방침" body={TERMS_PRIVACY} agreed={privacy} onToggle={() => setPrivacy((v) => !v)} />
-
+                <div className="pcauth-consent-inner">
+                    <div className="pcauth-section-label">권한선택</div>
                     <div className="pcauth-typecards">
                         {USER_TYPES.map((t) => (
                             <button key={t.key} type="button" className={`pcauth-typecard${userType === t.key ? ' selected' : ''}`} onClick={() => setUserType(t.key)}>
@@ -84,11 +79,22 @@ const ConsentStep = ({ onNext, onNavigate }) => {
                     </div>
                 </div>
             </div>
-            <button className="pcauth-submit" disabled={!requiredOk} onClick={() => onNext({ service, privacy, userType })}>다음</button>
-            <div className="pcauth-links">
-                <span style={{ color: '#777', fontSize: 14 }}>이미 계정이 있으신가요?</span>
-                <button className="pcauth-link" onClick={() => onNavigate && onNavigate('login')}>로그인</button>
+
+            {/* 약관 동의 */}
+            <div className="pcauth-card consent">
+                <div className="pcauth-consent-inner">
+                    <TermsBox title="이용약관" body={TERMS_SERVICE} agreed={service} onToggle={() => setService((v) => !v)} />
+                    <TermsBox title="개인정보처리방침" body={TERMS_PRIVACY} agreed={privacy} onToggle={() => setPrivacy((v) => !v)} />
+                    <div className="pcauth-agree-all-box">
+                        <button type="button" className={`pcauth-agree-all${allOn ? ' on' : ''}`} onClick={toggleAll}>
+                            <Check on={allOn} /> <span>모든 약관에 동의합니다</span>
+                        </button>
+                        <p className="pcauth-agree-all-sub">전체 약관에 동의해야 서비스를 이용할 수 있습니다.</p>
+                    </div>
+                </div>
             </div>
+
+            <button className="pcauth-submit consent-next" disabled={!requiredOk} onClick={() => onNext({ service, privacy, userType })}>다음</button>
         </div>
     );
 };
@@ -133,21 +139,7 @@ const SignupForm = ({ onNavigate, onBack, consent }) => {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
             });
             if (!res.ok) throw new Error((await res.json()).detail || '회원가입에 실패했습니다.');
-            try {
-                const lr = await fetch(`${API_URL}/users/login`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ID: payload.ID, PW: payload.PW }),
-                });
-                if (lr.ok) {
-                    const ld = await lr.json();
-                    if (ld.access_token) localStorage.setItem('access_token', ld.access_token);
-                    if (ld.user_name) {
-                        localStorage.setItem('user_name', ld.user_name);
-                        localStorage.setItem('username', ld.user_name);
-                    }
-                    if (ld.district_code) localStorage.setItem('district_code', ld.district_code);
-                }
-            } catch { /* 자동 로그인 실패해도 진행 */ }
+            // 자동 로그인하지 않음 — 완료 화면에서 로그인 페이지로 이동해 직접 로그인
             if (onNavigate) onNavigate('signupDone'); else if (onBack) onBack();
         } catch (e) { setError(e.message); } finally { setLoading(false); }
     };

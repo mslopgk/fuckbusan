@@ -15,15 +15,16 @@ const GUGUN = [
     '사상구', '기장군', '수영구', '강서구', '서구', '영도구', '동구', '중구',
 ];
 // 생활정보 카테고리 (persona.categories 라벨과 일치). icon=공용 living-icons
+// 순서는 Figma 302:3872 세로 레일(Group 968) 기준.
 const CATS = [
     { key: 'all', label: '전체', icon: '/figma-assets/living-icons/all.svg' },
-    { key: '안전', label: '안전', icon: '/figma-assets/living-icons/safety.svg' },
-    { key: '주거', label: '주거', icon: '/figma-assets/living-icons/home.svg' },
-    { key: '산업일자리', label: '산업·일자리', icon: '/figma-assets/living-icons/badge.svg' },
-    { key: '교육', label: '교육', icon: '/figma-assets/living-icons/edu.svg' },
-    { key: '환경', label: '환경', icon: '/figma-assets/living-icons/forest.svg' },
+    { key: '산업일자리', label: '산업 일자리', icon: '/figma-assets/living-icons/badge.svg' },
     { key: '문화여가', label: '문화·여가', icon: '/figma-assets/living-icons/game.svg' },
+    { key: '안전', label: '안전', icon: '/figma-assets/living-icons/safety.svg' },
+    { key: '교육', label: '교육', icon: '/figma-assets/living-icons/edu.svg' },
     { key: '보건', label: '보건·복지', icon: '/figma-assets/living-icons/care.svg' },
+    { key: '주거', label: '주거', icon: '/figma-assets/living-icons/home.svg' },
+    { key: '환경', label: '환경', icon: '/figma-assets/living-icons/forest.svg' },
     { key: '교통', label: '교통', icon: '/figma-assets/living-icons/bus.svg' },
 ];
 const SORTS = [
@@ -55,19 +56,8 @@ const DISTRICTS_POS = [
 ];
 const TEAL_FILTER = 'brightness(0) invert(67%) sepia(37%) saturate(586%) hue-rotate(136deg) brightness(0.9)';
 
-/* 인트로 애니메이션: 부산 지도 위 핀 + 점선 아크(데이터 연결) — 클릭 전 표시 */
-const INTRO_DISTRICTS = ['강서구', '사하구', '부산진구', '금정구', '해운대구', '기장군'];
-const INTRO_PTS = INTRO_DISTRICTS
-    .map((n) => DISTRICTS_POS.find((d) => d.name === n))
-    .filter(Boolean)
-    .map((d) => ({ x: d.left + d.w / 2, y: d.top + d.h / 2 }));
-const introArc = (a, b) => {
-    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-    const lift = Math.hypot(b.x - a.x, b.y - a.y) * 0.3;
-    return `M${a.x},${a.y} Q${mx},${my - lift} ${b.x},${b.y}`;
-};
-
-function FigmaDistrictMap({ selectedDistrict, onDistrictClick, hoveredDistrict, onDistrictHover, onDistrictLeave, hoverCitizen, hoverAvatarUrl, intro }) {
+function FigmaDistrictMap({ selectedDistrict, onDistrictClick, onDeselect, hoveredDistrict, onDistrictHover, onDistrictLeave, hoverCitizen, hoverAvatarUrl }) {
+    const selPos = selectedDistrict ? DISTRICTS_POS.find((d) => d.name === selectedDistrict) : null;
     const containerRef = useRef(null);
     const [layout, setLayout] = useState({ scale: 1, offsetX: 0, offsetY: 0 });
 
@@ -118,23 +108,17 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, hoveredDistrict, 
                         }}>{d.name}</span>
                     </button>
                 ))}
-                {intro && (
-                    <svg width="1920" height="1080" viewBox="0 0 1920 1080"
-                        style={{ position: 'absolute', left: 0, top: 0, pointerEvents: 'none', overflow: 'visible', zIndex: 12 }}>
-                        {INTRO_PTS.slice(0, -1).map((p, i) => (
-                            <path key={`arc${i}`} className="aic-mapfx-arc" d={introArc(p, INTRO_PTS[i + 1])} />
-                        ))}
-                        {INTRO_PTS.map((p, i) => (
-                            <g key={`pin${i}`} transform={`translate(${p.x},${p.y})`}>
-                                <ellipse className="aic-mapfx-pulse" cx="0" cy="0" rx="16" ry="6"
-                                    style={{ animationDelay: `${0.4 + i * 0.18}s` }} />
-                                <g className="aic-mapfx-pin" style={{ animationDelay: `${0.3 + i * 0.18}s` }}>
-                                    <path className="aic-mapfx-teardrop" d="M0,0 C-17,-22 -17,-48 0,-48 C17,-48 17,-22 0,0 Z" />
-                                    <circle cx="0" cy="-31" r="8" fill="#fff" />
-                                </g>
-                            </g>
-                        ))}
-                    </svg>
+                {selPos && onDeselect && (
+                    <button type="button" className="aic-deselect-chip" aria-label={`${selectedDistrict} 선택 해제`}
+                        onClick={onDeselect}
+                        style={{
+                            position: 'absolute',
+                            left: selPos.left + selPos.w / 2 + selPos.lx,
+                            top: selPos.top + selPos.h / 2 + selPos.ly + 30,
+                            transform: 'translate(-50%, 0)', zIndex: 13,
+                        }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#23bdbb" strokeWidth="2.6" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                    </button>
                 )}
                 {hoverBubble && hoverCitizen && (
                     <div key={hoveredDistrict} className="aic-hovwrap" style={{ position: 'absolute', left: hoverBubble.cx, top: hoverBubble.cy, transform: 'translate(-50%, -50%)', pointerEvents: 'none', zIndex: 15 }}>
@@ -161,16 +145,24 @@ function Avatar({ url, initial, size = 56 }) {
     );
 }
 
-/* ── 좌측 필터 패널 ── */
+/* ── 좌측 필터 (구역별 카드 + 생활정보 세로 레일 + AI 챗봇) — Figma 302:3872 ── */
 function FilterPanel({ region, setRegion, cat, setCat, onChat }) {
     const [open, setOpen] = useState(false);
     return (
-        <aside className="pubdata-panel pubdata-left aic-left">
-            <div className="pubdata-field">
+        <div className="aic-leftcol">
+            {/* 구역별 카드 */}
+            <div className="aic-region-card">
                 <label className="pubdata-label">구역별</label>
                 <div className={`pubdata-select${open ? ' open' : ''}`}>
                     <button type="button" className="pubdata-select-btn" onClick={() => setOpen((v) => !v)}>
-                        <span>{region}</span><i className="pubdata-caret" aria-hidden="true" />
+                        <span className={region ? undefined : 'aic-select-ph'}>{region || '설정해주세요'}</span>
+                        {region && (
+                            <i className="aic-select-clear" role="button" aria-label="선택 해제"
+                                onClick={(e) => { e.stopPropagation(); setRegion(null); setOpen(false); }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                            </i>
+                        )}
+                        <i className="pubdata-caret" aria-hidden="true" />
                     </button>
                     {open && (
                         <ul className="pubdata-select-menu" role="listbox">
@@ -185,29 +177,35 @@ function FilterPanel({ region, setRegion, cat, setCat, onChat }) {
                 </div>
             </div>
 
-            <div className="pubdata-section-head">생활정보</div>
-            <div className="pubdata-catgrid">
-                {CATS.map((c) => {
-                    const on = cat === c.key;
-                    return (
-                        <button key={c.key} type="button"
-                            className={`pubdata-cat${on ? ' active' : ''}`}
-                            style={on ? { background: ACCENT, borderColor: ACCENT } : undefined}
-                            onClick={() => setCat(c.key)}>
-                            <img className="pubdata-cat-ic" src={c.icon} alt="" aria-hidden="true" />
-                            <span>{c.label}</span>
-                        </button>
-                    );
-                })}
-            </div>
+            {/* 생활정보 세로 레일 */}
+            <nav className="aic-liferail" aria-label="생활정보 카테고리">
+                <div className="aic-liferail-head">생활정보</div>
+                <ul className="aic-liferail-list">
+                    {CATS.map((c) => {
+                        const on = cat === c.key;
+                        return (
+                            <li key={c.key} className="aic-liferail-item">
+                                <button type="button"
+                                    className={`aic-liferail-btn${on ? ' active' : ''}`}
+                                    aria-pressed={on}
+                                    onClick={() => setCat(c.key)}>
+                                    <img className="aic-liferail-ic" src={c.icon} alt="" aria-hidden="true" />
+                                    <span>{c.label}</span>
+                                </button>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </nav>
 
-            <button type="button" className="aic-chatbot-btn" onClick={onChat}>
+            {/* AI 챗봇 */}
+            <button type="button" className="aic-chatbot-btn aic-chatbot-btn--rail" onClick={onChat}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                 </svg>
                 AI 챗봇
             </button>
-        </aside>
+        </div>
     );
 }
 
@@ -216,8 +214,8 @@ function PersonaList({ region, citizens, avatars, sort, setSort, onSelect, selec
     const [sortOpen, setSortOpen] = useState(false);
     return (
         <aside className="pubdata-panel aic-list">
-            <h2 className="aic-list-title"><span>{region}</span> AI 가상시민</h2>
-            <p className="aic-list-sub">{region} 시민 의견과 데이터를 바탕으로 만든 AI 가상시민입니다. 서로 다른 삶과 시선을 통해 우리 동네의 고민과 바람을 한눈에 볼 수 있어요.</p>
+            <h2 className="aic-list-title"><span>{region || '부산대표'}</span> AI 가상시민</h2>
+            <p className="aic-list-sub">{region || '부산'} 시민 의견과 데이터를 바탕으로 만든 AI 가상시민입니다. 서로 다른 삶과 시선을 통해 우리 동네의 고민과 바람을 한눈에 볼 수 있어요.</p>
             <div className="aic-list-bar">
                 <span className="aic-list-count">총 {citizens.length}명</span>
                 <div className={`aic-sort${sortOpen ? ' open' : ''}`}>
@@ -279,7 +277,7 @@ function DetailReport({ citizen, avatarUrl, onClose, onPrev, onNext, onChat }) {
 }
 
 export default function PCAICitizen({ onNavigate }) {
-    const [region, setRegion] = useState('부산진구');
+    const [region, setRegion] = useState(null);   // null = 미선택(부산대표)
     const [cat, setCat] = useState('all');
     const [sort, setSort] = useState('importance');
     const [all, setAll] = useState([]);
@@ -288,8 +286,7 @@ export default function PCAICitizen({ onNavigate }) {
     const [detail, setDetail] = useState(null);        // 상세(detail 포함)
     const [chatPersona, setChatPersona] = useState(null);
     const [hovered, setHovered] = useState(null);      // 지도 hover 구·군
-    const [showMapIntro, setShowMapIntro] = useState(true); // 중앙 지도 인트로(클릭 시 사라짐)
-    const introCycleRef = useRef(null);
+    const [showMapIntro, setShowMapIntro] = useState(true); // 진입 인트로(여성 페르소나+말풍선, 닫으면 사라짐)
 
     // 전체 페르소나 로드
     useEffect(() => {
@@ -299,9 +296,9 @@ export default function PCAICitizen({ onNavigate }) {
             .catch(() => {});
     }, [sort]);
 
-    // 지역+카테고리 필터
+    // 지역+카테고리 필터 (region null = 부산 전체 = 부산대표)
     const citizens = useMemo(() => {
-        let list = all.filter((c) => c.district === region);
+        let list = region ? all.filter((c) => c.district === region) : [...all];
         if (cat !== 'all') list = list.filter((c) => (c.categories || []).includes(cat));
         list = [...list].sort((a, b) => (sort === 'age' ? b.age - a.age : (a.importance || 99) - (b.importance || 99)));
         return list;
@@ -322,40 +319,8 @@ export default function PCAICitizen({ onNavigate }) {
     // 지역 바뀌면 상세 닫기
     useEffect(() => { setSelected(null); setDetail(null); }, [region]);
 
-    // 인트로 등장 페르소나 아바타 프리페치
-    useEffect(() => {
-        if (!all.length) return;
-        INTRO_DISTRICTS.forEach((n) => {
-            const c = all.find((x) => x.district === n);
-            if (!c || avatars[c.id] !== undefined) return;
-            setAvatars((m) => ({ ...m, [c.id]: null }));
-            fetch(`${API_URL}/api/ai-citizens/${c.id}/avatar`)
-                .then((r) => (r.ok ? r.json() : null))
-                .then((d) => { if (d?.url) setAvatars((m) => ({ ...m, [c.id]: d.url })); })
-                .catch(() => {});
-        });
-    }, [all]); // eslint-disable-line
-
-    // 인트로 오토 투어: 핀 드롭 후 구를 순회하며 페르소나 프로필+말풍선 표시
-    useEffect(() => {
-        if (!showMapIntro || !all.length) { return undefined; }
-        const seq = INTRO_DISTRICTS.filter((n) => all.some((c) => c.district === n));
-        if (!seq.length) return undefined;
-        let i = 0;
-        const startT = setTimeout(() => {
-            setHovered(seq[0]); i = 1;
-            introCycleRef.current = setInterval(() => {
-                setHovered(seq[i % seq.length]); i += 1;
-            }, 2300);
-        }, 1500);
-        return () => {
-            clearTimeout(startT);
-            if (introCycleRef.current) { clearInterval(introCycleRef.current); introCycleRef.current = null; }
-            setHovered(null);
-        };
-    }, [showMapIntro, all]);
-
     const openDetail = (c) => {
+        setShowMapIntro(false);
         setSelected(c);
         setDetail(null);
         fetch(`${API_URL}/api/ai-citizens/${c.id}`)
@@ -372,6 +337,7 @@ export default function PCAICitizen({ onNavigate }) {
     };
 
     const startChat = (c) => {
+        setShowMapIntro(false);
         const base = c || detail || selected || citizens[0];
         if (base) setChatPersona({ ...base, avatarUrl: avatarSrc(avatars[base.id]) });
     };
@@ -385,17 +351,14 @@ export default function PCAICitizen({ onNavigate }) {
                 <div className="pubdata-map">
                     <FigmaDistrictMap
                         selectedDistrict={region}
-                        onDistrictClick={(name) => setRegion(name)}
+                        onDistrictClick={(name) => { setRegion(name); setShowMapIntro(false); }}
+                        onDeselect={() => setRegion(null)}
                         hoveredDistrict={hovered}
                         onDistrictHover={setHovered}
                         onDistrictLeave={() => setHovered(null)}
                         hoverCitizen={hoverCitizen}
                         hoverAvatarUrl={avatarSrc(hoverCitizen && avatars[hoverCitizen.id])}
-                        intro={showMapIntro}
                     />
-                    {showMapIntro && (
-                        <div className="aic-map-intro" onClick={() => setShowMapIntro(false)} />
-                    )}
                 </div>
 
                 <FilterPanel region={region} setRegion={setRegion} cat={cat} setCat={setCat} onChat={() => startChat()} />
@@ -405,6 +368,20 @@ export default function PCAICitizen({ onNavigate }) {
                     sort={sort} setSort={setSort}
                     onSelect={openDetail} selectedId={selected?.id}
                 />
+
+                {showMapIntro && (
+                    <div className="aic-intro">
+                        <img className="aic-intro-persona" src="/assets/aicitizen/intro_persona.png" alt="" draggable={false} />
+                        <div className="aic-intro-bubble">
+                            <button type="button" className="aic-intro-close" aria-label="닫기" onClick={() => setShowMapIntro(false)}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                            </button>
+                            <strong className="aic-intro-title">우리 지역을 대표하는 ‘가상 시민’을 만나보세요</strong>
+                            <p className="aic-intro-desc">AI 가상시민은 공공데이터와 시민 의견을 분석하여 생성된 가상의 시민 페르소나입니다. 지역의 생활환경과 문제, 요구를 ‘시민의 모습’으로 이해할 수 있습니다.</p>
+                            <button type="button" className="aic-intro-cta" onClick={() => setShowMapIntro(false)}>우리 지역 가상 시민 보기</button>
+                        </div>
+                    </div>
+                )}
 
                 {reportCitizen && (
                     <DetailReport

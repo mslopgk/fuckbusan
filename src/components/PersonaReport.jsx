@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import './PCAICitizen.css';
 
 /* 페르소나 풀 상세 리포트 본문 (Figma 215:5403).
@@ -24,6 +25,26 @@ export const actionEmoji = (a = '') => {
 const PROFILE_FIELDS_L = [['job', '직업'], ['family', '가족'], ['motto', '좌우명'], ['dream_life', '꿈꾸는 생활']];
 const PROFILE_FIELDS_R = [['interests', '관심사'], ['concerns', '고민'], ['hobbies', '취미'], ['activities', '활동']];
 const join = (v) => (Array.isArray(v) ? v.join(', ') : (v || '—'));
+
+/* 카테고리별 관심도 레이더(토글 ON). cats = [[label, key], ...] */
+function CatRadar({ cs, cats }) {
+    const SIZE = 200, cx = SIZE / 2, cy = SIZE / 2, maxR = 66;
+    const n = cats.length, step = (2 * Math.PI) / n;
+    const pt = (i, r) => { const a = i * step - Math.PI / 2; return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) }; };
+    const dataPts = cats.map(([, k], i) => pt(i, ((cs[k] || 0) / 5) * maxR));
+    const dPath = dataPts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ') + 'Z';
+    return (
+        <svg width="100%" viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ display: 'block', maxWidth: 220, margin: '4px auto 0' }}>
+            {[0.25, 0.5, 0.75, 1].map((lv, li) => {
+                const g = cats.map((_, i) => pt(i, lv * maxR)).map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ') + 'Z';
+                return <path key={li} d={g} fill="none" stroke="#e0e0e0" strokeWidth="1" />;
+            })}
+            {cats.map((_, i) => { const p = pt(i, maxR); return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="#e0e0e0" strokeWidth="1" />; })}
+            <path d={dPath} fill="rgba(35,189,187,0.2)" stroke="#23bdbb" strokeWidth="2" />
+            {cats.map(([label], i) => { const p = pt(i, maxR + 16); return <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" fontSize="8.5" fill="#555">{label}</text>; })}
+        </svg>
+    );
+}
 
 // 감정선 (행동 박스 하단을 잇는 점선 + 점)
 export function EmotionLine({ journey }) {
@@ -56,6 +77,7 @@ export function PersonRatioIcons() {
 
 /* 리포트 본문. onNext 주면 푸터에 '다른 시민 유형 보기' 버튼 노출(모달 전용). */
 export default function PersonaReport({ citizen, avatarUrl, onNext }) {
+    const [catRadar, setCatRadar] = useState(false);   // 카테고리별 관심도: false=막대, true=레이더
     const d = citizen.detail || {};
     const voices = (d.voices || []).slice(0, 3);
     const issues = (d.top_issues || []).slice(0, 3);
@@ -170,15 +192,24 @@ export default function PersonaReport({ citizen, avatarUrl, onNext }) {
                     <div className="aic-part-cap">제보와 설문 참여 비율이 높아 생활 불편 체감이 높은 유형입니다.</div>
                 </div>
                 <div className="aic-rp-card">
-                    <div className="aic-cat-head"><h4>카테고리별 관심도 <span className="aic-rp-sub8">(8대 영역)</span></h4><span className="aic-cat-toggle" /></div>
-                    <div className="aic-hbars">
-                        {CATS8.map(([label, key]) => (
-                            <div key={key} className="aic-hbar-row">
-                                <span className="aic-hbar-label">{label}</span>
-                                <div className="aic-hbar-track"><div className="aic-hbar-fill" style={{ width: `${((cs[key] || 0) / 5) * 100}%` }} /></div>
-                            </div>
-                        ))}
+                    <div className="aic-cat-head">
+                        <h4>카테고리별 관심도 <span className="aic-rp-sub8">(8대 영역)</span></h4>
+                        <button type="button" className={`aic-cat-toggle${catRadar ? ' on' : ''}`}
+                            onClick={() => setCatRadar((v) => !v)}
+                            role="switch" aria-checked={catRadar} aria-label="레이더 차트로 보기" />
                     </div>
+                    {catRadar ? (
+                        <CatRadar cs={cs} cats={CATS8} />
+                    ) : (
+                        <div className="aic-hbars">
+                            {CATS8.map(([label, key]) => (
+                                <div key={key} className="aic-hbar-row">
+                                    <span className="aic-hbar-label">{label}</span>
+                                    <div className="aic-hbar-track"><div className="aic-hbar-fill" style={{ width: `${((cs[key] || 0) / 5) * 100}%` }} /></div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
 

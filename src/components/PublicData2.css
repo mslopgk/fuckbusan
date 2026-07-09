@@ -1,4 +1,4 @@
-/* PC 공공데이터 리뉴얼 (Figma 269:14295). accent teal #23bdbb, page bg #f4f4f4 */
+/* PC 공공데이터 (Figma TCuOzEqNhoLKjhF0reBDks 302:8774). accent teal #23bdbb, page bg #f4f4f4 */
 .pubd { position: relative; width: 100%; min-height: calc(100vh - 64px); background: #f4f4f4; overflow: hidden; }
 
 /* 중앙 지도 */
@@ -12,25 +12,31 @@
 .pubd-tool-group { display: flex; flex-direction: column; border-radius: 12px; overflow: hidden;
     box-shadow: 0 4px 4px rgba(0,0,0,0.2); }
 .pubd-tool-btn { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
-    background: #fff; border: none; border-bottom: 1px solid #e6e6e6; color: #242424; cursor: pointer; }
+    background: #fff; border: none; border-bottom: 1px solid #e6e6e6; cursor: pointer; padding: 0; }
 .pubd-tool-group .pubd-tool-btn:last-child { border-bottom: none; }
-.pubd-tool-btn.active { background: #23bdbb; color: #fff; }
+.pubd-tool-btn img { width: 24px; height: 24px; object-fit: contain; }
+.pubd-tool-btn.active { background: #23bdbb; }
+/* map/analytics 아이콘은 export 시 teal → active(teal bg) 위에서 흰색으로 반전 */
+.pubd-tool-btn.active img { filter: brightness(0) invert(1); }
 
-/* 좌측 구역별 카드 */
+/* 좌측 구역별 필터 카드 */
 .pubd-region-card { position: absolute; left: 32px; top: 24px; width: 300px; z-index: 5;
     background: #fff; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); padding: 16px;
     display: flex; flex-direction: column; gap: 6px; }
 .pubd-region-label { font-size: 14px; color: #1e1e1e; }
 .pubd-region-select { position: relative; }
 .pubd-region-select select { width: 100%; height: 46px; border: 1px solid #242424; border-radius: 8px;
-    padding: 0 36px 0 12px; font-size: 16px; color: #242424; background: #fff; appearance: none; cursor: pointer; }
+    padding: 0 58px 0 12px; font-size: 16px; color: #242424; background: #fff; appearance: none; cursor: pointer; }
+.pubd-region-clear { position: absolute; right: 36px; top: 50%; transform: translateY(-50%);
+    width: 20px; height: 20px; border: none; border-radius: 50%; background: #d9d9d9; color: #fff;
+    font-size: 13px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .pubd-caret { position: absolute; right: 14px; top: 50%; width: 9px; height: 9px;
     border-right: 2px solid #242424; border-bottom: 2px solid #242424; transform: translateY(-65%) rotate(45deg); pointer-events: none; }
 
 /* 좌측 생활정보 세로 사이드바 */
 .pubd-side { position: absolute; left: 32px; top: 168px; width: 122px; z-index: 5;
     background: #fff; border-radius: 19px; box-shadow: 0 4px 4px rgba(0,0,0,0.25); padding: 14px 0 18px; }
-.pubd-side-head { font-family: Inter, sans-serif; font-weight: 700; font-size: 16px; color: #242424;
+.pubd-side-head { font-weight: 700; font-size: 16px; color: #242424;
     letter-spacing: -0.04em; text-align: center; padding: 6px 0 12px; }
 .pubd-side-list { display: flex; flex-direction: column; padding: 0 12px; }
 .pubd-side-cat { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px;
@@ -42,9 +48,15 @@
 .pubd-side-cat.active img { filter: brightness(0) invert(1); }
 .pubd-side-div { height: 1px; background: #ececec; margin: 0 2px; }
 
-/* 우측 KPI 패널 */
-.pubd-kpi { position: absolute; right: 88px; top: 24px; bottom: 24px; width: 450px; z-index: 5;
-    background: #fff; border-radius: 20px; padding: 0 20px; overflow-y: auto; }
+/* 우측 패널 컨테이너 (KPI + 상세 스택) */
+.pubd-right { position: absolute; right: 88px; top: 24px; bottom: 24px; width: 450px; z-index: 5;
+    display: flex; flex-direction: column; gap: 16px; }
+.pubd-right.is-all { bottom: 24px; }
+
+/* KPI 패널 */
+.pubd-kpi { background: #fff; border-radius: 20px; padding: 0 20px; overflow-y: auto; }
+.pubd-right.is-all .pubd-kpi { flex: 1 1 auto; }            /* 전체: 남은 높이 채움 */
+.pubd-right:not(.is-all) .pubd-kpi { flex: 0 0 auto; max-height: 60%; } /* 카테고리: 내용 높이 */
 .pubd-kpi-head { position: sticky; top: 0; background: #fff; display: flex; align-items: center;
     justify-content: space-between; padding: 22px 0 14px; z-index: 1; }
 .pubd-kpi-head h2 { margin: 0; font-size: 20px; font-weight: 600; color: #111; letter-spacing: -0.04em; }
@@ -53,13 +65,30 @@
 .pubd-kpi-sort .pubd-caret { right: 0; border-color: #111; }
 .pubd-kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 8px; padding-bottom: 24px; }
 .pubd-kpi-card { background: #fff; border: 1px solid #ddd; border-radius: 20px; min-height: 113px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 12px 6px; }
-.pubd-kpi-card img { width: 41px; height: 41px; object-fit: contain; }
-.pubd-kpi-label { font-size: 13px; font-weight: 500; color: #333; letter-spacing: -0.04em; text-align: center; line-height: 1.3; }
-.pubd-kpi-val { font-size: 16px; font-weight: 700; color: #23bdbb; letter-spacing: -0.04em; }
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 6px; cursor: pointer; text-align: center; }
+.pubd-right.is-all .pubd-kpi-card { cursor: default; }
+.pubd-kpi-card.selected { border: 2px solid #23bdbb; box-shadow: 0 0 0 3px rgba(35,189,187,0.12); }
+.pubd-kpi-card img { width: 41px; height: 41px; object-fit: contain; order: 2; }
+.pubd-kpi-label { font-size: 13px; font-weight: 500; color: #333; letter-spacing: -0.04em; line-height: 1.3; order: 1; }
+.pubd-kpi-val { font-size: 16px; font-weight: 700; color: #23bdbb; letter-spacing: -0.04em; order: 3; }
+.pubd-kpi-val.na { font-size: 13px; font-weight: 500; color: #9aa3ab; }
 .pubd-kpi-empty { grid-column: 1 / -1; text-align: center; color: #9aa3ab; font-size: 14px; padding: 40px 0; }
+
+/* 선택 지표 상세 카드 */
+.pubd-detail { background: #fff; border-radius: 20px; padding: 20px; flex: 1 1 auto; min-height: 0;
+    display: flex; flex-direction: column; }
+.pubd-detail-head { display: flex; align-items: center; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid #ececec; }
+.pubd-detail-head h3 { margin: 0; font-size: 18px; font-weight: 700; color: #111; letter-spacing: -0.04em; }
+.pubd-detail-region { font-size: 14px; color: #7a828a; }
+.pubd-detail-dl { margin-left: auto; height: 34px; padding: 0 18px; border: none; border-radius: 999px;
+    background: #23bdbb; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+.pubd-detail-dl:disabled { background: #bfe7e6; cursor: not-allowed; }
+.pubd-detail-body { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 24px 0; }
+.pubd-detail-na { margin: 0; font-size: 15px; font-weight: 600; color: #9aa3ab; }
+.pubd-detail-sub { margin: 0; font-size: 13px; color: #b5bcc3; }
 
 @media (max-width: 1400px) {
     .pubd-map { left: 170px; right: 500px; }
-    .pubd-kpi { width: 400px; right: 80px; }
+    .pubd-right { width: 400px; right: 80px; }
 }

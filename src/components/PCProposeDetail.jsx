@@ -19,6 +19,7 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
     const [comments, setComments] = useState([]);
     const [comment, setComment] = useState('');
     const [commenting, setCommenting] = useState(false);
+    const submittingRef = useRef(false); // 동기 가드: state는 비동기라 연타 시 중복 POST 발생
     const [voteDoneType, setVoteDoneType] = useState(null); // null | 'voted' | 'cancelled'
     const [voted, setVoted] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
@@ -100,9 +101,10 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
     const submitComment = async () => {
         const rawId = detail?.id ?? proposal?.id;
         const proposalId = typeof rawId === 'string' ? parseInt(rawId.replace(/\D/g, ''), 10) : rawId;
-        if (!comment.trim() || !proposalId || commenting) return;
+        if (!comment.trim() || !proposalId || submittingRef.current) return;
         const token = localStorage.getItem('access_token');
         if (!token) { alert('로그인이 필요합니다.'); return; }
+        submittingRef.current = true;
         setCommenting(true);
         try {
             const res = await fetch(`${API_URL}/api/reports/proposals/${proposalId}/comments`, {
@@ -123,6 +125,7 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
             console.error('comment failed', e);
             alert('서버 연결 오류가 발생했습니다.');
         } finally {
+            submittingRef.current = false;
             setCommenting(false);
         }
     };
@@ -131,6 +134,9 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
         <UserPCLayout currentView="pcProposeDetail" onNavigate={onNavigate}>
             <div className="pcd-page pcd-propose">
                 <div className="pcd-inner">
+
+                    {/* 진행상태 배지 (우상단) */}
+                    <span className="pcd-status-badge">{detail?.status || '접수중'}</span>
 
                     {/* 태그 행: 지역 + 카테고리 */}
                     <div className="pcd-tags">

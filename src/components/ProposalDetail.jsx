@@ -1,5 +1,5 @@
 /* ProposalDetail.jsx */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './ProposalDetail.css';
 import { API_URL } from '../utils/api';
 
@@ -22,6 +22,7 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [openCommentMenuId, setOpenCommentMenuId] = useState(null);
     const [currentUserId, setCurrentUserId] = useState(null);
+    const submittingRef = useRef(false); // 동기 가드: 댓글 연타 중복 등록 방지
 
     const isMine = safeProposal.is_mine === true || safeProposal.isMine === true;
 
@@ -140,6 +141,8 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
             return;
         }
         if (!contentStr.trim()) return;
+        if (submittingRef.current) return;
+        submittingRef.current = true;
 
         try {
             if (editingCommentId) {
@@ -180,6 +183,8 @@ const ProposalDetail = ({ proposal, onBack, onNavigate }) => {
             }
         } catch (error) {
             console.error("Comment submit error", error);
+        } finally {
+            submittingRef.current = false;
         }
     };
 

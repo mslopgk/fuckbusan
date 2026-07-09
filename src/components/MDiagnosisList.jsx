@@ -7,6 +7,8 @@ import {
 } from '../constants/diagnosis';
 import { API_URL } from '../utils/api';
 import MDiagnosisFilterModal from './MDiagnosisFilterModal';
+import CategoryRail from './filters/CategoryRail';
+import RegionDropdown from './filters/RegionDropdown';
 import './MDiagnosisList.css';
 
 const DIAG_PAGE_SIZE = 50;
@@ -149,33 +151,19 @@ export default function MDiagnosisList({ onNavigate }) {
                 </button>
             </header>
 
-            {/* 지역 선택 행 — Figma: bold "전체 ▶" */}
+            {/* 지역 선택 — 구역별 드롭다운 카드 (Figma 302:5940) */}
             <div className="m-diag-list-district-row">
-                <button
-                    type="button"
-                    className="m-diag-list-district-btn"
-                    onClick={() => setDistrictOpen(true)}
-                >
-                    <span>{district || '전체'}</span>
-                    <span className="m-diag-list-district-arrow">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="9 18 15 12 9 6"/>
-                        </svg>
-                    </span>
-                </button>
+                <RegionDropdown value={district || '전체'} onClick={() => setDistrictOpen(true)} accent="#23bdbb" />
             </div>
 
-            {/* 카테고리 칩 */}
-            <div className="m-diag-list-cats">
-                {CATEGORIES.map((c) => (
-                    <button
-                        key={c}
-                        type="button"
-                        className={`m-diag-list-cat-chip${category === c ? ' active' : ''}`}
-                        onClick={() => setCategory(c)}
-                    >{c}</button>
-                ))}
-            </div>
+            {/* 카테고리 — 생활정보 아이콘 rail (Figma 302:5940) */}
+            <CategoryRail
+                categories={CATEGORIES}
+                value={category}
+                onChange={setCategory}
+                accent="#23bdbb"
+                tint="#e2f6f6"
+            />
 
             {/* 카드 목록 */}
             <ul className="m-diag-list-cards" onScroll={handleScroll}>

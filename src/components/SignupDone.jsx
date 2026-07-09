@@ -1,32 +1,19 @@
-import './CheckDone.css'; // Reuse styles
+import './PCAuth.css';
 
+/* 회원가입 완료 — Figma 302:3357
+   카드 안내 + '로그인 페이지로 이동' 버튼 (자동 로그인 안 함) */
 const SignupDone = ({ onLogin }) => {
     return (
-        <div className="check-done-container">
-            <div className="check-done-content">
-                <div className="check-icon-wrapper">
-                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="30" cy="30" r="30" fill="#16B5B0" />
-                        <path d="M17 31L26 40L43 23" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                </div>
-                <h1 className="done-title" style={{ color: '#16B5B0' }}>회원가입 완료</h1>
-                <h2 className="done-subtitle">환영합니다!</h2>
-                <p className="done-description">
-                    회원가입이 성공적으로 완료되었습니다.<br />
-                    이제 로그인을 진행해 주세요.
+        <div className="pcauth">
+            <div className="pcauth-card done">
+                <h1 className="pcauth-done-title">회원가입 완료</h1>
+                <strong className="pcauth-done-lead">회원가입이 완료되었습니다!</strong>
+                <p className="pcauth-done-desc">
+                    로그인 후 서비스를 이용하실 수 있습니다.<br />
+                    로그인 페이지로 이동하시겠습니까?
                 </p>
             </div>
-
-            <div className="check-done-footer">
-                <button
-                    className="btn-home"
-                    onClick={onLogin}
-                    style={{ backgroundColor: '#16B5B0', color: '#fff', border: 'none' }}
-                >
-                    로그인 하기
-                </button>
-            </div>
+            <button className="pcauth-submit" onClick={onLogin}>로그인 페이지로 이동</button>
         </div>
     );
 };

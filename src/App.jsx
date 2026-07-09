@@ -28,6 +28,7 @@ const ChangePassword = lazy(() => import('./components/ChangePassword'));
 const MyPage = lazy(() => import('./components/MyPage'));
 const MyActivityHub = lazy(() => import('./components/MyActivityHub'));
 const MySurveys = lazy(() => import('./components/MySurveys'));
+const MyDiagnosis = lazy(() => import('./components/MyDiagnosis'));
 const MNotifications = lazy(() => import('./components/MNotifications'));
 const MPlatformNews = lazy(() => import('./components/MPlatformNews'));
 const ReportPostForm = lazy(() => import('./components/ReportPostForm'));
@@ -154,7 +155,7 @@ function App() {
             'myActivity', 'mMyActivity', 'myActivityHub', 'myReportList', 'myReports',
             'myProposals', 'mMyReportDetail', 'mMyReportEdit',
             'mProposalForm', 'mReportForm',
-            'mPage', 'myPage', 'mySurveys', 'changePassword',
+            'mPage', 'myPage', 'mySurveys', 'myDiagnosis', 'changePassword',
         ];
         if (stored && AUTH_REQUIRED_VIEWS.includes(stored) && !localStorage.getItem('access_token')) {
             return 'home';
@@ -580,6 +581,9 @@ function App() {
         } else if (target === 'mySurveys') {
             if (!localStorage.getItem('access_token')) { alert('로그인이 필요한 서비스입니다.'); setView('login'); return; }
             setView('mySurveys');
+        } else if (target === 'myDiagnosis') {
+            if (!localStorage.getItem('access_token')) { alert('로그인이 필요한 서비스입니다.'); setView('login'); return; }
+            setView('myDiagnosis');
         } else if (target === 'surveyChatHistory') {
             if (!localStorage.getItem('access_token')) { alert('로그인이 필요한 서비스입니다.'); setView('login'); return; }
             if (data) setSelectedChatSession(data);
@@ -772,7 +776,7 @@ function App() {
         'pcProposeMap', 'pcProposeForm', 'pcProposeDetail',
         'pcReportMap', 'pcReportForm', 'pcReportDetail',
         'pcMyReportList', 'pcMyReportEdit', 'pcMyProposalDetail',
-        'myActivityHub', 'mySurveys', 'surveyChatHistory',
+        'myActivityHub', 'surveyChatHistory',
         'pcAICitizen', 'pcPublicData',
         'pcDiagnosisMap', 'pcDiagnosisForm', 'pcDiagnosisDetail', 'pcDiagnosisDone',
     ];
@@ -1190,6 +1194,16 @@ function App() {
                 )}
                 {view === 'mySurveys' && (
                     <MySurveys onBack={() => setView('myActivityHub')} onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'myDiagnosis' && (
+                    <MyDiagnosis
+                        onBack={() => setView('myActivityHub')}
+                        onNavigate={(target, data) => onNavigate(target, data)}
+                        onCardClick={(item) => {
+                            setEditData(item);
+                            setView('mDiagnosisList');
+                        }}
+                    />
                 )}
                 {view === 'surveyChatHistory' && (
                     <SurveyChatHistory

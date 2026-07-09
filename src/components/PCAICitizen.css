@@ -748,22 +748,118 @@
 /* ============================================================
    리뉴얼 (Figma 215:3802) — 공공데이터 셸 + 페르소나 리스트/리포트
    ============================================================ */
-.aic .pubdata-left { max-height: calc(100% - 40px); }
+/* ── 좌측 필터 컬럼 (구역별 카드 + 생활정보 세로 레일 + AI 챗봇) — Figma 302:3872 ── */
+.aic-leftcol {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    max-height: calc(100% - 40px);
+    font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
+    pointer-events: none; /* 자식만 클릭 (레일 사이 빈틈은 지도 통과) */
+}
+.aic-leftcol > * { pointer-events: auto; }
 
-/* AI 챗봇 버튼 (좌측 패널) */
-.aic-chatbot-btn {
-    margin-top: 16px;
+/* 구역별 카드 */
+.aic-region-card {
+    width: 268px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+    padding: 16px;
+    box-sizing: border-box;
+    flex: none;
+}
+
+/* 생활정보 세로 레일 (떠있는 흰 카드) */
+.aic-liferail {
+    width: 112px;
+    background: #fff;
+    border-radius: 19px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    padding: 14px 10px 12px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    flex: 0 1 auto;
+}
+.aic-liferail-head {
+    font-size: 16px;
+    font-weight: 700;
+    color: #242424;
+    text-align: center;
+    letter-spacing: -0.04em;
+    padding: 2px 0 8px;
+    flex: none;
+}
+.aic-liferail-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.aic-liferail-item + .aic-liferail-item {
+    border-top: 1px dashed #dcdcdc;
+}
+.aic-liferail-btn {
     width: 100%;
-    height: 46px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 9px 2px;
+    border: none;
+    background: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1e1e1e;
+    letter-spacing: -0.04em;
+    line-height: 1.35;
+    white-space: nowrap;
+    transition: background 0.13s, color 0.13s;
+}
+.aic-liferail-btn:hover { background: #f0fbfb; }
+.aic-liferail-btn.active { background: #23bdbb; color: #fff; }
+.aic-liferail-ic {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(12%);  /* 근사 #1e1e1e */
+}
+.aic-liferail-btn.active .aic-liferail-ic { filter: brightness(0) invert(1); }  /* 흰색 */
+
+/* AI 챗봇 버튼 (레일 하단) */
+.aic-chatbot-btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    background: #23bdbb; color: #fff; border: none; border-radius: 12px;
-    font-size: 14px; font-weight: 800; letter-spacing: -0.02em; cursor: pointer;
+    background: #23bdbb; color: #fff; border: none;
+    letter-spacing: -0.02em; cursor: pointer;
     font-family: 'Pretendard Variable', sans-serif;
     box-shadow: 0 4px 14px rgba(35,189,187,0.28);
     transition: background 0.15s, transform 0.1s;
 }
 .aic-chatbot-btn:hover { background: #1aa6a4; }
 .aic-chatbot-btn:active { transform: translateY(1px); }
+.aic-chatbot-btn--rail {
+    width: 112px;
+    height: 44px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 800;
+    flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aic-liferail-btn, .aic-chatbot-btn { transition: none; }
+}
 
 /* 공용 아바타 */
 .aic-avatar { border-radius: 50%; overflow: hidden; flex: none; background: #eef1f2; display: inline-flex; align-items: center; justify-content: center; }
@@ -779,32 +875,72 @@
     font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
     letter-spacing: -0.02em;
 }
-/* 부산 지도 인트로: 지도는 그대로 보이고 위에 핀+점선 아크 애니메이션. 클릭하면 사라짐. */
-.aic-map-intro { position: absolute; inset: 0; z-index: 20; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-    padding-bottom: 6%; background: rgba(255,255,255,0.04); animation: aicIntroIn 0.4s ease; }
-@keyframes aicIntroIn { from { opacity: 0; } to { opacity: 1; } }
-.aic-map-intro-text { text-align: center; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
-.aic-map-intro-text strong { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #0f8f8c;
-    text-shadow: 0 1px 10px rgba(255,255,255,0.95); }
-.aic-map-intro-text span { font-size: 15px; color: #3f8b89; font-weight: 600;
-    text-shadow: 0 1px 10px rgba(255,255,255,0.95); }
-
-/* 지도 위 핀/아크 효과 (FigmaDistrictMap 1920×1080 좌표계 내부 SVG) */
-.aic-mapfx-arc { fill: none; stroke: #23bdbb; stroke-width: 4; stroke-linecap: round;
-    stroke-dasharray: 14 12; opacity: 0.85; animation: mapfxMarch 0.9s linear infinite; }
-@keyframes mapfxMarch { to { stroke-dashoffset: -26; } }
-.aic-mapfx-pin { transform-origin: 0 0; animation: mapfxDrop 0.6s cubic-bezier(.34,1.56,.64,1) both; }
-@keyframes mapfxDrop {
-    0% { transform: translateY(-36px) scale(0); opacity: 0; }
-    60% { opacity: 1; }
-    100% { transform: translateY(0) scale(1); opacity: 1; }
+/* 진입 인트로: 여성 페르소나(좌하단) + 말풍선(하단 중앙). Figma 302:3561
+   .pubdata 직속 오버레이. 페르소나는 좌측 패널/말풍선/지도보다 위(최상단). */
+.aic-intro { position: absolute; inset: 0; z-index: 30; pointer-events: none; overflow: hidden; }
+.aic-intro-persona {
+    position: absolute; left: 1.5%; bottom: 0; height: min(64%, 560px); width: auto;
+    z-index: 40; pointer-events: none;
+    user-select: none; -webkit-user-drag: none;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.12));
+    animation: aicPersonaIn 0.6s cubic-bezier(.22,1,.36,1) both;
 }
-.aic-mapfx-teardrop { fill: #23bdbb; }
-.aic-mapfx-pulse { fill: #23bdbb; transform-origin: 0 0; animation: mapfxPulse 1.9s ease-out infinite; }
-@keyframes mapfxPulse {
-    0% { transform: scale(0.5); opacity: 0.45; }
-    100% { transform: scale(2.4); opacity: 0; }
+@keyframes aicPersonaIn {
+    from { opacity: 0; transform: translateY(48px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.aic-intro-bubble {
+    position: absolute; left: 24%; bottom: 6.5%; max-width: 660px; pointer-events: auto;
+    background: #fff; border-radius: 20px; padding: 26px 30px 22px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.16);
+    font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; letter-spacing: -0.02em;
+    animation: aicBubbleIn 0.55s cubic-bezier(.22,1,.36,1) 0.28s both;
+}
+.aic-intro-bubble::before {
+    content: ''; position: absolute; left: -18px; top: 34px;
+    border-top: 13px solid transparent; border-bottom: 13px solid transparent;
+    border-right: 22px solid #fff;
+    filter: drop-shadow(-6px 2px 4px rgba(0,0,0,0.05));
+}
+@keyframes aicBubbleIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.aic-intro-close {
+    position: absolute; top: 16px; right: 16px; width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    background: #f1f3f4; border: none; border-radius: 50%; color: #7a8388; cursor: pointer;
+}
+.aic-intro-close:hover { background: #e5e8ea; color: #4a5257; }
+.aic-intro-title { display: block; font-size: 20px; font-weight: 800; color: #0f8f8c; margin: 0 40px 10px 0; letter-spacing: -0.02em; }
+.aic-intro-desc { margin: 0 0 18px; font-size: 15px; line-height: 1.55; color: #3f4a4a; }
+.aic-intro-cta {
+    display: inline-flex; align-items: center; background: #23bdbb; color: #fff;
+    border: none; border-radius: 10px; padding: 11px 22px; font-size: 14px; font-weight: 800;
+    letter-spacing: -0.02em; cursor: pointer; font-family: inherit;
+    box-shadow: 0 4px 14px rgba(35,189,187,0.3); transition: background 0.15s, transform 0.1s;
+}
+.aic-intro-cta:hover { background: #1aa6a4; }
+.aic-intro-cta:active { transform: translateY(1px); }
+
+/* 선택 지역 해제 칩 (지도 위 선택 구·군, Figma 302:4116) */
+.aic-deselect-chip {
+    display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; padding: 0; border-radius: 50%;
+    background: #fff; border: none; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    animation: aicChipIn 0.25s ease both;
+}
+.aic-deselect-chip:hover { background: #f0fbfb; }
+@keyframes aicChipIn { from { opacity: 0; transform: translate(-50%, 6px) scale(0.8); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+
+/* 구역별 셀렉트: 미선택 placeholder + 선택 시 clear(X) */
+.aic-select-ph { color: #9aa3ab; }
+.aic-select-clear { display: inline-flex; align-items: center; justify-content: center; margin-left: auto; margin-right: 8px; color: #b0b7bc; cursor: pointer; }
+.aic-select-clear:hover { color: #23bdbb; }
+
+@media (prefers-reduced-motion: reduce) {
+    .aic-intro-persona, .aic-intro-bubble, .aic-deselect-chip { animation: none; }
 }
 /* 페르소나 프로필+말풍선 등장(구 순회 시마다 리마운트되어 재생) */
 .aic-hovwrap { animation: aicHovIn 0.5s cubic-bezier(.34,1.56,.64,1) both; }
@@ -951,8 +1087,10 @@
 /* 카테고리 8바 */
 .aic-cat-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
 .aic-cat-head h4 { margin: 0; }
-.aic-cat-toggle { width: 37px; height: 18px; border-radius: 100px; background: #fff; box-shadow: inset 0 0 0 1px #e0e0e0, 0 0 4px rgba(0,0,0,0.08); position: relative; flex: none; }
-.aic-cat-toggle::after { content: ''; position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%; background: #23bdbb; }
+.aic-cat-toggle { width: 37px; height: 18px; border-radius: 100px; background: #fff; box-shadow: inset 0 0 0 1px #e0e0e0, 0 0 4px rgba(0,0,0,0.08); position: relative; flex: none; border: none; padding: 0; cursor: pointer; transition: background 0.18s; }
+.aic-cat-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #c4c9cc; transition: left 0.18s, background 0.18s; }
+.aic-cat-toggle.on { background: #e6f8f8; box-shadow: inset 0 0 0 1px #23bdbb; }
+.aic-cat-toggle.on::after { left: 21px; background: #23bdbb; }
 .aic-hbars { display: flex; flex-direction: column; gap: 8px; }
 .aic-hbar-row { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 8px; }
 .aic-hbar-label { font-size: 12px; color: #111111; font-weight: 400; white-space: nowrap; }

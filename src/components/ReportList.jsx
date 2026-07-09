@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Map, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
 import './ReportList.css';
+import CategoryRail from './filters/CategoryRail';
+import RegionDropdown from './filters/RegionDropdown';
 import { API_URL, authHeaders } from '../utils/api';
 
 
@@ -140,43 +142,54 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
 
     return (
         <div className="rl-page">
-            {/* Header: Title + Search */}
-            <div className="rl-header">
-                <h1 className="rl-title">제보현황</h1>
-                <div className="rl-search-row">
-                    <div className="rl-search-wrap">
-                        <input
-                            type="text"
-                            className="rl-search"
-                            placeholder="검색"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        <span className="rl-search-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            </svg>
-                        </span>
+            {/* Title */}
+            <h1 className="rl-title">제보현황</h1>
+
+            <div className="rl-body">
+                {/* 좌측 세로 레일 (Figma 302:5940): 구역별 드롭다운 + 생활정보 rail */}
+                <aside className="rl-rail">
+                    <RegionDropdown
+                        title="구역별"
+                        placeholder="설정해주세요"
+                        value={selectedRegion}
+                        unsetValue="부산 전 지역"
+                        options={REGIONS}
+                        onSelect={setSelectedRegion}
+                        accent="#542aa3"
+                    />
+                    <CategoryRail
+                        variant="rail"
+                        title="생활정보"
+                        categories={CATEGORIES}
+                        value={selectedCategory}
+                        onChange={setSelectedCategory}
+                        accent="#542aa3"
+                        tint="#efe9f7"
+                    />
+                </aside>
+
+                {/* 우측 콘텐츠: 검색 + 지도 + 정렬/상태 + 카드 그리드 */}
+                <div className="rl-content">
+                    <div className="rl-search-row">
+                        <div className="rl-search-wrap">
+                            <input
+                                type="text"
+                                className="rl-search"
+                                placeholder="검색"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            <span className="rl-search-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </span>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            {/* Region chips */}
-            <div className="rl-region-chips">
-                {REGIONS.map(reg => (
-                    <button
-                        key={reg}
-                        className={`rl-region-chip${selectedRegion === reg ? ' active' : ''}`}
-                        onClick={() => setSelectedRegion(reg)}
-                    >
-                        {reg}
-                    </button>
-                ))}
-            </div>
-
-            {/* Compact Kakao Map */}
-            <div className="rl-map-wrap">
+                    {/* Compact Kakao Map */}
+                    <div className="rl-map-wrap">
                 <Map
                     center={mapCenter}
                     level={5}
@@ -209,19 +222,6 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
                         <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
                     </svg>
                 </button>
-            </div>
-
-            {/* Category filter chips */}
-            <div className="rl-filter-row">
-                {CATEGORIES.map(cat => (
-                    <button
-                        key={cat}
-                        className={`rl-cat-chip${selectedCategory === cat ? ' active' : ''}`}
-                        onClick={() => setSelectedCategory(cat)}
-                    >
-                        {cat}
-                    </button>
-                ))}
             </div>
 
             {/* Sort dropdown + status tabs */}
@@ -314,6 +314,8 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
                         </div>
                     );
                 })}
+                    </div>
+                </div>
             </div>
 
             {/* Sort Modal */}

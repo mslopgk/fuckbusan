@@ -1,5 +1,5 @@
 /* PCMyProposalDetail.jsx — Figma 215:2205(나의제안글보기), 215:2829(수정), 215:2886(삭제), 215:2659(완료>나의제안) */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
@@ -46,6 +46,7 @@ export default function PCMyProposalDetail({ onNavigate, proposal, onDelete, onE
     const [detail, setDetail] = useState(proposal || null);
     const [comments, setComments] = useState([]);
     const [comment, setComment] = useState('');
+    const submittingRef = useRef(false); // 동기 가드: 댓글 연타 중복 POST 방지
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [showDelete, setShowDelete] = useState(false);
@@ -100,9 +101,10 @@ export default function PCMyProposalDetail({ onNavigate, proposal, onDelete, onE
     };
 
     const submitComment = async () => {
-        if (!comment.trim() || !proposal?.id) return;
+        if (!comment.trim() || !proposal?.id || submittingRef.current) return;
         const token = localStorage.getItem('access_token');
         if (!token) { alert('로그인이 필요합니다.'); return; }
+        submittingRef.current = true;
         try {
             const res = await fetch(`${API_URL}/api/reports/proposals/${proposal.id}/comments`, {
                 method: 'POST',
@@ -115,6 +117,7 @@ export default function PCMyProposalDetail({ onNavigate, proposal, onDelete, onE
                 setComment('');
             }
         } catch (e) { console.error('comment failed', e); }
+        finally { submittingRef.current = false; }
     };
 
     const toggleLike = async () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import { MY_CAT_STYLES as CAT_STYLES } from './catStyles';
 import './MProposalDetail.css';
@@ -38,6 +38,7 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
     const [comments, setComments] = useState([]);
     const [comment, setComment] = useState('');
     const [commenting, setCommenting] = useState(false);
+    const submittingRef = useRef(false); // 동시 제출 레이스 방지 (댓글 중복 등록)
     const [showDelete, setShowDelete] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState('');
@@ -57,6 +58,8 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
             alert('로그인이 필요합니다.');
             return;
         }
+        if (submittingRef.current) return;
+        submittingRef.current = true;
         setCommenting(true);
         try {
             const res = await fetch(`${API_URL}/api/reports/${data.id}/comments`, {
@@ -72,6 +75,7 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
         } catch (e) {
             console.error(e);
         } finally {
+            submittingRef.current = false;
             setCommenting(false);
         }
     };

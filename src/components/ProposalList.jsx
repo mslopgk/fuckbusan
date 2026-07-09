@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { formatDate } from '../utils/format';
 import './ProposalList.css';
+import CategoryRail from './filters/CategoryRail';
+import RegionDropdown from './filters/RegionDropdown';
 import { API_URL } from '../utils/api';
 
 const DISTRICTS = [
@@ -201,19 +203,15 @@ const ProposalList = ({ onNavigate, onBack }) => {
                     </button>
                 </div>
 
-                {/* 카테고리 가로 스크롤 */}
+                {/* 카테고리 — 생활정보 아이콘 rail (Figma 302:5940) */}
                 <div className="pl-categories-wrapper">
-                    <div className="pl-categories-scroll">
-                        {CATEGORIES.map((cat) => (
-                            <button
-                                key={cat}
-                                className={`pl-category-pill ${selectedCategory === cat ? 'active' : ''}`}
-                                onClick={() => setSelectedCategory(cat)}
-                            >
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
+                    <CategoryRail
+                        categories={CATEGORIES}
+                        value={selectedCategory}
+                        onChange={setSelectedCategory}
+                        accent="#f74e7e"
+                        tint="#fde4ec"
+                    />
                 </div>
 
                 {/* 정렬 */}
@@ -291,83 +289,71 @@ const ProposalList = ({ onNavigate, onBack }) => {
             </div>
 
             <div className="pl-content">
-                {/* 검색바 */}
-                <div className="pl-search-wrapper">
-                    <input
-                        type="text"
-                        className="pl-search-input"
-                        placeholder="검색"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') setAppliedSearch(search); }}
-                    />
-                    <button className="pl-search-btn" onClick={() => setAppliedSearch(search)}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </button>
-                </div>
+                <div className="pl-desktop-body">
+                    {/* 좌측 세로 레일 (Figma 302:5940): 구역별 드롭다운 + 생활정보 rail */}
+                    <aside className="pl-rail">
+                        <RegionDropdown
+                            title="구역별"
+                            placeholder="설정해주세요"
+                            value={selectedDistrict}
+                            unsetValue="부산전체"
+                            options={DISTRICTS}
+                            onSelect={setSelectedDistrict}
+                            accent="#f74e7e"
+                        />
+                        <CategoryRail
+                            variant="rail"
+                            title="생활정보"
+                            categories={CATEGORIES}
+                            value={selectedCategory}
+                            onChange={setSelectedCategory}
+                            accent="#f74e7e"
+                            tint="#fde4ec"
+                        />
+                    </aside>
 
-                {/* 구군 탭 - 두 개의 그리드를 붙여서 사용 */}
-                <div className="pl-district-tabs-wrapper">
-                    <div className="pl-district-tabs pl-district-tabs-row1">
-                        {DISTRICTS.slice(0, 9).map((d) => (
-                            <button
-                                key={d}
-                                className={`pl-district-tab ${selectedDistrict === d ? 'active' : ''}`}
-                                onClick={() => setSelectedDistrict(d)}
-                            >
-                                {d}
+                    {/* 우측 콘텐츠: 검색 + 정렬 + 카드 그리드 */}
+                    <div className="pl-desktop-main">
+                        {/* 검색바 */}
+                        <div className="pl-search-wrapper">
+                            <input
+                                type="text"
+                                className="pl-search-input"
+                                placeholder="검색"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                onKeyDown={(e) => { if (e.key === 'Enter') setAppliedSearch(search); }}
+                            />
+                            <button className="pl-search-btn" onClick={() => setAppliedSearch(search)}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
                             </button>
-                        ))}
-                    </div>
-                    <div className="pl-district-tabs pl-district-tabs-row2">
-                        {DISTRICTS.slice(9).map((d) => (
-                            <button
-                                key={d}
-                                className={`pl-district-tab ${selectedDistrict === d ? 'active' : ''}`}
-                                onClick={() => setSelectedDistrict(d)}
-                            >
-                                {d}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                        </div>
 
-                {/* 카테고리 필터 + 정렬 */}
-                <div className="pl-filter-row">
-                    <div className="pl-category-chips">
-                        {CATEGORIES.map((cat) => (
-                            <button
-                                key={cat}
-                                className={`pl-category-chip ${selectedCategory === cat ? 'active' : ''}`}
-                                onClick={() => setSelectedCategory(cat)}
-                            >
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
-                    <div className="pl-sort-btns">
-                        <button className={`pl-sort-btn ${sortBy === '조회수' ? 'active' : ''}`} onClick={() => setSortBy('조회수')}>조회수</button>
-                        <div className="pl-sort-divider"></div>
-                        <button className={`pl-sort-btn ${sortBy === '투표순' ? 'active' : ''}`} onClick={() => setSortBy('투표순')}>투표순</button>
-                        <div className="pl-sort-divider"></div>
-                        <button className={`pl-sort-btn ${sortBy === '최신순' ? 'active' : ''}`} onClick={() => setSortBy('최신순')}>최신순</button>
-                    </div>
-                </div>
+                        {/* 정렬 */}
+                        <div className="pl-filter-row">
+                            <div className="pl-sort-btns">
+                                <button className={`pl-sort-btn ${sortBy === '조회수' ? 'active' : ''}`} onClick={() => setSortBy('조회수')}>조회수</button>
+                                <div className="pl-sort-divider"></div>
+                                <button className={`pl-sort-btn ${sortBy === '투표순' ? 'active' : ''}`} onClick={() => setSortBy('투표순')}>투표순</button>
+                                <div className="pl-sort-divider"></div>
+                                <button className={`pl-sort-btn ${sortBy === '최신순' ? 'active' : ''}`} onClick={() => setSortBy('최신순')}>최신순</button>
+                            </div>
+                        </div>
 
-                {/* 데스크톱 카드 그리드 */}
-                {loading ? (
-                    <div className="pl-loading">로딩 중...</div>
-                ) : desktopFiltered.length === 0 ? (
-                    <div className="pl-empty">
-                        <p>등록된 제안이 없습니다.</p>
-                        <button className="pl-empty-btn" onClick={() => onNavigate('proposalForm')}>첫 제안 작성하기</button>
-                    </div>
-                ) : (
-                    <div className="pl-grid">
-                        {desktopFiltered.map((item) => {
+                        {/* 데스크톱 카드 그리드 */}
+                        {loading ? (
+                            <div className="pl-loading">로딩 중...</div>
+                        ) : desktopFiltered.length === 0 ? (
+                            <div className="pl-empty">
+                                <p>등록된 제안이 없습니다.</p>
+                                <button className="pl-empty-btn" onClick={() => onNavigate('proposalForm')}>첫 제안 작성하기</button>
+                            </div>
+                        ) : (
+                            <div className="pl-grid">
+                                {desktopFiltered.map((item) => {
                             const imageUrl = getImageUrl(item);
                             const catStyle = CATEGORY_STYLES[item.category] || { background: '#F5F5F5', color: '#616161' };
                             return (
@@ -397,10 +383,12 @@ const ProposalList = ({ onNavigate, onBack }) => {
                                         </div>
                                     </div>
                                 </div>
-                            );
-                        })}
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
 
             {/* ===================== 모바일 모달 ===================== */}

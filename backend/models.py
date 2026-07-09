@@ -74,6 +74,7 @@ class User(Base):
     PW = Column(String(255), nullable=False)
     name = Column(String(50), nullable=False)
     nickname = Column(String(100))
+    email = Column(String(255))              # 이메일 (마이페이지 내 정보 관리)
     phone_num = Column(String(20))
     birth_date = Column(String(20)) # Added birth_date
     address = Column(String(255))           # 회원가입 주소 (도로명/지번)
@@ -201,6 +202,7 @@ class NewProposal(Base):
     lng = Column(DECIMAL(11, 8), nullable=True)
     views_count = Column(Integer, default=0)
     likes_count = Column(Integer, default=0)
+    status = Column(String(50), default="접수중")  # 접수중/검토중/반영 등 진행상태
     created_at = Column(DateTime, default=datetime.now)
 
     # 작성자 관계 설정

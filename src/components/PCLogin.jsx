@@ -7,7 +7,20 @@ import PhoneVerify from './PhoneVerify';
    로그인 + 아이디찾기 + 비밀번호찾기(재설정). 본인인증은 페이지 내 SMS(OTP) 1회. */
 
 const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,20}$/;
-const maskId = (id) => (id.length <= 3 ? id + '****' : id.slice(0, 3) + '****');
+/* 완료 화면 카드 (아이디/비밀번호 재설정 완료) — Figma 302:3357 / 302:3386 */
+const AuthDoneCard = ({ title, lead, onGo }) => (
+    <>
+        <div className="pcauth-card done">
+            <h1 className="pcauth-done-title">{title}</h1>
+            <strong className="pcauth-done-lead">{lead}</strong>
+            <p className="pcauth-done-desc">
+                로그인 후 서비스를 이용하실 수 있습니다.<br />
+                로그인 페이지로 이동하시겠습니까?
+            </p>
+        </div>
+        <button className="pcauth-submit" onClick={onGo}>로그인 페이지로 이동</button>
+    </>
+);
 
 const PCLogin = ({ onBack, onSignup }) => {
     const [mode, setMode] = useState('login'); // login | findChoose | findId | findPw
@@ -107,6 +120,7 @@ const FindIdFlow = ({ onClose }) => {
     const [phone, setPhone] = useState('');
     const [verified, setVerified] = useState(false);
     const [foundId, setFoundId] = useState('');
+    const [method, setMethod] = useState(null); // 본인인증 방법 선택 (Figma 302:3015)
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -128,10 +142,26 @@ const FindIdFlow = ({ onClose }) => {
             <div className="pcauth-title"><h1>아이디 찾기</h1></div>
             <div className="pcauth-card compact">
                 <div className="pcauth-form">
-                    <div className="pcauth-result">가입하신 회원님의 아이디는<br /><strong>{maskId(foundId)}</strong> 입니다</div>
+                    <div className="pcauth-result">가입하신 회원님의 아이디는<br /><strong>{foundId}</strong> 입니다</div>
                     <button className="pcauth-submit" style={{ width: '100%', marginTop: 0 }} onClick={onClose}>로그인하기</button>
                 </div>
             </div>
+        </>
+    );
+
+    if (!method) return (
+        <>
+            <div className="pcauth-title"><h1 className="accent">아이디 찾기</h1><p>회원정보 확인을 위한 본인인증 단계입니다.<br />인증방법을 선택해주세요.</p></div>
+            <div className="pcauth-card compact">
+                <div className="pcauth-form">
+                    <p className="pcauth-center-text">휴대폰 인증 또는 아이핀 인증을 이용해서<br />아이디를 찾을 수 있습니다.</p>
+                    <div className="pcauth-method-row">
+                        <button type="button" className="pcauth-method-btn" onClick={() => setMethod('phone')}>휴대폰 인증하기</button>
+                        <button type="button" className="pcauth-method-btn ghost" onClick={() => alert('아이핀 인증은 준비 중입니다. 휴대폰 인증을 이용해주세요.')}>아이핀 인증</button>
+                    </div>
+                </div>
+            </div>
+            <div className="pcauth-links"><button className="pcauth-link" onClick={onClose}>로그인으로 돌아가기</button></div>
         </>
     );
 
@@ -162,6 +192,8 @@ const FindPwFlow = ({ onClose }) => {
     const [phone, setPhone] = useState('');
     const [verified, setVerified] = useState(false);
     const [stepReset, setStepReset] = useState(false);
+    const [done, setDone] = useState(false);
+    const [method, setMethod] = useState(null); // 본인인증 방법 선택 (Figma 302:3015)
     const [pw, setPw] = useState('');
     const [pwConfirm, setPwConfirm] = useState('');
     const [loading, setLoading] = useState(false);
@@ -191,10 +223,11 @@ const FindPwFlow = ({ onClose }) => {
                 body: JSON.stringify({ ID: id, phone_num: phone, new_pw: pw }),
             });
             if (!res.ok) throw new Error((await res.json()).detail || '비밀번호 재설정에 실패했습니다.');
-            alert('비밀번호가 재설정되었습니다. 새 비밀번호로 로그인해주세요.');
-            onClose();
+            setDone(true);
         } catch (e) { setError(e.message); } finally { setLoading(false); }
     };
+
+    if (done) return <AuthDoneCard title="비밀번호 재설정" lead="비밀번호 변경이 완료되었습니다!" onGo={onClose} />;
 
     if (stepReset) return (
         <>
@@ -217,6 +250,22 @@ const FindPwFlow = ({ onClose }) => {
                     </button>
                 </div>
             </div>
+        </>
+    );
+
+    if (!method) return (
+        <>
+            <div className="pcauth-title"><h1 className="accent">비밀번호 찾기</h1><p>회원정보 확인을 위한 본인인증 단계입니다.<br />인증방법을 선택해주세요.</p></div>
+            <div className="pcauth-card compact">
+                <div className="pcauth-form">
+                    <p className="pcauth-center-text">휴대폰 인증 또는 아이핀 인증을 이용해서<br />비밀번호를 재설정할 수 있습니다.</p>
+                    <div className="pcauth-method-row">
+                        <button type="button" className="pcauth-method-btn" onClick={() => setMethod('phone')}>휴대폰 인증하기</button>
+                        <button type="button" className="pcauth-method-btn ghost" onClick={() => alert('아이핀 인증은 준비 중입니다. 휴대폰 인증을 이용해주세요.')}>아이핀 인증</button>
+                    </div>
+                </div>
+            </div>
+            <div className="pcauth-links"><button className="pcauth-link" onClick={onClose}>로그인으로 돌아가기</button></div>
         </>
     );
 

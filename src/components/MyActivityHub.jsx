@@ -151,7 +151,7 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
                     </button>
 
                     {/* 진단 */}
-                    <button className="mahub-act-card mahub-act-card--diagnosis" onClick={() => onNavigate('mMyActivity')}>
+                    <button className="mahub-act-card mahub-act-card--diagnosis" onClick={() => onNavigate('myDiagnosis')}>
                         <div className="mahub-act-top">
                             <span className="mahub-act-label">진단</span>
                             <img className="mahub-act-icon" src="/assets/activity/icon_diagnosis.png" alt="진단" />

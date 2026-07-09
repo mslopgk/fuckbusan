@@ -11,7 +11,7 @@ const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', 
 const STAT_DEFS = [
     { key: 'report',   label: '제보',   icon: '/assets/activity/icon_report.png',    linkLabel: '제보 전체보기',   target: 'pcMyReportList' },
     { key: 'proposal', label: '제안',   icon: '/assets/activity/icon_proposal.png',  linkLabel: '제안 전체보기',   target: 'myProposals' },
-    { key: 'diagnosis',label: '진단',   icon: '/assets/activity/icon_diagnosis.png', linkLabel: '진단 전체보기',   target: 'pcDiagnosisMap' },
+    { key: 'diagnosis',label: '진단',   icon: '/assets/activity/icon_diagnosis.png', linkLabel: '진단 전체보기',   target: 'myDiagnosis' },
     { key: 'survey',   label: '설문',   icon: '/assets/activity/icon_survey.png',    linkLabel: '설문 전체보기',   target: 'mySurveys' },
 ];
 
@@ -93,7 +93,7 @@ const PCMyActivity = ({ onNavigate }) => {
                         <p className="pcma-page-subtitle">나의 활동과 관심서비스를 한눈에 확인하세요.</p>
                     </div>
 
-                    {/* 프로필 카드 */}
+                    {/* 프로필 카드 (풀폭) */}
                     <div className="pcma-profile">
                         <img className="pcma-avatar" src="/assets/activity/avatar_girl.png" alt="프로필" />
                         <div className="pcma-profile-info">
@@ -102,86 +102,95 @@ const PCMyActivity = ({ onNavigate }) => {
                         </div>
                         <button className="pcma-profile-edit-btn" onClick={() => onNavigate && onNavigate('myPage')}>
                             프로필 수정
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#777" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#777" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                 <circle cx="12" cy="7" r="4" />
                             </svg>
                         </button>
                     </div>
 
-                    {/* 나의 활동 */}
-                    <h2 className="pcma-section-title">나의 활동</h2>
-                    <div className="pcma-activity-grid">
-                        {STAT_DEFS.map((s) => (
-                            <button
-                                key={s.key}
-                                className={`pcma-act-card pcma-act-card--${s.key}`}
-                                onClick={() => onNavigate && onNavigate(s.target)}
-                            >
-                                <div className="pcma-act-top">
-                                    <span className="pcma-act-label">{s.label}</span>
-                                    <img className="pcma-act-icon" src={s.icon} alt={s.label} />
-                                </div>
-                                <div className="pcma-act-count">
-                                    <strong>{counts[s.key]}</strong>건
-                                </div>
-                                <div className="pcma-act-link">{s.linkLabel} <span>›</span></div>
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* 관심서비스 설정 */}
-                    <h2 className="pcma-section-title">관심서비스 설정</h2>
-                    <div className="pcma-interest-row">
-                        {/* 지역별 */}
-                        <div className="pcma-interest-card">
-                            <h3 className="pcma-interest-subtitle">지역별</h3>
-                            <div className="pcma-district-chips">
-                                {DISTRICTS.map(d => (
+                    {/* 나의 활동 + 관심서비스 설정 (한 카드, 2단) */}
+                    <div className="pcma-main-card">
+                        {/* 나의 활동 */}
+                        <section className="pcma-activity-section">
+                            <h2 className="pcma-section-title">나의 활동</h2>
+                            <div className="pcma-activity-grid">
+                                {STAT_DEFS.map((s) => (
                                     <button
-                                        key={d}
-                                        className={`pcma-district-chip ${activeDistrict === d ? 'active' : ''}`}
-                                        onClick={() => setActiveDistrict(d)}
+                                        key={s.key}
+                                        className={`pcma-act-card pcma-act-card--${s.key}`}
+                                        onClick={() => onNavigate && onNavigate(s.target)}
                                     >
-                                        {d}
+                                        <span className="pcma-act-label">{s.label}</span>
+                                        <img className="pcma-act-icon" src={s.icon} alt={s.label} />
+                                        <div className="pcma-act-count">
+                                            <strong>{counts[s.key]}</strong>건
+                                        </div>
+                                        <div className="pcma-act-link">
+                                            {s.linkLabel}
+                                            <svg className="pcma-act-arrow" width="7" height="14" viewBox="0 0 7 14" fill="none">
+                                                <path d="M1 1l5 6-5 6" stroke="#111" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </div>
                                     </button>
                                 ))}
                             </div>
-                        </div>
+                        </section>
 
-                        {/* 유형별 */}
-                        <div className="pcma-interest-card">
-                            <h3 className="pcma-interest-subtitle">유형별</h3>
-                            <div className="pcma-category-list">
-                                {CATEGORIES.map(cat => (
-                                    <label key={cat} className="pcma-cat-row" onClick={() => toggleCategory(cat)}>
-                                        <span className={`pcma-cat-checkbox ${activeCategories.has(cat) ? 'checked' : ''}`}>
-                                            {activeCategories.has(cat) && (
-                                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                                    <path d="M2 6l3 3 5-5" stroke="#23bdbb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                                                </svg>
-                                            )}
-                                        </span>
-                                        <span className="pcma-cat-name">{cat}</span>
-                                    </label>
-                                ))}
+                        {/* 관심서비스 설정 */}
+                        <section className="pcma-interest-section">
+                            <h2 className="pcma-section-title">관심서비스 설정</h2>
+                            <div className="pcma-interest-row">
+                                {/* 지역별 */}
+                                <div className="pcma-interest-card pcma-interest-card--district">
+                                    <h3 className="pcma-interest-subtitle">지역별</h3>
+                                    <div className="pcma-district-chips">
+                                        {DISTRICTS.map(d => (
+                                            <button
+                                                key={d}
+                                                className={`pcma-district-chip ${activeDistrict === d ? 'active' : ''}`}
+                                                onClick={() => setActiveDistrict(d)}
+                                            >
+                                                {d}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* 유형별 */}
+                                <div className="pcma-interest-card pcma-interest-card--type">
+                                    <h3 className="pcma-interest-subtitle">유형별</h3>
+                                    <div className="pcma-category-list">
+                                        {CATEGORIES.map(cat => (
+                                            <button
+                                                key={cat}
+                                                className={`pcma-cat-item ${activeCategories.has(cat) ? 'active' : ''}`}
+                                                onClick={() => toggleCategory(cat)}
+                                            >
+                                                {cat}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </section>
                     </div>
 
-                    {/* 빠른메뉴 */}
-                    <h2 className="pcma-section-title">빠른메뉴</h2>
-                    <div className="pcma-quick-grid">
-                        {QUICK_MENU.map((item) => (
-                            <button
-                                key={item.label}
-                                className="pcma-quick-item"
-                                onClick={() => item.target && onNavigate && onNavigate(item.target)}
-                            >
-                                <span className="pcma-quick-label">{item.label}</span>
-                                <span className="pcma-quick-sub">{item.sub}</span>
-                            </button>
-                        ))}
+                    {/* 빠른메뉴 (풀폭 카드, 1행 6열) */}
+                    <div className="pcma-quick-card">
+                        <h2 className="pcma-section-title">빠른메뉴</h2>
+                        <div className="pcma-quick-grid">
+                            {QUICK_MENU.map((item) => (
+                                <button
+                                    key={item.label}
+                                    className="pcma-quick-item"
+                                    onClick={() => item.target && onNavigate && onNavigate(item.target)}
+                                >
+                                    <span className="pcma-quick-label">{item.label}</span>
+                                    <span className="pcma-quick-sub">{item.sub}</span>
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

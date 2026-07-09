@@ -6,6 +6,8 @@ import MobileBottomNav from './MobileBottomNav';
 import { CAT_STYLES } from './catStyles';
 import { REGIONS, SORTS, DISTRICT_CENTERS } from '../constants/mapConstants';
 import { RegionSheet, SortSheet } from './MFilterSheets';
+import CategoryRail from './filters/CategoryRail';
+import RegionDropdown from './filters/RegionDropdown';
 import { API_URL } from '../utils/api';
 import { useLazyImage } from '../hooks/useLazyImage';
 import { thumbUrl, matchDistrict, nearestDistrict } from '../utils/format';
@@ -154,29 +156,19 @@ export default function MProposalList({ onNavigate }) {
                 </button>
             </header>
 
-            {/* 지역 선택 행 */}
+            {/* 지역 선택 행 — 구역별 드롭다운 카드 (Figma 302:5940) */}
             <div className="m-region-row">
-                <button type="button" className="m-region-btn" onClick={openRegion}>
-                    <span>{region}</span>
-                    <span className="m-region-arrow">
-                        <svg width="5" height="9" viewBox="0 0 5 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1 1L4.5 4.5L1 8" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                    </span>
-                </button>
+                <RegionDropdown value={region} onClick={openRegion} accent="#f74e7e" />
             </div>
 
-            {/* 카테고리 칩 */}
-            <div className="m-cat-chips">
-                {CATEGORIES.map((c) => (
-                    <button
-                        key={c}
-                        type="button"
-                        className={`m-cat-chip ${cat === c ? 'on' : ''}`}
-                        onClick={() => setCat(c)}
-                    >{c}</button>
-                ))}
-            </div>
+            {/* 카테고리 — 생활정보 아이콘 rail (Figma 302:5940) */}
+            <CategoryRail
+                categories={CATEGORIES}
+                value={cat}
+                onChange={setCat}
+                accent="#f74e7e"
+                tint="#fde4ec"
+            />
 
             {/* 정렬 */}
             <div className="m-sort-row">

@@ -6,6 +6,8 @@ import MobileBottomNav from './MobileBottomNav';
 import { CAT_STYLES } from './catStyles';
 import { REGIONS, SORTS, REPORT_STAGES as STAGES, DISTRICT_CENTERS } from '../constants/mapConstants';
 import { RegionSheet, SortSheet } from './MFilterSheets';
+import CategoryRail from './filters/CategoryRail';
+import RegionDropdown from './filters/RegionDropdown';
 import { API_URL } from '../utils/api';
 import { useLazyImage } from '../hooks/useLazyImage';
 import { thumbUrl, matchDistrict, nearestDistrict } from '../utils/format';
@@ -159,24 +161,18 @@ export default function MReportList({ onNavigate }) {
             </header>
 
             <div className="m-rlist-region-row">
-                <button className="m-region-btn" onClick={openRegion}>
-                    <span>{region}</span>
-                    <span className="m-region-arrow">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                    </span>
-                </button>
+                <RegionDropdown value={region} onClick={openRegion} accent="#542aa3" />
             </div>
 
             <div className="m-rlist-scroll" onScroll={handleScroll}>
-                <div className="m-cat-chips m-rlist-cats">
-                    {CATEGORIES.map((c) => (
-                        <button
-                            key={c}
-                            className={`m-cat-chip ${cat === c ? 'on' : ''}`}
-                            onClick={() => setCat(c)}
-                        >{c}</button>
-                    ))}
-                </div>
+                <CategoryRail
+                    className="m-rlist-cats"
+                    categories={CATEGORIES}
+                    value={cat}
+                    onChange={setCat}
+                    accent="#542aa3"
+                    tint="#efe9f7"
+                />
 
                 <div className="m-sort-row">
                     <button className="m-sort-btn" onClick={openSort}>

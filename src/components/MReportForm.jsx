@@ -8,9 +8,10 @@ import './MProposalList.css';
 import './MReportForm.css';
 
 // Figma 0:12713 (제보하기01 최신) — 카테고리 4개
-const CATS = ['주거', '환경', '교통', '안전'];
-const POSITIONS = ['위치', '도로', '인도', '공원', '주차장'];
-const ISSUES = ['문제사항', '훼손', '오염', '불편', '위험'];
+// PC(PCReportForm) 기준으로 통일 — 카테고리 8 / 시설물 7 / 문제 6
+const CATS = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
+const POSITIONS = ['공공/시설물', '도로/보도', '하수/배수', '가로등/조명', '벤치/쉼터', '쓰레기/청소', '안내판/표지판'];
+const ISSUES = ['파손', '오염', '고장', '미흡', '안전위험', '기타'];
 const DRAFT_KEY = 'mReportForm:draft';
 
 

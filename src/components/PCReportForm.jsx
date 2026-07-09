@@ -109,7 +109,7 @@ function LocationPickerModal({ onCancel, onConfirm }) {
                         </svg>
                     </button>
                 </div>
-                <button className="pc-loc-picker-confirm" onClick={handleConfirm}>
+                <button className="pc-loc-picker-confirm pc-loc-picker-confirm--report" onClick={handleConfirm}>
                     위치 선택완료
                 </button>
             </div>

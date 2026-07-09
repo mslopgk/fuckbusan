@@ -1,5 +1,10 @@
 /* PCReportForm — report-specific overrides (purple theme per Figma node 215:1329) */
 
+/* ── 위치 선택완료 버튼: 제보 테마 보라 (Figma 302:11980) ── */
+.pc-loc-picker-confirm--report { background: #542aa3; }
+.pc-loc-picker-confirm--report:disabled { background: #c3b3e0; }
+.pc-loc-picker-confirm--report:not(:disabled):hover { background: #47238c; }
+
 /* ── Form label: Figma shows 18px semibold (not shared 14px bold) ── */
 .pc-form-page .pc-form-label {
     font-size: 18px;
@@ -111,10 +116,12 @@
     display: block;
 }
 
+/* Figma: check overlay sits on the scroll's upper-right (matches mobile MReportDone) —
+   left=40px, top=26px within the 132×132 icon box, not hanging off the corner */
 .pcrf-done-check {
     position: absolute;
-    bottom: -8px;
-    right: -8px;
+    left: 40px;
+    top: 26px;
     width: 54px;
     height: 54px;
     object-fit: contain;

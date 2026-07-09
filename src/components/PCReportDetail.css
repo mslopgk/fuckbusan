@@ -27,9 +27,43 @@
     background: #ffc9c9;
 }
 
+/* Status badge — Figma 302:13665 (radius 10px, taller than tags) */
 .pcrd-tag-status {
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 10px;
+}
+
+/* 개선예정: 연핑크 배경 / 핑크 텍스트 */
+.pcrd-tag-status.is-planned {
     background: #fef0f5;
     color: #E6235A;
+}
+
+/* 개선중: 보라 채움 / 흰 텍스트 (Figma 302:13688) */
+.pcrd-tag-status.is-progress {
+    background: #542aa3;
+    color: #fff;
+}
+
+/* 개선완료: 상태 배지 대신 우상단 "개선결과보기" 회색 버튼 (Figma 302:12330 — #aaa/white) */
+.pcrd-status-result {
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 10px;
+    background: #aaa;
+    color: #fff;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.56px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.pcrd-status-result:hover {
+    background: #999;
 }
 
 /* ── Vote circle — purple (#542aa3) ─────────────────────────── */
@@ -146,24 +180,66 @@
     background: rgba(84, 42, 163, 0.28);
 }
 
-/* ── In-page 개선완료 result banner — purple theme for report ── */
-/* The shared .pcd-result-banner uses pink — override for report */
-.pcrd-improvement-banner {
+/* ── 개선완료 담당자 코멘트 프리뷰 카드 — Figma 302:12293 (Group 382) ── */
+.pcrd-manager-card {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
     background: rgba(84, 42, 163, 0.2);
-    border: none;
     border-radius: 15px;
-    padding: 20px 24px;
+    padding: 18px 24px 20px;
     margin-bottom: 32px;
-    position: relative;
 }
 
-.pcrd-improvement-banner .pcd-result-banner-badge {
-    background: #542aa3;
+.pcrd-manager-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
 }
 
-.pcrd-improvement-banner .pcd-result-banner-btn {
-    background: #542aa3;
+.pcrd-manager-arrow {
+    width: 18px;
+    height: 23px;
+    flex-shrink: 0;
+    margin-top: 4px;
 }
-.pcrd-improvement-banner .pcd-result-banner-btn:hover {
-    background: #3e1f8a;
+
+.pcrd-manager-text {
+    min-width: 0;
+}
+
+.pcrd-manager-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #542aa3;
+    letter-spacing: -0.72px;
+    margin: 0 0 4px;
+}
+
+.pcrd-manager-date {
+    font-size: 16px;
+    color: #1e1e1e;
+    line-height: 1.35;
+    margin: 0 0 8px;
+}
+
+.pcrd-manager-comment {
+    font-size: 16px;
+    color: #242424;
+    line-height: 1.4;
+    letter-spacing: -0.64px;
+    margin: 0;
+    word-break: keep-all;
+}
+
+.pcrd-manager-thumb {
+    width: 95px;
+    height: 95px;
+    border-radius: 15px;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
 }

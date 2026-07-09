@@ -4,7 +4,8 @@ import './PCHeader.css';
 import { useUnreadNotifications } from '../hooks/useUnreadNotifications';
 
 const SURVEY_VIEWS = ['pcSurveyList', 'pcSurveyDetail', 'pcSurveyConsent', 'pcSurveyJoin', 'pcSurveyResults', 'pcSurveyDone'];
-const REPORT_SUGGEST_VIEWS = ['pcProposeMap', 'pcProposeForm', 'pcProposeDone', 'pcProposeDetail', 'pcReportMap', 'pcReportForm', 'pcReportDone', 'pcReportDetail', 'pcMyReportList', 'pcMyReportEdit', 'myProposals', 'myReportList'];
+const REPORT_VIEWS = ['pcReportMap', 'pcReportForm', 'pcReportDone', 'pcReportDetail', 'pcMyReportList', 'pcMyReportEdit', 'myReportList'];
+const PROPOSE_VIEWS = ['pcProposeMap', 'pcProposeForm', 'pcProposeDone', 'pcProposeDetail', 'myProposals'];
 const DIAGNOSIS_VIEWS = ['diagnosis', 'diagnosisStep1', 'bigCategory', 'checkList', 'satisfaction', 'review', 'checkDone', 'diagnosisResult', 'diagnosisList', 'diagnosisEdit', 'expertDiagnosisResult', 'pcDiagnosisMap', 'pcDiagnosisForm', 'pcDiagnosisDetail', 'pcDiagnosisDone'];
 const AI_CITIZEN_VIEWS = ['pcAICitizen'];
 const PUBLIC_DATA_VIEWS = ['pcPublicData'];
@@ -13,7 +14,6 @@ const PCHeader = ({ currentView, onNavigate }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState('');
     const [showLogoutToast, setShowLogoutToast] = useState(false);
-    const [chooserOpen, setChooserOpen] = useState(false);
     const [comingSoonToast, setComingSoonToast] = useState(false);
     const { count: unreadCount } = useUnreadNotifications();
 
@@ -50,7 +50,8 @@ const PCHeader = ({ currentView, onNavigate }) => {
 
     const isActive = (key) => {
         if (key === 'survey') return SURVEY_VIEWS.includes(currentView);
-        if (key === 'reportSuggest') return REPORT_SUGGEST_VIEWS.includes(currentView);
+        if (key === 'report') return REPORT_VIEWS.includes(currentView);
+        if (key === 'propose') return PROPOSE_VIEWS.includes(currentView);
         if (key === 'diagnosis') return DIAGNOSIS_VIEWS.includes(currentView);
         if (key === 'aiCitizen') return AI_CITIZEN_VIEWS.includes(currentView);
         if (key === 'publicData') return PUBLIC_DATA_VIEWS.includes(currentView);
@@ -65,19 +66,25 @@ const PCHeader = ({ currentView, onNavigate }) => {
                     <img src="/WDC.svg" alt="WDC 로고" style={{ height: '32px', display: 'block' }} />
                 </div>
 
-                {/* 네비게이션 (Figma 5-nav) */}
+                {/* 네비게이션 (Figma: 제보/제안 분리) */}
                 <nav className="pc-nav">
+                    <button
+                        className={`pc-nav-link ${isActive('report') ? 'active' : ''}`}
+                        onClick={() => handleNav('pcReportMap')}
+                    >
+                        제보
+                    </button>
+                    <button
+                        className={`pc-nav-link ${isActive('propose') ? 'active' : ''}`}
+                        onClick={() => handleNav('pcProposeMap')}
+                    >
+                        제안
+                    </button>
                     <button
                         className={`pc-nav-link ${isActive('survey') ? 'active' : ''}`}
                         onClick={() => handleNav('pcSurveyList')}
                     >
                         설문
-                    </button>
-                    <button
-                        className={`pc-nav-link ${isActive('reportSuggest') ? 'active' : ''}`}
-                        onClick={() => setChooserOpen(true)}
-                    >
-                        제보·제안
                     </button>
                     <button
                         className={`pc-nav-link ${isActive('diagnosis') ? 'active' : ''}`}
@@ -153,57 +160,6 @@ const PCHeader = ({ currentView, onNavigate }) => {
                 </div>
             )}
 
-            {/* 제보·제안 분기 chooser 모달 */}
-            {chooserOpen && (
-                <div
-                    className="pc-rp-chooser-backdrop"
-                    onClick={() => setChooserOpen(false)}
-                >
-                    <div
-                        className="pc-rp-chooser-modal"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <h3 className="pc-rp-chooser-title">어떤 활동을 하시겠어요?</h3>
-                        <p className="pc-rp-chooser-sub">제보 또는 제안 중 하나를 선택해주세요</p>
-                        <div className="pc-rp-chooser-row">
-                            <button
-                                type="button"
-                                className="pc-rp-chooser-card report"
-                                onClick={() => { setChooserOpen(false); onNavigate('pcReportMap'); }}
-                            >
-                                <span className="pc-rp-chooser-icon" aria-hidden="true">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M3 11l15-7v16l-15-7z"/>
-                                        <path d="M3 11v3a3 3 0 0 0 3 3l1 4h2l-1-4"/>
-                                    </svg>
-                                </span>
-                                <strong>제보하기</strong>
-                                <span className="pc-rp-chooser-desc">우리 동네 불편사항을<br/>알려주세요</span>
-                            </button>
-                            <button
-                                type="button"
-                                className="pc-rp-chooser-card propose"
-                                onClick={() => { setChooserOpen(false); onNavigate('pcProposeMap'); }}
-                            >
-                                <span className="pc-rp-chooser-icon" aria-hidden="true">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <line x1="6" y1="20" x2="6" y2="13"/>
-                                        <line x1="12" y1="20" x2="12" y2="6"/>
-                                        <line x1="18" y1="20" x2="18" y2="10"/>
-                                    </svg>
-                                </span>
-                                <strong>제안하기</strong>
-                                <span className="pc-rp-chooser-desc">새로운 정책 아이디어를<br/>제안해주세요</span>
-                            </button>
-                        </div>
-                        <button
-                            type="button"
-                            className="pc-rp-chooser-cancel"
-                            onClick={() => setChooserOpen(false)}
-                        >취소</button>
-                    </div>
-                </div>
-            )}
         </header>
     );
 };

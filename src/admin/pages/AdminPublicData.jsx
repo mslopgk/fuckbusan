@@ -1,12 +1,21 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import './AdminCitizen.css';
 import './AdminExtra.css';
 
-/* 공공데이터 관리 — PublicThemeStat(테마별 지표) 목록 관리 + 작성/수정/삭제.
+/* 공공데이터 관리 — PublicThemeStat(테마별 지표) 목록 관리 + 작성/수정/삭제 + CSV 일괄 업로드.
    현재 comingSoon 이던 메뉴 신규 구축. */
 
-const API = `${(import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')}/api/public-data/admin/stats`;
+const API_BASE = `${(import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')}/api/public-data/admin`;
+const API = `${API_BASE}/stats`;
+const UPLOAD_API = `${API_BASE}/upload-csv`;
+
+// 샘플 CSV 템플릿 (헤더 + 예시 2행). 프론트에서 Blob 다운로드용.
+const SAMPLE_CSV = [
+    'theme,region,metric,value_text,year,note,source,sort_order',
+    '안전,부산진구,방범용 CCTV,"1,130대",2025,,data.busan.go.kr,1',
+    '교통,부산진구,교통사고 발생,"1,373건",2024,부산 16개 구·군 중 최다,TAAS,2',
+].join('\r\n');
 const THEMES = ['전체', '안전', '교통', '주거', '환경', '문화·여가', '산업·일자리', '교육', '보건·복지'];
 const SIZE = 10;
 const auth = () => {
@@ -24,6 +33,9 @@ export default function AdminPublicData({ onNavigate }) {
     const [loading, setLoading] = useState(false);
     const [themeOpen, setThemeOpen] = useState(false);
     const [editing, setEditing] = useState(null);   // row or EMPTY(new)
+    const [uploading, setUploading] = useState(false);
+    const [uploadResult, setUploadResult] = useState(null); // {created,updated,skipped,errors} | {error}
+    const fileRef = useRef(null);
 
     const fetchList = useCallback(async () => {
         setLoading(true);
@@ -53,6 +65,46 @@ export default function AdminPublicData({ onNavigate }) {
         return r.ok;
     };
 
+    const downloadTemplate = () => {
+        // 엑셀 한글 호환을 위해 BOM 부착 후 UTF-8 CSV 다운로드
+        const blob = new Blob(['﻿' + SAMPLE_CSV], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'public_data_template.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    };
+
+    const onFilePicked = async (e) => {
+        const f = e.target.files?.[0];
+        e.target.value = ''; // 같은 파일 재선택 허용
+        if (!f) return;
+        setUploading(true);
+        setUploadResult(null);
+        try {
+            const t = localStorage.getItem('access_token');
+            const fd = new FormData();
+            fd.append('file', f);
+            const r = await fetch(UPLOAD_API, {
+                method: 'POST',
+                headers: t ? { Authorization: `Bearer ${t}` } : {}, // Content-Type 은 브라우저가 boundary 포함해 자동 설정
+                body: fd,
+            });
+            const d = await r.json().catch(() => ({}));
+            if (r.ok) {
+                setUploadResult(d);
+                setPage(1);
+                fetchList();
+            } else {
+                setUploadResult({ error: d.detail || `업로드 실패 (${r.status})` });
+            }
+        } catch (err) {
+            setUploadResult({ error: String(err?.message || err) });
+        } finally {
+            setUploading(false);
+        }
+    };
+
     return (
         <AdminLayout onNavigate={onNavigate} currentView="adminPublicData">
             <div className="acd">
@@ -75,9 +127,36 @@ export default function AdminPublicData({ onNavigate }) {
                         {themeOpen && <ul className="acd-catdrop-menu">{THEMES.map((c) => <li key={c}><button className={c === theme ? 'sel' : ''} onClick={() => { setTheme(c); setThemeOpen(false); setPage(1); }}>{c}</button></li>)}</ul>}
                     </div>
                     <div className="acd-toolbar-right">
+                        <input ref={fileRef} type="file" accept=".csv,text/csv" hidden onChange={onFilePicked} />
+                        <button className="acd-btn-ghost" onClick={downloadTemplate}>샘플 CSV</button>
+                        <button className="acd-btn-ghost" disabled={uploading} onClick={() => fileRef.current?.click()}>
+                            {uploading ? '업로드 중…' : 'CSV 업로드'}
+                        </button>
                         <button className="acd-btn-convert" onClick={() => setEditing({ ...EMPTY })}>+ 데이터 작성</button>
                     </div>
                 </div>
+
+                <p className="acd-csv-hint">
+                    CSV 컬럼: <code>theme, region, metric, value_text, year, note, source, sort_order</code>
+                    {' '}— (theme·metric 필수, 인코딩 UTF-8/엑셀). 동일 <b>테마+지역+지표명</b> 은 값이 갱신됩니다.
+                </p>
+
+                {uploadResult && (
+                    <div className={`acd-csv-result${uploadResult.error ? ' err' : ''}`}>
+                        {uploadResult.error ? (
+                            <span>업로드 실패: {uploadResult.error}</span>
+                        ) : (
+                            <span>
+                                업로드 완료 — 신규 <b>{uploadResult.created}</b> · 갱신 <b>{uploadResult.updated}</b>
+                                {uploadResult.skipped ? <> · 스킵 <b>{uploadResult.skipped}</b></> : null}
+                                {uploadResult.errors?.length ? (
+                                    <em> (오류행: {uploadResult.errors.map((x) => x.row).join(', ')})</em>
+                                ) : null}
+                            </span>
+                        )}
+                        <button className="acd-csv-result-x" onClick={() => setUploadResult(null)}>×</button>
+                    </div>
+                )}
 
                 <div className="acd-table-wrap">
                     <table className="acd-table">

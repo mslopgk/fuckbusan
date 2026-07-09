@@ -51,6 +51,7 @@ export default function MReportDetail({ onNavigate, report }) {
     const [comments, setComments] = useState([]);
     const [replyTo, setReplyTo] = useState(null);
     const commentInputRef = useRef(null);
+    const submittingRef = useRef(false); // 동시 제출 레이스 방지 (댓글 중복 등록 버그)
     const [myId, setMyId] = useState(null);
 
     // 소유자 판정용 현재 사용자 user_id
@@ -127,6 +128,8 @@ export default function MReportDetail({ onNavigate, report }) {
             alert('로그인이 필요합니다.');
             return;
         }
+        if (submittingRef.current) return;
+        submittingRef.current = true;
         setCommenting(true);
         try {
             const res = await fetch(`${API_URL}/api/reports/${report.id}/comments`, {
@@ -149,6 +152,7 @@ export default function MReportDetail({ onNavigate, report }) {
         } catch (e) {
             console.error(e);
         } finally {
+            submittingRef.current = false;
             setCommenting(false);
         }
     };

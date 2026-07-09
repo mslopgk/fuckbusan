@@ -27,6 +27,7 @@ export default function PCReportDetail({ onNavigate, report }) {
     const [comments, setComments] = useState([]);
     const [comment, setComment] = useState('');
     const [commenting, setCommenting] = useState(false);
+    const submittingRef = useRef(false); // 동시 제출 레이스 방지 (댓글 중복 등록)
     const [liked, setLiked] = useState(() => getLikedSet().has(reportId));
     const [likeCount, setLikeCount] = useState(0);
     const [showResult, setShowResult] = useState(false);
@@ -150,6 +151,8 @@ export default function PCReportDetail({ onNavigate, report }) {
         if (!comment.trim() || !reportId || commenting) return;
         const token = localStorage.getItem('access_token');
         if (!token) { alert('로그인이 필요합니다.'); return; }
+        if (submittingRef.current) return;
+        submittingRef.current = true;
         setCommenting(true);
         try {
             const res = await fetch(`${API_URL}/api/reports/${reportId}/comments`, {
@@ -169,6 +172,7 @@ export default function PCReportDetail({ onNavigate, report }) {
             console.error('comment failed', e);
             alert('서버 연결 오류가 발생했습니다.');
         } finally {
+            submittingRef.current = false;
             setCommenting(false);
         }
     };
@@ -190,9 +194,25 @@ export default function PCReportDetail({ onNavigate, report }) {
                             <span className="pcrd-tag pcrd-tag-subcat">{detail.sub_category}</span>
                         )}
                         {detail?.status && (
-                            <span className="pcrd-tag pcrd-tag-status" style={{ marginLeft: 'auto' }}>
-                                {detail.status}
-                            </span>
+                            isImproved ? (
+                                /* Figma 302:12293 — 개선완료: 상태 배지 대신 우상단 "개선결과보기" 버튼 */
+                                <button
+                                    type="button"
+                                    className="pcrd-status-result"
+                                    style={{ marginLeft: 'auto' }}
+                                    onClick={() => setShowResult(true)}
+                                >
+                                    개선결과보기
+                                </button>
+                            ) : (
+                                /* Figma 302:13665 — 개선중=보라 채움, 개선예정=연핑크 */
+                                <span
+                                    className={`pcrd-tag pcrd-tag-status ${detail.status === '개선중' || detail.status === '검토중' ? 'is-progress' : 'is-planned'}`}
+                                    style={{ marginLeft: 'auto' }}
+                                >
+                                    {detail.status}
+                                </span>
+                            )
                         )}
                     </div>
 
@@ -260,20 +280,24 @@ export default function PCReportDetail({ onNavigate, report }) {
                         )}
                     </div>
 
-                    {/* 개선완료 결과 배너 — Figma: purple rgba(84,42,163,0.2) bg, no border */}
+                    {/* 개선완료 담당자 코멘트 프리뷰 카드 — Figma 302:12293 (Group 382) */}
                     {isImproved && (
-                        <div className="pcd-result-banner pcrd-improvement-banner">
-                            <div className="pcd-result-banner-head">
-                                <span className="pcd-result-banner-badge">개선완료</span>
-                                <p className="pcd-result-banner-title">답변이 등록되었습니다</p>
+                        <div className="pcrd-manager-card">
+                            <div className="pcrd-manager-main">
+                                <img src="/figma-assets/report_manager_reply.svg" alt="" className="pcrd-manager-arrow" aria-hidden="true" />
+                                <div className="pcrd-manager-text">
+                                    <p className="pcrd-manager-title">담당자 코멘트</p>
+                                    {(resultDetails?.date || resultDetails?.result_date) && (
+                                        <p className="pcrd-manager-date">{String(resultDetails.date || resultDetails.result_date).slice(0, 10).replace(/-/g, '.')}</p>
+                                    )}
+                                    <p className="pcrd-manager-comment">
+                                        {resultText || '담당자 코멘트가 아직 등록되지 않았습니다.'}
+                                    </p>
+                                </div>
                             </div>
                             {resultImage && (
-                                <img src={resultImage} alt="개선 결과 사진" className="pcd-result-banner-img" onError={(e) => { e.target.style.display = 'none'; }} />
+                                <img src={resultImage} alt="개선 결과 사진" className="pcrd-manager-thumb" onError={(e) => { e.target.style.display = 'none'; }} />
                             )}
-                            {resultText && <p className="pcd-result-banner-text">{resultText}</p>}
-                            <button type="button" className="pcd-result-banner-btn" onClick={() => setShowResult(true)}>
-                                결과보기
-                            </button>
                         </div>
                     )}
 
@@ -357,7 +381,7 @@ export default function PCReportDetail({ onNavigate, report }) {
                             {resultDetails?.content && (
                                 <div className="pcrd-result-comment-block">
                                     <p className="pcrd-result-comment-label">담당자 코멘트</p>
-                                    {resultDetails?.date && <p className="pcrd-result-comment-date">{String(resultDetails.date).slice(0, 10).replace(/-/g, '.')}</p>}
+                                    {(resultDetails?.date || resultDetails?.result_date) && <p className="pcrd-result-comment-date">{String(resultDetails.date || resultDetails.result_date).slice(0, 10).replace(/-/g, '.')}</p>}
                                     <p className="pcrd-result-comment-text">{resultDetails.content}</p>
                                 </div>
                             )}

@@ -6,7 +6,6 @@ import PCLogin from './PCLogin';
 import PhoneVerify from './PhoneVerify';
 
 const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,20}$/;
-const maskId = (id) => (id.length <= 3 ? id + '****' : id.slice(0, 3) + '****');
 
 
 const Login = ({ onBack, onSignup }) => {
@@ -29,18 +28,20 @@ const Login = ({ onBack, onSignup }) => {
     const [findError, setFindError] = useState(null);
     const [findLoading, setFindLoading] = useState(false);
     const [pwResetStep, setPwResetStep] = useState(false);        // 비번찾기 재설정 단계
+    const [pwResetDone, setPwResetDone] = useState(false);        // 비번 재설정 완료 화면
+    const [findMethod, setFindMethod] = useState(null);          // 본인인증 방법 선택 (Figma 302:3015)
     const [newPw, setNewPw] = useState('');
     const [newPwConfirm, setNewPwConfirm] = useState('');
 
     const resetFind = () => {
         setFindMode(null); setFindResult(null); setFindError(null);
         setFindInputs({ name: '', id: '', phone: '' });
-        setFindVerified(false); setPwResetStep(false); setNewPw(''); setNewPwConfirm('');
+        setFindVerified(false); setPwResetStep(false); setPwResetDone(false); setFindMethod(null); setNewPw(''); setNewPwConfirm('');
     };
     const switchFind = (m) => {
         setFindMode(m); setFindResult(null); setFindError(null);
         setFindInputs({ name: '', id: '', phone: '' });
-        setFindVerified(false); setPwResetStep(false); setNewPw(''); setNewPwConfirm('');
+        setFindVerified(false); setPwResetStep(false); setPwResetDone(false); setFindMethod(null); setNewPw(''); setNewPwConfirm('');
     };
 
     const isFormValid = inputs.id.length > 0 && inputs.password.length > 0;
@@ -143,8 +144,8 @@ const Login = ({ onBack, onSignup }) => {
                 body: JSON.stringify({ ID: findInputs.id, phone_num: findInputs.phone, new_pw: newPw })
             });
             if (!res.ok) throw new Error((await res.json()).detail || '비밀번호 재설정에 실패했습니다.');
-            alert('비밀번호가 재설정되었습니다. 새 비밀번호로 로그인해주세요.');
-            resetFind();
+            setPwResetStep(false);
+            setPwResetDone(true);
         } catch (e) {
             setFindError(e.message);
         } finally {
@@ -163,6 +164,25 @@ const Login = ({ onBack, onSignup }) => {
                 </button>
             </div>
         );
+
+        // 비밀번호 재설정 완료 화면
+        if (findMode === 'pw' && pwResetDone) {
+            return (
+                <div className="login-container">
+                    {backHeader}
+                    <div className="login-title-section">
+                        <div className="login-title">비밀번호 재설정</div>
+                    </div>
+                    <div style={{ margin: '24px', padding: '28px 16px', background: '#f0fffe', border: '1px solid #16B5B0', borderRadius: '12px', textAlign: 'center', lineHeight: 1.6 }}>
+                        <div style={{ fontSize: '17px', fontWeight: 'bold', color: '#16B5B0' }}>비밀번호 변경이 완료되었습니다!</div>
+                        <div style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>로그인 후 서비스를 이용하실 수 있습니다.</div>
+                    </div>
+                    <div className="login-btn-container">
+                        <button className="login-submit-btn active" onClick={resetFind}>로그인 페이지로 이동</button>
+                    </div>
+                </div>
+            );
+        }
 
         // 비밀번호 재설정 단계
         if (findMode === 'pw' && pwResetStep) {
@@ -205,11 +225,33 @@ const Login = ({ onBack, onSignup }) => {
                     </div>
                     <div style={{ margin: '24px', padding: '24px 16px', background: '#f0fffe', border: '1px solid #16B5B0', borderRadius: '12px', textAlign: 'center', lineHeight: 1.6 }}>
                         <div style={{ fontSize: '15px', color: '#444' }}>가입하신 회원님의 아이디는</div>
-                        <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#16B5B0', margin: '6px 0' }}>{maskId(findResult.value)}</div>
+                        <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#16B5B0', margin: '6px 0' }}>{findResult.value}</div>
                         <div style={{ fontSize: '15px', color: '#444' }}>입니다</div>
                     </div>
                     <div className="login-btn-container">
                         <button className="login-submit-btn active" onClick={resetFind}>로그인하기</button>
+                    </div>
+                </div>
+            );
+        }
+
+        // 본인인증 방법 선택 (Figma 302:3015)
+        if (!findMethod) {
+            return (
+                <div className="login-container">
+                    {backHeader}
+                    <div className="login-title-section">
+                        <div className="login-title">{findMode === 'id' ? '아이디 찾기' : '비밀번호 찾기'}</div>
+                        <div className="login-subtitle-desc">회원정보 확인을 위한 본인인증 단계입니다. 인증방법을 선택해주세요.</div>
+                    </div>
+                    <div style={{ margin: '24px', padding: '28px 16px', background: '#f8f8f8', borderRadius: '12px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '14px', color: '#666', lineHeight: 1.6, marginBottom: '18px' }}>
+                            휴대폰 인증 또는 아이핀 인증을 이용해서<br />{findMode === 'id' ? '아이디를 찾을' : '비밀번호를 재설정할'} 수 있습니다.
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button className="login-submit-btn active" style={{ flex: 1 }} onClick={() => setFindMethod('phone')}>휴대폰 인증하기</button>
+                            <button className="login-submit-btn" style={{ flex: 1, background: '#5fcfcd', color: '#fff' }} onClick={() => alert('아이핀 인증은 준비 중입니다. 휴대폰 인증을 이용해주세요.')}>아이핀 인증</button>
+                        </div>
                     </div>
                 </div>
             );

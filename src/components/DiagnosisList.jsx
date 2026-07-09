@@ -1,14 +1,34 @@
 import React, { useState } from 'react';
 import './DiagnosisList.css';
 import DiagnosisCard from './DiagnosisCard';
+import CategoryRail from './filters/CategoryRail';
+import RegionDropdown from './filters/RegionDropdown';
 
 import { fetchWithLogout, API_URL } from '../utils/api';
+
+const REGIONS = [
+    '부산 전 지역', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구',
+    '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'
+];
+
+const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '산업·일자리', '교육', '문화·여가', '보건·복지'];
+
+// 진단대상 세그먼트 (Figma 302:5940 "진단대상" 전체/시민/전문가)
+const TARGETS = [
+    { label: '전체', val: 'all' },
+    { label: '시민', val: 'general' },
+    { label: '전문가', val: 'expert' },
+];
 
 const DiagnosisList = ({ onBack, onNavigate }) => {
     // 'all' | 'general' | 'expert'
     const [activeTab, setActiveTab] = useState('all');
     const [sortOrder, setSortOrder] = useState('latest');
     const [isSortOpen, setIsSortOpen] = useState(false);
+
+    // 세로 레일 필터 (Figma 302:5940)
+    const [selectedRegion, setSelectedRegion] = useState('부산 전 지역');
+    const [selectedCategory, setSelectedCategory] = useState('전체');
 
     const [listData, setListData] = useState([]);
 
@@ -66,10 +86,15 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
         ));
     };
 
-    const filteredData = listData.filter(item => {
-        if (activeTab === 'all') return true;
-        return item.type === activeTab;
-    });
+    const filteredData = listData
+        .filter(item => activeTab === 'all' || item.type === activeTab)
+        .filter(item => selectedRegion === '부산 전 지역' || (item.address || '').includes(selectedRegion))
+        // 진단 데이터에 생활정보 카테고리 필드가 아직 없어, 필드가 있을 때만 필터 (없으면 표시 유지)
+        .filter(item => selectedCategory === '전체' || (item.category ? item.category === selectedCategory : true))
+        .sort((a, b) => {
+            if (sortOrder === 'latest') return b.date.localeCompare(a.date);
+            return parseFloat(b.score || 0) - parseFloat(a.score || 0);
+        });
 
     return (
         <div className="diagnosis-list-container">
@@ -85,30 +110,51 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
 
             <div className="page-title">진단 목록</div>
 
-            {/* Controls Row */}
-            <div className="controls-row">
-                <div className="tabs">
-                    <button
-                        className={`tab-btn all ${activeTab === 'all' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('all')}
-                    >
-                        전체
-                    </button>
-                    <button
-                        className={`tab-btn ${activeTab === 'general' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('general')}
-                    >
-                        일반인
-                    </button>
-                    <button
-                        className={`tab-btn ${activeTab === 'expert' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('expert')}
-                    >
-                        전문가
-                    </button>
-                </div>
+            <div className="dl-body">
+                {/* 좌측 세로 레일 (Figma 302:5940): 구역별 + 진단대상 + 생활정보 */}
+                <aside className="dl-rail">
+                    <RegionDropdown
+                        title="구역별"
+                        placeholder="설정해주세요"
+                        value={selectedRegion}
+                        unsetValue="부산 전 지역"
+                        options={REGIONS}
+                        onSelect={setSelectedRegion}
+                        accent="#23bdbb"
+                    />
 
-                <div className="sort-wrapper" style={{ position: 'relative' }}>
+                    <div className="dl-segment-card">
+                        <div className="dl-segment-title">진단대상</div>
+                        <div className="dl-segment">
+                            {TARGETS.map(t => (
+                                <button
+                                    key={t.val}
+                                    type="button"
+                                    className={`dl-segment-btn${activeTab === t.val ? ' on' : ''}`}
+                                    onClick={() => setActiveTab(t.val)}
+                                >
+                                    {t.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <CategoryRail
+                        variant="rail"
+                        title="생활정보"
+                        categories={CATEGORIES}
+                        value={selectedCategory}
+                        onChange={setSelectedCategory}
+                        accent="#23bdbb"
+                        tint="#e6f7f7"
+                    />
+                </aside>
+
+                {/* 우측 콘텐츠: 정렬 + 목록 */}
+                <div className="dl-content">
+                    {/* Controls Row */}
+                    <div className="controls-row">
+                        <div className="sort-wrapper" style={{ position: 'relative' }}>
                     <div
                         className="sort-dropdown-wrapper"
                         onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); }}
@@ -151,34 +197,21 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
                             </div>
                         </div>
                     )}
-                </div>
-            </div>
+                        </div>
+                    </div>
 
-            {/* List */}
-            <div className="list-content">
-                {listData
-                    .filter(item => activeTab === 'all' || item.type === activeTab)
-                    .sort((a, b) => {
-                        if (sortOrder === 'latest') {
-                            // Date desc (String comparison for YY.MM.DD works)
-                            return b.date.localeCompare(a.date);
-                        } else {
-                            // Score desc
-                            // Expert items might not have score, treat as -1 to put at bottom or top?
-                            // Let's assume user wants to see high scores.
-                            const scoreA = parseFloat(a.score || 0);
-                            const scoreB = parseFloat(b.score || 0);
-                            return scoreB - scoreA;
-                        }
-                    })
-                    .map(item => (
-                        <DiagnosisCard
-                            key={item.id}
-                            item={item}
-                            onBookmark={toggleBookmark}
-                            onClick={() => {}}
-                        />
-                    ))}
+                    {/* List */}
+                    <div className="list-content">
+                        {filteredData.map(item => (
+                            <DiagnosisCard
+                                key={item.id}
+                                item={item}
+                                onBookmark={toggleBookmark}
+                                onClick={() => {}}
+                            />
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -35,13 +35,15 @@
     margin-left: -8px;
 }
 
-/* ─── PC 제목 ─── */
+/* ─── PC 제목 (그리드 좌측 정렬, 956px 중앙 컨테이너) ─── */
 .ms-page-title {
     font-size: 30px;
     font-weight: 700;
     color: #000;
-    margin: 32px 0 24px;
-    padding: 0 40px;
+    margin: 32px auto 24px;
+    padding: 0;
+    max-width: 956px;
+    width: 100%;
     font-family: 'GmarketSans', sans-serif;
     letter-spacing: -0.02em;
 }
@@ -100,13 +102,14 @@
     padding: 0 20px;
 }
 
-/* PC: 2열 그리드 */
+/* PC: 3열 그리드 (Figma 302:14214 — 306px 카드 × 3, col gap 19 / row gap 20) */
 .ms-list--pc {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    padding: 0 40px;
-    max-width: 1040px;
+    grid-template-columns: repeat(3, 306px);
+    justify-content: center;
+    gap: 20px 19px;
+    padding: 0;
+    max-width: 956px;
     margin: 0 auto;
 }
 
@@ -251,6 +254,9 @@
     }
 
     .ms-card {
-        padding: 22px 20px 24px;
+        min-height: 130px;
+        padding: 20px 15px;
+        justify-content: flex-start;
+        gap: 10px;
     }
 }

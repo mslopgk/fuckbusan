@@ -139,11 +139,8 @@
     gap: 24px;
 }
 
-.surveychat-pc-left {
-    flex: 1;
-}
-
 .surveychat-pc-desc {
+    flex: 1;
     font-size: 20px;
     font-weight: 400;
     color: #333;
@@ -151,6 +148,57 @@
     letter-spacing: -0.8px;
     margin: 0;
 }
+
+.surveychat-pc-desc.mobile {
+    flex: none;
+    text-align: center;
+    font-size: 16px;
+    letter-spacing: -0.64px;
+    margin: 0 0 22px;
+}
+
+/* 인트로 래퍼 */
+.surveychat-introwrap.mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 설문 시작하기 버튼 (Figma 302:2710 — teal, radius 30) */
+.surveychat-startwrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 48px;
+}
+
+.surveychat-introwrap.mobile .surveychat-startwrap {
+    margin-top: 28px;
+    width: 100%;
+}
+
+.surveychat-startbtn {
+    min-width: 273px;
+    height: 52px;
+    padding: 0 28px;
+    border: none;
+    border-radius: 30px;
+    background: var(--teal);
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    font-family: inherit;
+    letter-spacing: -0.8px;
+    cursor: pointer;
+    transition: filter .15s;
+}
+
+.surveychat-introwrap.mobile .surveychat-startbtn {
+    width: 100%;
+    min-width: 0;
+    font-size: 18px;
+}
+
+.surveychat-startbtn:hover { filter: brightness(0.96); }
 
 /* ===== 말풍선 ===== */
 .surveychat-row { display: flex; margin-bottom: 14px; }
@@ -207,30 +255,26 @@
 }
 
 .surveychat-opt {
-    padding: 9px 17px;
-    height: 40px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: #fff;
+    padding: 0 18px;
+    height: 36px;
+    border: 1px solid var(--teal);
+    border-radius: 30px;
+    background: #f4f4f4;
     font-size: 16px;
+    font-weight: 600;
     font-family: inherit;
-    color: #111;
+    color: var(--teal);
     letter-spacing: -0.64px;
     cursor: pointer;
-    transition: border-color .15s, color .15s, background .15s;
+    transition: color .15s, background .15s;
     display: inline-flex;
     align-items: center;
 }
 
-.surveychat-opt:hover {
-    border-color: var(--teal);
-    color: var(--teal);
-}
-
+.surveychat-opt:hover,
 .surveychat-opt.selected {
     background: var(--teal);
     color: #fff;
-    border-color: var(--teal);
 }
 
 /* ===== 척도(리커트) 위젯 ===== */
@@ -246,7 +290,7 @@
     right: calc(6px + 11px);
     top: 8px;
     height: 3px;
-    background: #e6e6e6;
+    background: #ddd;
     border-radius: 99999px;
 }
 
@@ -320,15 +364,21 @@
     white-space: pre-line;
 }
 
-/* ===== 입력바 ===== */
+/* ===== 입력바 (Figma 302:2962 — 필드 pill + 전송 버튼) ===== */
 .surveychat-inputbar {
     flex: 0 0 auto;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 16px;
-    border-top: 1px solid var(--line);
-    background: #fff;
+}
+
+/* 입력 필드(첨부 + 텍스트) */
+.surveychat-field {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .surveychat-attach {
@@ -360,55 +410,77 @@
     outline: none;
     font-size: 16px;
     font-family: inherit;
-    color: #777;
+    color: #242424;
     background: none;
     letter-spacing: -0.64px;
 }
 
 .surveychat-textfield::placeholder { color: #777; }
 
+/* 전송 버튼 (기본: 아이콘 / 모바일=원형, PC=전송 라벨 pill) */
+.surveychat-send {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.surveychat-send-label { display: none; }
+.surveychat-send img { width: 20px; height: 19px; display: block; }
+.surveychat-send:disabled { cursor: default; }
+
 /* ===== 모바일 입력바 = 라운드 pill (Figma 269:19972: #f4f4f4, radius 30px, 좌우 여백) ===== */
 .surveychat:not(.pc) .surveychat-inputbar {
     margin: 4px 11px 10px;
     padding: 5px 14px;
     background: #f4f4f4;
-    border: none;
-    border-top: none;
     border-radius: 30px;
     box-sizing: border-box;
 }
 
-.surveychat-send {
-    flex: 0 0 auto;
+.surveychat:not(.pc) .surveychat-send {
     width: 40px;
     height: 40px;
-    border: none;
     border-radius: 50%;
-    background: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
     transition: background .15s;
 }
+.surveychat:not(.pc) .surveychat-send.active { background: var(--teal); }
+.surveychat:not(.pc) .surveychat-send.active img { filter: brightness(0) invert(1); }
 
-.surveychat-send img { width: 20px; height: 19px; display: block; }
-.surveychat-send.active { background: var(--teal); }
-.surveychat-send.active img { filter: brightness(0) invert(1); }
-
-/* ===== PC ===== */
+/* ===== PC (Figma 302:2694 / 302:2936) ===== */
 .surveychat.pc {
     height: auto;
     min-height: calc(100vh - 64px);
     padding: 40px 20px 60px;
     background: #f4f4f4;
+    display: flex;
     align-items: center;
 }
 
-.surveychat.pc .surveychat-card {
-    flex: 0 1 auto;
+/* 카드 + 왼쪽 상단 페르소나 아바타 래퍼 */
+.surveychat-cardwrap {
+    position: relative;
     width: 100%;
-    max-width: 960px;
+    max-width: 563px;
+}
+
+.surveychat-avatar {
+    position: absolute;
+    top: 0;
+    left: -26px;
+    width: 52px;
+    height: 52px;
+    z-index: 2;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08));
+}
+.surveychat-avatar img { display: block; width: 52px; height: 52px; }
+
+.surveychat.pc .surveychat-card {
+    width: 100%;
     background: #fff;
     border-radius: 30px;
     border: 1px solid var(--line);
@@ -419,25 +491,45 @@
 }
 
 .surveychat.pc .surveychat-scroll {
-    padding: 44px 80px 28px;
+    padding: 40px 40px 24px;
     overflow-y: auto;
     flex: 1;
     min-height: 0;
 }
 
-.surveychat.pc .surveychat-bubble { max-width: 66%; }
+.surveychat.pc .surveychat-bubble { max-width: 78%; }
 
-/* PC inputbar: f4f4f4 rounded field inside card bottom */
+/* PC 입력바: 필드 pill + 전송 pill */
 .surveychat.pc .surveychat-inputbar {
-    margin: 0 40px 24px;
-    padding: 10px 16px;
-    background: #f4f4f4;
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    border-top: 1px solid var(--line);
+    margin: 0 24px 24px;
+    gap: 12px;
+    background: none;
+    border: none;
 }
 
-.surveychat.pc .surveychat-textfield {
-    height: 48px;
-    color: #777;
+.surveychat.pc .surveychat-field {
+    padding: 0 16px;
+    height: 49px;
+    background: #f4f4f4;
+    border-radius: 30px;
 }
+
+.surveychat.pc .surveychat-send {
+    height: 49px;
+    padding: 0 20px;
+    background: #f4f4f4;
+    border-radius: 30px;
+    color: #777;
+    transition: background .15s, color .15s;
+}
+
+.surveychat.pc .surveychat-send-label {
+    display: inline;
+    font-size: 16px;
+    font-family: inherit;
+    letter-spacing: -0.64px;
+}
+
+.surveychat.pc .surveychat-send img { filter: grayscale(1) opacity(.55); }
+.surveychat.pc .surveychat-send.active { background: var(--teal); color: #fff; }
+.surveychat.pc .surveychat-send.active img { filter: brightness(0) invert(1); }

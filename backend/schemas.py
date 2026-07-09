@@ -84,6 +84,7 @@ class UserCreate(BaseModel):
     PW: str
     name: str
     nickname: Optional[str] = None
+    email: Optional[str] = None
     phone_num: str
     created_at: Optional[datetime] = None
     district_code: str
@@ -96,6 +97,7 @@ class UserOut(BaseModel):
     ID: str
     name: str
     nickname: Optional[str] = None
+    email: Optional[str] = None
     phone_num: Optional[str] = None
     created_at: Optional[datetime] = None
     district_code: Optional[str] = None
@@ -111,8 +113,12 @@ class UserLogin(BaseModel):
 
 class UserUpdate(BaseModel):
     name: Optional[str] = None
+    nickname: Optional[str] = None
+    email: Optional[str] = None
     phone_num: Optional[str] = None
     birth_date: Optional[str] = None
+    address: Optional[str] = None
+    detailed_address: Optional[str] = None
     new_pw: Optional[str] = None # For password reset
 
 class Token(BaseModel):
@@ -208,6 +214,7 @@ class NewProposalRead(NewProposalCreate):
     user_id: Optional[int] = None
     views_count: int
     likes_count: int
+    status: Optional[str] = "접수중"
     comments_count: Optional[int] = 0
     nickname: Optional[str] = None
     is_mine: Optional[bool] = False

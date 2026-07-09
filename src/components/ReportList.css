@@ -19,6 +19,28 @@
     margin: 0 0 16px 0;
 }
 
+/* ===== 2단 레이아웃: 좌측 세로 레일 + 우측 콘텐츠 (Figma 302:5940) ===== */
+.rl-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.rl-rail {
+    flex: 0 0 160px;
+    width: 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 80px;
+}
+
+.rl-content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
 /* Search */
 .rl-search-row {
     margin-bottom: 16px;
@@ -514,6 +536,14 @@
 @media (max-width: 900px) {
     .rl-cards-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+    .rl-body {
+        flex-direction: column;
+    }
+    .rl-rail {
+        flex: 0 0 auto;
+        width: 100%;
+        position: static;
     }
 }
 

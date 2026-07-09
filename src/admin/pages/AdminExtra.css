@@ -44,3 +44,20 @@
 .acx-pub.on { background: #e3f6f5; color: #199; }
 .acx-pin { margin-left: 6px; font-size: 13px; }
 .acx-thumb { width: 56px; height: 34px; object-fit: cover; border-radius: 6px; }
+
+/* 공공데이터 CSV 업로드 */
+.acd-btn-ghost { height: 44px; padding: 0 16px; border: 1px solid #d5d5d5; border-radius: 10px;
+    background: #fff; color: #444; font-weight: 600; font-size: 14px; cursor: pointer; }
+.acd-btn-ghost:hover { background: #f5f5f5; border-color: #23bdbb; color: #199; }
+.acd-btn-ghost:disabled { opacity: .5; cursor: default; }
+.acd-csv-hint { margin: 10px 2px 0; font-size: 12.5px; color: #888; line-height: 1.6; }
+.acd-csv-hint code { background: #f2f2f2; padding: 2px 6px; border-radius: 5px; font-size: 12px; color: #555; }
+.acd-csv-result { position: relative; display: flex; align-items: center; gap: 8px; margin: 12px 0 0;
+    padding: 12px 40px 12px 16px; border-radius: 10px; font-size: 13.5px;
+    background: #e3f6f5; color: #167; border: 1px solid #b7e6e4; }
+.acd-csv-result.err { background: #fdecec; color: #b23; border-color: #f3c4c4; }
+.acd-csv-result b { font-weight: 800; }
+.acd-csv-result em { font-style: normal; color: #a55; margin-left: 4px; }
+.acd-csv-result-x { position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    border: none; background: none; font-size: 20px; line-height: 1; cursor: pointer; color: inherit; opacity: .6; }
+.acd-csv-result-x:hover { opacity: 1; }

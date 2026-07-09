@@ -30,6 +30,88 @@
     margin-top: 10px;
 }
 
+/* ===== 2단 레이아웃: 좌측 세로 레일 + 우측 콘텐츠 (Figma 302:5940) ===== */
+.dl-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.dl-rail {
+    flex: 0 0 160px;
+    width: 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 80px;
+}
+
+.dl-content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.dl-content .controls-row {
+    justify-content: flex-end;
+}
+
+/* 진단대상 세그먼트 카드 */
+.dl-segment-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.dl-segment-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #737373;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+.dl-segment {
+    display: flex;
+    gap: 6px;
+}
+
+.dl-segment-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 8px 4px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    color: #888;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+}
+
+.dl-segment-btn.on {
+    border-color: #23bdbb;
+    color: #23bdbb;
+    background: #e6f7f7;
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+    .dl-body {
+        flex-direction: column;
+    }
+    .dl-rail {
+        flex: 0 0 auto;
+        width: 100%;
+        position: static;
+    }
+}
+
 /* Controls */
 .controls-row {
     display: flex;

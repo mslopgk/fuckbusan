@@ -65,7 +65,7 @@
 
 .pc-myrep-region-row {
     display: grid;
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: repeat(8, 1fr); /* row1=8개 균등 (row2는 inline repeat(9)) */
     gap: 6px;
     margin-bottom: 6px;
 }
@@ -100,6 +100,7 @@
 .pc-myrep-cat-row {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center; /* 카테고리 칩 중앙정렬 */
     gap: 8px;
     max-width: 960px;
     margin: 0 auto 20px;

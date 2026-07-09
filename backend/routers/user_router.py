@@ -147,7 +147,7 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     hashed_password = get_password_hash(user.PW)
     new_user = User(
         ID=user.ID, PW=hashed_password, name=user.name,
-        nickname=user.nickname, phone_num=user.phone_num,
+        nickname=user.nickname, email=user.email, phone_num=user.phone_num,
         district_code=user.district_code, birth_date=user.birth_date,
         address=user.address, detailed_address=user.detailed_address
     )
@@ -177,6 +177,7 @@ def get_me(current_user: User = Depends(get_current_user)):
         "ID": current_user.ID,
         "name": current_user.name,
         "nickname": current_user.nickname,
+        "email": current_user.email or "",
         "phone_num": current_user.phone_num,
         "district_code": current_user.district_code,
         "birth_date": current_user.birth_date or "",
@@ -195,10 +196,18 @@ def update_my_profile(
 ):
     if user_update.name is not None:
         current_user.name = user_update.name
+    if user_update.nickname is not None:
+        current_user.nickname = user_update.nickname
+    if user_update.email is not None:
+        current_user.email = user_update.email
     if user_update.phone_num is not None:
         current_user.phone_num = user_update.phone_num
     if user_update.birth_date is not None:
         current_user.birth_date = user_update.birth_date
+    if user_update.address is not None:
+        current_user.address = user_update.address
+    if user_update.detailed_address is not None:
+        current_user.detailed_address = user_update.detailed_address
     db.commit()
     db.refresh(current_user)
     return current_user

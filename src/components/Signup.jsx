@@ -140,21 +140,7 @@ const SignupForm = ({ onBack, onNavigate, consent }) => {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
             });
             if (!res.ok) throw new Error((await res.json()).detail || '회원가입에 실패했습니다.');
-            try {
-                const lr = await fetch(`${API_URL}/users/login`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ID: payload.ID, PW: payload.PW }),
-                });
-                if (lr.ok) {
-                    const ld = await lr.json();
-                    if (ld.access_token) localStorage.setItem('access_token', ld.access_token);
-                    if (ld.user_name) {
-                        localStorage.setItem('user_name', ld.user_name);
-                        localStorage.setItem('username', ld.user_name); // username 키도 동기화
-                    }
-                    if (ld.district_code) localStorage.setItem('district_code', ld.district_code);
-                }
-            } catch { /* 자동 로그인 실패해도 진행 */ }
+            // 자동 로그인하지 않음 — 완료 화면에서 로그인 페이지로 이동해 직접 로그인
             if (onNavigate) onNavigate('signupDone'); else if (onBack) onBack();
         } catch (e) { setError(e.message); } finally { setLoading(false); }
     };

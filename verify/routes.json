@@ -74,6 +74,17 @@
       }
     },
     {
+      "id": "diagnosisList",
+      "view": "diagnosisList",
+      "path": "/",
+      "auth": false,
+      "waitFor": "body",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
       "id": "myPage",
       "view": "myPage",
       "path": "/",

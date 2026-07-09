@@ -53,6 +53,10 @@ async def lifespan(app: FastAPI):
                 "ALTER TABLE survey_chat_interviews ADD COLUMN user_id INT NULL",
                 # 제보 댓글 답글(대댓글) 지원
                 "ALTER TABLE report_comments ADD COLUMN parent_id INT NULL",
+                # 마이페이지 이메일 저장
+                "ALTER TABLE users ADD COLUMN email VARCHAR(255) NULL",
+                # 제안 진행상태(접수중 등) 배지
+                "ALTER TABLE new_proposals ADD COLUMN status VARCHAR(50) DEFAULT '접수중'",
             ]:
                 try:
                     conn.execute(text(stmt))
