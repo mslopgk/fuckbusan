@@ -24,6 +24,21 @@ const auth = () => {
 };
 const fmtDate = (s) => (s ? String(s).replace('T', ' ').slice(0, 16) : '—');
 
+// [2-3] 엑셀 업로드용 양식 다운로드 — 답변서 정의 컬럼(테마/지역/지표명/표시값/연도/비고/출처/정렬순서)
+const EXCEL_COLUMNS = ['테마', '지역', '지표명', '표시값', '연도', '비고', '출처', '정렬순서'];
+const downloadTemplate = async () => {
+    const XLSX = await import('xlsx');
+    const sample = [
+        ['안전', '수영구', '방범용 CCTV', '1234', '2026', '구 전수', 'data.busan.go.kr', '1'],
+        ['교통', '부산전체', '교통사고 발생건수', '5678', '2026', '', 'TAAS', '2'],
+    ];
+    const ws = XLSX.utils.aoa_to_sheet([EXCEL_COLUMNS, ...sample]);
+    ws['!cols'] = EXCEL_COLUMNS.map((c) => ({ wch: Math.max(10, c.length + 6) }));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '공공데이터');
+    XLSX.writeFile(wb, '공공데이터_업로드양식.xlsx');
+};
+
 export default function AdminPublicData({ onNavigate }) {
     const [mode, setMode] = useState('list'); // list | form
     const [editRow, setEditRow] = useState(null);
@@ -236,12 +251,14 @@ function PublicDataForm({ row, onCancel, onDone, onDelete }) {
                     <div className="acp-file">
                         <input ref={fileRef} type="file" accept=".csv,.xlsx,.xls" hidden onChange={(e) => setFile(e.target.files?.[0] || null)} />
                         <button type="button" className="acd-btn-ghost" onClick={() => fileRef.current?.click()}>엑셀 업로드</button>
+                        <button type="button" className="acd-btn-ghost" onClick={downloadTemplate}>엑셀 양식 다운로드</button>
                         {file && (
                             <span className="acp-file-chip">{file.name}
                                 <button type="button" onClick={() => { setFile(null); if (fileRef.current) fileRef.current.value = ''; }}>×</button>
                             </span>
                         )}
                     </div>
+                    <p className="acp-file-hint">양식 컬럼: {EXCEL_COLUMNS.join(' / ')}</p>
                 </div>
             </div>
 
