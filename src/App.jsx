@@ -138,15 +138,21 @@ function App() {
     // For adminLogin and adminSignup, force redirect to 'home' on refresh as per user request
     const [view, setView] = useState(() => {
         const path = window.location.pathname;
+        const ADMIN_VIEWS = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveySettings', 'surveyStatusDetail', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos', 'surveyChatAnalytics'];
         if (path === '/admin' || path === '/admin/') {
             const token = localStorage.getItem('access_token');
-            if (token && isAdminToken(token)) return 'adminMain';
+            if (token && isAdminToken(token)) {
+                // 새로고침 시 보고 있던 어드민 페이지 유지 (없거나 로그인뷰면 메인)
+                const storedAdmin = sessionStorage.getItem('current_view');
+                if (storedAdmin && storedAdmin !== 'adminLoginNew' && ADMIN_VIEWS.includes(storedAdmin)) return storedAdmin;
+                return 'adminMain';
+            }
             return 'adminLoginNew';
         }
 
         const stored = sessionStorage.getItem('current_view');
         // If path is not /admin, but stored view is an admin view, reset to home
-        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveySettings', 'surveyStatusDetail', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos', 'surveyChatAnalytics'].includes(stored);
+        const isAdminView = ADMIN_VIEWS.includes(stored);
         if (path === '/' && isAdminView) return 'home';
 
         if (['adminLogin', 'adminSignup', 'adminDashboard'].includes(stored)) return 'home';

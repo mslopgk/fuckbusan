@@ -27,15 +27,34 @@ def _persona_system(p):
     lines.append(
         "\n[규칙] 캐릭터 유지·1인칭·2~4문장 간결. 동네 현안 질문엔 네 생활 경험으로 솔직히. "
         "데이터에 없는 사실 단정 금지. **답변 본문에는 되묻는 질문 목록이나 '추천 질문'을 넣지 말 것** "
-        "(후속 질문 칩은 화면이 따로 보여준다). 자연스러운 대화 답변만 한다."
+        "(후속 질문 칩은 화면이 따로 보여준다). 자연스러운 대화 답변만 한다. "
+        "**반드시 순수 한국어만 사용할 것 — 한자·중국어·영어 단어를 섞지 말 것.**"
     )
     return "\n".join(lines)
 
 
+import re as _re
+
+# MiniMax가 간헐적으로 섞는 중국어(한자) 정리 — 자주 나오는 어휘는 한국어 치환, 나머지는 제거
+_HANJA_RE = _re.compile(r"[一-鿿]+")
+_HANJA_FIX = {
+    "老年": "어르신", "老人": "어르신", "一堆": "잔뜩", "间距": "간격", "距离": "거리",
+    "问题": "문제", "非常": "아주", "很多": "많이", "环境": "환경", "安全": "안전",
+}
+
+
+def _strip_hanja(text):
+    for k, v in _HANJA_FIX.items():
+        text = text.replace(k, v)
+    # 남은 한자는 제거 후 이중 공백 정리
+    text = _HANJA_RE.sub("", text)
+    return _re.sub(r"[ \t]{2,}", " ", text)
+
+
 def _clean_reply(text):
-    """모델이 끝에 붙이는 질문 목록/구분선 제거 (본문만 남김)."""
+    """모델이 끝에 붙이는 질문 목록/구분선 제거 (본문만 남김) + 한자 혼입 정리."""
     import re
-    text = (text or "").strip()
+    text = _strip_hanja((text or "").strip())
     # '---' 이후 꼬리(추천질문 등) 절단
     text = re.split(r"\n-{3,}\s*\n", text)[0].strip()
     lines = text.split("\n")

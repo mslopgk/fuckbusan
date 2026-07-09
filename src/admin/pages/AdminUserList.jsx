@@ -136,22 +136,27 @@ export default function AdminUserList({ onNavigate }) {
                                     </span>
                                 </td>
                                 <td>
-                                    <div className="action-btns-new">
-                                        <span
-                                            className="btn-action-text"
-                                            onClick={() => onNavigate && onNavigate('memberEdit', item)}
-                                        >
-                                            수정
-                                        </span>
-                                        {' | '}
-                                        <span
-                                            className="btn-action-text"
-                                            style={{ color: '#e53e3e' }}
-                                            onClick={() => handleDelete(item)}
-                                        >
-                                            삭제
-                                        </span>
-                                    </div>
+                                    {/* 슈퍼관리자는 DB 미저장 가상 계정 — 수정/삭제 불가 */}
+                                    {item.isSuperAdmin ? (
+                                        <span style={{ color: '#bbb', fontSize: 13 }}>—</span>
+                                    ) : (
+                                        <div className="action-btns-new">
+                                            <span
+                                                className="btn-action-text"
+                                                onClick={() => onNavigate && onNavigate('memberEdit', item)}
+                                            >
+                                                수정
+                                            </span>
+                                            {' | '}
+                                            <span
+                                                className="btn-action-text"
+                                                style={{ color: '#e53e3e' }}
+                                                onClick={() => handleDelete(item)}
+                                            >
+                                                삭제
+                                            </span>
+                                        </div>
+                                    )}
                                 </td>
                             </tr>
                         ))}

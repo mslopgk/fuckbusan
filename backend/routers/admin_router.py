@@ -290,7 +290,21 @@ def admin_list_users(
     if district:
         qry = qry.filter(models.User.district_code == district)
     rows = qry.order_by(desc(models.User.created_at)).limit(min(limit, 500)).all()
-    return [_user_to_dict(u) for u in rows]
+    out = [_user_to_dict(u) for u in rows]
+
+    # 슈퍼관리자(admin/admin1234)는 DB 미저장 가상 계정 → 목록 맨 앞에 합성해 노출 (왕관 표시용)
+    _sa = {
+        "user_id": 999999, "ID": "admin", "name": "관리자", "nickname": "관리자",
+        "email": None, "phone_num": None, "birth_date": None,
+        "address": None, "detailed_address": None, "district_code": "admin",
+        "created_at": None, "is_approved": True, "last_login": None, "prev_login": None,
+        "is_super_admin": True,
+    }
+    _match_q = (not q) or any((q or "").lower() in s for s in ("admin", "관리자"))
+    _match_d = (not district) or district == "admin"
+    if _match_q and _match_d:
+        out.insert(0, _sa)
+    return out
 
 
 def _iso(dt):
