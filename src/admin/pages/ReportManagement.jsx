@@ -4,8 +4,6 @@ import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import { API_BASE } from '../api';
 
-const STATUS_OPTIONS = ['전체', '개선예정', '개선중', '개선완료'];
-
 const SearchIcon = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
         <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -91,37 +89,12 @@ export default function ReportManagement({ onNavigate }) {
 
             <div className="search-box-new-col" style={{ marginTop: 20 }}>
                 <div className="search-row">
-                    <div className="search-label-new">상태</div>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        {STATUS_OPTIONS.map((s) => (
-                            <button
-                                key={s}
-                                type="button"
-                                className={`btn-search-new${statusFilter === s ? '' : ' outline'}`}
-                                style={{
-                                    height: 36,
-                                    padding: '0 16px',
-                                    background: statusFilter === s ? '#E6235A' : '#f1f3f5',
-                                    color: statusFilter === s ? '#fff' : '#333',
-                                    border: 'none',
-                                    borderRadius: 6,
-                                    cursor: 'pointer',
-                                    fontSize: 13,
-                                }}
-                                onClick={() => { setStatusFilter(s); setPage(1); }}
-                            >
-                                {s}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-                <div className="search-row">
-                    <div className="search-label-new">작성자</div>
+                    <div className="search-label-new">회원검색</div>
                     <div className="search-input-wrapper-new" style={{ maxWidth: 'none' }}>
                         <input
                             type="text"
                             className="search-input-new"
-                            placeholder="이름/닉네임을 입력해 주세요"
+                            placeholder="이름을 입력해 주세요"
                             value={authorSearch}
                             onChange={(e) => setAuthorSearch(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -152,45 +125,29 @@ export default function ReportManagement({ onNavigate }) {
                 <table className="admin-table-new">
                     <thead>
                         <tr>
-                            <th style={{ width: '35%', textAlign: 'left' }}>제보 제목</th>
-                            <th>작성자</th>
+                            <th style={{ width: '55%', textAlign: 'left' }}>제보 제목</th>
+                            <th>작성자 ID</th>
                             <th>유형</th>
-                            <th>지역</th>
-                            <th>상태</th>
-                            <th>작성일</th>
+                            <th>위치</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan={6} style={{ padding: '40px 0', color: '#999' }}>불러오는 중…</td></tr>
+                            <tr><td colSpan={4} style={{ padding: '40px 0', color: '#999' }}>불러오는 중…</td></tr>
                         ) : reports.length === 0 ? (
-                            <tr><td colSpan={6} style={{ padding: '40px 0', color: '#999' }}>등록된 제보가 없습니다.</td></tr>
-                        ) : reports.map((r) => {
-                            const createdAt = r.created_at ? String(r.created_at).slice(0, 10) : r.date || '-';
-                            const statusColor = {
-                                '개선예정': '#f59e0b',
-                                '개선중': '#3b82f6',
-                                '개선완료': '#10b981',
-                            }[r.status] || '#999';
-                            return (
-                                <tr
-                                    key={r.id}
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => onNavigate && onNavigate('adminReportDetail', r)}
-                                >
-                                    <td style={{ textAlign: 'left' }}>{r.title}</td>
-                                    <td>{r.author || '-'}</td>
-                                    <td>{r.category || '-'}</td>
-                                    <td>{r.region || '-'}</td>
-                                    <td>
-                                        <span style={{ color: statusColor, fontWeight: 600, fontSize: 12 }}>
-                                            {r.status || '-'}
-                                        </span>
-                                    </td>
-                                    <td>{createdAt}</td>
-                                </tr>
-                            );
-                        })}
+                            <tr><td colSpan={4} style={{ padding: '40px 0', color: '#999' }}>등록된 제보가 없습니다.</td></tr>
+                        ) : reports.map((r) => (
+                            <tr
+                                key={r.id}
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => onNavigate && onNavigate('adminReportDetail', r)}
+                            >
+                                <td style={{ textAlign: 'left' }}>{r.title}</td>
+                                <td>{r.author || '-'}</td>
+                                <td>{r.category || '-'}</td>
+                                <td>{r.region || '-'}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
 

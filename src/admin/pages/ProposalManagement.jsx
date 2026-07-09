@@ -74,21 +74,6 @@ export default function ProposalManagement({ onNavigate }) {
         fetchProposals(1);
     };
 
-    const handleDelete = async (id) => {
-        if (!confirm('정말 삭제하시겠습니까?')) return;
-        try {
-            const token = localStorage.getItem('access_token');
-            const res = await fetch(`${API_BASE}/admin/proposals/${id}`, {
-                method: 'DELETE',
-                headers: token ? { Authorization: `Bearer ${token}` } : {},
-            });
-            if (res.ok) fetchProposals(page);
-            else alert('삭제 실패');
-        } catch (e) {
-            alert('삭제 중 오류: ' + e.message);
-        }
-    };
-
     const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
     return (
@@ -100,12 +85,12 @@ export default function ProposalManagement({ onNavigate }) {
 
             <div className="search-box-new-col">
                 <div className="search-row">
-                    <div className="search-label-new">작성자</div>
+                    <div className="search-label-new">회원검색</div>
                     <div className="search-input-wrapper-new">
                         <input
                             type="text"
                             className="search-input-new"
-                            placeholder="닉네임을 입력해 주세요"
+                            placeholder="이름을 입력해 주세요"
                             value={authorSearch}
                             onChange={(e) => setAuthorSearch(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -134,59 +119,29 @@ export default function ProposalManagement({ onNavigate }) {
                 <table className="admin-table-new">
                     <thead>
                         <tr>
-                            <th style={{ width: '35%', textAlign: 'left' }}>제안 제목</th>
-                            <th>작성자</th>
+                            <th style={{ width: '55%', textAlign: 'left' }}>제안 제목</th>
+                            <th>작성자 ID</th>
                             <th>유형</th>
-                            <th>지역</th>
-                            <th>조회</th>
-                            <th>추천</th>
-                            <th>댓글</th>
-                            <th>작성일</th>
-                            <th>메뉴</th>
+                            <th>위치</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan={9} style={{ padding: '40px 0', color: '#999' }}>불러오는 중…</td></tr>
+                            <tr><td colSpan={4} style={{ padding: '40px 0', color: '#999' }}>불러오는 중…</td></tr>
                         ) : proposals.length === 0 ? (
-                            <tr><td colSpan={9} style={{ padding: '40px 0', color: '#999' }}>등록된 제안이 없습니다.</td></tr>
-                        ) : proposals.map((p) => {
-                            const createdAt = p.created_at ? String(p.created_at).slice(0, 10) : '-';
-                            return (
-                                <tr key={p.id}>
-                                    <td
-                                        style={{ textAlign: 'left', cursor: 'pointer' }}
-                                        onClick={() => onNavigate && onNavigate('adminProposalDetail', p)}
-                                    >
-                                        {p.title}
-                                    </td>
-                                    <td>{p.author || p.nickname || '-'}</td>
-                                    <td>{p.category || '-'}</td>
-                                    <td>{p.region || '-'}</td>
-                                    <td>{p.views ?? '-'}</td>
-                                    <td>{p.likes ?? '-'}</td>
-                                    <td>{p.comments_count ?? '-'}</td>
-                                    <td>{createdAt}</td>
-                                    <td>
-                                        <div className="action-btns-new">
-                                            <span
-                                                className="btn-action-text"
-                                                onClick={() => onNavigate && onNavigate('adminProposalDetail', p)}
-                                            >
-                                                상세
-                                            </span>
-                                            {' | '}
-                                            <span
-                                                className="btn-action-text"
-                                                onClick={() => handleDelete(p.id)}
-                                            >
-                                                삭제
-                                            </span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                            <tr><td colSpan={4} style={{ padding: '40px 0', color: '#999' }}>등록된 제안이 없습니다.</td></tr>
+                        ) : proposals.map((p) => (
+                            <tr
+                                key={p.id}
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => onNavigate && onNavigate('adminProposalDetail', p)}
+                            >
+                                <td style={{ textAlign: 'left' }}>{p.title}</td>
+                                <td>{p.author || p.nickname || '-'}</td>
+                                <td>{p.category || '-'}</td>
+                                <td>{p.region || '-'}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
 
