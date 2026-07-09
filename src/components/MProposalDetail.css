@@ -210,6 +210,7 @@
 .m-comment-input-row {
     display: flex;
     gap: 8px;
+    align-items: center; /* 원형 전송버튼이 입력창 높이(41px)만큼 세로로 늘어나 타원으로 깨지던 것 방지 */
     margin-bottom: 16px;
     /* Figma: 댓글 입력창이 left:10px / w:373px — content 패딩(20px)에서 10px 빼서 edge 맞춤 */
     margin-left: -10px;
@@ -232,6 +233,7 @@
 .m-comment-input:focus { border-color: #f74e7e; outline: none; }
 
 .m-comment-send {
+    flex: 0 0 38px; /* 좁은 화면에서 원형 버튼이 찌그러지지 않도록 고정 */
     width: 38px;
     height: 38px;
     border-radius: 50%;

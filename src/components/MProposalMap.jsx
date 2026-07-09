@@ -71,10 +71,11 @@ export default function MProposalMap({ onNavigate }) {
         if (cat && cat !== '전체') arr = arr.filter((p) => p.category === cat);
         if (search.trim()) {
             const q = search.trim().toLowerCase();
+            // 검색 대상: 제목/내용/작성자 + 주소(지역구)·항목(카테고리) — QA: 주소/항목 검색 무반응 수정
             arr = arr.filter((p) =>
-                (p.title && p.title.toLowerCase().includes(q)) ||
-                (p.content && p.content.toLowerCase().includes(q)) ||
-                (p.nickname && p.nickname.toLowerCase().includes(q))
+                [p.title, p.content, p.body, p.nickname, p.region, p.address,
+                 p.category, p.sub_category]
+                    .some((v) => v && String(v).toLowerCase().includes(q))
             );
         }
         return arr;

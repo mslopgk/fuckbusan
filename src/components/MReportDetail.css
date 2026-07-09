@@ -333,6 +333,9 @@
 
 /* Comment input: Figma 848:19789 — height 41px, radius 15px, border #dadada */
 .m-report-detail-page .m-comment-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     height: 41px;
     border: 1px solid #dadada;
     border-radius: 15px;
