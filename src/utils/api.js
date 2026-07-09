@@ -1,5 +1,16 @@
 export const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
+// 응답 본문을 안전하게 JSON 파싱. 빈 본문/비JSON/스트림 재사용 시 {}로 폴백.
+// (res.json()을 두 번 호출하면 "body stream already read", 빈 204/500 본문이면 "unexpected end of JSON input" 발생)
+export const safeJson = async (res) => {
+    try {
+        const text = await res.text();
+        return text ? JSON.parse(text) : {};
+    } catch {
+        return {};
+    }
+};
+
 export const authHeaders = (extra = {}) => {
     const token = localStorage.getItem('access_token');
     return token ? { Authorization: `Bearer ${token}`, ...extra } : { ...extra };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Signup.css';
 import './Login.css'; // 공통 input/button 스타일 재사용
 import './PCAuth.css';
-import { API_URL } from '../utils/api';
+import { API_URL, safeJson } from '../utils/api';
 import { formatPhone, PHONE_RE, isValidBirth } from '../utils/phoneAuth';
 import { TERMS_SERVICE, TERMS_PRIVACY } from './authTerms';
 import PCSignup from './PCSignup';
@@ -139,7 +139,8 @@ const SignupForm = ({ onBack, onNavigate, consent }) => {
             const res = await fetch(`${API_URL}/users/signup`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
             });
-            if (!res.ok) throw new Error((await res.json()).detail || '회원가입에 실패했습니다.');
+            const data = await safeJson(res);
+            if (!res.ok) throw new Error(data.detail || '회원가입에 실패했습니다.');
             // 자동 로그인하지 않음 — 완료 화면에서 로그인 페이지로 이동해 직접 로그인
             if (onNavigate) onNavigate('signupDone'); else if (onBack) onBack();
         } catch (e) { setError(e.message); } finally { setLoading(false); }

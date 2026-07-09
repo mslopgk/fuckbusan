@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './PCAuth.css';
-import { API_URL } from '../utils/api';
+import { API_URL, safeJson } from '../utils/api';
 import PhoneVerify from './PhoneVerify';
 
 /* Figma: TCuOzEqNhoLKjhF0reBDks 215:3447 (로그인/회원가입 섹션)
@@ -50,8 +50,8 @@ const LoginCard = ({ onBack, onSignup, setMode }) => {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ID: id, PW: pw }),
             });
-            if (!res.ok) throw new Error((await res.json()).detail || '로그인에 실패했습니다.');
-            const d = await res.json();
+            const d = await safeJson(res);
+            if (!res.ok) throw new Error(d.detail || '로그인에 실패했습니다.');
             localStorage.setItem('access_token', d.access_token);
             if (d.user_name) {
                 localStorage.setItem('user_name', d.user_name);
@@ -132,8 +132,9 @@ const FindIdFlow = ({ onClose }) => {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, phone_num: phone }),
             });
-            if (!res.ok) throw new Error((await res.json()).detail || '일치하는 회원 정보가 없습니다.');
-            setFoundId((await res.json()).ID);
+            const d = await safeJson(res);
+            if (!res.ok) throw new Error(d.detail || '일치하는 회원 정보가 없습니다.');
+            setFoundId(d.ID);
         } catch (e) { setError(e.message); } finally { setLoading(false); }
     };
 
@@ -207,7 +208,8 @@ const FindPwFlow = ({ onClose }) => {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ID: id, phone_num: phone }),
             });
-            if (!res.ok) throw new Error((await res.json()).detail || '일치하는 회원 정보가 없습니다.');
+            const d = await safeJson(res);
+            if (!res.ok) throw new Error(d.detail || '일치하는 회원 정보가 없습니다.');
             setStepReset(true);
         } catch (e) { setError(e.message); } finally { setLoading(false); }
     };
@@ -222,7 +224,8 @@ const FindPwFlow = ({ onClose }) => {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ID: id, phone_num: phone, new_pw: pw }),
             });
-            if (!res.ok) throw new Error((await res.json()).detail || '비밀번호 재설정에 실패했습니다.');
+            const d = await safeJson(res);
+            if (!res.ok) throw new Error(d.detail || '비밀번호 재설정에 실패했습니다.');
             setDone(true);
         } catch (e) { setError(e.message); } finally { setLoading(false); }
     };

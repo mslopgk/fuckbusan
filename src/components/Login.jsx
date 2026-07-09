@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Login.css';
 import './PCAuth.css';
-import { API_URL } from '../utils/api';
+import { API_URL, safeJson } from '../utils/api';
 import PCLogin from './PCLogin';
 import PhoneVerify from './PhoneVerify';
 
@@ -113,8 +113,9 @@ const Login = ({ onBack, onSignup }) => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: findInputs.name, phone_num: findInputs.phone })
                 });
-                if (!res.ok) throw new Error((await res.json()).detail || '일치하는 회원 정보가 없습니다.');
-                setFindResult({ type: 'id', value: (await res.json()).ID });
+                const data = await safeJson(res);
+                if (!res.ok) throw new Error(data.detail || '일치하는 회원 정보가 없습니다.');
+                setFindResult({ type: 'id', value: data.ID });
             } else {
                 // 본인확인(ID+휴대폰) → 비밀번호 재설정 단계로
                 const res = await fetch(`${API_URL}/users/verify-user`, {
@@ -122,7 +123,8 @@ const Login = ({ onBack, onSignup }) => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ID: findInputs.id, phone_num: findInputs.phone })
                 });
-                if (!res.ok) throw new Error((await res.json()).detail || '일치하는 회원 정보가 없습니다.');
+                const data = await safeJson(res);
+                if (!res.ok) throw new Error(data.detail || '일치하는 회원 정보가 없습니다.');
                 setPwResetStep(true);
             }
         } catch (e) {
@@ -143,7 +145,8 @@ const Login = ({ onBack, onSignup }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ID: findInputs.id, phone_num: findInputs.phone, new_pw: newPw })
             });
-            if (!res.ok) throw new Error((await res.json()).detail || '비밀번호 재설정에 실패했습니다.');
+            const data = await safeJson(res);
+            if (!res.ok) throw new Error(data.detail || '비밀번호 재설정에 실패했습니다.');
             setPwResetStep(false);
             setPwResetDone(true);
         } catch (e) {
