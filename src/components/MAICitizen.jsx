@@ -170,7 +170,7 @@ export default function MAICitizen({ onNavigate }) {
         : byCat;
 
     // [2-5] 안내문구: 가장 문제로 꼽힌 영역 = 카테고리 최빈값
-    const REP_VISIBLE = 6;
+    const REP_VISIBLE = 5;
     const LIFE_AREAS = ['안전', '교통', '주거', '산업·일자리', '교육', '환경', '문화·여가', '보건·복지'];
     const topArea = (() => {
         const tally = {};

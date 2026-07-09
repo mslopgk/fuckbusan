@@ -212,7 +212,7 @@ function FilterPanel({ region, setRegion, cat, setCat, onChat }) {
 /* ── 우측 페르소나 리스트 ── */
 // 8개 생활영역 — [2-5] 안내문구용
 const LIFE_AREAS = ['안전', '교통', '주거', '산업·일자리', '교육', '환경', '문화·여가', '보건·복지'];
-const REP_VISIBLE = 6; // [1-5] 초기 노출 인원 (더보기로 전체)
+const REP_VISIBLE = 5; // [1-5] 초기 노출 인원(대표 3~5명 권장, 더보기로 전체)
 
 function PersonaList({ region, citizens, avatars, sort, setSort, onSelect, selectedId }) {
     const [sortOpen, setSortOpen] = useState(false);
