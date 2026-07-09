@@ -87,6 +87,21 @@ export default function AdminCitizenPersonas({ onNavigate }) {
         } catch (e) { setGen({ err: String(e) }); }
     };
 
+    // 대표 가상시민 지정/해제 — importance 0=대표(최상위), 100=일반 (문의 [1-6])
+    const toggleRepresentative = async (p) => {
+        const makeRep = (p.importance ?? 100) !== 0;
+        const nextImp = makeRep ? 0 : 100;
+        setList((l) => l.map((x) => (x.id === p.id ? { ...x, importance: nextImp } : x)));
+        try {
+            await fetch(`${API}/personas/${p.id}`, {
+                method: 'PATCH', headers: auth(),
+                body: JSON.stringify({ importance: nextImp }),
+            });
+        } catch {
+            setList((l) => l.map((x) => (x.id === p.id ? { ...x, importance: p.importance } : x)));
+        }
+    };
+
     const removePersona = async (id, name) => {
         if (!window.confirm(`'${name}' 가상시민을 삭제할까요?`)) return;
         await fetch(`${API}/personas/${id}`, { method: 'DELETE', headers: auth() });
@@ -171,6 +186,14 @@ export default function AdminCitizenPersonas({ onNavigate }) {
                                     </div>
                                 </button>
                                 <div className="acp-item-actions">
+                                    <button
+                                        className={`acp-act rep${(p.importance ?? 100) === 0 ? ' on' : ''}`}
+                                        onClick={() => toggleRepresentative(p)}
+                                        aria-pressed={(p.importance ?? 100) === 0}
+                                        title="사용자 페이지 상단에 노출할 대표 가상시민으로 지정"
+                                    >
+                                        {(p.importance ?? 100) === 0 ? '★ 대표' : '☆ 대표지정'}
+                                    </button>
                                     <button className="acp-act edit" onClick={() => openEdit(p.id)}>✎ 편집</button>
                                     <button className="acp-act ghost" onClick={() => exportPersona(p.id, p.name)}>JSON 내보내기</button>
                                     <button className="acp-act del" onClick={() => removePersona(p.id, p.name)} aria-label="삭제">🗑</button>
