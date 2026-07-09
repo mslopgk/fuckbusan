@@ -1,5 +1,5 @@
 /* 모바일 홈 리뉴얼 (Figma 269:19829). accent teal #23bdbb */
-.hmob2 { background: #fff; min-height: 100vh; padding-bottom: 96px; }
+.hmob2 { background: #fff; min-height: 100vh; padding-bottom: 96px; overflow-x: hidden; }
 
 /* 상단 헤더 — 파란 배너 카드 안에 겹쳐 배치 (로고/벨) */
 .hmob2-header { display: flex; align-items: center; justify-content: space-between;
@@ -47,7 +47,7 @@
 .hmob2-total strong { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
 .hmob2-count-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .hmob2-count { display: flex; align-items: center; justify-content: space-between; border: 1px solid #d9d9d9;
-    border-radius: 14px; padding: 16px 18px; }
+    border-radius: 14px; padding: 16px 18px; box-sizing: border-box; min-width: 0; }
 .hmob2-count span { font-size: 14px; font-weight: 700; color: #111; }
 .hmob2-count b { font-size: 16px; font-weight: 800; color: #23bdbb; }
 
@@ -72,7 +72,8 @@
 /* 빠른 액션 2x2 */
 .hmob2-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
 .hmob2-act { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; text-align: left;
-    border: none; border-radius: 18px; padding: 18px; cursor: pointer; background: #f4f4f4; min-height: 130px; }
+    border: none; border-radius: 18px; padding: 18px; cursor: pointer; background: #f4f4f4; min-height: 130px;
+    box-sizing: border-box; min-width: 0; /* 좁은 화면(320px)에서 grid 트랙이 콘텐츠 폭에 밀려 넘치던 것 방지 */ }
 .hmob2-act.report { background: #f3edff; }
 .hmob2-act.propose { background: #ffecf1; }
 .hmob2-act span { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; color: #111; }
@@ -87,4 +88,4 @@
 .hmob2-news ul { list-style: none; margin: 0; padding: 0; }
 .hmob2-news li { display: flex; align-items: center; justify-content: space-between; gap: 10px;
     padding: 15px 0; border-bottom: 1px solid #f1f1f1; cursor: pointer; }
-.hmob2-news-text { font-size: 15px; color: #111; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hmob2-news-text { flex: 1; min-width: 0; font-size: 15px; color: #111; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
