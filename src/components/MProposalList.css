@@ -422,3 +422,6 @@
     font-family: inherit;
     margin-top: 8px;
 }
+
+/* 투표 완료 표시 (모바일 QA: 이미 투표한 항목 상시 표기) */
+.m-prop-voted { color: #f74e7e; font-weight: 600; }

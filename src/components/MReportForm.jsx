@@ -180,8 +180,7 @@ export default function MReportForm({ onNavigate }) {
     const handleSubmit = async () => {
         setSubmitting(true);
         const token = localStorage.getItem('access_token');
-        // '불편' 선택 시 접미사 "불편해요"와 중복되지 않도록 처리
-        const title = issue === '불편' ? `${position}에 불편해요` : `${position}에 ${issue} 불편해요`;
+        const title = `${position}에 ${issue} 불편해요`;
         const payload = {
             category: cat,
             sub_category: `${position} · ${issue}`,
@@ -298,11 +297,12 @@ export default function MReportForm({ onNavigate }) {
 
                     <div className="m-row-with-suffix">
                         <select className={`m-select${errors.issue ? ' error' : ''}`} value={issue} onChange={(e) => { setIssue(e.target.value); clearError('issue'); }} required>
-                            {ISSUES.map((p, i) => (
-                                <option key={p} value={i === 0 ? '' : p}>{p}</option>
+                            <option value="" disabled hidden>문제사항</option>
+                            {ISSUES.map((p) => (
+                                <option key={p} value={p}>{p}</option>
                             ))}
                         </select>
-                        <span className="m-row-suffix">{issue === '불편' ? '해요' : '불편해요'}</span>
+                        <span className="m-row-suffix">불편해요</span>
                     </div>
                     {errors.issue && <p className="m-form-error-msg">{errors.issue}</p>}
 

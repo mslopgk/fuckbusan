@@ -13,15 +13,15 @@ import { useLazyImage } from '../hooks/useLazyImage';
 import { thumbUrl, matchDistrict, nearestDistrict } from '../utils/format';
 import './MProposalList.css';
 
-function VoteIcon() {
-    // Figma 리스트/지도 카드 동의수 아이콘 — 체크 서클 (image 59, opacity 0.3)
+function VoteIcon({ voted }) {
+    // Figma 리스트/지도 카드 동의수 아이콘 — 체크 서클. 투표 완료 시 불투명 강조
     return (
         <img
             src="/figma-assets/icons/icon_vote_check.png"
             alt=""
             width="12"
             height="12"
-            style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 3, opacity: 0.3 }}
+            style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 3, opacity: voted ? 1 : 0.3 }}
         />
     );
 }
@@ -59,7 +59,7 @@ function ProposalListCard({ it, onNavigate }) {
                 <div className="m-report-author-stat-row">
                     <p className="m-prop-author">{author}</p>
                     <div className="m-prop-stats">
-                        <span><VoteIcon />{it.likes_count ?? 0}</span>
+                        <span className={it.has_voted ? 'm-prop-voted' : ''}><VoteIcon voted={it.has_voted} />{it.likes_count ?? 0}</span>
                         <span><CommentIcon />{it.comments_count ?? 0}</span>
                     </div>
                 </div>
