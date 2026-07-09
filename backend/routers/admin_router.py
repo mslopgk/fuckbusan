@@ -290,19 +290,131 @@ def admin_list_users(
     if district:
         qry = qry.filter(models.User.district_code == district)
     rows = qry.order_by(desc(models.User.created_at)).limit(min(limit, 500)).all()
-    return [
+    return [_user_to_dict(u) for u in rows]
+
+
+def _iso(dt):
+    return dt.isoformat() if dt else None
+
+
+def _user_to_dict(u: "models.User") -> dict:
+    """관리자 회원 목록/상세 공통 직렬화."""
+    return {
+        "user_id": u.user_id,
+        "ID": u.ID,
+        "name": u.name,
+        "nickname": u.nickname,
+        "email": u.email,
+        "phone_num": u.phone_num,
+        "birth_date": u.birth_date,
+        "address": u.address,
+        "detailed_address": u.detailed_address,
+        "district_code": u.district_code,
+        "created_at": _iso(u.created_at),
+        "is_approved": getattr(u, 'is_approved', True),
+        "last_login": _iso(getattr(u, 'last_login', None)),
+        "prev_login": _iso(getattr(u, 'prev_login', None)),
+        # 슈퍼관리자(로그인 ID == 'admin') 표시용
+        "is_super_admin": (u.ID == "admin"),
+    }
+
+
+@router.get("/users/{user_id}")
+def admin_get_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """단일 회원 상세 — 모든 필드 반환."""
+    _require_admin(current_user)
+    u = db.query(models.User).filter(models.User.user_id == user_id).first()
+    if not u:
+        raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+    return _user_to_dict(u)
+
+
+@router.get("/users/{user_id}/activity")
+def admin_get_user_activity(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """회원 참여현황 — 제안 / 제보 / 설문."""
+    _require_admin(current_user)
+    u = db.query(models.User).filter(models.User.user_id == user_id).first()
+    if not u:
+        raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+
+    # 제안 (제안제목 / 작성자ID / 유형(category) / 위치(region))
+    proposals = [
         {
-            "user_id": u.user_id,
-            "ID": u.ID,
-            "name": u.name,
-            "nickname": u.nickname,
-            "phone_num": u.phone_num,
-            "district_code": u.district_code,
-            "created_at": u.created_at.isoformat() if u.created_at else None,
-            "is_approved": getattr(u, 'is_approved', True),
+            "id": p.id,
+            "title": p.title,
+            "author_id": u.ID,
+            "category": p.category,
+            "region": p.region,
+            "created_at": _iso(p.created_at),
         }
-        for u in rows
+        for p in db.query(models.NewProposal)
+        .filter(models.NewProposal.user_id == user_id)
+        .order_by(desc(models.NewProposal.created_at))
+        .all()
     ]
+
+    # 제보 (제목 / 작성자ID / 유형(category) / 위치(region))
+    reports = [
+        {
+            "id": r.id,
+            "title": r.title,
+            "author_id": u.ID,
+            "category": r.category,
+            "region": r.region,
+            "created_at": _iso(r.created_at),
+        }
+        for r in db.query(models.Report)
+        .filter(models.Report.user_id == user_id)
+        .order_by(desc(models.Report.created_at))
+        .all()
+    ]
+
+    # 설문 (설문제목 / 작성자ID / 상태 / 답변수 / 수정일) — 사용자가 응답한 설문 기준
+    surveys = []
+    responses = (
+        db.query(models.SurveyResponse)
+        .filter(models.SurveyResponse.user_id == user_id)
+        .order_by(desc(models.SurveyResponse.submitted_at))
+        .all()
+    )
+    if responses:
+        survey_ids = list({resp.survey_id for resp in responses})
+        survey_map = {
+            s.id: s
+            for s in db.query(models.Survey).filter(models.Survey.id.in_(survey_ids)).all()
+        }
+        # 응답별 답변 수 집계
+        resp_ids = [resp.id for resp in responses]
+        answer_counts = {}
+        if resp_ids:
+            for rid, cnt in (
+                db.query(models.SurveyAnswer.response_id, func.count(models.SurveyAnswer.id))
+                .filter(models.SurveyAnswer.response_id.in_(resp_ids))
+                .group_by(models.SurveyAnswer.response_id)
+                .all()
+            ):
+                answer_counts[rid] = cnt
+        for resp in responses:
+            s = survey_map.get(resp.survey_id)
+            surveys.append({
+                "id": resp.survey_id,
+                "response_id": resp.id,
+                "title": s.title if s else f"설문 #{resp.survey_id}",
+                "author_id": u.ID,
+                "status": s.status if s else None,
+                "answer_count": answer_counts.get(resp.id, 0),
+                "updated_at": _iso(resp.submitted_at),
+            })
+
+    return {"proposals": proposals, "reports": reports, "surveys": surveys}
 
 
 @router.delete("/reports/{report_id}")
@@ -354,7 +466,7 @@ def admin_patch_user(
     u = db.query(models.User).filter(models.User.user_id == user_id).first()
     if not u:
         raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
-    for k in ("nickname", "phone_num", "district_code"):
+    for k in ("nickname", "phone_num", "district_code", "email", "address", "detailed_address", "is_approved"):
         v = getattr(payload, k, None)
         if v is not None:
             setattr(u, k, v)

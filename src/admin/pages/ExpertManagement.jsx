@@ -19,13 +19,15 @@ export default function ExpertManagement({ onNavigate }) {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setExperts(data.map((u) => ({
+                    // 전문가 = district_code가 'expert'로 지정된 회원
+                    const expertsOnly = data.filter((u) => u.district_code === 'expert');
+                    setExperts(expertsOnly.map((u) => ({
                         id: u.user_id,
                         name: u.name || '-',
                         nickname: u.nickname || '-',
                         phone: u.phone_num || '-',
-                        address: u.district_code || '-',
-                        email: u.ID,
+                        address: [u.address, u.detailed_address].filter(Boolean).join(' ') || '-',
+                        email: u.email || '-',
                         approval: u.is_approved ? '승인' : '미승인',
                     })));
                 }

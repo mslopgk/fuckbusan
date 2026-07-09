@@ -1,246 +1,235 @@
-import React, { useState } from 'react';
-import '../styles/dashboard_new.css'; // Borrowing sidebar/header styles
+import { useEffect, useState } from 'react';
+import AdminLayout from '../components/AdminLayout';
+import '../styles/dashboard_new.css';
+import '../styles/admin_layout.css';
+import '../styles/member_edit.css';
 import '../styles/expert_edit.css';
 import { API_BASE } from '../api';
 
-export default function ExpertEdit({ member, onNavigate }) {
-    const [isMemberMenuOpen, setIsMemberMenuOpen] = useState(true);
-    // Default mock data if no member provided
-    const [formData, setFormData] = useState(member || {
-        name: '홍길동 1',
-        nickname: '부산시민1',
-        phone: '010-1111-2222',
-        address: '부산시 동래구 온천천로 285번길 28 104호',
-        email: 'busan@naver.com',
-        status: 'approved-orange',
-        statusText: '승인',
-        birth: '880101',
-        joinDate: '2025.01.01',
-        lastLogin: '2025.01.01 15:00',
-        participation: '제안 4건'
-    });
+const fmtDate = (v) => (v ? String(v).replace('T', ' ').slice(0, 10) : '-');
+const fmtDateTime = (v) => (v ? String(v).replace('T', ' ').slice(0, 16) : '-');
 
-    const handleLogout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user_info');
-        if (onNavigate) onNavigate('adminLoginNew');
-    };
+export default function ExpertEdit({ member, onNavigate }) {
+    const [formData, setFormData] = useState(member || {});
+    const [activity, setActivity] = useState({ proposals: [], reports: [], surveys: [] });
+    const [open, setOpen] = useState({ proposals: true, reports: true, surveys: true });
+    const [saving, setSaving] = useState(false);
+
+    const set = (key, val) => setFormData((prev) => ({ ...prev, [key]: val }));
+    const toggle = (key) => setOpen((prev) => ({ ...prev, [key]: !prev[key] }));
+
+    useEffect(() => {
+        const id = member?.id;
+        if (!id) return;
+        const token = localStorage.getItem('access_token');
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+        (async () => {
+            try {
+                const res = await fetch(`${API_BASE}/admin/users/${id}`, { headers });
+                if (res.ok) {
+                    const u = await res.json();
+                    setFormData({
+                        id: u.user_id,
+                        name: u.name || '',
+                        loginId: u.ID || '',
+                        nickname: u.nickname || '',
+                        phone: u.phone_num || '',
+                        address: [u.address, u.detailed_address].filter(Boolean).join(' '),
+                        email: u.email || '',
+                        isApproved: !!u.is_approved,
+                        joinDate: fmtDate(u.created_at),
+                        lastLogin: fmtDateTime(u.prev_login || u.last_login),
+                    });
+                }
+            } catch (e) { console.error('Failed to fetch expert:', e); }
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/users/${id}/activity`, { headers });
+                if (res.ok) setActivity(await res.json());
+            } catch (e) { console.error('Failed to fetch activity:', e); }
+        })();
+    }, [member?.id]);
 
     const handleConfirm = async () => {
+        if (!formData.id) { alert('회원 정보가 없습니다.'); return; }
+        setSaving(true);
         try {
             const token = localStorage.getItem('access_token');
-            const response = await fetch(`${API_BASE}/users/${formData.id}`, {
-                method: 'PUT',
+            const res = await fetch(`${API_BASE}/admin/users/${formData.id}`, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
                 body: JSON.stringify({
-                    user_id: formData.id,
-                    ID: formData.email,
-                    name: formData.name,
-                    nickname: formData.nickname,
-                    phone_num: formData.phone,
-                    district_code: formData.district_code || 'expert'
+                    nickname: formData.nickname || null,
+                    phone_num: formData.phone || null,
+                    email: formData.email || null,
+                    address: formData.address || null,
+                    is_approved: !!formData.isApproved,
                 }),
             });
-
-            if (response.ok) {
+            if (res.ok) {
                 alert('전문가 정보가 수정되었습니다.');
-                if (onNavigate) onNavigate('expertManagement');
+                onNavigate && onNavigate('expertManagement');
             } else {
-                alert('수정에 실패했습니다.');
+                const err = await res.json().catch(() => ({}));
+                alert(err.detail || '수정에 실패했습니다.');
             }
-        } catch (error) {
-            console.error("Update Error:", error);
+        } catch (e) {
             alert('에러가 발생했습니다.');
+        } finally {
+            setSaving(false);
         }
     };
 
     const handleDelete = async () => {
-        if (!window.confirm('정말 삭제하시겠습니까?')) return;
+        if (!formData.id) return;
+        if (!window.confirm(`"${formData.name}" 회원을 삭제하시겠습니까?`)) return;
         try {
             const token = localStorage.getItem('access_token');
-            const response = await fetch(`${API_BASE}/users/${formData.id}`, {
+            const res = await fetch(`${API_BASE}/admin/users/${formData.id}`, {
                 method: 'DELETE',
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
-
-            if (response.ok) {
+            if (res.ok) {
                 alert('전문가가 삭제되었습니다.');
-                if (onNavigate) onNavigate('expertManagement');
+                onNavigate && onNavigate('expertManagement');
             } else {
-                alert('삭제에 실패했습니다.');
+                const err = await res.json().catch(() => ({}));
+                alert(err.detail || '삭제에 실패했습니다.');
             }
-        } catch (error) {
-            console.error("Delete Error:", error);
+        } catch (e) {
             alert('에러가 발생했습니다.');
         }
     };
 
-    const handleBack = () => {
-        if (onNavigate) onNavigate('expertManagement');
-    };
+    const proposals = activity.proposals || [];
+    const reports = activity.reports || [];
+    const surveys = activity.surveys || [];
 
     return (
-        <div className="expert-edit-container">
-            {/* Sidebar */}
-            <aside className="admin-sidebar-new">
-                <div className="sidebar-logo-new"><img src="/WDC.svg" alt="WDC" style={{ height: '32px', display: 'block' }} /></div>
-                <nav className="sidebar-menu-new">
-                    <div 
-                        className={`menu-item-new ${isMemberMenuOpen ? 'active' : ''}`}
-                        onClick={() => setIsMemberMenuOpen(!isMemberMenuOpen)}
-                    >
-                        회원 관리
-                        <svg 
-                            width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
-                            style={{ transform: isMemberMenuOpen ? 'rotate(0deg)' : 'rotate(180deg)' }}
-                        >
-                            <polyline points="18 15 12 9 6 15"></polyline>
-                        </svg>
-                    </div>
-                    {isMemberMenuOpen && (
-                        <div className="submenu-list-new">
-                            <div className="submenu-item-new" onClick={() => onNavigate && onNavigate('adminDashboardNew')}>시민</div>
-                            <div className="submenu-item-new active">전문가</div>
-                            <div className="submenu-item-new">관리자</div>
-                        </div>
-                    )}
-                    <div 
-                        className="menu-item-new"
-                        onClick={() => {
-                            setIsMemberMenuOpen(false);
-                            onNavigate && onNavigate('proposalManagement');
-                        }}
-                    >
-                        제안
-                    </div>
-                </nav>
-            </aside>
+        <AdminLayout onNavigate={onNavigate} currentView="expertEdit">
+            <div className="edit-form-header">
+                <h2 className="edit-form-title">회원관리</h2>
+            </div>
 
-            {/* Main Content Area */}
-            <main className="expert-edit-main">
-                {/* Header */}
-                <header className="admin-header-new">
-                    <div className="header-user-info">
-                        <div className="user-avatar-circle">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                            </svg>
-                        </div>
-                        <span>홍길동님</span>
-                    </div>
-                    <button className="btn-logout-new" onClick={handleLogout}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
-                        </svg>
-                        로그아웃
-                    </button>
-                </header>
-
-                <div className="expert-edit-content">
-                    <div className="ex-edit-header">
-                        <h2 className="ex-edit-title">회원관리</h2>
-                    </div>
-
-                    <div className="ex-edit-form-box">
-                        <div className="ex-edit-row">
-                            <label className="ex-edit-label">회원이름</label>
-                            <input 
-                                type="text" 
-                                className="ex-edit-input" 
-                                value={formData.name} 
-                                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                            />
-                        </div>
-                        <div className="ex-edit-row">
-                            <label className="ex-edit-label">닉네임</label>
-                            <input 
-                                type="text" 
-                                className="ex-edit-input" 
-                                value={formData.nickname} 
-                                onChange={(e) => setFormData({...formData, nickname: e.target.value})}
-                            />
-                        </div>
-                        <div className="ex-edit-row">
-                            <label className="ex-edit-label">연락처</label>
-                            <input 
-                                type="text" 
-                                className="ex-edit-input" 
-                                value={formData.phone} 
-                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                            />
-                        </div>
-                        <div className="ex-edit-row">
-                            <label className="ex-edit-label">주소</label>
-                            <input 
-                                type="text" 
-                                className="ex-edit-input wide" 
-                                value={formData.address} 
-                                onChange={(e) => setFormData({...formData, address: e.target.value})}
-                            />
-                        </div>
-                        <div className="ex-edit-row">
-                            <label className="ex-edit-label">이메일</label>
-                            <input 
-                                type="text" 
-                                className="ex-edit-input" 
-                                value={formData.email} 
-                                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                            />
-                        </div>
-                        <div className="ex-edit-row">
-                            <label className="ex-edit-label">승인상태</label>
-                            <div className="ex-edit-text-only">
-                                <span className={`ex-status-display ${formData.status}`}>
-                                    {formData.statusText || '승인'}
-                                </span>
-                            </div>
-                        </div>
-                        <div className="ex-edit-row">
-                            <label className="ex-edit-label">생년월일</label>
-                            <input 
-                                type="text" 
-                                className="ex-edit-input" 
-                                value={formData.birth} 
-                                onChange={(e) => setFormData({...formData, birth: e.target.value})}
-                            />
-                        </div>
-                        <div className="ex-edit-row">
-                            <label className="ex-edit-label">가입일</label>
-                            <input 
-                                type="text" 
-                                className="ex-edit-input" 
-                                value={formData.joinDate || '2025.01.01'} 
-                                readOnly
-                            />
-                        </div>
-                        <div className="ex-edit-row">
-                            <label className="ex-edit-label">최근 접속일</label>
-                            <input 
-                                type="text" 
-                                className="ex-edit-input" 
-                                value={formData.lastLogin || '2025.01.01 15:00'} 
-                                readOnly
-                            />
-                        </div>
-                        <div className="ex-edit-row">
-                            <label className="ex-edit-label">참여현황 리스트</label>
-                            <div className="ex-edit-input ex-edit-text-only" style={{ display: 'flex', alignItems: 'center' }}>
-                                제안 <span>&nbsp;4건</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="ex-edit-footer">
-                        <button className="btn-ex-delete" onClick={handleDelete}>회원삭제</button>
-                        <button className="btn-ex-confirm" onClick={handleConfirm}>확인</button>
+            <div className="edit-form-box">
+                <div className="edit-form-row">
+                    <label className="edit-form-label">회원이름</label>
+                    <input type="text" className="edit-form-input" value={formData.name || ''} readOnly
+                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                </div>
+                <div className="edit-form-row">
+                    <label className="edit-form-label">회원아이디</label>
+                    <input type="text" className="edit-form-input" value={formData.loginId || ''} readOnly
+                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                </div>
+                <div className="edit-form-row">
+                    <label className="edit-form-label">닉네임</label>
+                    <input type="text" className="edit-form-input" value={formData.nickname || ''}
+                        onChange={(e) => set('nickname', e.target.value)} />
+                </div>
+                <div className="edit-form-row">
+                    <label className="edit-form-label">연락처</label>
+                    <input type="text" className="edit-form-input" value={formData.phone || ''}
+                        onChange={(e) => set('phone', e.target.value)} />
+                </div>
+                <div className="edit-form-row">
+                    <label className="edit-form-label">주소</label>
+                    <input type="text" className="edit-form-input wide" value={formData.address || ''}
+                        onChange={(e) => set('address', e.target.value)} />
+                </div>
+                <div className="edit-form-row">
+                    <label className="edit-form-label">이메일</label>
+                    <input type="text" className="edit-form-input" value={formData.email || ''}
+                        onChange={(e) => set('email', e.target.value)} />
+                </div>
+                <div className="edit-form-row">
+                    <label className="edit-form-label">승인상태</label>
+                    <div className="approval-toggle">
+                        <button
+                            type="button"
+                            className={`approval-toggle-btn ${formData.isApproved ? 'on' : ''}`}
+                            onClick={() => set('isApproved', true)}
+                        >승인</button>
+                        <button
+                            type="button"
+                            className={`approval-toggle-btn pending ${!formData.isApproved ? 'on' : ''}`}
+                            onClick={() => set('isApproved', false)}
+                        >미승인</button>
                     </div>
                 </div>
-            </main>
+                <div className="edit-form-row">
+                    <label className="edit-form-label">가입일</label>
+                    <input type="text" className="edit-form-input" value={formData.joinDate || '-'} readOnly
+                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                </div>
+                <div className="edit-form-row">
+                    <label className="edit-form-label">최근 접속일</label>
+                    <input type="text" className="edit-form-input" value={formData.lastLogin || '-'} readOnly
+                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                </div>
+
+                {/* 참여현황 리스트 (collapsible) */}
+                <div className="edit-form-row" style={{ alignItems: 'flex-start' }}>
+                    <label className="edit-form-label" style={{ paddingTop: 4 }}>참여현황 리스트</label>
+                    <div className="participation-wrap">
+                        <CollapsibleTable
+                            title="제안" count={proposals.length} open={open.proposals} onToggle={() => toggle('proposals')}
+                            head={['제안제목', '작성자 ID', '유형', '위치']}
+                            rows={proposals.map((p) => [p.title, p.author_id, p.category, p.region])}
+                        />
+                        <CollapsibleTable
+                            title="제보" count={reports.length} open={open.reports} onToggle={() => toggle('reports')}
+                            head={['제보제목', '작성자 ID', '유형', '위치']}
+                            rows={reports.map((r) => [r.title, r.author_id, r.category, r.region])}
+                        />
+                        <CollapsibleTable
+                            title="설문" count={surveys.length} open={open.surveys} onToggle={() => toggle('surveys')}
+                            head={['설문제목', '작성자 ID', '상태', '답변', '수정']}
+                            rows={surveys.map((s) => [s.title, s.author_id, s.status, s.answer_count, fmtDateTime(s.updated_at)])}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="edit-form-footer">
+                <button className="btn-delete-member" onClick={handleDelete}>회원삭제</button>
+                <button className="btn-confirm-edit" onClick={handleConfirm} disabled={saving}>
+                    {saving ? '저장 중...' : '확인'}
+                </button>
+            </div>
+        </AdminLayout>
+    );
+}
+
+function CollapsibleTable({ title, count, head, rows, open, onToggle }) {
+    return (
+        <div className="participation-block">
+            <div className="participation-caption participation-caption-toggle" onClick={onToggle}>
+                <span>{title} <strong>{count}건</strong></span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                    style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform .15s' }}>
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </div>
+            {open && (
+                <table className="participation-table">
+                    <thead>
+                        <tr>{head.map((h) => <th key={h}>{h}</th>)}</tr>
+                    </thead>
+                    <tbody>
+                        {rows.length === 0 ? (
+                            <tr><td colSpan={head.length} className="participation-empty">내역이 없습니다.</td></tr>
+                        ) : rows.map((cells, i) => (
+                            <tr key={i}>{cells.map((c, j) => <td key={j}>{c ?? '-'}</td>)}</tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
         </div>
     );
 }

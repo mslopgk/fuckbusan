@@ -22,13 +22,19 @@ export default function AdminUserList({ onNavigate }) {
             });
             if (!res.ok) throw new Error(res.status);
             const data = await res.json();
-            setUsers(data.map((u) => ({
+            // 관리자 = district_code가 'admin'으로 지정된 회원
+            const adminsOnly = data.filter((u) => u.district_code === 'admin');
+            setUsers(adminsOnly.map((u) => ({
                 id: u.user_id,
                 name: u.name || '-',
                 nickname: u.nickname || '-',
                 phone: u.phone_num || '-',
+                address: [u.address, u.detailed_address].filter(Boolean).join(' ') || '-',
+                email: u.email || '-',
                 district: u.district_code || '-',
                 loginId: u.ID,
+                approval: u.is_approved ? '승인' : '미승인',
+                isSuperAdmin: !!u.is_super_admin,
                 joinDate: u.created_at ? u.created_at.slice(0, 10) : '-',
             })));
             setPage(1);
@@ -81,7 +87,7 @@ export default function AdminUserList({ onNavigate }) {
                     <input
                         type="text"
                         className="search-input-new"
-                        placeholder="이름, 아이디, 닉네임으로 검색"
+                        placeholder="이름을 입력해 주세요"
                         value={inputVal}
                         onChange={(e) => setInputVal(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -94,12 +100,12 @@ export default function AdminUserList({ onNavigate }) {
                 <table className="admin-table-new">
                     <thead>
                         <tr>
-                            <th>이름</th>
-                            <th>아이디</th>
+                            <th>회원이름</th>
                             <th>닉네임</th>
                             <th>연락처</th>
-                            <th>지역</th>
-                            <th>가입일</th>
+                            <th>주소</th>
+                            <th>이메일</th>
+                            <th>승인상태</th>
                             <th>메뉴</th>
                         </tr>
                     </thead>
@@ -114,12 +120,21 @@ export default function AdminUserList({ onNavigate }) {
                             </tr>
                         ) : visible.map((item) => (
                             <tr key={item.id}>
-                                <td>{item.name}</td>
-                                <td>{item.loginId}</td>
+                                <td>
+                                    {item.name}
+                                    {item.isSuperAdmin && (
+                                        <span className="super-admin-crown" title="슈퍼관리자">👑</span>
+                                    )}
+                                </td>
                                 <td className="nickname-cell">{item.nickname}</td>
                                 <td>{item.phone}</td>
-                                <td>{item.district}</td>
-                                <td>{item.joinDate}</td>
+                                <td>{item.address}</td>
+                                <td>{item.email}</td>
+                                <td>
+                                    <span className={`approval-badge ${item.approval === '승인' ? 'approved' : 'pending'}`}>
+                                        {item.approval}
+                                    </span>
+                                </td>
                                 <td>
                                     <div className="action-btns-new">
                                         <span

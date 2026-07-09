@@ -409,6 +409,10 @@ class AdminUserUpdate(BaseModel):
     nickname: Optional[str] = None
     phone_num: Optional[str] = None
     district_code: Optional[str] = None
+    email: Optional[str] = None
+    address: Optional[str] = None
+    detailed_address: Optional[str] = None
+    is_approved: Optional[bool] = None
     role: Optional[str] = None  # 'admin' / 'user' (only district_code='admin' for admin marker)
 
 

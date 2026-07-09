@@ -108,6 +108,47 @@
     font-weight: 700;
 }
 
+/* 승인상태 토글 뱃지 */
+.approval-toggle {
+    display: flex;
+    gap: 8px;
+}
+
+.approval-toggle-btn {
+    height: 30px;
+    padding: 0 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 15px;
+    background: #f5f5f5;
+    color: #aaa;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .12s;
+}
+
+.approval-toggle-btn.on {
+    background: #dcf6da;
+    border-color: #b7e6b3;
+    color: #2b8a3e;
+}
+
+.approval-toggle-btn.pending.on {
+    background: #ececec;
+    border-color: #ddd;
+    color: #666;
+}
+
+/* collapsible 참여현황 헤더 */
+.participation-caption-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    color: #333;
+    user-select: none;
+}
+
 /* Footer Buttons */
 .ex-edit-footer {
     display: flex;

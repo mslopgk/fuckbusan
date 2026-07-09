@@ -23,14 +23,16 @@ export default function DashboardNew({ onNavigate }) {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setMemberData(data.map((u) => ({
+                    // 시민 = 전문가/관리자(district_code)로 지정되지 않은 회원
+                    const citizens = data.filter((u) => u.district_code !== 'expert' && u.district_code !== 'admin');
+                    setMemberData(citizens.map((u) => ({
                         id: u.user_id,
                         name: u.name || '-',
                         nickname: u.nickname || '-',
                         phone: u.phone_num || '-',
-                        address: u.address || u.district_code || '-',
+                        address: [u.address, u.detailed_address].filter(Boolean).join(' ') || '-',
                         district: u.district_code || '',
-                        email: u.ID,
+                        email: u.email || '-',
                         birth: u.birth_date || '-',
                         joinedAt: u.created_at ? String(u.created_at).slice(0, 10) : '-',
                     })));

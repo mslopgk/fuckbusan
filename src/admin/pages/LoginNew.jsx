@@ -30,7 +30,7 @@ export default function LoginNew({ onNavigate }) {
             if (onNavigate) onNavigate('adminMain');
         } catch (err) {
             console.error("Login Error:", err);
-            setError('로그인 실패. 아이디/비밀번호를 확인하세요. (admin / admin1234)');
+            setError('로그인 실패. 아이디/비밀번호를 확인하세요.');
         } finally {
             setIsLoading(false);
         }

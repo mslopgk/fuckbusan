@@ -252,6 +252,15 @@
     color: #333 !important;
 }
 
+/* 슈퍼관리자(로그인 ID=admin) 왕관 표시 */
+.super-admin-crown {
+    margin-left: 6px;
+    font-size: 14px;
+    line-height: 1;
+    cursor: default;
+    vertical-align: middle;
+}
+
 .action-btns-new {
     display: flex;
     justify-content: center;

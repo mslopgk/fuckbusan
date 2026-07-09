@@ -1,15 +1,53 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import '../styles/member_edit.css';
 import { API_BASE } from '../api';
 
+const fmtDate = (v) => (v ? String(v).replace('T', ' ').slice(0, 10) : '-');
+const fmtDateTime = (v) => (v ? String(v).replace('T', ' ').slice(0, 16) : '-');
+
 export default function MemberEdit({ member, onNavigate }) {
     const [formData, setFormData] = useState(member || {});
+    const [activity, setActivity] = useState({ proposals: [], reports: [], surveys: [] });
     const [saving, setSaving] = useState(false);
 
     const set = (key, val) => setFormData((prev) => ({ ...prev, [key]: val }));
+
+    // 상세/참여현황 최신 데이터 fetch (리스트가 안 넘겨준 필드 대비)
+    useEffect(() => {
+        const id = member?.id;
+        if (!id) return;
+        const token = localStorage.getItem('access_token');
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+        (async () => {
+            try {
+                const res = await fetch(`${API_BASE}/admin/users/${id}`, { headers });
+                if (res.ok) {
+                    const u = await res.json();
+                    setFormData({
+                        id: u.user_id,
+                        name: u.name || '',
+                        loginId: u.ID || '',
+                        nickname: u.nickname || '',
+                        phone: u.phone_num || '',
+                        address: [u.address, u.detailed_address].filter(Boolean).join(' '),
+                        email: u.email || '',
+                        birth: u.birth_date || '',
+                        joinDate: fmtDate(u.created_at),
+                        lastLogin: fmtDateTime(u.prev_login || u.last_login),
+                    });
+                }
+            } catch (e) { console.error('Failed to fetch member:', e); }
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/users/${id}/activity`, { headers });
+                if (res.ok) setActivity(await res.json());
+            } catch (e) { console.error('Failed to fetch activity:', e); }
+        })();
+    }, [member?.id]);
 
     const handleConfirm = async () => {
         if (!formData.id) { alert('회원 정보가 없습니다.'); return; }
@@ -25,12 +63,13 @@ export default function MemberEdit({ member, onNavigate }) {
                 body: JSON.stringify({
                     nickname: formData.nickname || null,
                     phone_num: formData.phone || null,
-                    district_code: formData.district || null,
+                    email: formData.email || null,
+                    address: formData.address || null,
                 }),
             });
             if (res.ok) {
                 alert('회원 정보가 수정되었습니다.');
-                onNavigate && onNavigate('adminUserList');
+                onNavigate && onNavigate('adminDashboardNew');
             } else {
                 const err = await res.json().catch(() => ({}));
                 alert(err.detail || '수정에 실패했습니다.');
@@ -53,7 +92,7 @@ export default function MemberEdit({ member, onNavigate }) {
             });
             if (res.ok) {
                 alert('회원이 삭제되었습니다.');
-                onNavigate && onNavigate('adminUserList');
+                onNavigate && onNavigate('adminDashboardNew');
             } else {
                 const err = await res.json().catch(() => ({}));
                 alert(err.detail || '삭제에 실패했습니다.');
@@ -63,6 +102,10 @@ export default function MemberEdit({ member, onNavigate }) {
         }
     };
 
+    const proposals = activity.proposals || [];
+    const reports = activity.reports || [];
+    const surveys = activity.surveys || [];
+
     return (
         <AdminLayout onNavigate={onNavigate} currentView="memberEdit">
             <div className="edit-form-header">
@@ -71,62 +114,66 @@ export default function MemberEdit({ member, onNavigate }) {
 
             <div className="edit-form-box">
                 <div className="edit-form-row">
-                    <label className="edit-form-label">이름</label>
-                    <input
-                        type="text"
-                        className="edit-form-input"
-                        value={formData.name || ''}
-                        readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }}
-                    />
-                </div>
-                <div className="edit-form-row">
-                    <label className="edit-form-label">아이디</label>
-                    <input
-                        type="text"
-                        className="edit-form-input"
-                        value={formData.loginId || ''}
-                        readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }}
-                    />
+                    <label className="edit-form-label">회원이름</label>
+                    <input type="text" className="edit-form-input" value={formData.name || ''} readOnly
+                        style={{ background: '#f5f5f5', cursor: 'default' }} />
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">닉네임</label>
-                    <input
-                        type="text"
-                        className="edit-form-input"
-                        value={formData.nickname || ''}
-                        onChange={(e) => set('nickname', e.target.value)}
-                    />
+                    <input type="text" className="edit-form-input" value={formData.nickname || ''}
+                        onChange={(e) => set('nickname', e.target.value)} />
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">연락처</label>
-                    <input
-                        type="text"
-                        className="edit-form-input"
-                        value={formData.phone || ''}
-                        onChange={(e) => set('phone', e.target.value)}
-                    />
+                    <input type="text" className="edit-form-input" value={formData.phone || ''}
+                        onChange={(e) => set('phone', e.target.value)} />
                 </div>
                 <div className="edit-form-row">
-                    <label className="edit-form-label">지역</label>
-                    <input
-                        type="text"
-                        className="edit-form-input"
-                        value={formData.district || ''}
-                        onChange={(e) => set('district', e.target.value)}
-                        placeholder="예: 부산진구"
-                    />
+                    <label className="edit-form-label">주소</label>
+                    <input type="text" className="edit-form-input wide" value={formData.address || ''}
+                        onChange={(e) => set('address', e.target.value)} />
+                </div>
+                <div className="edit-form-row">
+                    <label className="edit-form-label">이메일</label>
+                    <input type="text" className="edit-form-input" value={formData.email || ''}
+                        onChange={(e) => set('email', e.target.value)} />
+                </div>
+                <div className="edit-form-row">
+                    <label className="edit-form-label">생년월일</label>
+                    <input type="text" className="edit-form-input" value={formData.birth || ''} readOnly
+                        style={{ background: '#f5f5f5', cursor: 'default' }} />
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">가입일</label>
-                    <input
-                        type="text"
-                        className="edit-form-input"
-                        value={formData.joinDate || '-'}
-                        readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }}
-                    />
+                    <input type="text" className="edit-form-input" value={formData.joinDate || '-'} readOnly
+                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                </div>
+                <div className="edit-form-row">
+                    <label className="edit-form-label">최근 접속일</label>
+                    <input type="text" className="edit-form-input" value={formData.lastLogin || '-'} readOnly
+                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                </div>
+
+                {/* 참여현황 리스트 */}
+                <div className="edit-form-row" style={{ alignItems: 'flex-start' }}>
+                    <label className="edit-form-label" style={{ paddingTop: 4 }}>참여현황 리스트</label>
+                    <div className="participation-wrap">
+                        <ParticipationTable
+                            title="제안" count={proposals.length}
+                            head={['제안제목', '작성자 ID', '유형', '위치']}
+                            rows={proposals.map((p) => [p.title, p.author_id, p.category, p.region])}
+                        />
+                        <ParticipationTable
+                            title="제보" count={reports.length}
+                            head={['제보제목', '작성자 ID', '유형', '위치']}
+                            rows={reports.map((r) => [r.title, r.author_id, r.category, r.region])}
+                        />
+                        <ParticipationTable
+                            title="설문" count={surveys.length}
+                            head={['설문제목', '작성자 ID', '상태', '답변', '수정']}
+                            rows={surveys.map((s) => [s.title, s.author_id, s.status, s.answer_count, fmtDateTime(s.updated_at)])}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -137,5 +184,25 @@ export default function MemberEdit({ member, onNavigate }) {
                 </button>
             </div>
         </AdminLayout>
+    );
+}
+
+function ParticipationTable({ title, count, head, rows }) {
+    return (
+        <div className="participation-block">
+            <div className="participation-caption">{title} <strong>{count}건</strong></div>
+            <table className="participation-table">
+                <thead>
+                    <tr>{head.map((h) => <th key={h}>{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                    {rows.length === 0 ? (
+                        <tr><td colSpan={head.length} className="participation-empty">내역이 없습니다.</td></tr>
+                    ) : rows.map((cells, i) => (
+                        <tr key={i}>{cells.map((c, j) => <td key={j}>{c ?? '-'}</td>)}</tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 }
