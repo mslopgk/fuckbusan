@@ -17,6 +17,7 @@ export default function SurveyManagement({ onNavigate }) {
     const [items, setItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [regionSearch, setRegionSearch] = useState('');
+    const [nameSearch, setNameSearch] = useState('');
     const [surveySearch, setSurveySearch] = useState('');
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -28,6 +29,7 @@ export default function SurveyManagement({ onNavigate }) {
         try {
             const params = new URLSearchParams({ page: currentPage, size: itemsPerPage });
             if (regionSearch) params.set('region', regionSearch);
+            if (nameSearch) params.set('name', nameSearch);
             if (surveySearch) params.set('q', surveySearch);
             const res = await fetch(`${API_BASE}/survey-chat/admin/list?${params}`, {
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -47,7 +49,7 @@ export default function SurveyManagement({ onNavigate }) {
         } finally {
             setLoading(false);
         }
-    }, [regionSearch, surveySearch, itemsPerPage]);
+    }, [regionSearch, nameSearch, surveySearch, itemsPerPage]);
 
     useEffect(() => { fetchList(page); }, [page]);
 
@@ -100,6 +102,21 @@ export default function SurveyManagement({ onNavigate }) {
                     </div>
                 </div>
                 <div className="search-row">
+                    <div className="search-label-new">회원검색</div>
+                    <div className="search-input-wrapper-new">
+                        <input
+                            type="text"
+                            className="search-input-new"
+                            placeholder="응답자(회원명)를 입력해 주세요"
+                            value={nameSearch}
+                            onChange={(e) => setNameSearch(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            style={{ paddingRight: 40 }}
+                        />
+                        <SearchIcon />
+                    </div>
+                </div>
+                <div className="search-row">
                     <div className="search-label-new">설문검색</div>
                     <div className="search-input-wrapper-new" style={{ maxWidth: 'none' }}>
                         <input
@@ -122,6 +139,7 @@ export default function SurveyManagement({ onNavigate }) {
                     <thead>
                         <tr>
                             <th>지역</th>
+                            <th>응답자</th>
                             <th>수정</th>
                             <th>설문유형</th>
                             <th>메뉴</th>
@@ -129,12 +147,13 @@ export default function SurveyManagement({ onNavigate }) {
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan={4} style={{ padding: '40px 0', color: '#999' }}>불러오는 중…</td></tr>
+                            <tr><td colSpan={5} style={{ padding: '40px 0', color: '#999' }}>불러오는 중…</td></tr>
                         ) : items.length === 0 ? (
-                            <tr><td colSpan={4} style={{ padding: '40px 0', color: '#999' }}>등록된 설문 응답이 없습니다.</td></tr>
+                            <tr><td colSpan={5} style={{ padding: '40px 0', color: '#999' }}>등록된 설문 응답이 없습니다.</td></tr>
                         ) : items.map((row) => (
                             <tr key={row.id} style={{ cursor: 'pointer' }} onClick={() => handleEdit(row)}>
                                 <td>{row.region || '-'}</td>
+                                <td>{row.respondent || '비회원'}</td>
                                 <td>{fmtDateTime(row.updated_at)}</td>
                                 <td>{row.survey_type || '-'}</td>
                                 <td onClick={(e) => e.stopPropagation()}>

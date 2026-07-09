@@ -393,11 +393,12 @@ def _attachment_urls(interview) -> List[str]:
 
 @router.get("/admin/list")
 def admin_list(q: Optional[str] = None, region: Optional[str] = None,
+               name: Optional[str] = None,
                page: int = 1, size: int = 10,
                db: Session = Depends(get_db),
                current_user: models.User = Depends(get_current_user)):
     """AI 대화형 설문 응답(세션) 목록 — 어드민 설문목록.
-    컬럼: 지역 / 수정(일시) / 설문유형 / 메뉴. region·q 검색, 페이지네이션."""
+    컬럼: 지역 / 응답자(회원명) / 수정(일시) / 설문유형 / 메뉴. region·q·name 검색, 페이지네이션."""
     require_admin(current_user)
     sessions = (db.query(models.SurveyChatSession)
                 .order_by(models.SurveyChatSession.created_at.desc())
@@ -409,14 +410,23 @@ def admin_list(q: Optional[str] = None, region: Optional[str] = None,
                .order_by(models.SurveyChatInterview.id.asc()).all()):
         prim.setdefault(iv.session_id, iv)
 
+    # 응답자(회원명) 매핑 — user_id → 이름 (문의사항 답변서 [1-2])
+    uid_set = {s.user_id for s in sessions if getattr(s, "user_id", None)}
+    users = (db.query(models.User).filter(models.User.user_id.in_(uid_set)).all()
+             if uid_set else [])
+    uid_name = {u.user_id: (u.name or u.nickname or "-") for u in users}
+
     items = []
     for s in sessions:
         iv = prim.get(s.session_id)
         region_name = _region_from_location(iv.location_bucket if iv else None)
+        uid = getattr(s, "user_id", None)
+        respondent = uid_name.get(uid) if uid else None
         items.append({
             "id": s.session_id,
             "session_id": s.session_id,
             "region": region_name or "-",
+            "respondent": respondent or "비회원",
             "survey_type": _SURVEY_KIND,
             "title": s.title or "AI 대화형 설문",
             "status": s.status or "신규",
@@ -429,8 +439,11 @@ def admin_list(q: Optional[str] = None, region: Optional[str] = None,
     # 검색 필터
     if region:
         items = [it for it in items if region in (it["region"] or "")]
+    if name:
+        items = [it for it in items if name in (it["respondent"] or "")]
     if q:
-        items = [it for it in items if q in (it["title"] or "") or q in (it["survey_type"] or "")]
+        items = [it for it in items if q in (it["title"] or "")
+                 or q in (it["survey_type"] or "") or q in (it["respondent"] or "")]
 
     total = len(items)
     page = max(1, page)
