@@ -100,9 +100,21 @@ def _engine():
         raise HTTPException(status_code=503, detail=f"AI 설문 서비스를 사용할 수 없습니다. ({e})")
 
 
+def _get_settings_row(db: Session) -> models.SurveyChatSetting:
+    """싱글턴 설정(id=1) 조회 — 없으면 생성."""
+    row = db.query(models.SurveyChatSetting).filter_by(id=1).first()
+    if row is None:
+        row = models.SurveyChatSetting(id=1, keywords=[], speed_buttons=[])
+        db.add(row)
+        db.commit()
+        db.refresh(row)
+    return row
+
+
 @router.post("/start", response_model=StartResp)
-def start():
-    return _engine().start()
+def start(db: Session = Depends(get_db)):
+    row = _get_settings_row(db)
+    return _engine().start(keywords=row.keywords or [], speed_buttons=row.speed_buttons or [])
 
 
 @router.post("/message", response_model=MessageResp)
@@ -450,6 +462,49 @@ def admin_list(q: Optional[str] = None, region: Optional[str] = None,
     start = (page - 1) * size
     return {"items": items[start:start + size], "total": total,
             "page": page, "size": size}
+
+
+# =============================================================================
+# AI설문 설정 — 주제 키워드 + 스피드버튼 (문의사항 답변서 [1-1]/[2-2])
+# 주의: /admin/{session_id} 보다 먼저 선언해야 'settings'가 session_id로 안 잡힘
+# =============================================================================
+class SurveyChatSettingUpdate(BaseModel):
+    keywords: List[str] = []
+    speed_buttons: List[str] = []
+
+
+def _clean_list(xs) -> List[str]:
+    seen, out = set(), []
+    for x in (xs or []):
+        v = str(x).strip()
+        if v and v not in seen:
+            seen.add(v)
+            out.append(v)
+    return out
+
+
+@router.get("/admin/settings")
+def get_survey_settings(db: Session = Depends(get_db),
+                        current_user: models.User = Depends(get_current_user)):
+    """AI설문 설정 조회 — 관리자 '설문설정' 탭."""
+    require_admin(current_user)
+    row = _get_settings_row(db)
+    return {"keywords": row.keywords or [], "speed_buttons": row.speed_buttons or [],
+            "updated_at": row.updated_at.isoformat() if row.updated_at else None}
+
+
+@router.put("/admin/settings")
+def update_survey_settings(body: SurveyChatSettingUpdate, db: Session = Depends(get_db),
+                           current_user: models.User = Depends(get_current_user)):
+    """AI설문 설정 저장 — 키워드/스피드버튼 목록·순서."""
+    require_admin(current_user)
+    row = _get_settings_row(db)
+    row.keywords = _clean_list(body.keywords)
+    row.speed_buttons = _clean_list(body.speed_buttons)
+    db.commit()
+    db.refresh(row)
+    return {"keywords": row.keywords, "speed_buttons": row.speed_buttons,
+            "updated_at": row.updated_at.isoformat() if row.updated_at else None}
 
 
 @router.get("/admin/{session_id}")

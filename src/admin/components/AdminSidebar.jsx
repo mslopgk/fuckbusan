@@ -31,6 +31,7 @@ const MENU_TREE = [
         label: '설문관리',
         children: [
             { key: 'surveyList', label: '설문목록', view: 'surveyManagement' },
+            { key: 'surveySettings', label: 'AI설문 설정', view: 'surveySettings' },
             { key: 'surveyChatAnalytics', label: 'AI설문 분석', view: 'surveyChatAnalytics' },
         ],
     },
@@ -77,6 +78,7 @@ const VIEW_TO_PATH = {
     proposalManagement: ['reportSuggest', 'proposals'],
     proposalEdit: ['reportSuggest', 'proposals'],
     surveyManagement: ['survey', 'surveyList'],
+    surveySettings: ['survey', 'surveySettings'],
     surveyStatusDetail: ['survey', 'surveyList'],
     surveyChatAnalytics: ['survey', 'surveyChatAnalytics'],
     surveyEditor: ['survey', 'surveyList'],

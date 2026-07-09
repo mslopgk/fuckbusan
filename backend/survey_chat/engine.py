@@ -109,12 +109,24 @@ def _collected_fields(info: Dict[str, Any]) -> List[Dict[str, Any]]:
     return [{**f, "value": info[f["id"]]} for f in C.REQUIRED_FIELDS if info.get(f["id"]) is not None]
 
 
-def _build_system_prompt(info: Dict[str, Any], collected_issues: List[dict], lang: str) -> str:
+def _build_system_prompt(info: Dict[str, Any], collected_issues: List[dict], lang: str,
+                         keywords: Optional[List[str]] = None) -> str:
     parts = [
         C.loc(C.SYSTEM_PROMPT["role"], lang),
         C.loc(C.SYSTEM_PROMPT["interview_style"], lang),
         C.loc(C.SYSTEM_PROMPT["extraction_rules"], lang),
     ]
+
+    # [1-1] 주제 키워드 제약 — 관리자 설정 키워드로 질문/스피드버튼 범위를 좁힌다.
+    kws = [k for k in (keywords or []) if str(k).strip()]
+    if kws:
+        parts.append(
+            "\n## 주제 키워드 제약\n"
+            "이번 설문은 다음 키워드 범위에 집중합니다: "
+            + ", ".join(kws)
+            + ".\n이 범위와 무관한 주제로 벗어나는 질문은 하지 말고, "
+            "제안하는 빠른응답(suggested_replies)도 이 키워드와 연관된 것으로 구성하세요."
+        )
 
     if collected_issues:
         s = f"\n## 이전에 수집된 이슈 ({len(collected_issues)}건)\n"
@@ -164,14 +176,19 @@ class SurveyChatEngine:
         self.client = AsyncOpenAI(api_key=api_key)
 
     # --- 세션 ---
-    def start(self) -> Dict[str, Any]:
+    def start(self, keywords: Optional[List[str]] = None,
+              speed_buttons: Optional[List[str]] = None) -> Dict[str, Any]:
         sid = uuid.uuid4().hex[:12]
         greeting = C.loc(C.GREETING, self.lang)
+        kws = [k for k in (keywords or []) if str(k).strip()]
+        btns = [b for b in (speed_buttons or []) if str(b).strip()]
         self._sessions[sid] = {
             "messages": [{"role": "assistant", "content": greeting}],
             "info": _empty_info(),
             "collected_issues": [],
             "complete": False,
+            "keywords": kws,             # [1-1] 세션 동안 질문 범위 제약
+            "speed_buttons": btns,       # [2-2] 관리자 지정 스피드버튼
         }
         return {
             "session_id": sid,
@@ -180,7 +197,8 @@ class SurveyChatEngine:
             "input_type": "text",
             "choices": [],
             "scale": None,
-            "suggested_replies": [],
+            # 첫 턴에는 관리자 지정 스피드버튼을 그대로 노출
+            "suggested_replies": btns,
         }
 
     def get_session(self, sid: str) -> Optional[Dict[str, Any]]:
@@ -220,12 +238,14 @@ class SurveyChatEngine:
         input_type = "text" if is_complete else (bot.get("input_type") or "text")
         scale = bot.get("scale") if input_type == "scale" else None
         choices = bot.get("choices", []) if input_type == "single_choice" else []
+        # 텍스트 턴 스피드버튼: LLM 제안이 있으면 우선, 없으면 관리자 지정 버튼으로 폴백 [2-2]
+        suggested = bot.get("suggested_replies", []) or (sess.get("speed_buttons") or [])
         return {
             "response": bot["response"],
             "input_type": input_type,
             "choices": choices,
             "scale": scale,
-            "suggested_replies": [] if input_type != "text" else bot.get("suggested_replies", []),
+            "suggested_replies": [] if (input_type != "text" or is_complete) else suggested,
             "info": _collected_snapshot(sess),
             "collected_issues": sess["collected_issues"],
             "is_complete": is_complete,
@@ -264,7 +284,8 @@ class SurveyChatEngine:
 
     # --- LLM 경로 (OpenAI 전용, 폴백 없음) ---
     async def _llm_turn(self, sess: Dict[str, Any]) -> Dict[str, Any]:
-        system_prompt = _build_system_prompt(sess["info"], sess["collected_issues"], self.lang)
+        system_prompt = _build_system_prompt(sess["info"], sess["collected_issues"], self.lang,
+                                             keywords=sess.get("keywords"))
         messages = [{"role": "system", "content": system_prompt}] + sess["messages"]
         resp = await self.client.chat.completions.create(
             model=self.model,

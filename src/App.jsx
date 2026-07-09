@@ -54,6 +54,7 @@ const AdminPublicData = lazy(() => import('./admin/pages/AdminPublicData'));
 const AdminAnnouncements = lazy(() => import('./admin/pages/AdminAnnouncements'));
 const ReportManagement = lazy(() => import('./admin/pages/ReportManagement'));
 const SurveyManagement = lazy(() => import('./admin/pages/SurveyManagement'));
+const SurveySettings = lazy(() => import('./admin/pages/SurveySettings'));
 const SurveyStatusDetail = lazy(() => import('./admin/pages/SurveyStatusDetail'));
 const SurveyChatAnalytics = lazy(() => import('./admin/pages/SurveyChatAnalytics'));
 const AdminReportDetail = lazy(() => import('./admin/pages/ReportDetail'));
@@ -145,7 +146,7 @@ function App() {
 
         const stored = sessionStorage.getItem('current_view');
         // If path is not /admin, but stored view is an admin view, reset to home
-        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyStatusDetail', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos', 'surveyChatAnalytics'].includes(stored);
+        const isAdminView = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveySettings', 'surveyStatusDetail', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'memberEdit', 'expertEdit', 'proposalManagement', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos', 'surveyChatAnalytics'].includes(stored);
         if (path === '/' && isAdminView) return 'home';
 
         if (['adminLogin', 'adminSignup', 'adminDashboard'].includes(stored)) return 'home';
@@ -351,7 +352,7 @@ function App() {
         window.scrollTo(0, 0);
         sessionStorage.setItem('current_view', view);
 
-        const adminViews = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyStatusDetail', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'proposalManagement', 'memberEdit', 'expertEdit', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos', 'surveyChatAnalytics'];
+        const adminViews = ['adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveySettings', 'surveyStatusDetail', 'surveyEditor', 'surveyCreated', 'surveyResults', 'expertManagement', 'proposalManagement', 'memberEdit', 'expertEdit', 'proposalEdit', 'adminProposalDetail', 'adminRAG', 'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos', 'surveyChatAnalytics'];
         const newPath = adminViews.includes(view) ? '/admin' : '/';
         
         if (window.history.state?.view !== view || window.location.pathname !== newPath) {
@@ -524,6 +525,8 @@ function App() {
             setSelectedSurvey(data || null);
             if (data) sessionStorage.setItem('selectedSurvey', JSON.stringify(data));
             setView('surveyStatusDetail');
+        } else if (target === 'surveySettings') {
+            setView('surveySettings');
         } else if (target === 'surveyChatAnalytics') {
             setView('surveyChatAnalytics');
         } else if (target === 'surveyEditor') {
@@ -773,7 +776,7 @@ function App() {
         'changePassword',
         'adminLogin', 'adminLoginNew', 'adminDashboardNew', 'adminMain', 'adminUserList', 'adminRAG',
         'adminCitizenData', 'adminCitizenPersonas', 'adminDiagnosis', 'adminPublicData', 'adminNotices', 'adminPromos',
-        'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveyStatusDetail', 'surveyEditor',
+        'reportManagement', 'adminReportDetail', 'surveyManagement', 'surveySettings', 'surveyStatusDetail', 'surveyEditor',
         'surveyCreated', 'surveyResults', 'surveyChatAnalytics', 'expertManagement', 'memberEdit', 'expertEdit',
         'proposalManagement', 'proposalEdit', 'adminProposalDetail',
         // UserPCLayout 자체 헤더를 가진 PC 전용 뷰 (PCHeader 중복 방지)
@@ -1430,6 +1433,9 @@ function App() {
                         survey={selectedSurvey}
                         onNavigate={(target, data) => onNavigate(target, data)}
                     />
+                )}
+                {view === 'surveySettings' && (
+                    <SurveySettings onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'surveyChatAnalytics' && (
                     <SurveyChatAnalytics onNavigate={(target, data) => onNavigate(target, data)} />

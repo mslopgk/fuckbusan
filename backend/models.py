@@ -406,6 +406,21 @@ class SurveyChatSession(Base):
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)  # 어드민 수정일시
 
 
+class SurveyChatSetting(Base):
+    """AI 대화형 설문 관리자 설정 (싱글턴 id=1) — 문의사항 답변서 [1-1]/[2-2].
+
+    - keywords: 주제 키워드. 인터뷰 엔진 시스템 프롬프트에 질문 범위 제약으로 주입.
+    - speed_buttons: 빠른응답(스피드버튼) 라벨 목록(순서 유지). 첫 턴 suggested_replies로 노출.
+    """
+    __tablename__ = "survey_chat_settings"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True)  # 싱글턴 (id=1)
+    keywords = Column(JSON, nullable=True)         # ["보행 안전", "야간 조명", ...]
+    speed_buttons = Column(JSON, nullable=True)    # ["네", "아니요", "잘 모르겠어요", ...]
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+
 # =============================================================================
 # 공공데이터 대시보드 (PCPublicData) — 실데이터 (출처: data.go.kr, data.busan.go.kr,
 # 행정안전부, TAAS, 문체부, 통계청 등. 시드: backend/public_data/seed_data.py)
