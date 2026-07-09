@@ -6,6 +6,7 @@ import {
     CATEGORIES_WITH_ALL as CATEGORIES,
 } from '../constants/diagnosis';
 import { API_URL } from '../utils/api';
+import { matchDistrict } from '../utils/format';
 import MDiagnosisFilterModal from './MDiagnosisFilterModal';
 import CategoryRail from './filters/CategoryRail';
 import RegionDropdown from './filters/RegionDropdown';
@@ -99,7 +100,20 @@ export default function MDiagnosisList({ onNavigate }) {
     const filtered = useMemo(() => {
         const bigSet = new Set(filter.bigCats);
         return allRows
-            .filter((r) => !district || r.진단지역 === district || r.district_code === district)
+            .filter((r) => {
+                // 지역 필터: district_code/진단지역 문자열 매칭 → 실패 시 위도/경도로 최근접 구 추정
+                if (!district) return true;
+                if (matchDistrict(r.district_code, district) || matchDistrict(r.진단지역, district)) return true;
+                const lat = r.위도 != null ? Number(r.위도) : NaN;
+                const lng = r.경도 != null ? Number(r.경도) : NaN;
+                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+                let best = null, bestD = Infinity;
+                for (const [name, c] of Object.entries(DISTRICT_CENTERS)) {
+                    const d = (lat - c.lat) ** 2 + (lng - c.lng) ** 2;
+                    if (d < bestD) { bestD = d; best = name; }
+                }
+                return matchDistrict(best, district);
+            })
             .filter((r) => category === '전체' || r.대분류 === category)
             .filter((r) => !bigSet.size || bigSet.has(r.대분류))
             .filter((r) => !filter.mid || r.중분류 === filter.mid)
