@@ -420,3 +420,30 @@ class AdminUserUpdate(BaseModel):
 
 class ReportCommentUpdate(BaseModel):
     content: str
+
+
+# ===== Diagnosis region (진단 지역 registry) =====
+
+class DiagnosisRegionCreate(BaseModel):
+    name: str
+    district_code: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+
+
+class DiagnosisRegionUpdate(BaseModel):
+    name: Optional[str] = None
+    district_code: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+
+
+class DiagnosisRegionOut(BaseModel):
+    id: int
+    name: str
+    district_code: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    created_at: Optional[datetime] = None
+    diagnosis_count: int = 0
+    participant_count: int = 0

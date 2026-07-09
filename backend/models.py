@@ -114,6 +114,23 @@ class ChecklistResult(Base):
 
 User.results = relationship("ChecklistResult", back_populates="owner")
 
+class DiagnosisRegion(Base):
+    """진단 지역 registry — 어드민이 등록/수정/삭제하는 진단 대상 지역.
+
+    진단 기록(ChecklistResult)이 0건이어도 목록에 존재하며 등록일을 가진다.
+    진단수/진단인원은 ChecklistResult.진단지역 == name 으로 집계한다.
+    """
+    __tablename__ = "diagnosis_regions"
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), unique=True, index=True, nullable=False)  # 진단지역명
+    district_code = Column(String(50), nullable=True)
+    latitude = Column(DECIMAL(10, 8), nullable=True)
+    longitude = Column(DECIMAL(11, 8), nullable=True)
+    created_at = Column(DateTime, default=datetime.now)
+
+
 class Report(Base):
     __tablename__ = "reports"
     __table_args__ = {'mysql_charset': 'utf8mb4'}

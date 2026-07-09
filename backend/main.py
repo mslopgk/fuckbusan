@@ -76,6 +76,19 @@ async def lifespan(app: FastAPI):
                 _db.close()
         except Exception as e:
             logger.error(f"Startup: public data seed failed: {e}")
+
+        # 진단 지역 registry 시드 (기존 진단 기록의 진단지역 distinct → 없는 이름만 insert)
+        try:
+            from database import SessionLocal
+            from routers.checklist_admin_router import seed_diagnosis_regions
+            _db = SessionLocal()
+            try:
+                added = seed_diagnosis_regions(_db)
+                logger.info(f"Startup: Diagnosis regions seeded ({added} new)")
+            finally:
+                _db.close()
+        except Exception as e:
+            logger.error(f"Startup: diagnosis region seed failed: {e}")
     except Exception as e:
         logger.error(f"Startup Error: Database connection failed. {e}")
         # We don't exit to allow frontend to serve even if DB fails, but dependent APIs will fail.
@@ -124,6 +137,7 @@ app.include_router(public_data_router.router)
 app.include_router(rag_admin_router.router)
 app.include_router(announcement_router.router)
 app.include_router(checklist_admin_router.router)
+app.include_router(checklist_admin_router.regions_router)
 
 # Static Files & Frontend Serving (로컬 전용 — Lambda/CloudFront 환경에선 스킵)
 current_dir = os.path.dirname(os.path.abspath(__file__))
