@@ -44,13 +44,10 @@
 .pch2-stats-row-k { font-size: 14px; font-weight: 700; color: #333; }
 .pch2-stats-row-v { margin-left: auto; font-size: 15px; font-weight: 800; color: #23bdbb; }
 
-/* 지역별 TOP5 — 지도 하단 섹션 중앙 카드 (Figma 302:14384) */
-.pch2-top5-section {
-    background: #f7fbfb; padding: 32px 24px 8px; display: flex; justify-content: center;
-}
+/* 지역별 TOP5 — 지도 하단, hero 우측 하단 플로팅 카드 (Figma 목표) */
 .pch2-top5 {
-    width: 100%; max-width: 720px;
-    background: #fff; border-radius: 20px; padding: 24px 26px; box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+    position: absolute; right: 24px; bottom: 36px; width: 380px; z-index: 4;
+    background: #fff; border-radius: 20px; padding: 24px 22px; box-shadow: 0 12px 40px rgba(0,0,0,0.08);
 }
 .pch2-top5 h3 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
 .pch2-top5-sub { font-size: 13px; color: #9aa3ab; }
@@ -128,8 +125,7 @@
 .pch2-faq:hover { background: #2b2b2b; }
 
 @media (max-width: 1180px) {
-    .pch2-stats { position: static; width: auto; margin: 16px; }
-    .pch2-top5-section { padding: 20px 16px 4px; }
+    .pch2-stats, .pch2-top5 { position: static; width: auto; margin: 16px; }
     .pch2-hero { min-height: 0; padding-bottom: 24px; }
     .pch2-hero-map { position: relative; inset: auto; padding: 12px; }
     .pch2-hero-map .busanmap { width: min(80vw, 560px); }
