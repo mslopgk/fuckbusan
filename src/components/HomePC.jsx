@@ -84,8 +84,11 @@ const HomePC = ({ onNavigate }) => {
                         ))}
                     </div>
                 </div>
+                </div>
+            </section>
 
-                {/* 우측 지역별 TOP5 카드 */}
+            {/* ===== 지역별 TOP5 (지도 하단, Figma 302:14384) ===== */}
+            <section className="pch2-top5-section">
                 <div className="pch2-top5">
                     <h3>지역별 참여 TOP 5</h3>
                     <span className="pch2-top5-sub">참여건수 기준</span>
@@ -100,7 +103,6 @@ const HomePC = ({ onNavigate }) => {
                         ))}
                         {!ranking.length && <li className="pch2-top5-empty">참여 데이터를 집계 중입니다.</li>}
                     </ul>
-                </div>
                 </div>
             </section>
 
