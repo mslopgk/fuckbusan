@@ -18,7 +18,7 @@
 ### 메인화면 (Home)
 - [x] 메인 지도 뒷 배경 — 이미 구현됨(`.pch2-hero::before` 지도배경 데스크탑.png opacity 0.3). 클라 "누락"은 구버전 빌드 기준. 무변경
 - [x] 지도 hero 수직 중앙 정렬 — `HomePC.css .pch2-hero-map` top:24px/flex-start → top:0 bottom:0/center (`06b866c`, 실브라우저 검증)
-- [x] 지역별 TOP 5 지도 하단 이동 — 사용자 결정으로 지도 아래 별도 섹션 재배치(Figma 302:14384 순서). PC(`8aa9f2a`, hero→TOP5섹션→액션). 모바일은 이미 참여현황→지도→TOP5 순이라 무변경
+- [x] 지역별 TOP 5 지도 하단 배치 — 사용자 재확인: hero **우측 하단 플로팅 카드**(참여현황 좌상/지도 중앙/TOP5 우하). PC(`bb96760`, absolute right:24 bottom:36). 모바일은 이미 참여현황→지도→TOP5 순이라 무변경
 
 ### 설문화면 (PC — 스피드 버튼 영역, 설문 진입 카드)
 - [x] "무엇을 도와드릴까요?" 카드에서 우측 스피드 버튼 3개를 같은 div 안에서 full-width로 분리 (SurveyChat.css `.surveychat-intro.pc` stretch + flex 240px, 칩 width:100% — 2026-07-15 검증)
