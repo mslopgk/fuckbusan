@@ -1061,8 +1061,10 @@
 .aic-jr-body { position: relative; padding-left: 36px; }
 .aic-jr-rowlabels { position: absolute; left: 0; top: 0; bottom: 30px; display: flex; flex-direction: column; justify-content: space-between; font-size: 10px; color: #111111; }
 .aic-jr-rowlabels span { line-height: 1; }
-.aic-jr-grid { display: grid; gap: 8px; }
-.aic-jr-step { background: #fff; border-radius: 10px; padding: 10px 6px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+/* gap:0 + 카드 좌우 margin으로 시각 간격 유지 → 카드 중심이 (i+0.5)/n 균등분할과 일치,
+   하단 EmotionLine SVG 점(동일 분할)이 상단 이모지와 정확히 정렬됨 (코드코리아 260713) */
+.aic-jr-grid { display: grid; gap: 0; }
+.aic-jr-step { background: #fff; border-radius: 10px; padding: 10px 6px; margin: 0 4px; text-align: center; display: flex; flex-direction: column; align-items: center; }
 .aic-jr-num { display: inline-flex; align-items: center; justify-content: center; width: 19px; height: 19px; border-radius: 50%; color: #fff; font-size: 10px; font-weight: 900; }
 .aic-jr-emoji { font-size: 26px; margin: 6px 0 4px; line-height: 1; }
 .aic-jr-action { font-size: 10px; font-weight: 400; color: #111111; line-height: 1.3; }
