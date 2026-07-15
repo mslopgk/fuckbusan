@@ -114,15 +114,7 @@ export default function MProposalMap({ onNavigate }) {
 
     return (
         <div className="m-prop-map-page">
-            {/* 맵 페이지 백 버튼 — Figma: standalone at left:20, top:25 */}
-            <button
-                type="button"
-                className="m-prop-map-back"
-                onClick={() => onNavigate?.('home')}
-                aria-label="뒤로"
-            >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
+            {/* 뒤로가기는 검색바 내부 back 하나로 통일 (MReportMap과 동일 패턴, 중복 제거) */}
             <MMapSearchBar value={search} onChange={setSearch} onBack={() => onNavigate?.('mProposalList')} placeholder="검색" showBack={true} />
 
             <div className="m-map-canvas">
