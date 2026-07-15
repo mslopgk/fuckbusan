@@ -123,7 +123,7 @@ export default function MProposalMap({ onNavigate }) {
             >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
-            <MMapSearchBar value={search} onChange={setSearch} onBack={() => onNavigate?.('home')} placeholder="검색" showBack={false} />
+            <MMapSearchBar value={search} onChange={setSearch} onBack={() => onNavigate?.('mProposalList')} placeholder="검색" showBack={true} />
 
             <div className="m-map-canvas">
                 <PCMapCanvas

@@ -92,12 +92,18 @@
     margin-bottom: 20px;
 }
 
-/* PC: 빠른시작 칩 — 오른쪽 세로 열 */
+/* PC: 빠른시작 칩 — 오른쪽 세로 열 (같은 div 안에서 full-width로 분리된 느낌, 코드코리아 260713) */
 .surveychat-intro.pc {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    align-items: flex-end;
+    align-items: stretch;
+    flex: 0 0 240px;
+}
+
+.surveychat-intro.pc .surveychat-introchip {
+    width: 100%;
+    min-width: 0;
 }
 
 .surveychat-introchip {
