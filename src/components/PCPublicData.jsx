@@ -105,12 +105,13 @@ export default function PCPublicData({ onNavigate }) {
     const activeCat = CATS.find((c) => c.key === cat);
     const isAll = cat === 'all';
 
-    // 지표 → 백엔드 값 매칭. 없으면 null → '준비중' 표기 (수치 날조 금지)
-    const valueFor = (m) => {
+    // 지표 → 백엔드 stats row 매칭. 없으면 null → '준비중' 표기 (수치 날조 금지)
+    const hitFor = (m) => {
+        if (!m) return null;
         const needle = m.key || m.label;
-        const hit = stats.find((s) => (s.metric || '').includes(needle));
-        return hit ? hit.value_text : null;
+        return stats.find((s) => (s.metric || '').includes(needle)) || null;
     };
+    const valueFor = (m) => hitFor(m)?.value_text || null;
 
     const cards = useMemo(() => {
         let list = isAll
@@ -178,13 +179,13 @@ export default function PCPublicData({ onNavigate }) {
                         <div className="pubd-kpi-grid">
                             {cards.map((m, i) => {
                                 const val = valueFor(m);
-                                const selected = !isAll && selMetric && selMetric.label === m.label;
+                                const selected = selMetric && selMetric.label === m.label;
                                 return (
                                     <button
                                         key={m.label + i}
                                         type="button"
                                         className={`pubd-kpi-card${selected ? ' selected' : ''}`}
-                                        onClick={() => !isAll && setSelMetric(m)}
+                                        onClick={() => setSelMetric(m)}
                                     >
                                         <span className="pubd-kpi-label">{m.label}</span>
                                         <img src={m.icon} alt="" />
@@ -196,21 +197,35 @@ export default function PCPublicData({ onNavigate }) {
                         </div>
                     </aside>
 
-                    {/* 선택 지표 상세 (카테고리 모드) — 백엔드 연동 전 placeholder.
-                        TODO: /api/public-data 연동 시 Figma 302:9670(연도별 막대) / 302:9852(표) 형태로 recharts 렌더 */}
-                    {!isAll && selMetric && (
-                        <section className="pubd-detail">
-                            <div className="pubd-detail-head">
-                                <h3>{selMetric.label}</h3>
-                                {region && <span className="pubd-detail-region">{region}</span>}
-                                <button type="button" className="pubd-detail-dl" disabled>다운로드</button>
-                            </div>
-                            <div className="pubd-detail-body">
-                                <p className="pubd-detail-na">데이터 준비중</p>
-                                <p className="pubd-detail-sub">공공데이터 연동 후 연도별 추이가 표시됩니다.</p>
-                            </div>
-                        </section>
-                    )}
+                    {/* 선택 지표 상세 — 카드 클릭 시 해당 지표의 백엔드 실값 표시(전체/카테고리 모드 공통).
+                        값이 없으면 '준비중'(수치 날조 금지). TODO: 연도별 추이는 시계열 API 연동 시 recharts 렌더 */}
+                    {selMetric && (() => {
+                        const hit = hitFor(selMetric);
+                        return (
+                            <section className="pubd-detail">
+                                <div className="pubd-detail-head">
+                                    <h3>{selMetric.label}</h3>
+                                    <span className="pubd-detail-region">{hit?.region || region || '부산'}</span>
+                                    <button type="button" className="pubd-detail-dl" disabled>다운로드</button>
+                                </div>
+                                {hit ? (
+                                    <div className="pubd-detail-body">
+                                        <p className="pubd-detail-value">{hit.value_text}{hit.unit ? ` ${hit.unit}` : ''}</p>
+                                        <p className="pubd-detail-meta">
+                                            {hit.year && <span>{hit.year}년 기준</span>}
+                                            {hit.note && <span> · {hit.note}</span>}
+                                        </p>
+                                        {hit.source && <p className="pubd-detail-source">출처: {hit.source}</p>}
+                                    </div>
+                                ) : (
+                                    <div className="pubd-detail-body">
+                                        <p className="pubd-detail-na">데이터 준비중</p>
+                                        <p className="pubd-detail-sub">공공데이터 연동 후 값·연도별 추이가 표시됩니다.</p>
+                                    </div>
+                                )}
+                            </section>
+                        );
+                    })()}
                 </div>
             </div>
         </UserPCLayout>
