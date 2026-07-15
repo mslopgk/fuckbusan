@@ -163,6 +163,7 @@ export default function MProposalList({ onNavigate }) {
 
             {/* 카테고리 — 생활정보 아이콘 rail (Figma 302:5940) */}
             <CategoryRail
+                variant="pill"
                 categories={CATEGORIES}
                 value={cat}
                 onChange={setCat}

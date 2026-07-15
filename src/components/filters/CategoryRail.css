@@ -60,6 +60,35 @@
     min-width: 60px;
 }
 
+/* ── 모바일 리스트: 둥근 알약칩(pill) — 아이콘 없이 라벨, 가로 스크롤 (Figma 리스트전용 프레임) ── */
+.cat-rail--pill .cat-rail-items {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 4px 16px 8px;
+    gap: 8px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.cat-rail--pill .cat-rail-items::-webkit-scrollbar {
+    display: none;
+}
+.cat-rail--pill .cat-rail-item {
+    flex-direction: row;
+    min-width: 0;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid #e5e5e5;
+    background: #fff;
+    color: #767676;
+}
+.cat-rail--pill .cat-rail-item.on {
+    border-color: transparent;
+}
+.cat-rail--pill .cat-rail-label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
 /* ── PC: 세로 rail 카드 ── */
 .cat-rail--rail {
     background: #fff;

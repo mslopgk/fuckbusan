@@ -167,6 +167,7 @@ export default function MReportList({ onNavigate }) {
             <div className="m-rlist-scroll" onScroll={handleScroll}>
                 <CategoryRail
                     className="m-rlist-cats"
+                    variant="pill"
                     categories={CATEGORIES}
                     value={cat}
                     onChange={setCat}
