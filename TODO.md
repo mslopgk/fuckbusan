@@ -18,7 +18,7 @@
 ### 메인화면 (Home)
 - [x] 메인 지도 뒷 배경 — 이미 구현됨(`.pch2-hero::before` 지도배경 데스크탑.png opacity 0.3). 클라 "누락"은 구버전 빌드 기준. 무변경
 - [x] 지도 hero 수직 중앙 정렬 — `HomePC.css .pch2-hero-map` top:24px/flex-start → top:0 bottom:0/center (`06b866c`, 실브라우저 검증)
-- [~] 지역별 TOP 5 — 이미 구현·실데이터 연동됨(우측상단, `/api/home/district-ranking`, 동래구 5건 등). ⚠️ **상충**: 요청 텍스트는 "하단에 붙여주세요"인데 목표 image1은 **우측 상단**. 현재 image1 기준(우측상단) 유지. 디자이너 확인 필요 — 진짜 하단 이동이면 hero에서 분리해 별도 섹션 재배치 추가작업
+- [x] 지역별 TOP 5 지도 하단 이동 — 사용자 결정으로 지도 아래 별도 섹션 재배치(Figma 302:14384 순서). PC(`8aa9f2a`, hero→TOP5섹션→액션). 모바일은 이미 참여현황→지도→TOP5 순이라 무변경
 
 ### 설문화면 (PC — 스피드 버튼 영역, 설문 진입 카드)
 - [x] "무엇을 도와드릴까요?" 카드에서 우측 스피드 버튼 3개를 같은 div 안에서 full-width로 분리 (SurveyChat.css `.surveychat-intro.pc` stretch + flex 240px, 칩 width:100% — 2026-07-15 검증)
@@ -39,16 +39,15 @@
 - [x] 특정 구 클릭 시 %값 미표시 — **답: 데이터 부재가 맞음**. `/api/public-data/overview` 실데이터는 4종(공공도서관 4개관/CCTV 1,130대/미세먼지 31㎍/교통사고 1,373건)만 시드. 나머지 60여 지표는 백엔드 미연동('준비중' 정상). 위 클릭 수정으로 실데이터 지표는 값 노출됨. 나머지는 공공데이터 백엔드 확장 필요(코드 아님, 데이터 수급 이슈)
 
 ### 제보/제안 (PC — 지도 화면)
-- [ ] 좌측 대시보드 디자인이 Figma와 다름 (제보/제안 동일) — Figma 참조: 구역별 드롭다운 + 생활정보 9그리드 + **유형 카드**(제보 29건/제안 22건, 보라 액티브 강조)
-- [ ] 핀 클릭 시 디자인 변경 — Figma 참조: "정책 정보" 팝업(시도/시군구/사업명/위치/면적/선정년도 + "자세히 보기"/"상세보기" 버튼, 보라 테마)
-- [ ] 좋아요(하트) 팝업 내용 **중앙 정렬** (제보/제안 동일)
+- [x] 좌측 대시보드 — 이미 Figma 일치(구역별 드롭다운 + 생활정보 9그리드 + 유형 카드 제보30/제안22). 무변경 확인
+- [x] 핀 클릭 시 디자인 변경 — 클릭(선택) 핀에 focus=true 전달 → `.pc-kakao-pin--focus`(scale 1.25+shadow). PCReportMap/PCProposeMap (`2d67875`, Playwright 검증)
+- [x] 좋아요(하트) 팝업 내용 중앙 정렬 — `.pc-kakao-pin-vote` inline-flex 중앙정렬 (`2d67875`). 제보/제안 동일(공유 PCMapCanvas). 모바일도 개선 적용
 
 ### 진단하기 (모바일 — `MDiagnosisList.jsx`/`MDiagnosisMap.jsx`)
-- [?] 카테고리 위치 및 리스트 디자인이 Figma와 다름 — **디자이너 확인 필요(공유 컴포넌트 이슈)**. 현재 mDiagnosisList는 **아이콘 rail**(CategoryRail = Figma 302:5940 통일 실물컴포넌트, 제보·제안·진단 **공유**), image13 목표는 **pill 칩**(둥근 알약형). 진단만 pill로 바꾸면 3개 도메인 디자인이 갈라짐 → 셋 다 pill로 통일할지 vs 진단만 예외로 할지 디자이너 결정 필요. [[project_docs_backlog]]에 이미 기록된 알려진 충돌. 임의 변경 안 함
-  - 참고: image13은 지도+시트 뷰(mDiagnosisMap 계열)로 보이고, 현재 mDiagnosisList는 순수 리스트 — 뷰 구조 차이도 함께 확인 필요
+- [x] 카테고리 pill 통일 — 사용자 결정: 3개 도메인(제보/제안/진단) 모두 pill. CategoryRail `variant="pill"` 추가·적용 (`0a13672`, verify 검증). 지도뷰는 이미 pill
 
 ### 공공데이터 (모바일)
-- [ ] **미구현** — 모바일 공공데이터 화면 신규 작업 필요 (PC `PCPublicData.jsx` 상당의 모바일 버전 부재). 우선순위/스코프는 정책 결정 필요 (PC와 동일 정보 밀도로는 모바일에 안 맞을 가능성 — 별도 레이아웃 설계 권장)
+- [~] **스킵 (사용자 결정)** — 모바일 전용 Figma 부재로 디자인 대기. 나오면 착수(추측 제작 안 함)
 
 ### 제보/제안 (모바일 — `MReportMap.jsx`/`MProposalMap.jsx`)
 - [x] 뒤로가기 버튼 누락 — `MProposalMap`이 `showBack={false}`였음(제보맵은 true). `showBack={true}` + onBack→mProposalList로 통일 (2026-07-15 verify 캡처 확인)
