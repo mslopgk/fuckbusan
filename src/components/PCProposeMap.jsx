@@ -88,7 +88,10 @@ export default function PCProposeMap({ onNavigate }) {
         propose: proposals.length,
     };
 
-    const pins = filtered.filter((it) => it.lat && it.lng).map((it) => ({ ...it, color: '#E6235A' }));
+    // 클릭(선택)된 핀은 focus 디자인으로 변경 (코드코리아 260713)
+    const pins = filtered
+        .filter((it) => it.lat && it.lng)
+        .map((it) => ({ ...it, color: '#E6235A', focus: policyItem != null && String(it.id) === String(policyItem.id) }));
 
     return (
         <UserPCLayout currentView="pcProposeMap" onNavigate={onNavigate}>

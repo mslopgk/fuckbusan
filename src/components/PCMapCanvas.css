@@ -155,13 +155,18 @@
     left: 100%;
     bottom: 50%;
     margin-left: 4px;
+    /* 하트+숫자 내용 중앙 정렬 (코드코리아 260713) */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
     background: #fff;
     border: 1.5px solid currentColor;
     border-radius: 10px;
-    padding: 1px 6px 1px 5px;
+    padding: 1px 7px;
     font-size: 10px;
     font-weight: 800;
-    line-height: 1.4;
+    line-height: 1;
     white-space: nowrap;
     box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     pointer-events: none;
