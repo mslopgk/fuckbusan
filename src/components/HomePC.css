@@ -14,7 +14,7 @@
     opacity: 0.3; pointer-events: none;
 }
 .pch2-hero-map {
-    position: absolute; left: 0; right: 0; top: 24px; display: flex; align-items: flex-start; justify-content: center;
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center;
 }
 .pch2-hero-map .busanmap { width: min(40vw, 560px); }
 .pch2-hero-inner {

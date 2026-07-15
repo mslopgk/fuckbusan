@@ -15,6 +15,15 @@
       "assertions": []
     },
     {
+      "id": "pcHome",
+      "view": "home",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".pch2-hero",
+      "viewport": { "width": 1280, "height": 900 },
+      "assertions": []
+    },
+    {
       "id": "login",
       "view": "login",
       "path": "/",
