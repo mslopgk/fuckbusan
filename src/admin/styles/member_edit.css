@@ -110,6 +110,17 @@
     color: #23BDBB;
 }
 
+/* collapsible 참여현황 헤더 (펼침/접힘) */
+.participation-caption-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    color: #333;
+    user-select: none;
+    max-width: 620px;
+}
+
 .participation-table {
     width: 100%;
     border-collapse: collapse;

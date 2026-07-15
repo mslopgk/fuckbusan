@@ -237,8 +237,10 @@ function EditModal({ persona, onClose, onSaved }) {
         top_issues: arrToLines(d.top_issues), voices: arrToLines(d.voices),
         category_scores: { ...CAT8.reduce((o, k) => ({ ...o, [k]: (d.category_scores || {})[k] || 0 }), {}) },
         participation: { 제안: (d.participation || {})['제안'] || 0, 제보: (d.participation || {})['제보'] || 0, 진단: (d.participation || {})['진단'] || 0, 설문: (d.participation || {})['설문'] || 0 },
-        advanced: JSON.stringify({ journey: d.journey || [], policy_signals: d.policy_signals || {} }, null, 2),
+        journey_json: JSON.stringify(d.journey || [], null, 2),
+        policy_json: JSON.stringify(d.policy_signals || {}, null, 2),
     });
+    const [tab, setTab] = useState('basic'); // basic | stats | journey | policy
     const [saving, setSaving] = useState(false);
     const [err, setErr] = useState('');
 
@@ -248,9 +250,11 @@ function EditModal({ persona, onClose, onSaved }) {
 
     const save = async () => {
         setSaving(true); setErr('');
-        let adv = {};
-        try { adv = JSON.parse(f.advanced || '{}'); }
-        catch { setErr('고급(JSON) 형식 오류 — journey/policy_signals 확인'); setSaving(false); return; }
+        let journey, policy;
+        try { journey = JSON.parse(f.journey_json || '[]'); }
+        catch { setTab('journey'); setErr('여정지도(JSON) 형식 오류를 확인해주세요.'); setSaving(false); return; }
+        try { policy = JSON.parse(f.policy_json || '{}'); }
+        catch { setTab('policy'); setErr('정책 신호등(JSON) 형식 오류를 확인해주세요.'); setSaving(false); return; }
         const detail = {
             ...persona.detail, job: f.job, body_language: f.body_language,
             interests: f.interests, concerns: f.concerns, hobbies: f.hobbies,
@@ -258,7 +262,7 @@ function EditModal({ persona, onClose, onSaved }) {
             similar_ratio: f.similar_ratio, similar_desc: f.similar_desc,
             top_issues: linesToArr(f.top_issues), voices: linesToArr(f.voices),
             category_scores: f.category_scores, participation: f.participation,
-            journey: adv.journey ?? d.journey ?? [], policy_signals: adv.policy_signals ?? d.policy_signals ?? {},
+            journey: journey ?? d.journey ?? [], policy_signals: policy ?? d.policy_signals ?? {},
         };
         const body = {
             name: f.name, age: Number(f.age), gender: f.gender, job: f.job, quote: f.quote,
@@ -279,56 +283,79 @@ function EditModal({ persona, onClose, onSaved }) {
                     <h3>가상시민 편집 — {persona.name}</h3>
                     <button onClick={() => !saving && onClose()}>×</button>
                 </div>
+
+                <div className="acp-edit-tabs">
+                    {[['basic', '기본정보'], ['stats', '데이터 통계'], ['journey', '여정지도'], ['policy', '정책 신호등']].map(([k, label]) => (
+                        <button key={k} type="button" className={`acp-edit-tab${tab === k ? ' on' : ''}`} onClick={() => setTab(k)}>{label}</button>
+                    ))}
+                </div>
+
                 <div className="acp-edit-body">
-                    <div className="acp-edit-grid4">
-                        <label>이름<input value={f.name} onChange={(e) => set('name', e.target.value)} /></label>
-                        <label>나이<input type="number" value={f.age} onChange={(e) => set('age', e.target.value)} /></label>
-                        <label>성별<input value={f.gender} onChange={(e) => set('gender', e.target.value)} /></label>
-                        <label>직업<input value={f.job} onChange={(e) => set('job', e.target.value)} /></label>
-                    </div>
-                    <label className="acp-edit-full">한 줄 인용(quote)<textarea rows={2} value={f.quote} onChange={(e) => set('quote', e.target.value)} /></label>
-                    <div className="acp-edit-grid2">
-                        <label>태그 (쉼표)<input value={f.tags} onChange={(e) => set('tags', e.target.value)} /></label>
-                        <label>카테고리 (쉼표)<input value={f.categories} onChange={(e) => set('categories', e.target.value)} /></label>
-                    </div>
-                    <label className="acp-edit-full">시민 체감 언어<textarea rows={2} value={f.body_language} onChange={(e) => set('body_language', e.target.value)} /></label>
-                    <div className="acp-edit-grid4">
-                        <label>관심사<input value={f.interests} onChange={(e) => set('interests', e.target.value)} /></label>
-                        <label>고민<input value={f.concerns} onChange={(e) => set('concerns', e.target.value)} /></label>
-                        <label>취미<input value={f.hobbies} onChange={(e) => set('hobbies', e.target.value)} /></label>
-                        <label>활동<input value={f.activities} onChange={(e) => set('activities', e.target.value)} /></label>
-                    </div>
-                    <div className="acp-edit-grid4">
-                        <label>가족<input value={f.family} onChange={(e) => set('family', e.target.value)} /></label>
-                        <label>좌우명<input value={f.motto} onChange={(e) => set('motto', e.target.value)} /></label>
-                        <label>꿈꾸는 생활<input value={f.dream_life} onChange={(e) => set('dream_life', e.target.value)} /></label>
-                        <label>유사비율<input value={f.similar_ratio} onChange={(e) => set('similar_ratio', e.target.value)} /></label>
-                    </div>
-                    <label className="acp-edit-full">유사 시민 설명<input value={f.similar_desc} onChange={(e) => set('similar_desc', e.target.value)} /></label>
-                    <div className="acp-edit-grid2">
-                        <label>핵심 이슈 TOP (줄바꿈)<textarea rows={3} value={f.top_issues} onChange={(e) => set('top_issues', e.target.value)} /></label>
-                        <label>시민 목소리 (줄바꿈)<textarea rows={3} value={f.voices} onChange={(e) => set('voices', e.target.value)} /></label>
-                    </div>
-                    <div className="acp-edit-sub">카테고리별 관심도 (0~5)</div>
-                    <div className="acp-edit-scores">
-                        {CAT8.map((k) => (
-                            <label key={k}>{k}
-                                <input type="number" min={0} max={5} value={f.category_scores[k]} onChange={(e) => setScore(k, e.target.value)} />
-                            </label>
-                        ))}
-                    </div>
-                    <div className="acp-edit-sub">공공데이터 참여 비율 (%)</div>
-                    <div className="acp-edit-scores">
-                        {['제안', '제보', '진단', '설문'].map((k) => (
-                            <label key={k}>{k}
-                                <input type="number" min={0} max={100} value={f.participation[k]} onChange={(e) => setPart(k, e.target.value)} />
-                            </label>
-                        ))}
-                    </div>
-                    <details className="acp-edit-adv">
-                        <summary>고급: 여정지도 · 정책신호등 (JSON)</summary>
-                        <textarea rows={8} value={f.advanced} onChange={(e) => set('advanced', e.target.value)} />
-                    </details>
+                    {tab === 'basic' && (
+                        <>
+                            <div className="acp-edit-grid2">
+                                <label>이름<input value={f.name} onChange={(e) => set('name', e.target.value)} /></label>
+                                <label>나이<input type="number" value={f.age} onChange={(e) => set('age', e.target.value)} /></label>
+                                <label>성별<input value={f.gender} onChange={(e) => set('gender', e.target.value)} /></label>
+                                <label>직업<input value={f.job} onChange={(e) => set('job', e.target.value)} /></label>
+                            </div>
+                            <label className="acp-edit-full">한 줄 인용(quote)<textarea rows={2} value={f.quote} onChange={(e) => set('quote', e.target.value)} /></label>
+                            <div className="acp-edit-grid2">
+                                <label>태그 (쉼표)<input value={f.tags} onChange={(e) => set('tags', e.target.value)} /></label>
+                                <label>카테고리 (쉼표)<input value={f.categories} onChange={(e) => set('categories', e.target.value)} /></label>
+                            </div>
+                            <label className="acp-edit-full">시민 체감 언어<textarea rows={2} value={f.body_language} onChange={(e) => set('body_language', e.target.value)} /></label>
+                            <div className="acp-edit-grid2">
+                                <label>관심사<input value={f.interests} onChange={(e) => set('interests', e.target.value)} /></label>
+                                <label>고민<input value={f.concerns} onChange={(e) => set('concerns', e.target.value)} /></label>
+                                <label>취미<input value={f.hobbies} onChange={(e) => set('hobbies', e.target.value)} /></label>
+                                <label>활동<input value={f.activities} onChange={(e) => set('activities', e.target.value)} /></label>
+                                <label>가족<input value={f.family} onChange={(e) => set('family', e.target.value)} /></label>
+                                <label>좌우명<input value={f.motto} onChange={(e) => set('motto', e.target.value)} /></label>
+                                <label>꿈꾸는 생활<input value={f.dream_life} onChange={(e) => set('dream_life', e.target.value)} /></label>
+                                <label>유사비율<input value={f.similar_ratio} onChange={(e) => set('similar_ratio', e.target.value)} /></label>
+                            </div>
+                            <label className="acp-edit-full">유사 시민 설명<input value={f.similar_desc} onChange={(e) => set('similar_desc', e.target.value)} /></label>
+                        </>
+                    )}
+
+                    {tab === 'stats' && (
+                        <>
+                            <div className="acp-edit-grid2">
+                                <label>핵심 이슈 TOP (줄바꿈)<textarea rows={4} value={f.top_issues} onChange={(e) => set('top_issues', e.target.value)} /></label>
+                                <label>시민 목소리 (줄바꿈)<textarea rows={4} value={f.voices} onChange={(e) => set('voices', e.target.value)} /></label>
+                            </div>
+                            <div className="acp-edit-sub">카테고리별 관심도 (0~5)</div>
+                            <div className="acp-edit-scores">
+                                {CAT8.map((k) => (
+                                    <label key={k}>{k}
+                                        <input type="number" min={0} max={5} value={f.category_scores[k]} onChange={(e) => setScore(k, e.target.value)} />
+                                    </label>
+                                ))}
+                            </div>
+                            <div className="acp-edit-sub">공공데이터 참여 비율 (%)</div>
+                            <div className="acp-edit-scores">
+                                {['제안', '제보', '진단', '설문'].map((k) => (
+                                    <label key={k}>{k}
+                                        <input type="number" min={0} max={100} value={f.participation[k]} onChange={(e) => setPart(k, e.target.value)} />
+                                    </label>
+                                ))}
+                            </div>
+                        </>
+                    )}
+
+                    {tab === 'journey' && (
+                        <label className="acp-edit-full acp-edit-json">여정지도 (JSON 배열)
+                            <textarea rows={14} value={f.journey_json} onChange={(e) => set('journey_json', e.target.value)} />
+                        </label>
+                    )}
+
+                    {tab === 'policy' && (
+                        <label className="acp-edit-full acp-edit-json">정책 신호등 (JSON)
+                            <textarea rows={14} value={f.policy_json} onChange={(e) => set('policy_json', e.target.value)} />
+                        </label>
+                    )}
+
                     {err && <div className="acp-edit-err">{err}</div>}
                 </div>
                 <div className="acp-edit-foot">

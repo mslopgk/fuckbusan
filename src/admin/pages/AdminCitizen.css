@@ -193,31 +193,41 @@
 .acp-act:hover { background: #f5f5f5; }
 .acp-item-body { border-top: 1px solid #eee; background: #fafbfb; padding: 8px 18px 18px; }
 
-/* 편집 모달 */
-.acp-edit { width: 760px; max-width: calc(100vw - 32px); max-height: 90vh; background: #fff; border-radius: 16px;
+/* 편집 모달 — 탭 구조 · 세로 단일 컬럼 (가로 스크롤 방지) */
+.acp-edit { width: 560px; max-width: calc(100vw - 32px); max-height: 90vh; background: #fff; border-radius: 16px;
     display: flex; flex-direction: column; }
 .acp-edit-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px;
     border-bottom: 1px solid #eee; }
 .acp-edit-head h3 { font-size: 18px; font-weight: 800; margin: 0; }
-.acp-edit-body { padding: 20px 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
-.acp-edit-grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.acp-edit-grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-.acp-edit-body label { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: #555; }
+
+/* 탭 네비 */
+.acp-edit-tabs { display: flex; gap: 4px; padding: 10px 24px 0; border-bottom: 1px solid #eee; flex-wrap: wrap; }
+.acp-edit-tab { border: none; background: none; padding: 10px 14px; font-size: 14px; font-weight: 700;
+    color: #999; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.acp-edit-tab.on { color: #23bdbb; border-bottom-color: #23bdbb; }
+
+.acp-edit-body { padding: 20px 24px; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 14px; }
+/* minmax(0,1fr) — 자식 내용이 넘쳐도 트랙이 늘어나지 않아 가로 스크롤이 생기지 않음 */
+.acp-edit-grid4 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.acp-edit-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.acp-edit-body label { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: #555; min-width: 0; }
 .acp-edit-full { width: 100%; }
-.acp-edit-body input, .acp-edit-body textarea { border: 1px solid #ddd; border-radius: 9px; padding: 9px 11px;
-    font-size: 14px; font-family: inherit; color: #222; }
+.acp-edit-body input, .acp-edit-body textarea { width: 100%; box-sizing: border-box; min-width: 0;
+    border: 1px solid #ddd; border-radius: 9px; padding: 9px 11px; font-size: 14px; font-family: inherit; color: #222; }
 .acp-edit-body input:focus, .acp-edit-body textarea:focus { outline: none; border-color: #23bdbb; }
 .acp-edit-sub { font-size: 13px; font-weight: 700; color: #444; margin-top: 4px; }
-.acp-edit-scores { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+.acp-edit-scores { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .acp-edit-scores label { font-size: 12px; align-items: center; }
 .acp-edit-scores input { width: 100%; text-align: center; }
-.acp-edit-adv summary { font-size: 13px; font-weight: 700; color: #199; cursor: pointer; }
-.acp-edit-adv textarea { width: 100%; margin-top: 8px; font-family: ui-monospace, monospace; font-size: 12px; }
+.acp-edit-json textarea { font-family: ui-monospace, monospace; font-size: 12px; resize: vertical; }
 .acp-edit-err { background: #fde8ec; color: #c0392b; border-radius: 9px; padding: 10px 14px; font-size: 13px; }
 .acp-edit-foot { padding: 16px 24px; border-top: 1px solid #eee; }
 
 @media (max-width: 1100px) {
     .acd-counts { grid-template-columns: repeat(3, 1fr); }
-    .acp-edit-grid4, .acd-sys-grid { grid-template-columns: repeat(2, 1fr); }
-    .acp-edit-scores { grid-template-columns: repeat(4, 1fr); }
+    .acd-sys-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+    .acp-edit-grid4, .acp-edit-grid2 { grid-template-columns: 1fr; }
+    .acp-edit-scores { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

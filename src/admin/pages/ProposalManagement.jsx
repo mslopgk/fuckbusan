@@ -10,11 +10,14 @@ const SearchIcon = () => (
     </svg>
 );
 
+// 제안 카테고리(유형) — MProposalForm.jsx TYPES와 동일 taxonomy
+const CATEGORIES = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
+
 export default function ProposalManagement({ onNavigate }) {
     const [proposals, setProposals] = useState([]);
     const [total, setTotal] = useState(0);
-    const [search, setSearch] = useState('');
-    const [authorSearch, setAuthorSearch] = useState('');
+    const [keyword, setKeyword] = useState('');
+    const [category, setCategory] = useState('전체');
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const itemsPerPage = 10;
@@ -24,24 +27,24 @@ export default function ProposalManagement({ onNavigate }) {
         try {
             const token = localStorage.getItem('access_token');
             const params = new URLSearchParams({ page: currentPage, size: itemsPerPage });
+            if (category && category !== '전체') params.set('category', category);
             const res = await fetch(`${API_BASE}/admin/proposals?${params}`, {
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
 
+            // 키워드: 제목·작성자 통합 검색 (클라이언트)
+            const match = (p) => !keyword
+                || (p.title || '').includes(keyword)
+                || (p.author || p.nickname || '').includes(keyword);
+
             if (res.ok) {
                 const data = await res.json();
                 if (Array.isArray(data)) {
-                    const filtered = data.filter((p) =>
-                        (!search || (p.title || '').includes(search)) &&
-                        (!authorSearch || (p.author || p.nickname || '').includes(authorSearch))
-                    );
+                    const filtered = data.filter(match);
                     setTotal(filtered.length);
                     setProposals(filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
                 } else {
-                    const filtered = (data.items || []).filter((p) =>
-                        (!search || (p.title || '').includes(search)) &&
-                        (!authorSearch || (p.author || '').includes(authorSearch))
-                    );
+                    const filtered = (data.items || []).filter(match);
                     setTotal(data.total ?? filtered.length);
                     setProposals(filtered);
                 }
@@ -52,8 +55,7 @@ export default function ProposalManagement({ onNavigate }) {
             if (fb.ok) {
                 const arr = await fb.json();
                 const filtered = arr.filter((p) =>
-                    (!search || (p.title || '').includes(search)) &&
-                    (!authorSearch || (p.nickname || '').includes(authorSearch))
+                    (category === '전체' || (p.category || '') === category) && match(p)
                 );
                 setTotal(filtered.length);
                 setProposals(filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
@@ -63,7 +65,12 @@ export default function ProposalManagement({ onNavigate }) {
         } finally {
             setLoading(false);
         }
-    }, [search, authorSearch, itemsPerPage]);
+    }, [category, keyword, itemsPerPage]);
+
+    useEffect(() => {
+        setPage(1);
+        fetchProposals(1);
+    }, [category]);
 
     useEffect(() => {
         fetchProposals(page);
@@ -85,33 +92,31 @@ export default function ProposalManagement({ onNavigate }) {
 
             <div className="search-box-new-col">
                 <div className="search-row">
-                    <div className="search-label-new">회원검색</div>
-                    <div className="search-input-wrapper-new">
+                    <div className="search-label-new search-label-fixed">카테고리 선택</div>
+                    <select
+                        className="search-select-new"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                    >
+                        <option value="전체">전체</option>
+                        {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                </div>
+                <div className="search-row">
+                    <div className="search-label-new search-label-fixed">검색</div>
+                    <div className="search-input-wrapper-new" style={{ maxWidth: 'none' }}>
                         <input
                             type="text"
                             className="search-input-new"
-                            placeholder="이름을 입력해 주세요"
-                            value={authorSearch}
-                            onChange={(e) => setAuthorSearch(e.target.value)}
+                            placeholder="제목·작성자로 검색해주세요"
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            style={{ paddingRight: 40 }}
                         />
                         <SearchIcon />
                     </div>
                     <button className="btn-search-new" onClick={handleSearch}>검색</button>
-                </div>
-                <div className="search-row">
-                    <div className="search-label-new">제목</div>
-                    <div className="search-input-wrapper-new">
-                        <input
-                            type="text"
-                            className="search-input-new"
-                            placeholder="제목을 입력해 주세요"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                        />
-                        <SearchIcon />
-                    </div>
                 </div>
             </div>
 

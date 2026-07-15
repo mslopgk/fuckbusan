@@ -211,6 +211,35 @@
     cursor: pointer;
 }
 
+/* 카테고리 선택 드롭다운 (제보/제안/설문 관리 검색 통일) */
+.search-select-new {
+    height: 48px;
+    min-width: 220px;
+    padding: 0 40px 0 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+
+.search-select-new:focus {
+    outline: none;
+    border-color: #23BDBB;
+}
+
+/* 검색 통일 레이아웃: 라벨 고정폭으로 드롭다운·검색박스 좌측 정렬 */
+.search-label-fixed {
+    width: 90px;
+    flex-shrink: 0;
+}
+
 /* Table Styling */
 .table-container-new {
     background-color: transparent;

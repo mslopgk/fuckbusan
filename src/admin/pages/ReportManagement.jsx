@@ -10,12 +10,14 @@ const SearchIcon = () => (
     </svg>
 );
 
+// 제보 카테고리(유형) — MReportForm.jsx CATS와 동일 taxonomy
+const CATEGORIES = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
+
 export default function ReportManagement({ onNavigate }) {
     const [reports, setReports] = useState([]);
     const [total, setTotal] = useState(0);
-    const [search, setSearch] = useState('');
-    const [authorSearch, setAuthorSearch] = useState('');
-    const [statusFilter, setStatusFilter] = useState('전체');
+    const [keyword, setKeyword] = useState('');
+    const [category, setCategory] = useState('전체');
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const itemsPerPage = 10;
@@ -25,7 +27,7 @@ export default function ReportManagement({ onNavigate }) {
         const token = localStorage.getItem('access_token');
         try {
             const params = new URLSearchParams({ page: currentPage, size: itemsPerPage });
-            if (statusFilter && statusFilter !== '전체') params.set('status', statusFilter);
+            if (category && category !== '전체') params.set('category', category);
 
             const adminUrl = `${API_BASE}/admin/reports?${params}`;
             let res = token
@@ -34,26 +36,23 @@ export default function ReportManagement({ onNavigate }) {
 
             if (!res || !res.ok) {
                 const fallbackParams = new URLSearchParams();
-                if (statusFilter && statusFilter !== '전체') fallbackParams.set('status', statusFilter);
+                if (category && category !== '전체') fallbackParams.set('category', category);
                 res = await fetch(`${API_BASE}/reports/full?${fallbackParams}`);
             }
 
             if (res && res.ok) {
                 const data = await res.json();
+                // 키워드: 제목·작성자 통합 검색 (클라이언트)
+                const match = (r) => !keyword
+                    || (r.title || '').includes(keyword)
+                    || (r.author || r.author_name || '').includes(keyword);
                 if (Array.isArray(data)) {
-                    // 비인증 fallback: 클라이언트 필터
-                    const filtered = data.filter((r) =>
-                        (!search || (r.title || '').includes(search)) &&
-                        (!authorSearch || (r.author || r.author_name || '').includes(authorSearch))
-                    );
+                    const filtered = data.filter(match);
                     setTotal(filtered.length);
                     setReports(filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
                 } else {
                     // 인증 admin endpoint: {items, total}
-                    const filtered = (data.items || []).filter((r) =>
-                        (!search || (r.title || '').includes(search)) &&
-                        (!authorSearch || (r.author || '').includes(authorSearch))
-                    );
+                    const filtered = (data.items || []).filter(match);
                     setTotal(data.total ?? filtered.length);
                     setReports(filtered);
                 }
@@ -63,11 +62,12 @@ export default function ReportManagement({ onNavigate }) {
         } finally {
             setLoading(false);
         }
-    }, [statusFilter, search, authorSearch, itemsPerPage]);
+    }, [category, keyword, itemsPerPage]);
 
     useEffect(() => {
+        setPage(1);
         fetchReports(1);
-    }, [statusFilter]);
+    }, [category]);
 
     useEffect(() => {
         fetchReports(page);
@@ -89,29 +89,25 @@ export default function ReportManagement({ onNavigate }) {
 
             <div className="search-box-new-col" style={{ marginTop: 20 }}>
                 <div className="search-row">
-                    <div className="search-label-new">회원검색</div>
-                    <div className="search-input-wrapper-new" style={{ maxWidth: 'none' }}>
-                        <input
-                            type="text"
-                            className="search-input-new"
-                            placeholder="이름을 입력해 주세요"
-                            value={authorSearch}
-                            onChange={(e) => setAuthorSearch(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                            style={{ paddingRight: 40 }}
-                        />
-                        <SearchIcon />
-                    </div>
+                    <div className="search-label-new search-label-fixed">카테고리 선택</div>
+                    <select
+                        className="search-select-new"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                    >
+                        <option value="전체">전체</option>
+                        {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    </select>
                 </div>
                 <div className="search-row">
-                    <div className="search-label-new">제목</div>
+                    <div className="search-label-new search-label-fixed">검색</div>
                     <div className="search-input-wrapper-new" style={{ maxWidth: 'none' }}>
                         <input
                             type="text"
                             className="search-input-new"
-                            placeholder="제목을 입력해 주세요"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="제목·작성자로 검색해주세요"
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                             style={{ paddingRight: 40 }}
                         />

@@ -12,13 +12,16 @@ const SearchIcon = () => (
 
 const fmtDateTime = (v) => (v ? String(v).replace('T', ' ').slice(0, 16) : '-');
 
+// 부산 16개 구·군 (설문 응답 지역 필터)
+const DISTRICTS = ['부산진구', '해운대구', '사하구', '동래구', '북구', '남구', '연제구', '금정구',
+    '사상구', '기장군', '수영구', '강서구', '서구', '영도구', '동구', '중구'];
+
 // Figma 설문목록(302-29426): AI 대화형 설문 "응답" 관리
 export default function SurveyManagement({ onNavigate }) {
     const [items, setItems] = useState([]);
     const [total, setTotal] = useState(0);
-    const [regionSearch, setRegionSearch] = useState('');
-    const [nameSearch, setNameSearch] = useState('');
-    const [surveySearch, setSurveySearch] = useState('');
+    const [region, setRegion] = useState('전체');
+    const [keyword, setKeyword] = useState('');
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const itemsPerPage = 10;
@@ -28,9 +31,8 @@ export default function SurveyManagement({ onNavigate }) {
         const token = localStorage.getItem('access_token');
         try {
             const params = new URLSearchParams({ page: currentPage, size: itemsPerPage });
-            if (regionSearch) params.set('region', regionSearch);
-            if (nameSearch) params.set('name', nameSearch);
-            if (surveySearch) params.set('q', surveySearch);
+            if (region && region !== '전체') params.set('region', region);
+            if (keyword) params.set('q', keyword);
             const res = await fetch(`${API_BASE}/survey-chat/admin/list?${params}`, {
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
@@ -49,9 +51,11 @@ export default function SurveyManagement({ onNavigate }) {
         } finally {
             setLoading(false);
         }
-    }, [regionSearch, nameSearch, surveySearch, itemsPerPage]);
+    }, [region, keyword, itemsPerPage]);
 
     useEffect(() => { fetchList(page); }, [page]);
+
+    useEffect(() => { setPage(1); fetchList(1); }, [region]);
 
     const handleSearch = () => {
         if (page === 1) fetchList(1);
@@ -87,44 +91,25 @@ export default function SurveyManagement({ onNavigate }) {
 
             <div className="search-box-new-col" style={{ marginTop: 20 }}>
                 <div className="search-row">
-                    <div className="search-label-new">지역검색</div>
-                    <div className="search-input-wrapper-new">
-                        <input
-                            type="text"
-                            className="search-input-new"
-                            placeholder="지역을 입력해 주세요"
-                            value={regionSearch}
-                            onChange={(e) => setRegionSearch(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                            style={{ paddingRight: 40 }}
-                        />
-                        <SearchIcon />
-                    </div>
+                    <div className="search-label-new search-label-fixed">지역 선택</div>
+                    <select
+                        className="search-select-new"
+                        value={region}
+                        onChange={(e) => setRegion(e.target.value)}
+                    >
+                        <option value="전체">전체</option>
+                        {DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
+                    </select>
                 </div>
                 <div className="search-row">
-                    <div className="search-label-new">회원검색</div>
-                    <div className="search-input-wrapper-new">
-                        <input
-                            type="text"
-                            className="search-input-new"
-                            placeholder="응답자(회원명)를 입력해 주세요"
-                            value={nameSearch}
-                            onChange={(e) => setNameSearch(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                            style={{ paddingRight: 40 }}
-                        />
-                        <SearchIcon />
-                    </div>
-                </div>
-                <div className="search-row">
-                    <div className="search-label-new">설문검색</div>
+                    <div className="search-label-new search-label-fixed">검색</div>
                     <div className="search-input-wrapper-new" style={{ maxWidth: 'none' }}>
                         <input
                             type="text"
                             className="search-input-new"
-                            placeholder="설문을 검색해주세요"
-                            value={surveySearch}
-                            onChange={(e) => setSurveySearch(e.target.value)}
+                            placeholder="응답자·설문유형으로 검색해주세요"
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                             style={{ paddingRight: 40 }}
                         />

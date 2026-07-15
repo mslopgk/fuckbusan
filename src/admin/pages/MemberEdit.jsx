@@ -11,9 +11,11 @@ const fmtDateTime = (v) => (v ? String(v).replace('T', ' ').slice(0, 16) : '-');
 export default function MemberEdit({ member, onNavigate }) {
     const [formData, setFormData] = useState(member || {});
     const [activity, setActivity] = useState({ proposals: [], reports: [], surveys: [] });
+    const [open, setOpen] = useState({ proposals: true, reports: true, surveys: true });
     const [saving, setSaving] = useState(false);
 
     const set = (key, val) => setFormData((prev) => ({ ...prev, [key]: val }));
+    const toggle = (key) => setOpen((prev) => ({ ...prev, [key]: !prev[key] }));
 
     // 상세/참여현황 최신 데이터 fetch (리스트가 안 넘겨준 필드 대비)
     useEffect(() => {
@@ -159,17 +161,17 @@ export default function MemberEdit({ member, onNavigate }) {
                     <label className="edit-form-label" style={{ paddingTop: 4 }}>참여현황 리스트</label>
                     <div className="participation-wrap">
                         <ParticipationTable
-                            title="제안" count={proposals.length}
+                            title="제안" count={proposals.length} open={open.proposals} onToggle={() => toggle('proposals')}
                             head={['제안제목', '작성자 ID', '유형', '위치']}
                             rows={proposals.map((p) => [p.title, p.author_id, p.category, p.region])}
                         />
                         <ParticipationTable
-                            title="제보" count={reports.length}
+                            title="제보" count={reports.length} open={open.reports} onToggle={() => toggle('reports')}
                             head={['제보제목', '작성자 ID', '유형', '위치']}
                             rows={reports.map((r) => [r.title, r.author_id, r.category, r.region])}
                         />
                         <ParticipationTable
-                            title="설문" count={surveys.length}
+                            title="설문" count={surveys.length} open={open.surveys} onToggle={() => toggle('surveys')}
                             head={['설문제목', '작성자 ID', '상태', '답변', '수정']}
                             rows={surveys.map((s) => [s.title, s.author_id, s.status, s.answer_count, fmtDateTime(s.updated_at)])}
                         />
@@ -187,22 +189,31 @@ export default function MemberEdit({ member, onNavigate }) {
     );
 }
 
-function ParticipationTable({ title, count, head, rows }) {
+function ParticipationTable({ title, count, head, rows, open, onToggle }) {
     return (
         <div className="participation-block">
-            <div className="participation-caption">{title} <strong>{count}건</strong></div>
-            <table className="participation-table">
-                <thead>
-                    <tr>{head.map((h) => <th key={h}>{h}</th>)}</tr>
-                </thead>
-                <tbody>
-                    {rows.length === 0 ? (
-                        <tr><td colSpan={head.length} className="participation-empty">내역이 없습니다.</td></tr>
-                    ) : rows.map((cells, i) => (
-                        <tr key={i}>{cells.map((c, j) => <td key={j}>{c ?? '-'}</td>)}</tr>
-                    ))}
-                </tbody>
-            </table>
+            <div className="participation-caption participation-caption-toggle" onClick={onToggle}>
+                <span>{title} <strong>{count}건</strong></span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                    style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform .15s' }}>
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </div>
+            {open && (
+                <table className="participation-table">
+                    <thead>
+                        <tr>{head.map((h) => <th key={h}>{h}</th>)}</tr>
+                    </thead>
+                    <tbody>
+                        {rows.length === 0 ? (
+                            <tr><td colSpan={head.length} className="participation-empty">내역이 없습니다.</td></tr>
+                        ) : rows.map((cells, i) => (
+                            <tr key={i}>{cells.map((c, j) => <td key={j}>{c ?? '-'}</td>)}</tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
         </div>
     );
 }
