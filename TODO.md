@@ -31,7 +31,7 @@
 - [x] 상단 이모지 겹침 — 실제는 여정지도(`PersonaReport`)의 하단 감정선 SVG 점이 상단 카드/이모지와 어긋난 것. 원인: 그리드 gap 8px vs SVG 점 균등분할 불일치. `PCAICitizen.css` gap:0+카드 margin:0 4px로 카드중심=(i+0.5)/n 일치시켜 정렬 (`bf5dd72`, Playwright 6스텝 diff 전부 0px 검증)
 
 ### 진단하기 (PC — `PCDiagnosisMap.jsx`/`PCDiagnosisDetail.jsx`)
-- [x] **좌측 대시보드 (2026-07-16 사용자 스크린샷 기준 재작업)** — 진단대상 세그먼트/공공시설물 대분류·중분류·소분류 폼은 이미 구현돼 있었음(코드 변경 불필요). Figma와 실제로 다르던 건 구역별(네이티브 select)·생활정보(3열 그리드) 두 카드뿐 — AI가상시민과 동일한 `filters/MapFilterPanel`(RegionFilterCard/LifeRail, accent=진단 teal #23BDBB)로 교체. `diagnosis.js` LIVING_CATS 순서/라벨도 Figma 순서로 정정. Playwright로 카테고리 토글·구역선택 동작 확인
+- [x] **좌측 대시보드 (2026-07-16 사용자 스크린샷 기준 재작업, 2차 수정 포함)** — 진단대상 세그먼트/공공시설물 대분류·중분류·소분류 폼은 이미 구현돼 있었음(코드 변경 불필요). 1차: 구역별(네이티브 select)·생활정보(3열 그리드) 두 카드를 AI가상시민과 동일한 `filters/MapFilterPanel`(RegionFilterCard/LifeRail, accent=진단 teal #23BDBB)로 교체. 2차: 4장을 세로 한 줄로 쌓던 걸 사용자 지적으로 2행 구조(1행 구역별 전체폭 / 2행 생활정보rail+진단대상·공공시설물 2열)로 재구성. **Figma MCP rate limit로 실제 노드 대조는 못 했고 사용자 제공 스크린샷 기준으로만 구현 — 쿼터 회복 시 재대조 필요**. Playwright로 토글 동작 확인
 
 ### 공공데이터 (PC — `PCPublicData.jsx`)
 - [x] 우측 지표 카드 클릭 시 데이터값 미표시 — 근본원인: `!isAll` 게이트로 **전체 모드에서 카드 클릭 자체가 무반응**이었고 상세는 하드코딩 placeholder. 수정: 전체/카테고리 공통 클릭 + 상세에 백엔드 실값(값/연도/비고/출처) 렌더, 없으면 '준비중'. `hitFor()` 추가 (2026-07-15 Playwright 검증: 공공도서관 클릭→"4개관/2024년 기준/출처")
@@ -43,6 +43,7 @@
 - [x] 좌측 대시보드(구역별/유형 카드) — 이미 Figma 일치(구역별 드롭다운 + 유형 카드 제보30/제안22). 무변경 확인
 - [x] 핀 클릭 시 디자인 변경 — 클릭(선택) 핀에 focus=true 전달 → `.pc-kakao-pin--focus`(scale 1.25+shadow). PCReportMap/PCProposeMap (`2d67875`, Playwright 검증)
 - [x] 좋아요(하트) 팝업 내용 중앙 정렬 — `.pc-kakao-pin-vote` inline-flex 중앙정렬 (`2d67875`). 제보/제안 동일(공유 PCMapCanvas). 모바일도 개선 적용
+- [x] **"유형"(제보/제안 건수 전환) 카드 제거 (2026-07-16 사용자 지적)** — 상단 글로벌 네비로 이미 전환 가능해 중복이라 삭제
 - [x] **정책 정보 팝업 가짜 데이터 제거 (전수검증 중 발견, 2026-07-16)** — 모든 핀에서 동일하게 `245172번지`/`2446㎡`/`선정년도 2023` 하드코딩되어 있던 걸 실필드(region/title/address/category/date/status)로 교체, 없는 값은 '준비중'. PCReportMap.jsx/PCProposeMap.jsx. 부수로 `AdminCitizenPersonas`(PersonaDetailModal) 기대효과 fallback도 가짜 수치("30% 증가" 등) → 빈 상태 '준비중'으로 교체. Playwright로 핀별 값 상이함 검증
 
 ### 진단하기 (모바일 — `MDiagnosisList.jsx`/`MDiagnosisMap.jsx`)
