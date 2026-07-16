@@ -121,9 +121,11 @@ export default function PCPublicData({ onNavigate }) {
         return list;
     }, [cat, sortAsc, isAll, activeCat]);
 
-    // 카테고리 전환 시 첫 지표 자동 선택 (전체 모드는 상세 없음)
+    // 카테고리 전환 시 해당 카테고리 첫 지표 자동 선택.
+    // 전체 모드는 자동 선택 없이 대기 — 카드 클릭으로 언제든 selMetric 지정 가능(상세 렌더는 렌더 시점의 selMetric && 게이트만 따름).
+    // 전체로 돌아왔을 때 강제로 null 처리하지 않아, 직전에 보던 지표 상세가 유지된다.
     useEffect(() => {
-        if (isAll) { setSelMetric(null); return; }
+        if (isAll) return;
         setSelMetric(activeCat?.metrics?.[0] || null);
     }, [cat]); // eslint-disable-line react-hooks/exhaustive-deps
 
