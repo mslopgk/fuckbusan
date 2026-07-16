@@ -63,6 +63,8 @@ async def lifespan(app: FastAPI):
                 # 공공데이터(테마 지표): 단위 + 등록일 컬럼
                 "ALTER TABLE public_theme_stats ADD COLUMN unit VARCHAR(20) NULL",
                 "ALTER TABLE public_theme_stats ADD COLUMN created_at DATETIME NULL",
+                # 마이페이지 생성형 프로필 아바타 캐시 경로
+                "ALTER TABLE users ADD COLUMN avatar_path VARCHAR(255) NULL",
             ]:
                 try:
                     conn.execute(text(stmt))

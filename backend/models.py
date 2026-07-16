@@ -84,6 +84,7 @@ class User(Base):
     is_approved = Column(Boolean, default=True, server_default='1')
     last_login = Column(DateTime)   # 이번 로그인 시각
     prev_login = Column(DateTime)   # 직전(이전) 로그인 시각 — "마지막 접속 일시" 표시용
+    avatar_path = Column(String(255))  # 생성된 프로필 아바타 URL (/uploads/avatars/user_{id}.png)
 
 class ChecklistResult(Base):
     __tablename__ = "checklist_result"

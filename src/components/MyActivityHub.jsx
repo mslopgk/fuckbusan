@@ -8,10 +8,14 @@ import { fetchWithLogout, API_URL } from '../utils/api';
 const DISTRICTS = ['전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구'];
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 
+/* 중립 실루엣 placeholder — 아바타 생성 전/실패 시 표시 (성별 추정 이미지 금지) */
+const NEUTRAL_AVATAR = '/assets/activity/info_person.svg';
+
 const MyActivityHub = ({ onBack, onNavigate }) => {
     const [isPC, setIsPC] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
     const [userName, setUserName] = useState(localStorage.getItem('user_name') || '사용자');
     const [lastLogin, setLastLogin] = useState('');
+    const [avatarUrl, setAvatarUrl] = useState(null);
     const [counts, setCounts] = useState({ report: 0, proposal: 0, survey: 0, diagnosis: 0 });
     const [activeDistrict, setActiveDistrict] = useState('전체');
     const [activeCategories, setActiveCategories] = useState(new Set(['전체']));
@@ -54,6 +58,11 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
         const getJson = (path) =>
             fetchWithLogout(`${API_URL}${path}`, { headers: { Authorization: `Bearer ${token}` } })
                 .then(r => (r.ok ? r.json() : null)).catch(() => null);
+
+        // 회원정보(나이대) 기반 생성 아바타 — 실패/폴백 시 중립 실루엣 유지
+        getJson('/users/me/avatar').then((d) => {
+            if (d?.url) setAvatarUrl(`${API_URL}${d.url}`);
+        });
         Promise.all([
             getJson('/api/reports/mine'),
             getJson('/api/reports/my-proposals'),
@@ -107,7 +116,12 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
             {/* 프로필 카드 */}
             <div className="mahub-profile-card">
                 <div className="mahub-profile-avatar">
-                    <img src="/assets/activity/avatar_girl.png" alt="프로필" />
+                    <img
+                        className={avatarUrl ? '' : 'mahub-avatar-placeholder'}
+                        src={avatarUrl || NEUTRAL_AVATAR}
+                        alt="프로필"
+                        onError={() => setAvatarUrl(null)}
+                    />
                 </div>
                 <div className="mahub-profile-info">
                     <p className="mahub-greeting">반가워요 <strong>{userName}님</strong></p>

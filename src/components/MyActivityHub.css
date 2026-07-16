@@ -61,6 +61,14 @@
     object-fit: cover;
 }
 
+/* 중립 실루엣 placeholder (생성 전/실패) */
+.mahub-profile-avatar img.mahub-avatar-placeholder {
+    object-fit: contain;
+    padding: 22px;
+    box-sizing: border-box;
+    opacity: 0.35;
+}
+
 .mahub-profile-info {
     flex: 1;
     min-width: 0;

@@ -188,6 +188,81 @@ def get_me(current_user: User = Depends(get_current_user)):
         if (current_user.prev_login or current_user.last_login or current_user.created_at) else None,
     }
 
+def _profile_avatar_prompt(birth_date: str) -> str:
+    """회원 생년월일 기반 아바타 프롬프트. 성별은 회원정보에 없으므로 중립 프롬프트 사용.
+
+    AI 가상시민(_build_prompt, ai_citizens.py)과 동일한 3D 카툰 스타일 유지."""
+    import re as _re
+    digits = _re.sub(r"\D", "", birth_date or "")
+    age_desc = "adult"
+    if len(digits) >= 4:
+        try:
+            birth_year = int(digits[:4])
+            age = datetime.now().year - birth_year
+            if 0 < age < 120:
+                band = min(max((age // 10) * 10, 10), 80)
+                age_desc = f"in their {band}s"
+        except ValueError:
+            pass
+    return (
+        f"close-up head and shoulders portrait of a Korean person {age_desc}, "
+        "gender-neutral androgynous appearance, "
+        "Pixar-style 3D cartoon character, "
+        "face occupies most of the frame, no full body, cropped at the chest, "
+        "warm friendly smile, relaxed natural expression, slight head tilt, "
+        "clean light gray background, "
+        "portrait orientation (taller than wide), "
+        "soft studio lighting, vibrant colors, "
+        "no text, no watermark, no border"
+    )
+
+
+@router.get("/users/me/avatar")
+async def get_my_avatar(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """회원 프로필 아바타 (마이페이지 프로필 카드).
+
+    - 캐시(파일 존재) 시 즉시 URL 반환 — 재생성 없음.
+    - 없으면 AI 가상시민과 동일한 Imagen 파이프라인으로 생성 (나이대 기반, 성별 미수집 → 중립).
+    - 생성 실패/키 미설정 시 {"url": None, "fallback": True} — 프론트는 중립 실루엣 유지.
+    """
+    from .ai_citizens import AVATARS_DIR, generate_avatar_bytes
+
+    filename = f"user_{current_user.user_id}.png"
+    path = os.path.join(AVATARS_DIR, filename)
+    url = f"/uploads/avatars/{filename}"
+
+    if os.path.exists(path):
+        if not getattr(current_user, "avatar_path", None):
+            try:
+                current_user.avatar_path = url
+                db.commit()
+            except Exception:
+                db.rollback()
+        return {"url": url, "cached": True}
+
+    if not os.getenv("GEMINI_API_KEY"):
+        return {"url": None, "fallback": True, "reason": "GEMINI_API_KEY not configured"}
+
+    try:
+        img_bytes = await generate_avatar_bytes(_profile_avatar_prompt(current_user.birth_date))
+    except Exception as e:
+        # 생성 실패는 치명적이지 않음 — 프론트가 중립 실루엣을 유지하도록 폴백 마커 반환
+        detail = getattr(e, "detail", None) or str(e)
+        return {"url": None, "fallback": True, "reason": str(detail)}
+
+    os.makedirs(AVATARS_DIR, exist_ok=True)
+    with open(path, "wb") as f:
+        f.write(img_bytes)
+
+    try:
+        current_user.avatar_path = url
+        db.commit()
+    except Exception:
+        db.rollback()  # admin 가상 유저 등 세션 미소속 객체 대비 — 파일 캐시로 충분
+
+    return {"url": url, "cached": False}
+
+
 @router.put("/users/me", response_model=UserOut)
 def update_my_profile(
     user_update: UserUpdate,

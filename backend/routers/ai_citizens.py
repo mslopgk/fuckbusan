@@ -156,18 +156,12 @@ def chat_with_citizen(citizen_id: int, req: ChatReq, db: Session = Depends(get_d
     return rag_chat.chat(p, req.message.strip(), req.history)
 
 
-async def _generate_avatar(citizen_id: int, db: Session) -> dict:
-    """Imagen 4로 아바타 생성 후 디스크 저장. URL 딕셔너리 반환."""
-    p = db.query(models.Persona).filter(models.Persona.id == citizen_id).first()
-    if not p:
-        raise HTTPException(status_code=404, detail="시민을 찾을 수 없습니다.")
-
+async def generate_avatar_bytes(prompt: str) -> bytes:
+    """Imagen 4(fast)로 아바타 PNG bytes 생성. AI 가상시민/회원 프로필 공용 파이프라인."""
     api_key = os.getenv("GEMINI_API_KEY", "")
     if not api_key:
         raise HTTPException(status_code=503, detail="GEMINI_API_KEY not configured")
 
-    citizen_dict = {"age": p.age, "gender": p.gender, "tags": p.tags or []}
-    prompt = _build_prompt(citizen_dict)
     imagen_url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
         f"imagen-4.0-fast-generate-001:predict?key={api_key}"
@@ -190,7 +184,18 @@ async def _generate_avatar(citizen_id: int, db: Session) -> dict:
         raise HTTPException(status_code=503, detail=f"Imagen API 연결 실패: {str(e)}")
 
     b64 = data["predictions"][0]["bytesBase64Encoded"]
-    img_bytes = base64.b64decode(b64)
+    return base64.b64decode(b64)
+
+
+async def _generate_avatar(citizen_id: int, db: Session) -> dict:
+    """Imagen 4로 아바타 생성 후 디스크 저장. URL 딕셔너리 반환."""
+    p = db.query(models.Persona).filter(models.Persona.id == citizen_id).first()
+    if not p:
+        raise HTTPException(status_code=404, detail="시민을 찾을 수 없습니다.")
+
+    citizen_dict = {"age": p.age, "gender": p.gender, "tags": p.tags or []}
+    prompt = _build_prompt(citizen_dict)
+    img_bytes = await generate_avatar_bytes(prompt)
 
     os.makedirs(AVATARS_DIR, exist_ok=True)
     path = _avatar_path(citizen_id)

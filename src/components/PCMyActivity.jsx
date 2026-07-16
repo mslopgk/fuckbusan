@@ -37,9 +37,13 @@ const formatAccess = (d) => {
     return `마지막 접속 ${y}. ${m}. ${day}. ${ampm} ${h}:${min}`;
 };
 
+/* 중립 실루엣 placeholder — 아바타 생성 전/실패 시 표시 (성별 추정 이미지 금지) */
+const NEUTRAL_AVATAR = '/assets/activity/info_person.svg';
+
 const PCMyActivity = ({ onNavigate }) => {
     const [name, setName] = useState(localStorage.getItem('user_name') || '');
     const [lastLogin, setLastLogin] = useState('');
+    const [avatarUrl, setAvatarUrl] = useState(null);
     const [counts, setCounts] = useState({ report: 0, proposal: 0, survey: 0, diagnosis: 0 });
     const [activeDistrict, setActiveDistrict] = useState('전체');
     const [activeCategories, setActiveCategories] = useState(new Set(['전체']));
@@ -57,6 +61,11 @@ const PCMyActivity = ({ onNavigate }) => {
                 const dt = new Date(d.last_login);
                 if (!isNaN(dt)) setLastLogin(formatAccess(dt));
             }
+        });
+
+        // 회원정보(나이대) 기반 생성 아바타 — 실패/폴백 시 중립 실루엣 유지
+        getJson('/users/me/avatar').then((d) => {
+            if (d?.url) setAvatarUrl(`${API_URL}${d.url}`);
         });
 
         Promise.all([
@@ -95,7 +104,12 @@ const PCMyActivity = ({ onNavigate }) => {
 
                     {/* 프로필 카드 (풀폭) */}
                     <div className="pcma-profile">
-                        <img className="pcma-avatar" src="/assets/activity/avatar_girl.png" alt="프로필" />
+                        <img
+                            className={`pcma-avatar${avatarUrl ? '' : ' pcma-avatar--placeholder'}`}
+                            src={avatarUrl || NEUTRAL_AVATAR}
+                            alt="프로필"
+                            onError={() => setAvatarUrl(null)}
+                        />
                         <div className="pcma-profile-info">
                             <div className="pcma-greeting">반가워요 <strong>{name || '회원'}님</strong></div>
                             {lastLogin && <div className="pcma-lastlogin">{lastLogin}</div>}
