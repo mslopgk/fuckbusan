@@ -13,6 +13,7 @@ export default function MemberEdit({ member, onNavigate }) {
     const [activity, setActivity] = useState({ proposals: [], reports: [], surveys: [] });
     const [open, setOpen] = useState({ proposals: true, reports: true, surveys: true });
     const [saving, setSaving] = useState(false);
+    const [resetting, setResetting] = useState(false);
 
     const set = (key, val) => setFormData((prev) => ({ ...prev, [key]: val }));
     const toggle = (key) => setOpen((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -83,6 +84,29 @@ export default function MemberEdit({ member, onNavigate }) {
         }
     };
 
+    const handleResetPassword = async () => {
+        if (!formData.id) return;
+        if (!window.confirm(`"${formData.name}"(${formData.loginId}) 님의 비밀번호를 임시 비밀번호로 초기화할까요?`)) return;
+        setResetting(true);
+        try {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}/admin/users/${formData.id}/reset-password`, {
+                method: 'POST',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.temp_password) {
+                alert(`임시 비밀번호가 발급되었습니다.\n\n아이디: ${formData.loginId}\n임시 비밀번호: ${data.temp_password}\n\n회원에게 직접 전달해주세요. (다시 확인할 수 없으니 지금 기록해두세요)`);
+            } else {
+                alert(data.detail || '비밀번호 초기화에 실패했습니다.');
+            }
+        } catch (e) {
+            alert('에러가 발생했습니다.');
+        } finally {
+            setResetting(false);
+        }
+    };
+
     const handleDelete = async () => {
         if (!formData.id) return;
         if (!window.confirm(`"${formData.name}" 회원을 삭제하시겠습니까?`)) return;
@@ -124,6 +148,17 @@ export default function MemberEdit({ member, onNavigate }) {
                     <label className="edit-form-label">아이디</label>
                     <input type="text" className="edit-form-input" value={formData.loginId || ''} readOnly
                         style={{ background: '#f5f5f5', cursor: 'default' }} />
+                    <button
+                        type="button"
+                        onClick={handleResetPassword}
+                        disabled={resetting}
+                        style={{
+                            marginLeft: 10, padding: '8px 14px', borderRadius: 8, border: '1px solid #ddd',
+                            background: '#fff', color: '#333', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap',
+                        }}
+                    >
+                        {resetting ? '초기화 중...' : '비밀번호 초기화'}
+                    </button>
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">닉네임</label>

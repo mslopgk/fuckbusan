@@ -7,7 +7,7 @@ from sqlalchemy import func, desc, or_
 
 from database import get_db
 import models, schemas
-from .user_router import get_current_user, require_admin
+from .user_router import get_current_user, require_admin, get_password_hash
 from notification_utils import push_notification, log_activity
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -488,6 +488,29 @@ def admin_patch_user(
                  meta=payload.dict(exclude_unset=True))
     db.commit()
     return {"message": "사용자가 수정되었습니다."}
+
+
+@router.post("/users/{user_id}/reset-password")
+def admin_reset_user_password(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """관리자가 회원 비밀번호를 임시 비밀번호로 초기화. 평문은 이 응답에만 1회 노출되고
+    로그(log_activity)에는 절대 남기지 않는다 — 관리자가 화면에서 회원에게 직접 전달."""
+    _require_admin(current_user)
+    u = db.query(models.User).filter(models.User.user_id == user_id).first()
+    if not u:
+        raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+    if u.ID == "admin":
+        raise HTTPException(status_code=400, detail="관리자 계정은 이 화면에서 초기화할 수 없습니다.")
+    import random, string
+    temp_pw = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+    u.PW = get_password_hash(temp_pw)
+    log_activity(db, user_id=None, action="admin_reset_password", target_type="user", target_id=user_id,
+                 meta={"ID": u.ID})
+    db.commit()
+    return {"temp_password": temp_pw}
 
 
 # =============================================================================
