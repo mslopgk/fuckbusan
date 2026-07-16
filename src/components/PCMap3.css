@@ -274,12 +274,26 @@
     background: #1faaaa;
 }
 
+.pc-map3-tool--teal img {
+    filter: brightness(0) invert(1);
+}
+
 .pc-map3-tool--teal-off {
     background: #fff;
     color: #23bdbb;
 }
 .pc-map3-tool--teal-off:hover {
     background: #f0fafa;
+}
+
+/* AI 가상시민 icon (person.svg) ships with a white fill for use on colored
+   backgrounds; darken it so it reads on this button's white background.
+   invert(45%) on a brightness(0)-forced black maps to rgb(115,115,115),
+   i.e. #737373 — the same gray the other 5 toolbar icons (my_location,
+   add, remove, satellite_alt) natively ship with, so the whole family
+   reads as one consistent color/weight instead of person looking near-black. */
+.pc-map3-tool--ai img {
+    filter: brightness(0) saturate(100%) invert(45%);
 }
 
 /* Floating policy info card */
