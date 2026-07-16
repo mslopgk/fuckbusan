@@ -19,8 +19,7 @@ export default function PCReportMap({ onNavigate }) {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const mapRef = useRef(null);
 
-    const { reports, proposals } = useReportsData();
-    const proposalsCount = proposals.length;
+    const { reports } = useReportsData({ includeProposals: false });
 
     const ITEMS = useMemo(() => reports.map((r) => ({
         id: r.id,
@@ -61,11 +60,6 @@ export default function PCReportMap({ onNavigate }) {
         return arr;
     }, [ITEMS, district, livingCats, sort]);
 
-    const counts = {
-        report: ITEMS.length,
-        propose: proposalsCount,
-    };
-
     // 클릭(선택)된 핀은 focus 디자인으로 변경 (코드코리아 260713)
     const pins = filtered
         .filter((it) => it.lat && it.lng)
@@ -89,26 +83,6 @@ export default function PCReportMap({ onNavigate }) {
                         onChange={(c) => toggleLivingCat(c.key)}
                         accent="#542aa3"
                     />
-
-                    <aside className="pc-map3-filter-card">
-                        <div className="pc-map3-section-label">유형</div>
-                        <div className="pc-map3-kind-row">
-                            <button
-                                className="pc-map3-kind-card active"
-                                onClick={() => { }}
-                            >
-                                <div>제보</div>
-                                <strong>{counts.report}건</strong>
-                            </button>
-                            <button
-                                className="pc-map3-kind-card"
-                                onClick={() => onNavigate && onNavigate('pcProposeMap')}
-                            >
-                                <div>제안</div>
-                                <strong>{counts.propose}건</strong>
-                            </button>
-                        </div>
-                    </aside>
                 </div>
 
                 <div className="pc-map3-canvas">

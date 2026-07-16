@@ -176,7 +176,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
     return (
         <UserPCLayout currentView="pcDiagnosisMap" onNavigate={onNavigate}>
             <div className={`pc-diag-page${sidebarOpen ? '' : ' pc-diag-sidebar-closed'}`}>
-                {/* LEFT FILTER STACK — 4 separate cards */}
+                {/* LEFT FILTER STACK — 1행: 구역별(전체폭) / 2행: 생활정보 rail | 진단대상+공공시설물 (2열) */}
                 <div className="pc-diag-filter-stack pc-diag-filter-stack--rail">
                     {/* 1. 구역별 */}
                     <RegionFilterCard
@@ -187,73 +187,77 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                         placeholder="설정해주세요"
                     />
 
-                    {/* 2. 생활정보 */}
-                    <LifeRail
-                        categories={LIVING_CATS.map((c) => ({ key: c.key, label: c.label, icon: catIcon(c.label) }))}
-                        isOn={(c) => livingCats.has(c.key)}
-                        onChange={(c) => toggleLivingCat(c.key)}
-                        accent="#23BDBB"
-                    />
+                    <div className="pc-diag-filter-row2">
+                        {/* 2. 생활정보 */}
+                        <LifeRail
+                            categories={LIVING_CATS.map((c) => ({ key: c.key, label: c.label, icon: catIcon(c.label) }))}
+                            isOn={(c) => livingCats.has(c.key)}
+                            onChange={(c) => toggleLivingCat(c.key)}
+                            accent="#23BDBB"
+                        />
 
-                    {/* 3. 진단대상 */}
-                    <aside className="pc-diag-filter-card">
-                        <div className="pc-diag-section-label">진단대상</div>
-                        <div className="pc-diag-target-row">
-                            {TARGETS.map((t) => (
-                                <button
-                                    key={t.key}
-                                    type="button"
-                                    className={`pc-diag-target-btn ${target === t.key ? 'on' : ''}`}
-                                    onClick={() => setTarget(t.key)}
-                                >{t.label}</button>
-                            ))}
+                        <div className="pc-diag-filter-col2">
+                            {/* 3. 진단대상 */}
+                            <aside className="pc-diag-filter-card">
+                                <div className="pc-diag-section-label">진단대상</div>
+                                <div className="pc-diag-target-row">
+                                    {TARGETS.map((t) => (
+                                        <button
+                                            key={t.key}
+                                            type="button"
+                                            className={`pc-diag-target-btn ${target === t.key ? 'on' : ''}`}
+                                            onClick={() => setTarget(t.key)}
+                                        >{t.label}</button>
+                                    ))}
+                                </div>
+                            </aside>
+
+                            {/* 4. 공공/시설물 */}
+                            <aside className="pc-diag-filter-card">
+                                <div className="pc-diag-facility-title">공공/시설물</div>
+                                <div className="pc-diag-section-label">대분류</div>
+                                <div className="pc-diag-check-col">
+                                    {FACILITY_BIG.map((f) => (
+                                        <label key={f} className={`pc-diag-check ${bigSel.has(f) ? 'on' : ''}`}>
+                                            <input
+                                                type="checkbox"
+                                                checked={bigSel.has(f)}
+                                                onChange={() => toggleBig(f)}
+                                            />
+                                            {f}
+                                        </label>
+                                    ))}
+                                </div>
+
+                                <div className="pc-diag-facility-divider" />
+
+                                <div className="pc-diag-section-label">중분류</div>
+                                <div className="pc-diag-dropdown pc-diag-sub-select">
+                                    <select value={facilityMid} onChange={(e) => setFacilityMid(e.target.value)}>
+                                        <option value="">선택해주세요</option>
+                                        {[...new Set(items.map((it) => it.mid).filter(Boolean))].sort().map((m) => (
+                                            <option key={m} value={m}>{m}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="pc-diag-facility-divider" />
+
+                                <div className="pc-diag-section-label">소분류</div>
+                                <div className="pc-diag-dropdown pc-diag-sub-select">
+                                    {/* 진단 데이터에 소분류 차원 없음 — 추후 데이터 추가 시 활성화 */}
+                                    <select value={facilitySub} onChange={(e) => setFacilitySub(e.target.value)} disabled>
+                                        <option value="">선택해주세요</option>
+                                    </select>
+                                </div>
+
+                                <div className="pc-diag-filter-actions">
+                                    <button type="button" className="pc-diag-btn-cancel" onClick={() => { setBigSel(new Set()); setFacilityMid(''); setFacilitySub(''); }}>취소</button>
+                                    <button type="button" className="pc-diag-btn-confirm" onClick={() => setRefreshKey((k) => k + 1)}>확인</button>
+                                </div>
+                            </aside>
                         </div>
-                    </aside>
-
-                    {/* 4. 공공/시설물 */}
-                    <aside className="pc-diag-filter-card">
-                        <div className="pc-diag-facility-title">공공/시설물</div>
-                        <div className="pc-diag-section-label">대분류</div>
-                        <div className="pc-diag-check-col">
-                            {FACILITY_BIG.map((f) => (
-                                <label key={f} className={`pc-diag-check ${bigSel.has(f) ? 'on' : ''}`}>
-                                    <input
-                                        type="checkbox"
-                                        checked={bigSel.has(f)}
-                                        onChange={() => toggleBig(f)}
-                                    />
-                                    {f}
-                                </label>
-                            ))}
-                        </div>
-
-                        <div className="pc-diag-facility-divider" />
-
-                        <div className="pc-diag-section-label">중분류</div>
-                        <div className="pc-diag-dropdown pc-diag-sub-select">
-                            <select value={facilityMid} onChange={(e) => setFacilityMid(e.target.value)}>
-                                <option value="">선택해주세요</option>
-                                {[...new Set(items.map((it) => it.mid).filter(Boolean))].sort().map((m) => (
-                                    <option key={m} value={m}>{m}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="pc-diag-facility-divider" />
-
-                        <div className="pc-diag-section-label">소분류</div>
-                        <div className="pc-diag-dropdown pc-diag-sub-select">
-                            {/* 진단 데이터에 소분류 차원 없음 — 추후 데이터 추가 시 활성화 */}
-                            <select value={facilitySub} onChange={(e) => setFacilitySub(e.target.value)} disabled>
-                                <option value="">선택해주세요</option>
-                            </select>
-                        </div>
-
-                        <div className="pc-diag-filter-actions">
-                            <button type="button" className="pc-diag-btn-cancel" onClick={() => { setBigSel(new Set()); setFacilityMid(''); setFacilitySub(''); }}>취소</button>
-                            <button type="button" className="pc-diag-btn-confirm" onClick={() => setRefreshKey((k) => k + 1)}>확인</button>
-                        </div>
-                    </aside>
+                    </div>
 
                     {panel !== 'list' && (
                         <button type="button" className="pc-diag-back-btn" onClick={goList}>

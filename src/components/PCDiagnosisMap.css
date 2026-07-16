@@ -32,20 +32,26 @@
     width: auto;
     align-items: flex-start;
 }
-.pc-diag-filter-stack--rail .pc-diag-filter-card {
+/* 2행: 생활정보 rail(112px) | 진단대상+공공시설물(268px, 세로 2장) — Figma 302:3872 진단 대시보드 */
+.pc-diag-filter-row2 {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.pc-diag-filter-col2 {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.pc-diag-filter-col2 .pc-diag-filter-card {
     width: 268px;
     box-sizing: border-box;
 }
 
-/* 카드 기본 */
+/* 카드 기본 — 진단대상 / 공공·시설물 */
 .pc-diag-filter-card {
     background: #fff;
     padding: 16px;
-}
-
-/* 3. 진단대상  4. 공공/시설물 */
-.pc-diag-filter-card:nth-child(3),
-.pc-diag-filter-card:nth-child(4) {
     border-radius: 10px;
 }
 

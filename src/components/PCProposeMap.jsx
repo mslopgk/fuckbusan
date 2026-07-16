@@ -21,7 +21,7 @@ export default function PCProposeMap({ onNavigate }) {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const mapRef = useRef(null);
 
-    const { reports, proposals } = useReportsData();
+    const { proposals } = useReportsData();
 
     // 제안 전용 지도 — 제안(new_proposals)만 표시. 제보는 pcReportMap에서.
     const ITEMS = useMemo(() => {
@@ -87,11 +87,6 @@ export default function PCProposeMap({ onNavigate }) {
         return arr;
     }, [ITEMS, district, livingCats, sort]);
 
-    const counts = {
-        report: reports.length,
-        propose: proposals.length,
-    };
-
     // 클릭(선택)된 핀은 focus 디자인으로 변경 (코드코리아 260713)
     const pins = filtered
         .filter((it) => it.lat && it.lng)
@@ -117,25 +112,6 @@ export default function PCProposeMap({ onNavigate }) {
                         accent="#f74e7e"
                     />
 
-                    <aside className="pc-map3-filter-card">
-                        <div className="pc-map3-section-label">유형</div>
-                        <div className="pc-map3-kind-row">
-                            <button
-                                className="pc-map3-kind-card"
-                                onClick={() => onNavigate && onNavigate('pcReportMap')}
-                            >
-                                <div>제보</div>
-                                <strong>{counts.report}건</strong>
-                            </button>
-                            <button
-                                className="pc-map3-kind-card active"
-                                onClick={() => { }}
-                            >
-                                <div>제안</div>
-                                <strong>{counts.propose}건</strong>
-                            </button>
-                        </div>
-                    </aside>
                 </div>
 
                 {/* CENTER MAP */}
