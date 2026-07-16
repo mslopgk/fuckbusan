@@ -2,8 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import UserPCLayout from './UserPCLayout';
 import PersonaChat from './PersonaChat';
 import PersonaReport from './PersonaReport';
+import MapToolbar from './PCMapToolbar';
 import { API_URL } from '../utils/api';
 import './PCPublicData.css';
+import './PCMap3.css';
 import './PCAICitizen.css';
 
 /* PC AI 가상시민 — Figma 215:3802 리뉴얼 (공공데이터와 동일 셸).
@@ -33,6 +35,19 @@ const SORTS = [
 ];
 const DONUT_COLORS = ['#e6235a', '#5b2eab', '#3b82f6', '#23bdbb', '#9aa3ab', '#f59e0b', '#06ab69', '#ec4899'];
 
+// 구·군청 대표 위경도(근사) — "내 위치" 버튼에서 geolocation 결과와 최근접 구 매칭 (PCPublicData 동일 패턴).
+const GUGUN_LATLNG = {
+    강서구: [35.2124, 128.9806], 사상구: [35.1524, 128.9909], 북구: [35.1970, 129.0061],
+    금정구: [35.2430, 129.0921], 기장군: [35.2443, 129.2223], 동래구: [35.1955, 129.0835],
+    연제구: [35.1762, 129.0796], 부산진구: [35.1627, 129.0530], 해운대구: [35.1631, 129.1636],
+    수영구: [35.1455, 129.1132], 남구: [35.1365, 129.0843], 사하구: [35.1043, 128.9747],
+    서구: [35.0975, 129.0242], 동구: [35.1294, 129.0454], 중구: [35.1002, 129.0324],
+    영도구: [35.0912, 129.0680],
+};
+const MAP_ZOOM_MIN = 0.7;
+const MAP_ZOOM_MAX = 1.8;
+const MAP_ZOOM_STEP = 0.15;
+
 const avatarSrc = (url) => (url ? (url.startsWith('http') ? url : `${API_URL}${url}`) : null);
 
 /* ── 기존 스타일라이즈드 부산 구·군 지도 (Figma 일러스트, 카카오맵 아님) ── */
@@ -56,7 +71,7 @@ const DISTRICTS_POS = [
 ];
 const TEAL_FILTER = 'brightness(0) invert(67%) sepia(37%) saturate(586%) hue-rotate(136deg) brightness(0.9)';
 
-function FigmaDistrictMap({ selectedDistrict, onDistrictClick, onDeselect, hoveredDistrict, onDistrictHover, onDistrictLeave, hoverCitizen, hoverAvatarUrl }) {
+function FigmaDistrictMap({ selectedDistrict, onDistrictClick, onDeselect, hoveredDistrict, onDistrictHover, onDistrictLeave, hoverCitizen, hoverAvatarUrl, zoom = 1 }) {
     const selPos = selectedDistrict ? DISTRICTS_POS.find((d) => d.name === selectedDistrict) : null;
     const containerRef = useRef(null);
     const [layout, setLayout] = useState({ scale: 1, offsetX: 0, offsetY: 0 });
@@ -82,9 +97,14 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, onDeselect, hover
 
     return (
         <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '100%', background: '#d4e8ee', overflow: 'hidden' }}>
+            {/* 지형 배경: 컨테이너 전체를 cover로 채움 — 스테이지(letterbox) 안에 두면
+                화면비에 따라 상단에 맨 배경색 띠가 생기고, 줌아웃(<1) 때도 가장자리가 비므로
+                줌 래퍼 밖에서 컨테이너에 직접 깐다 (장식용 텍스처라 구·군과 정밀 정합 불필요). */}
+            <img src="/assets/지도 배경 데스크탑.png" alt="" draggable={false}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none', userSelect: 'none' }} />
+            {/* 줌 래퍼: 툴바 확대/축소를 CSS transform 으로 (카카오맵 아님 — PCPublicData 동일 접근) */}
+            <div className="aic-map-zoom" style={{ position: 'absolute', inset: 0, transform: `scale(${zoom})`, transformOrigin: '50% 50%', transition: 'transform 0.25s ease' }}>
             <div style={{ position: 'absolute', top: layout.offsetY, left: layout.offsetX, width: 1920, height: 1080, transformOrigin: 'top left', transform: `scale(${layout.scale})` }}>
-                <img src="/assets/지도 배경 데스크탑.png" alt="" draggable={false}
-                    style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 904, pointerEvents: 'none', userSelect: 'none' }} />
                 <img src="/assets/districts/shadow.svg" alt="" draggable={false}
                     style={{ position: 'absolute', left: 382, top: 116, width: 1150, height: 880, pointerEvents: 'none', userSelect: 'none' }} />
                 {DISTRICTS_POS.map((d) => (
@@ -131,6 +151,7 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, onDeselect, hover
                         </div>
                     </div>
                 )}
+            </div>
             </div>
         </div>
     );
@@ -212,14 +233,38 @@ function FilterPanel({ region, setRegion, cat, setCat, onChat }) {
 /* ── 우측 페르소나 리스트 ── */
 // 8개 생활영역 — [2-5] 안내문구용
 const LIFE_AREAS = ['안전', '교통', '주거', '산업·일자리', '교육', '환경', '문화·여가', '보건·복지'];
-const REP_VISIBLE = 5; // [1-5] 초기 노출 인원(대표 3~5명 권장, 더보기로 전체)
 
-function PersonaList({ region, citizens, avatars, sort, setSort, onSelect, selectedId }) {
-    const [sortOpen, setSortOpen] = useState(false);
-    const [expanded, setExpanded] = useState(false);
+/* 기본(부산대표) 상태 대형 카드 — Figma 302:3635 (351x383, 159px 원형 포트레이트 중앙배치).
+   구/군 선택 상태의 컴팩트 카드(302:4360)와 별개 레이아웃. 카드 크기가 px 고정이라 내부는 절대좌표. */
+function DefaultCard({ citizen, avatarUrl, onClick, active }) {
+    return (
+        <button type="button" className={`aic-dcard${active ? ' active' : ''}`}
+            onClick={onClick} tabIndex={onClick ? undefined : -1}>
+            <span className="aic-dcard-avatar">
+                {avatarUrl
+                    ? <img src={avatarUrl} alt="" draggable={false} />
+                    : <span className="aic-dcard-avatar-fb">{citizen.avatar_initial || '시'}</span>}
+            </span>
+            <span className="aic-dcard-namerow">
+                <span className="aic-dcard-name">{citizen.name}</span>
+                <span className="aic-dcard-age">{citizen.age}세</span>
+            </span>
+            <span className="aic-dcard-tags">
+                {(citizen.tags || []).slice(0, 3).map((t) => <span key={t}># {String(t).replace(/^#\s*/, '')}</span>)}
+            </span>
+            <span className="aic-dcard-divider" aria-hidden="true" />
+            <img className="aic-dcard-q aic-dcard-q--open" src="/figma-assets/icons/quote_mark.png" alt="" aria-hidden="true" />
+            <p className="aic-dcard-quote">{citizen.quote}</p>
+            <img className="aic-dcard-q aic-dcard-q--close" src="/figma-assets/icons/quote_mark.png" alt="" aria-hidden="true" />
+        </button>
+    );
+}
 
-    // 지역/필터가 바뀌면 다시 접기
-    useEffect(() => { setExpanded(false); }, [region, citizens.length]);
+function PersonaList({ region, citizens, avatars, onSelect, selectedId }) {
+    const [carouselIndex, setCarouselIndex] = useState(0);
+
+    // 지역/필터가 바뀌면 캐러셀 처음(0번)으로
+    useEffect(() => { setCarouselIndex(0); }, [region, citizens.length]);
 
     // [2-5] 가장 문제로 꼽힌 영역 = 가상시민 카테고리 최빈값
     const topArea = useMemo(() => {
@@ -229,11 +274,18 @@ function PersonaList({ region, citizens, avatars, sort, setSort, onSelect, selec
         return sorted.length ? sorted[0][0] : null;
     }, [citizens]);
 
-    const visible = expanded ? citizens : citizens.slice(0, REP_VISIBLE);
-    const hiddenCount = citizens.length - visible.length;
+    // Figma 302:4360 — 카드 1장씩 보여주는 캐러셀. 구/군 선택 시 좌우 화살표,
+    // 부산대표(region=null)일 때는 우측 화살표 + 다음 카드 살짝 peek.
+    const safeIndex = citizens.length ? Math.min(carouselIndex, citizens.length - 1) : 0;
+    const current = citizens[safeIndex];
+    const nextCitizen = citizens[safeIndex + 1];
+    const hasPrev = safeIndex > 0;
+    const hasNext = safeIndex < citizens.length - 1;
+    const goPrev = () => setCarouselIndex((i) => Math.max(i - 1, 0));
+    const goNext = () => setCarouselIndex((i) => Math.min(i + 1, citizens.length - 1));
 
     return (
-        <aside className="pubdata-panel aic-list">
+        <aside className={`pubdata-panel aic-list${region ? '' : ' aic-list--default'}`}>
             <h2 className="aic-list-title"><span>{region || '부산대표'}</span> AI 가상시민</h2>
             <p className="aic-list-sub">{region || '부산'} 시민 의견과 데이터를 바탕으로 만든 AI 가상시민입니다. 서로 다른 삶과 시선을 통해 우리 동네의 고민과 바람을 한눈에 볼 수 있어요.</p>
             {citizens.length > 0 && (
@@ -243,46 +295,80 @@ function PersonaList({ region, citizens, avatars, sort, setSort, onSelect, selec
                     가상시민 <b>{citizens.length}명</b>이에요.
                 </p>
             )}
-            <div className="aic-list-bar">
-                <span className="aic-list-count">총 {citizens.length}명</span>
-                <div className={`aic-sort${sortOpen ? ' open' : ''}`}>
-                    <button type="button" className="aic-sort-btn" onClick={() => setSortOpen((v) => !v)}>
-                        {SORTS.find((s) => s.key === sort).label} <i className="pubdata-caret" aria-hidden="true" />
-                    </button>
-                    {sortOpen && (
-                        <ul className="aic-sort-menu">
-                            {SORTS.map((s) => (
-                                <li key={s.key}><button type="button" className={s.key === sort ? 'sel' : ''}
-                                    onClick={() => { setSort(s.key); setSortOpen(false); }}>{s.label}</button></li>
-                            ))}
-                        </ul>
-                    )}
+            {/* 총N명/정렬 바: 기본(부산대표) 상태의 Figma 302:3635 에는 없음 — 구/군 선택 상태에서만 렌더 */}
+            {region && (
+                <div className="aic-list-bar">
+                    <span className="aic-list-count">총 {citizens.length}명</span>
+                    <span className="aic-slide-label">슬라이드 <i className="pubdata-caret" aria-hidden="true" /></span>
                 </div>
-            </div>
-            <div className="aic-cards">
+            )}
+            <div className="aic-carousel">
                 {citizens.length === 0 && <p className="aic-empty">해당 지역의 가상시민이 아직 없어요.</p>}
-                {visible.map((c) => (
-                    <button key={c.id} type="button"
-                        className={`aic-card${selectedId === c.id ? ' active' : ''}`}
-                        onClick={() => onSelect(c)}>
-                        <Avatar url={avatarSrc(avatars[c.id])} initial={c.avatar_initial} size={62} />
-                        <div className="aic-card-body">
-                            <div className="aic-card-name">
-                                {(c.importance ?? 100) === 0 && <span className="aic-card-rep">대표</span>}
-                                {c.name} <em>{c.age}세</em>
+                {current && !region && (
+                    /* 기본(부산대표) 상태 — Figma 302:3635: 대형 카드 + 우측 121px 피크 + 34px 화살표 */
+                    <div className="aic-carousel-stage aic-dstage">
+                        <DefaultCard
+                            citizen={current}
+                            avatarUrl={avatarSrc(avatars[current.id])}
+                            active={selectedId === current.id}
+                            onClick={() => onSelect(current)}
+                        />
+                        {nextCitizen && (
+                            <div className="aic-dpeek" aria-hidden="true">
+                                <DefaultCard citizen={nextCitizen} avatarUrl={avatarSrc(avatars[nextCitizen.id])} />
                             </div>
-                            <div className="aic-card-tags">{(c.tags || []).slice(0, 3).map((t) => <span key={t}>{t}</span>)}</div>
-                            <p className="aic-card-quote">{c.quote}</p>
-                        </div>
-                        <span className="aic-card-arrow">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill={ACCENT} /><path d="M10 8l4 4-4 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        </span>
-                    </button>
-                ))}
-                {hiddenCount > 0 && (
-                    <button type="button" className="aic-more-btn" onClick={() => setExpanded(true)}>
-                        가상시민 {hiddenCount}명 더보기
-                    </button>
+                        )}
+                        {hasNext && (
+                            <button type="button" className="aic-dnav" aria-label="다음 가상시민"
+                                onClick={(e) => { e.stopPropagation(); goNext(); }}>
+                                <img src="/figma-assets/icons/expand_circle_right_filled.svg" alt="" />
+                            </button>
+                        )}
+                    </div>
+                )}
+                {current && region && (
+                    <div className="aic-carousel-stage">
+                        <button type="button"
+                            className={`aic-carousel-card${selectedId === current.id ? ' active' : ''}`}
+                            onClick={() => onSelect(current)}>
+                            <div className="aic-carousel-head">
+                                <Avatar url={avatarSrc(avatars[current.id])} initial={current.avatar_initial} size={72} />
+                                <div className="aic-carousel-headtext">
+                                    {(current.importance ?? 100) === 0 && <span className="aic-card-rep">대표</span>}
+                                    <span className="aic-carousel-name">{current.name}</span>
+                                    <span className="aic-carousel-age">{current.age}세</span>
+                                    {region && current.gender && <span className="aic-carousel-gender">{current.gender}</span>}
+                                </div>
+                            </div>
+                            <hr className="aic-carousel-divider" />
+                            <div className="aic-carousel-tags">
+                                {(current.tags || []).slice(0, 3).map((t) => <span key={t}>{t}</span>)}
+                            </div>
+                            <p className="aic-carousel-quote">“{current.quote}”</p>
+                        </button>
+                        {region && hasPrev && (
+                            <button type="button" className="aic-carousel-nav prev" aria-label="이전 가상시민"
+                                onClick={(e) => { e.stopPropagation(); goPrev(); }}>
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill={ACCENT} /><path d="M14 8l-4 4 4 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            </button>
+                        )}
+                        {hasNext && (
+                            <button type="button" className="aic-carousel-nav next" aria-label="다음 가상시민"
+                                onClick={(e) => { e.stopPropagation(); goNext(); }}>
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill={ACCENT} /><path d="M10 8l4 4-4 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            </button>
+                        )}
+                    </div>
+                )}
+                {citizens.length > 1 && (
+                    <div className="aic-carousel-dots">
+                        {citizens.map((c, i) => (
+                            <button key={c.id} type="button"
+                                className={`aic-carousel-dot${i === safeIndex ? ' active' : ''}`}
+                                aria-label={`${i + 1}번째 가상시민`}
+                                onClick={() => setCarouselIndex(i)} />
+                        ))}
+                    </div>
                 )}
             </div>
         </aside>
@@ -322,6 +408,37 @@ export default function PCAICitizen({ onNavigate }) {
     const [chatPersona, setChatPersona] = useState(null);
     const [hovered, setHovered] = useState(null);      // 지도 hover 구·군
     const [showMapIntro, setShowMapIntro] = useState(true); // 진입 인트로(여성 페르소나+말풍선, 닫으면 사라짐)
+    const [mapZoom, setMapZoom] = useState(1);          // 지도 확대/축소 (CSS transform scale)
+
+    // 지도 툴바(공용 MapToolbar) 연결 — 카카오맵 ref 대신 자체 SVG 지도용 핸들러 객체
+    const zoomIn = () => setMapZoom((z) => Math.min(MAP_ZOOM_MAX, +(z + MAP_ZOOM_STEP).toFixed(2)));
+    const zoomOut = () => setMapZoom((z) => Math.max(MAP_ZOOM_MIN, +(z - MAP_ZOOM_STEP).toFixed(2)));
+    const locateMe = () => {
+        if (!navigator.geolocation) {
+            alert('이 브라우저는 위치 확인 기능을 지원하지 않습니다.');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                if (latitude < 34.8 || latitude > 35.5 || longitude < 128.5 || longitude > 129.5) {
+                    alert('부산 지역 밖에 있어 위치를 표시할 수 없습니다.');
+                    return;
+                }
+                let best = null;
+                let bestDist = Infinity;
+                for (const [name, [lat, lng]] of Object.entries(GUGUN_LATLNG)) {
+                    const d = Math.hypot(lat - latitude, lng - longitude);
+                    if (d < bestDist) { bestDist = d; best = name; }
+                }
+                if (best) { setRegion(best); setShowMapIntro(false); }
+            },
+            () => alert('위치 정보를 가져올 수 없습니다. 브라우저 위치 권한을 확인해주세요.'),
+            { enableHighAccuracy: true, timeout: 8000 }
+        );
+    };
+    const mapCtlRef = useRef({});
+    mapCtlRef.current = { zoomIn, zoomOut, locateMe }; // toggleMapType 미지원(자체 SVG 지도) — 위성 버튼은 무동작(PCPublicData 동일)
 
     // 전체 페르소나 로드
     useEffect(() => {
@@ -383,30 +500,40 @@ export default function PCAICitizen({ onNavigate }) {
 
     return (
         <UserPCLayout currentView="pcAICitizen" onNavigate={onNavigate}>
-            <div className="pubdata aic">
+            {/* aic--default: 부산대표(구 미선택) 상태 — 우측 패널이 519px(Figma 302:3635)로 넓어져
+                지도 툴바 right 오프셋이 함께 이동한다 (PCAICitizen.css 참조) */}
+            <div className={`pubdata aic${region ? '' : ' aic--default'}`}>
                 <div className="pubdata-map">
                     <FigmaDistrictMap
                         selectedDistrict={region}
                         onDistrictClick={(name) => { setRegion(name); setShowMapIntro(false); }}
                         onDeselect={() => setRegion(null)}
-                        hoveredDistrict={hovered}
-                        onDistrictHover={setHovered}
-                        onDistrictLeave={() => setHovered(null)}
+                        hoveredDistrict={showMapIntro ? null : hovered}
+                        onDistrictHover={showMapIntro ? undefined : setHovered}
+                        onDistrictLeave={showMapIntro ? undefined : () => setHovered(null)}
                         hoverCitizen={hoverCitizen}
                         hoverAvatarUrl={avatarSrc(hoverCitizen && avatars[hoverCitizen.id])}
+                        zoom={mapZoom}
                     />
                 </div>
+
+                {/* 지도 컨트롤 툴바 (Figma 302:3611) — 공용 MapToolbar 재사용.
+                    Card A(teal) = AI 챗봇 열기, Card B = 내위치/확대/축소/일반지도/위성지도.
+                    .pubdata 기준 absolute (top 16 / right 425 = 우측 페르소나 패널 좌측 21px 간격). */}
+                <MapToolbar mapRef={mapCtlRef} onAI={() => startChat()} aiTeal />
 
                 <FilterPanel region={region} setRegion={setRegion} cat={cat} setCat={setCat} onChat={() => startChat()} />
 
                 <PersonaList
                     region={region} citizens={citizens} avatars={avatars}
-                    sort={sort} setSort={setSort}
                     onSelect={openDetail} selectedId={selected?.id}
                 />
 
                 {showMapIntro && (
                     <div className="aic-intro">
+                        {/* 캐릭터+말풍선을 한 그룹(px 좌표계)으로 묶어 좌하단 앵커 — viewport % 독립 배치로 인한
+                            비율별 겹침 방지 (그룹 내부는 px 오프셋이라 화면비가 변해도 상대 위치 고정) */}
+                        <div className="aic-intro-group">
                         <img className="aic-intro-persona" src="/assets/aicitizen/intro_persona.png" alt="" draggable={false} />
                         <div className="aic-intro-bubble">
                             <button type="button" className="aic-intro-close" aria-label="닫기" onClick={() => setShowMapIntro(false)}>
@@ -415,6 +542,7 @@ export default function PCAICitizen({ onNavigate }) {
                             <strong className="aic-intro-title">우리 지역을 대표하는 ‘가상 시민’을 만나보세요</strong>
                             <p className="aic-intro-desc">AI 가상시민은 공공데이터와 시민 의견을 분석하여 생성된 가상의 시민 페르소나입니다. 지역의 생활환경과 문제, 요구를 ‘시민의 모습’으로 이해할 수 있습니다.</p>
                             <button type="button" className="aic-intro-cta" onClick={() => setShowMapIntro(false)}>우리 지역 가상 시민 보기</button>
+                        </div>
                         </div>
                     </div>
                 )}

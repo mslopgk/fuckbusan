@@ -1,11 +1,16 @@
-export default function PCMapToolbar({ mapRef, onToggleSidebar, sidebarOpen = true }) {
+/* onAI / aiTeal: AI가상시민 페이지 전용 옵션 (Figma 302:3611 — Card A가 teal 버튼 + 챗봇 트리거).
+   미전달 시 기존 4개 지도 페이지와 동일한 흰색 무동작 버튼 렌더 (하위호환). */
+export default function PCMapToolbar({ mapRef, onToggleSidebar, sidebarOpen = true, onAI, aiTeal = false }) {
     const call = (fn) => () => mapRef.current && mapRef.current[fn] && mapRef.current[fn]();
 
     return (
         <div className="pc-map3-toolbar">
             {/* Card 1: AI 가상시민 */}
             <div className="pc-map3-card">
-                <button className="pc-map3-tool pc-map3-tool--ai" aria-label="AI 가상시민" title="AI 가상시민">
+                <button
+                    className={`pc-map3-tool pc-map3-tool--ai${aiTeal ? ' pc-map3-tool--teal' : ''}`}
+                    aria-label="AI 가상시민" title="AI 가상시민" onClick={onAI}
+                >
                     <img src="/figma-assets/icons/map-controls/person.svg" alt="" width="22" height="22" />
                 </button>
             </div>
@@ -36,8 +41,8 @@ export default function PCMapToolbar({ mapRef, onToggleSidebar, sidebarOpen = tr
                 </button>
             </div>
 
-            {/* Card 3: 목록 토글 */}
-            <div className="pc-map3-card">
+            {/* Card 3: 목록 토글 — 사이드바가 있는 페이지에서만 (AI가상시민 페이지는 미사용) */}
+            {onToggleSidebar && <div className="pc-map3-card">
                 <button
                     className={`pc-map3-tool pc-map3-tool--teal${sidebarOpen ? '' : ' pc-map3-tool--teal-off'}`}
                     aria-label={sidebarOpen ? '목록 숨기기' : '목록 보기'}
@@ -48,7 +53,7 @@ export default function PCMapToolbar({ mapRef, onToggleSidebar, sidebarOpen = tr
                         <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/>
                     </svg>
                 </button>
-            </div>
+            </div>}
         </div>
     );
 }

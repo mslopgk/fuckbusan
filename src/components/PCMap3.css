@@ -296,6 +296,12 @@
     filter: brightness(0) saturate(100%) invert(45%);
 }
 
+/* AI가상시민 페이지 변형 (Figma 302:3611): Card A가 teal 배경일 땐 person 아이콘을
+   흰색으로. --ai 규칙이 --teal img 보다 뒤에 있어 이기므로 복합 셀렉터로 재지정. */
+.pc-map3-tool--ai.pc-map3-tool--teal img {
+    filter: brightness(0) invert(1);
+}
+
 /* Floating policy info card */
 .pc-map3-policy {
     position: absolute;

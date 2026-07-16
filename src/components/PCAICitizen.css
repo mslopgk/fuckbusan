@@ -878,8 +878,15 @@
 /* 진입 인트로: 여성 페르소나(좌하단) + 말풍선(하단 중앙). Figma 302:3561
    .pubdata 직속 오버레이. 페르소나는 좌측 패널/말풍선/지도보다 위(최상단). */
 .aic-intro { position: absolute; inset: 0; z-index: 30; pointer-events: none; overflow: hidden; }
+/* 캐릭터+말풍선 그룹: 좌하단 앵커 px 좌표계. left 32(여백) ~ right 555(기본상태 우측 패널 519+여백 36).
+   내부 자식은 전부 px 오프셋 → 1100~1920px 어느 화면비에서도 서로 겹치지 않는다.
+   (인트로는 기본(부산대표) 상태에서만 뜨므로 519px 패널 기준으로만 계산) */
+.aic-intro-group {
+    position: absolute; left: 32px; right: 555px; bottom: 0; height: 0;
+    pointer-events: none;
+}
 .aic-intro-persona {
-    position: absolute; left: 1.5%; bottom: 0; height: min(64%, 560px); width: auto;
+    position: absolute; left: 0; bottom: 0; width: 224px; height: auto; /* 526x1215 원본 → 약 517px 높이 */
     z-index: 40; pointer-events: none;
     user-select: none; -webkit-user-drag: none;
     filter: drop-shadow(0 8px 24px rgba(0,0,0,0.12));
@@ -889,8 +896,11 @@
     from { opacity: 0; transform: translateY(48px); }
     to { opacity: 1; transform: translateY(0); }
 }
+/* 말풍선: 캐릭터(224px 폭) 오른쪽에 px 오프셋으로 고정 — 어깨~머리 높이에서 그룹으로 읽힘.
+   max-width는 그룹 폭(= 화면 - 좌우 앵커) 안으로 제한해 우측 페르소나 패널과 절대 안 겹침. */
 .aic-intro-bubble {
-    position: absolute; left: 24%; bottom: 6.5%; max-width: 660px; pointer-events: auto;
+    position: absolute; left: 252px; bottom: 250px;
+    max-width: min(620px, calc(100% - 252px)); box-sizing: border-box; pointer-events: auto;
     background: #fff; border-radius: 20px; padding: 26px 30px 22px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.16);
     font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; letter-spacing: -0.02em;
@@ -985,6 +995,109 @@
 .aic-card-tags span { font-size: 12px; font-weight: 700; color: #23bdbb; background: none; border: 1px solid #23bdbb; border-radius: 4px; padding: 2px 5px; }
 .aic-card-quote { margin: 0; font-size: 13px; color: #333; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .aic-card-arrow { position: absolute; top: 16px; right: 14px; line-height: 0; }
+
+/* ── 우측 페르소나 캐러셀 (Figma 302:4360 — 구/군 선택 상태) 카드 1장씩 슬라이드 ── */
+.aic-slide-label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #555; }
+.aic-carousel { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.aic-carousel-stage { position: relative; flex: none; padding: 0 30px; }
+.aic-carousel-peek {
+    position: absolute; top: 50%; right: 4px; transform: translateY(-50%);
+    z-index: 1; opacity: 0.55; pointer-events: none;
+}
+.aic-carousel-peek .aic-avatar { box-shadow: 0 4px 14px rgba(0,0,0,0.1); }
+.aic-carousel-card {
+    position: relative; z-index: 2; width: 100%; box-sizing: border-box;
+    display: block; text-align: left; font-family: inherit; cursor: pointer;
+    padding: 20px 20px 22px; border: 1.5px solid #ececec; border-radius: 18px; background: #fff;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06); transition: border-color 0.13s, box-shadow 0.13s, background 0.13s;
+}
+.aic-carousel-card:hover { border-color: #c8eceb; box-shadow: 0 6px 22px rgba(35,189,187,0.14); }
+.aic-carousel-card.active { border-color: #23bdbb; background: #f3fbfb; }
+.aic-carousel-head { display: flex; align-items: center; gap: 12px; }
+.aic-carousel-headtext { min-width: 0; display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+.aic-carousel-name { font-size: 17px; font-weight: 800; color: #222; }
+.aic-carousel-age, .aic-carousel-gender { font-size: 14px; font-weight: 500; color: #5b6469; }
+.aic-carousel-divider { border: none; border-top: 1.5px dashed #dfe6e6; margin: 16px 0 14px; }
+.aic-carousel-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.aic-carousel-tags span { font-size: 12px; font-weight: 700; color: #23bdbb; background: none; border: 1px solid #23bdbb; border-radius: 999px; padding: 3px 10px; }
+.aic-carousel-quote {
+    margin: 0; font-size: 14px; color: #333; line-height: 1.55;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.aic-carousel-nav {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+    width: 36px; height: 36px; padding: 0; border: none; background: none; line-height: 0; cursor: pointer;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.18));
+}
+.aic-carousel-nav svg { display: block; }
+.aic-carousel-nav.prev { left: 0; }
+.aic-carousel-nav.next { right: 0; }
+.aic-carousel-nav:hover circle { fill: #1aa6a4; }
+.aic-carousel-dots { display: flex; justify-content: center; gap: 6px; margin-top: 14px; }
+.aic-carousel-dot { width: 7px; height: 7px; padding: 0; border: none; border-radius: 50%; background: #d8e2e2; cursor: pointer; }
+.aic-carousel-dot.active { background: #23bdbb; width: 18px; border-radius: 4px; }
+
+/* ── 기본(부산대표) 상태 캐러셀 — Figma 302:3635 정확 복제 ──
+   패널 519px / 카드 351x383 / 다음 카드 121px 피크(패널 우측 모서리에서 클리핑) / 34px 화살표.
+   카드 크기가 px 고정이라 내부 요소는 Figma 절대좌표 그대로 배치. */
+.aic-list--default {
+    width: 519px; bottom: auto; max-height: calc(100% - 40px);
+    padding: 22px 26px 18px; overflow: hidden; /* 피크 카드를 패널 모서리에서 클립 */
+}
+/* 지도 툴바: 기본 상태에선 넓어진 패널(519+20) 왼쪽으로 이동 (PCMap3.css 기본 425 오버라이드) */
+.aic.aic--default .pc-map3-toolbar { right: 559px; }
+
+.aic-dstage { padding: 0; height: 383px; }
+.aic-dcard {
+    position: absolute; left: 0; top: 0; width: 351px; height: 383px; box-sizing: border-box;
+    padding: 0; background: #fff; border: 1px solid #ddd; border-radius: 10px;
+    font-family: inherit; cursor: pointer; z-index: 2;
+    transition: border-color 0.13s, box-shadow 0.13s;
+}
+.aic-dcard:hover { border-color: #c8eceb; box-shadow: 0 6px 22px rgba(35,189,187,0.14); }
+.aic-dcard.active { border-color: #23bdbb; }
+.aic-dcard-avatar {
+    position: absolute; left: 50%; top: 27px; transform: translateX(-50%);
+    width: 159px; height: 159px; border-radius: 50%; overflow: hidden;
+    background: #eef1f2; display: flex; align-items: center; justify-content: center;
+}
+.aic-dcard-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.aic-dcard-avatar-fb { font-size: 44px; font-weight: 800; color: #9aa7ad; }
+.aic-dcard-namerow {
+    position: absolute; left: 0; top: 211px; width: 100%;
+    display: flex; justify-content: center; align-items: baseline; gap: 16px;
+}
+.aic-dcard-name { font-size: 24px; font-weight: 700; color: #242424; letter-spacing: -0.04em; }
+.aic-dcard-age { font-size: 20px; font-weight: 400; color: #777; letter-spacing: -0.04em; }
+.aic-dcard-tags {
+    position: absolute; left: 0; top: 250px; width: 100%;
+    display: flex; justify-content: center; gap: 8px;
+}
+.aic-dcard-tags span {
+    border: 1px solid #23bdbb; border-radius: 4px; padding: 1px 4px;
+    font-size: 12px; font-weight: 500; line-height: 16px; color: #23bdbb; white-space: nowrap;
+}
+.aic-dcard-divider { position: absolute; left: 13px; top: 280px; width: 324px; border-top: 1px solid #d9d9d9; }
+.aic-dcard-quote {
+    position: absolute; left: 30px; top: 290px; width: 291px; margin: 0;
+    font-size: 16px; font-weight: 600; color: #242424; line-height: 22px; letter-spacing: -0.04em;
+    text-align: center;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.aic-dcard-q { position: absolute; width: 17px; height: 17px; }
+.aic-dcard-q--open { left: 30px; top: 299px; transform: rotate(180deg); }
+.aic-dcard-q--close { left: 320px; top: 334px; }
+/* 다음 카드 피크: 카드 우측 21px 간격, 패널 overflow:hidden 으로 우측 모서리에서 잘림 */
+.aic-dpeek { position: absolute; left: 372px; top: 0; width: 351px; height: 383px; pointer-events: none; z-index: 1; }
+.aic-dpeek .aic-dcard { cursor: default; }
+/* 다음 화살표 (Figma expand_circle_right_filled 34px) — 피크 카드 위에 겹침 */
+.aic-dnav {
+    position: absolute; left: 442px; top: 76px; width: 34px; height: 34px;
+    padding: 0; border: none; background: none; cursor: pointer; line-height: 0; z-index: 3;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+}
+.aic-dnav img { width: 34px; height: 34px; display: block; }
+.aic-dnav:hover { transform: scale(1.08); }
 
 /* ── 페르소나 풀 상세 리포트 (Figma 215:5403 정확 토큰) ── */
 .aic-modal-backdrop {
@@ -1113,7 +1226,8 @@
 .aic-rp-foot span { font-size: 12px; font-weight: 300; color: #111111; }
 .aic-rp-foot button { background: none; border: none; color: #111111; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
 
-@media (max-width: 1280px) { .aic-list { width: 340px; } }
+/* 좁은 화면: 컴팩트(구/군 선택) 패널만 축소 — 기본(부산대표) 패널은 카드가 351px 고정이라 519 유지 */
+@media (max-width: 1280px) { .aic-list:not(.aic-list--default) { width: 340px; } }
 
 /* Header section */
 .pc-ai-detail-header {
