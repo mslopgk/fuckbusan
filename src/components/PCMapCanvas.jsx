@@ -108,6 +108,24 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
         return () => ro.disconnect();
     }, []);
 
+    // pins가 비어있다가 뒤늦게(비동기 fetch) 채워지는 경우, 카카오맵 SDK가 대량의
+    // CustomOverlayMap을 한 번에 붙일 때 일부만 렌더하고 멈추는 현상이 있어(드래그해야
+    // 나머지가 나타남) — center를 미세하게 흔들어 강제로 오버레이 재배치를 트리거한다.
+    const hadPins = useRef(false);
+    useEffect(() => {
+        if (pins.length === 0 || hadPins.current) return;
+        hadPins.current = true;
+        const t = setTimeout(() => {
+            const map = mapInstance.current;
+            if (!map || !window.kakao?.maps) return;
+            if (typeof map.relayout === 'function') map.relayout();
+            const c = map.getCenter();
+            map.setCenter(new window.kakao.maps.LatLng(c.getLat() + 0.000001, c.getLng()));
+            map.setCenter(c);
+        }, 200);
+        return () => clearTimeout(t);
+    }, [pins.length]);
+
     // Fly to selected district (only on user-triggered changes, not on initial mount)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
@@ -183,10 +201,27 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
 
     const renderedPins = useMemo(() => buildClusters(pins, level), [pins, level]);
 
+    // 카카오맵 SDK의 'click' 이벤트는 자체 히트테스트로 발생해 React 합성 이벤트의
+    // e.stopPropagation()으로는 막히지 않는다(핀/클러스터를 눌러도 지도 클릭이 같이 발생해
+    // 위치선택 CTA가 함께 뜨는 버그) — ref 플래그로 핀 클릭 직후의 지도 클릭 1회를 무시.
+    const suppressMapClickRef = useRef(false);
+    const suppressNextMapClick = () => {
+        suppressMapClickRef.current = true;
+        // 클러스터 클릭은 급격한 zoom/center 변경을 유발해 카카오맵 내부 클릭 처리가
+        // 지연될 수 있어 여유있게 잡는다(소비되면 지도 클릭 리스너에서 즉시 false로 리셋).
+        setTimeout(() => { suppressMapClickRef.current = false; }, 700);
+    };
+
     const handleClusterClick = (cluster) => {
-        setCenter({ lat: cluster.lat, lng: cluster.lng });
-        // 클러스터가 여전히 겹칠 수 있도록 CLUSTER_LEVEL_THRESHOLD 이하까지 과감히 확대
-        setLevel((l) => Math.max(1, Math.min(l - 4, CLUSTER_LEVEL_THRESHOLD - 2)));
+        suppressNextMapClick();
+        // zoom/center 변경으로 클러스터 버튼 DOM이 즉시 사라지면, 진행 중이던 네이티브
+        // 클릭 제스처(mousedown→mouseup)의 나머지가 그 자리의 지도 자체로 떨어져 카카오맵이
+        // 별도 지도 클릭으로 인식하는 경우가 있어, 한 프레임 지연시켜 제스처가 먼저 끝나게 한다.
+        requestAnimationFrame(() => {
+            setCenter({ lat: cluster.lat, lng: cluster.lng });
+            // 클러스터가 여전히 겹칠 수 있도록 CLUSTER_LEVEL_THRESHOLD 이하까지 과감히 확대
+            setLevel((l) => Math.max(1, Math.min(l - 4, CLUSTER_LEVEL_THRESHOLD - 2)));
+        });
     };
 
     return (
@@ -202,6 +237,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                 mapInstance.current = m;
                 if (onMapClick) {
                     window.kakao.maps.event.addListener(m, 'click', (mouseEvent) => {
+                        if (suppressMapClickRef.current) { suppressMapClickRef.current = false; return; }
                         const lat = mouseEvent.latLng.getLat();
                         const lng = mouseEvent.latLng.getLng();
                         onMapClick({ lat, lng });
@@ -278,7 +314,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                                     type="button"
                                     onTouchStart={(e) => e.stopPropagation()}
                                     onTouchEnd={(e) => e.stopPropagation()}
-                                    onClick={() => handleClusterClick(pin)}
+                                    onClick={(e) => { e.stopPropagation(); handleClusterClick(pin); }}
                                     className="pc-diag-tdrop-btn pc-diag-tdrop-btn--cluster"
                                     aria-label={`${pin.count}건`}
                                 >
@@ -295,7 +331,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                                     type="button"
                                     onTouchStart={(e) => e.stopPropagation()}
                                     onTouchEnd={(e) => e.stopPropagation()}
-                                    onClick={() => onPinClick && onPinClick(pin)}
+                                    onClick={(e) => { e.stopPropagation(); suppressNextMapClick(); onPinClick && onPinClick(pin); }}
                                     className={`pc-diag-tdrop-btn${pin.focus ? ' pc-diag-tdrop-btn--focus' : ''}`}
                                     aria-label={pin.title || '진단'}
                                 >
@@ -318,7 +354,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                             /* ── 제보/제안: Figma Union 말풍선 클러스터 ── */
                             <button
                                 type="button"
-                                onClick={() => handleClusterClick(pin)}
+                                onClick={(e) => { e.stopPropagation(); handleClusterClick(pin); }}
                                 className="pc-kakao-cluster-balloon"
                                 aria-label={`${pin.count}건`}
                             >
@@ -333,7 +369,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                         ) : pin.count != null ? (
                             <button
                                 type="button"
-                                onClick={() => onPinClick && onPinClick(pin)}
+                                onClick={(e) => { e.stopPropagation(); suppressNextMapClick(); onPinClick && onPinClick(pin); }}
                                 className="pc-kakao-pin pc-kakao-pin-count"
                                 style={{ background: pin.color || accentColor, '--pin-bg': pin.color || accentColor }}
                                 aria-label={pin.title || `${pin.count}건`}
@@ -344,7 +380,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                             <div className="pc-kakao-pin-wrap">
                                 <button
                                     type="button"
-                                    onClick={() => onPinClick && onPinClick(pin)}
+                                    onClick={(e) => { e.stopPropagation(); suppressNextMapClick(); onPinClick && onPinClick(pin); }}
                                     className={`pc-kakao-pin${pin.focus ? ' pc-kakao-pin--focus' : ''}`}
                                     aria-label={pin.title}
                                 >

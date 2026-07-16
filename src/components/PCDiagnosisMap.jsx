@@ -376,7 +376,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                             item={selected}
                             onAddDiagnosis={goForm}
                             onBack={goList}
-                            mode={target === 'expert' ? 'expert' : 'citizen'}
+                            mode={selected?.targetType === '전문가' ? 'expert' : 'citizen'}
                         />
                     )}
 

@@ -362,6 +362,11 @@ export default function MDiagnosisMap({ onNavigate }) {
                                         const addr = p.district && p.district !== 'all'
                                             ? `${p.district} (${p.count}건)` : '진단 위치';
                                         setSelectedPin({ lat: p.lat, lng: p.lng, district: p.district, address: addr });
+                                        setCurrentCenter({ lat: p.lat, lng: p.lng });
+                                        if (mapRef.current && window.kakao) {
+                                            mapRef.current.panTo(new window.kakao.maps.LatLng(p.lat, p.lng));
+                                            if (mapLevel > 5) mapRef.current.setLevel(5);
+                                        }
                                         if (p.district && p.district !== 'all') setDistrict(p.district);
                                         setTimeout(() => { isPanningRef.current = false; }, 800);
                                     }}
