@@ -97,14 +97,17 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, onDeselect, hover
 
     return (
         <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '100%', background: '#d4e8ee', overflow: 'hidden' }}>
-            {/* 지형 배경: 컨테이너 전체를 cover로 채움 — 스테이지(letterbox) 안에 두면
-                화면비에 따라 상단에 맨 배경색 띠가 생기고, 줌아웃(<1) 때도 가장자리가 비므로
-                줌 래퍼 밖에서 컨테이너에 직접 깐다 (장식용 텍스처라 구·군과 정밀 정합 불필요). */}
+            {/* 지형 배경 underlay: 컨테이너 전체 cover — letterbox 여백/줌아웃 시 맨 배경이 비지 않게 하는 안전망 */}
             <img src="/assets/지도 배경 데스크탑.png" alt="" draggable={false}
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none', userSelect: 'none' }} />
             {/* 줌 래퍼: 툴바 확대/축소를 CSS transform 으로 (카카오맵 아님 — PCPublicData 동일 접근) */}
             <div className="aic-map-zoom" style={{ position: 'absolute', inset: 0, transform: `scale(${zoom})`, transformOrigin: '50% 50%', transition: 'transform 0.25s ease' }}>
             <div style={{ position: 'absolute', top: layout.offsetY, left: layout.offsetX, width: 1920, height: 1080, transformOrigin: 'top left', transform: `scale(${layout.scale})` }}>
+                {/* 지형 배경 정합 레이어: 스테이지 좌표계에 1.36배(좌상단 앵커)로 깔면 PNG의 육지/바다
+                    경계선이 구·군 남해안(사하 ~980 / 해운대 ~700 / 기장 ~620)을 따라 지나간다 (실측 캘리브레이션).
+                    스테이지 내부라 줌/구 도형과 한 몸으로 움직임. */}
+                <img src="/assets/지도 배경 데스크탑.png" alt="" draggable={false}
+                    style={{ position: 'absolute', left: 0, top: 0, width: 2611, height: 1229, pointerEvents: 'none', userSelect: 'none' }} />
                 <img src="/assets/districts/shadow.svg" alt="" draggable={false}
                     style={{ position: 'absolute', left: 382, top: 116, width: 1150, height: 880, pointerEvents: 'none', userSelect: 'none' }} />
                 {DISTRICTS_POS.map((d) => (
@@ -260,8 +263,9 @@ function DefaultCard({ citizen, avatarUrl, onClick, active }) {
     );
 }
 
-function PersonaList({ region, citizens, avatars, onSelect, selectedId }) {
+function PersonaList({ region, citizens, avatars, sort, setSort, loaded, onSelect, selectedId }) {
     const [carouselIndex, setCarouselIndex] = useState(0);
+    const [sortOpen, setSortOpen] = useState(false);
 
     // 지역/필터가 바뀌면 캐러셀 처음(0번)으로
     useEffect(() => { setCarouselIndex(0); }, [region, citizens.length]);
@@ -274,14 +278,12 @@ function PersonaList({ region, citizens, avatars, onSelect, selectedId }) {
         return sorted.length ? sorted[0][0] : null;
     }, [citizens]);
 
-    // Figma 302:4360 — 카드 1장씩 보여주는 캐러셀. 구/군 선택 시 좌우 화살표,
-    // 부산대표(region=null)일 때는 우측 화살표 + 다음 카드 살짝 peek.
+    // 캐러셀은 기본(부산대표) 상태 전용 — Figma 302:3635 (대형 카드 + peek + 화살표).
+    // 구/군 선택 상태는 컴팩트 세로 리스트라 캐러셀 인덱스를 쓰지 않는다.
     const safeIndex = citizens.length ? Math.min(carouselIndex, citizens.length - 1) : 0;
     const current = citizens[safeIndex];
     const nextCitizen = citizens[safeIndex + 1];
-    const hasPrev = safeIndex > 0;
     const hasNext = safeIndex < citizens.length - 1;
-    const goPrev = () => setCarouselIndex((i) => Math.max(i - 1, 0));
     const goNext = () => setCarouselIndex((i) => Math.min(i + 1, citizens.length - 1));
 
     return (
@@ -299,11 +301,26 @@ function PersonaList({ region, citizens, avatars, onSelect, selectedId }) {
             {region && (
                 <div className="aic-list-bar">
                     <span className="aic-list-count">총 {citizens.length}명</span>
-                    <span className="aic-slide-label">슬라이드 <i className="pubdata-caret" aria-hidden="true" /></span>
+                    <div className={`aic-sort${sortOpen ? ' open' : ''}`}>
+                        <button type="button" className="aic-sort-btn" onClick={() => setSortOpen((v) => !v)}>
+                            {SORTS.find((s) => s.key === sort).label} <i className="pubdata-caret" aria-hidden="true" />
+                        </button>
+                        {sortOpen && (
+                            <ul className="aic-sort-menu">
+                                {SORTS.map((s) => (
+                                    <li key={s.key}><button type="button" className={s.key === sort ? 'sel' : ''}
+                                        onClick={() => { setSort(s.key); setSortOpen(false); }}>{s.label}</button></li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
                 </div>
             )}
             <div className="aic-carousel">
-                {citizens.length === 0 && <p className="aic-empty">해당 지역의 가상시민이 아직 없어요.</p>}
+                {/* 빈 상태 문구는 로딩 완료 후에만 — 로딩 중 빈 배열을 "없음"으로 오인 방지 */}
+                {citizens.length === 0 && (loaded
+                    ? <p className="aic-empty">해당 지역의 가상시민이 아직 없어요.</p>
+                    : <p className="aic-empty">가상시민을 불러오는 중이에요…</p>)}
                 {current && !region && (
                     /* 기본(부산대표) 상태 — Figma 302:3635: 대형 카드 + 우측 121px 피크 + 34px 화살표 */
                     <div className="aic-carousel-stage aic-dstage">
@@ -326,41 +343,34 @@ function PersonaList({ region, citizens, avatars, onSelect, selectedId }) {
                         )}
                     </div>
                 )}
-                {current && region && (
-                    <div className="aic-carousel-stage">
-                        <button type="button"
-                            className={`aic-carousel-card${selectedId === current.id ? ' active' : ''}`}
-                            onClick={() => onSelect(current)}>
-                            <div className="aic-carousel-head">
-                                <Avatar url={avatarSrc(avatars[current.id])} initial={current.avatar_initial} size={72} />
-                                <div className="aic-carousel-headtext">
-                                    {(current.importance ?? 100) === 0 && <span className="aic-card-rep">대표</span>}
-                                    <span className="aic-carousel-name">{current.name}</span>
-                                    <span className="aic-carousel-age">{current.age}세</span>
-                                    {region && current.gender && <span className="aic-carousel-gender">{current.gender}</span>}
-                                </div>
-                            </div>
-                            <hr className="aic-carousel-divider" />
-                            <div className="aic-carousel-tags">
-                                {(current.tags || []).slice(0, 3).map((t) => <span key={t}>{t}</span>)}
-                            </div>
-                            <p className="aic-carousel-quote">“{current.quote}”</p>
-                        </button>
-                        {region && hasPrev && (
-                            <button type="button" className="aic-carousel-nav prev" aria-label="이전 가상시민"
-                                onClick={(e) => { e.stopPropagation(); goPrev(); }}>
-                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill={ACCENT} /><path d="M14 8l-4 4 4 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                {region && citizens.length > 0 && (
+                    /* 구/군 선택 상태 — 컴팩트 세로 리스트 (사용자 확정 레퍼런스: 슬라이드 아님,
+                       카드=아바타+이름/나이+해시태그칩+2줄말줄임 인용, 화살표/점선구분선 없음) */
+                    <div className="aic-rlist">
+                        {citizens.map((c) => (
+                            <button key={c.id} type="button"
+                                className={`aic-rcard${selectedId === c.id ? ' active' : ''}`}
+                                onClick={() => onSelect(c)}>
+                                <span className="aic-rcard-head">
+                                    <Avatar url={avatarSrc(avatars[c.id])} initial={c.avatar_initial} size={56} />
+                                    <span className="aic-rcard-headtext">
+                                        <span className="aic-rcard-namerow">
+                                            {(c.importance ?? 100) === 0 && <span className="aic-card-rep">대표</span>}
+                                            <span className="aic-rcard-name">{c.name}</span>
+                                            <span className="aic-rcard-age">{c.age}세</span>
+                                            {c.gender && <span className="aic-rcard-age">{c.gender}</span>}
+                                        </span>
+                                        <span className="aic-rcard-tags">
+                                            {(c.tags || []).slice(0, 3).map((t) => <span key={t}># {String(t).replace(/^#\s*/, '')}</span>)}
+                                        </span>
+                                    </span>
+                                </span>
+                                <p className="aic-rcard-quote">{c.quote}</p>
                             </button>
-                        )}
-                        {hasNext && (
-                            <button type="button" className="aic-carousel-nav next" aria-label="다음 가상시민"
-                                onClick={(e) => { e.stopPropagation(); goNext(); }}>
-                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill={ACCENT} /><path d="M10 8l4 4-4 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                            </button>
-                        )}
+                        ))}
                     </div>
                 )}
-                {citizens.length > 1 && (
+                {!region && citizens.length > 1 && (
                     <div className="aic-carousel-dots">
                         {citizens.map((c, i) => (
                             <button key={c.id} type="button"
@@ -440,17 +450,20 @@ export default function PCAICitizen({ onNavigate }) {
     const mapCtlRef = useRef({});
     mapCtlRef.current = { zoomIn, zoomOut, locateMe }; // toggleMapType 미지원(자체 SVG 지도) — 위성 버튼은 무동작(PCPublicData 동일)
 
-    // 전체 페르소나 로드
+    // 전체 페르소나 로드. loaded 전에는 빈 목록을 "없음"으로 오인해 빈상태 문구가 깜빡이므로
+    // (가상시민이 있는데 없다고 뜨는 현상) 로딩 완료 여부를 함께 추적한다.
+    const [loaded, setLoaded] = useState(false);
     useEffect(() => {
         fetch(`${API_URL}/api/ai-citizens?sort=${sort}`)
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => { if (Array.isArray(rows)) setAll(rows); })
-            .catch(() => {});
+            .catch(() => {})
+            .finally(() => setLoaded(true));
     }, [sort]);
 
-    // 지역+카테고리 필터 (region null = 부산 전체 = 부산대표)
+    // 지역+카테고리 필터 (region null = 부산 전체 = 부산대표). district 는 공백 방어 trim 비교.
     const citizens = useMemo(() => {
-        let list = region ? all.filter((c) => c.district === region) : [...all];
+        let list = region ? all.filter((c) => String(c.district || '').trim() === region) : [...all];
         if (cat !== 'all') list = list.filter((c) => (c.categories || []).includes(cat));
         list = [...list].sort((a, b) => (sort === 'age' ? b.age - a.age
             : (a.importance ?? 99) - (b.importance ?? 99)));
@@ -526,6 +539,7 @@ export default function PCAICitizen({ onNavigate }) {
 
                 <PersonaList
                     region={region} citizens={citizens} avatars={avatars}
+                    sort={sort} setSort={setSort} loaded={loaded}
                     onSelect={openDetail} selectedId={selected?.id}
                 />
 

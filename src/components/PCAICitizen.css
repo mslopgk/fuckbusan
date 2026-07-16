@@ -868,9 +868,10 @@
 
 /* ── 우측 페르소나 리스트 ── */
 .aic-list {
-    position: absolute; top: 20px; right: 20px; bottom: 20px;
+    position: absolute; top: 20px; right: 80px; /* 우측 끝 툴바(48px)+간격 자리 확보 (사용자 확정) */
     width: 384px; z-index: 5;
     display: flex; flex-direction: column;
+    max-height: calc(100% - 40px); /* 내용에 맞춰 늘어나되 지도 영역 안에서 캡 (긴 목록은 내부 스크롤) */
     padding: 22px 20px 14px;
     font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
     letter-spacing: -0.02em;
@@ -878,11 +879,14 @@
 /* 진입 인트로: 여성 페르소나(좌하단) + 말풍선(하단 중앙). Figma 302:3561
    .pubdata 직속 오버레이. 페르소나는 좌측 패널/말풍선/지도보다 위(최상단). */
 .aic-intro { position: absolute; inset: 0; z-index: 30; pointer-events: none; overflow: hidden; }
-/* 캐릭터+말풍선 그룹: 좌하단 앵커 px 좌표계. left 32(여백) ~ right 555(기본상태 우측 패널 519+여백 36).
-   내부 자식은 전부 px 오프셋 → 1100~1920px 어느 화면비에서도 서로 겹치지 않는다.
-   (인트로는 기본(부산대표) 상태에서만 뜨므로 519px 패널 기준으로만 계산) */
+/* 캐릭터+말풍선 그룹: 하단 앵커 + 가로 중앙 정렬(사용자 확정).
+   중앙 기준은 우측 패널(519+여백 36)을 제외한 지도 가시영역 — 패널과 절대 안 겹침.
+   내부 자식은 전부 px 오프셋 → 1100~1920px 어느 화면비에서도 캐릭터/말풍선이 서로 겹치지 않는다. */
 .aic-intro-group {
-    position: absolute; left: 32px; right: 555px; bottom: 0; height: 0;
+    position: absolute; bottom: 0; height: 0;
+    left: calc((100% - 599px) / 2); /* 우측 패널(519)+패널 우측여백(80) 제외 영역의 중앙 */
+    transform: translateX(-50%);
+    width: min(872px, calc(100% - 619px)); /* 캐릭터 224+간격 28+말풍선 620 상한, 패널과 20px 간격 */
     pointer-events: none;
 }
 .aic-intro-persona {
@@ -1041,11 +1045,40 @@
    패널 519px / 카드 351x383 / 다음 카드 121px 피크(패널 우측 모서리에서 클리핑) / 34px 화살표.
    카드 크기가 px 고정이라 내부 요소는 Figma 절대좌표 그대로 배치. */
 .aic-list--default {
-    width: 519px; bottom: auto; max-height: calc(100% - 40px);
+    width: 519px;
     padding: 22px 26px 18px; overflow: hidden; /* 피크 카드를 패널 모서리에서 클립 */
 }
-/* 지도 툴바: 기본 상태에선 넓어진 패널(519+20) 왼쪽으로 이동 (PCMap3.css 기본 425 오버라이드) */
-.aic.aic--default .pc-map3-toolbar { right: 559px; }
+
+/* ── 구/군 선택 상태 — 컴팩트 세로 리스트 (사용자 확정 레퍼런스) ──
+   카드: 56px 아바타 + 이름/나이 + 해시태그 칩 + 2줄 말줄임 인용. 화살표/점선구분선 없음. */
+.aic-rlist {
+    flex: 1; min-height: 0; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 10px; padding-bottom: 4px;
+}
+.aic-rcard {
+    flex: none; display: block; width: 100%; box-sizing: border-box; text-align: left;
+    font-family: inherit; cursor: pointer;
+    background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 12px 14px;
+    transition: border-color 0.13s, box-shadow 0.13s, background 0.13s;
+}
+.aic-rcard:hover { border-color: #c8eceb; box-shadow: 0 4px 14px rgba(35,189,187,0.12); }
+.aic-rcard.active { border-color: #23bdbb; background: #f6fcfc; }
+.aic-rcard-head { display: flex; align-items: center; gap: 12px; }
+.aic-rcard-headtext { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.aic-rcard-namerow { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.aic-rcard-name { font-size: 16px; font-weight: 800; color: #222; }
+.aic-rcard-age { font-size: 13px; font-weight: 500; color: #7a8388; }
+.aic-rcard-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.aic-rcard-tags span {
+    font-size: 11px; font-weight: 500; color: #23bdbb;
+    border: 1px solid #23bdbb; border-radius: 4px; padding: 1px 5px; white-space: nowrap;
+}
+.aic-rcard-quote {
+    margin: 8px 0 0; font-size: 13px; color: #444; line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+/* 지도 툴바: 화면 오른쪽 끝 고정, 패널 상단과 정렬 (사용자 확정 — 패널 상태와 무관) */
+.aic .pc-map3-toolbar { right: 16px; top: 20px; }
 
 .aic-dstage { padding: 0; height: 383px; }
 .aic-dcard {
@@ -1079,7 +1112,8 @@
 }
 .aic-dcard-divider { position: absolute; left: 13px; top: 280px; width: 324px; border-top: 1px solid #d9d9d9; }
 .aic-dcard-quote {
-    position: absolute; left: 30px; top: 290px; width: 291px; margin: 0;
+    /* 좌우 55px 거터 — 양끝 17px 따옴표 이미지(30px/320px 지점)가 텍스트를 절대 가리지 않게 분리 */
+    position: absolute; left: 55px; top: 290px; width: 241px; margin: 0;
     font-size: 16px; font-weight: 600; color: #242424; line-height: 22px; letter-spacing: -0.04em;
     text-align: center;
     display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;

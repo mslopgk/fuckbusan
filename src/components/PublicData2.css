@@ -8,8 +8,9 @@
     display: flex; align-items: center; justify-content: center; }
 .pubd-map .busanmap { width: 100%; max-width: 760px; }
 
-/* 지도 우측 상단 툴바 — .pubd-map 기준 top-right 고정 (다른 지도 페이지 pc-map3-toolbar 컨벤션과 동일) */
-.pubd-toolbar { position: absolute; top: 16px; right: 16px;
+/* 지도 컨트롤 툴바 — 우측 KPI 패널(right:88px)보다 더 오른쪽, 화면 맨 끝에 고정 (사용자 확정).
+   .pubd(페이지 컨테이너) 기준으로 배치되며 패널 top(24px)과 상단 정렬 */
+.pubd-toolbar { position: absolute; top: 24px; right: 16px;
     display: flex; flex-direction: column; gap: 16px; z-index: 6; }
 .pubd-tool-group { display: flex; flex-direction: column; border-radius: 12px; overflow: hidden;
     box-shadow: 0 4px 4px rgba(0,0,0,0.2); }

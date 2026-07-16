@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
@@ -23,6 +23,9 @@ export default function ReportDetail({ report, onNavigate }) {
     const [reply, setReply] = useState('');
     const [stage, setStage] = useState('reviewing');
     const [saving, setSaving] = useState(false);
+    const [resultImage, setResultImage] = useState('');   // 개선 결과사진 (업로드된 URL)
+    const [uploadingImg, setUploadingImg] = useState(false);
+    const fileRef = useRef(null);
 
     useEffect(() => {
         if (!report?.id) return;
@@ -34,6 +37,12 @@ export default function ReportDetail({ report, onNavigate }) {
                     setData(found);
                     const stageMap = { 1: 'received', 2: 'reviewing', 3: 'reviewed', 4: 'announced' };
                     setStage(stageMap[found.progress_step] || 'reviewing');
+                    // 기존 결과 답변/사진이 있으면 로드해 이어서 수정 가능하게
+                    const rd = found.result_details;
+                    if (rd) {
+                        setReply(rd.body || rd.content || '');
+                        setResultImage(rd.image || '');
+                    }
                 }
             } catch (e) {
                 console.error('Failed to fetch report detail:', e);
@@ -41,6 +50,28 @@ export default function ReportDetail({ report, onNavigate }) {
         };
         fetchOne();
     }, [report?.id]);
+
+    const handleResultImageChange = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploadingImg(true);
+        try {
+            const form = new FormData();
+            form.append('file', file);
+            const res = await fetch(`${API_BASE}/reports/upload`, { method: 'POST', body: form });
+            if (res.ok) {
+                const j = await res.json();
+                setResultImage(j.url || '');
+            } else {
+                alert('사진 업로드에 실패했습니다.');
+            }
+        } catch (err) {
+            alert('사진 업로드 중 오류: ' + err.message);
+        } finally {
+            setUploadingImg(false);
+            if (fileRef.current) fileRef.current.value = '';
+        }
+    };
 
     if (!data) {
         return (
@@ -107,7 +138,11 @@ export default function ReportDetail({ report, onNavigate }) {
                     status: STAGE_TO_STATUS[stage],
                     progress_step: STAGES.find((s) => s.key === stage)?.step ?? 2,
                     result_details: {
+                        // body(모바일 결과모달)와 content(PC 결과배너)가 서로 다른 키를 읽어
+                        // 둘 다 채워줌 — content 누락 시 PC에서 결과 코멘트가 안 보이던 버그
                         body: reply.trim(),
+                        content: reply.trim(),
+                        image: resultImage || null,
                         date: new Date().toISOString().slice(0, 10),
                         manager: '관리자',
                     },
@@ -249,6 +284,40 @@ export default function ReportDetail({ report, onNavigate }) {
                             disabled={saving}
                         >
                             {saving ? '…' : '작성'}
+                        </button>
+                    </div>
+                </div>
+
+                {/* 개선 결과사진 — 결과안내(개선완료) 시 사용자 상세의 결과보기에 노출됨 */}
+                <div className="rfd-row rfd-row--top">
+                    <span className="rfd-label">결과사진</span>
+                    <div className="rfd-attachments" style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                        {resultImage ? (
+                            <div style={{ position: 'relative' }}>
+                                <img src={resultImage} alt="개선 결과" className="rfd-thumb" />
+                                <button
+                                    type="button"
+                                    onClick={() => setResultImage('')}
+                                    aria-label="결과사진 삭제"
+                                    style={{
+                                        position: 'absolute', top: -8, right: -8, width: 22, height: 22,
+                                        borderRadius: '50%', border: 'none', background: '#333', color: '#fff',
+                                        cursor: 'pointer', fontSize: 12, lineHeight: 1,
+                                    }}
+                                >×</button>
+                            </div>
+                        ) : (
+                            <div className="rfd-thumb-empty" />
+                        )}
+                        <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleResultImageChange} />
+                        <button
+                            type="button"
+                            className="btn-search-new"
+                            style={{ height: 36, padding: '0 16px', background: '#f1f3f5', color: '#333' }}
+                            onClick={() => fileRef.current?.click()}
+                            disabled={uploadingImg}
+                        >
+                            {uploadingImg ? '업로드 중…' : (resultImage ? '사진 변경' : '사진 업로드')}
                         </button>
                     </div>
                 </div>

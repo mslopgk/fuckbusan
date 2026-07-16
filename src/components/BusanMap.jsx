@@ -41,7 +41,7 @@ const pct = (v, total) => `${(v / total) * 100}%`;
 
 const DRAG_CLICK_THRESHOLD = 5; // px — 이내면 클릭, 초과면 드래그로 판정
 
-const BusanMap = ({ selectedDistrict = null, onDistrictChange, zoom = 1, draggable = false, bgSrc = null }) => {
+const BusanMap = ({ selectedDistrict = null, onDistrictChange, zoom = 1, draggable = false, bgSrc = null, showCharacters = true }) => {
     const [svgs, setSvgs] = useState({});
     // 팬(드래그 이동) — draggable=true(공공데이터)일 때만 활성. 홈 등 기존 사용처는 영향 없음.
     const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -114,9 +114,14 @@ const BusanMap = ({ selectedDistrict = null, onDistrictChange, zoom = 1, draggab
             onClickCapture={onClickCapture}
         >
             <div className="busanmap-stage" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}>
-                {/* 배경 (opt-in) — stage 내부라서 팬/줌 시 구역 도형과 한 몸으로 움직임 */}
+                {/* 배경 (opt-in) — stage 내부라서 팬/줌 시 구역 도형과 한 몸으로 움직임.
+                    underlay(500% cover)는 팬/줌·화면비 여백 안전망, align 레이어는 PNG의 육지/바다
+                    경계선을 구·군 남해안에 정합시킨 본 배경 (스테이지 % 좌표라 도형과 동일하게 스케일). */}
                 {bgSrc && (
-                    <img className="busanmap-bg" src={bgSrc} alt="" aria-hidden="true" draggable={false} />
+                    <>
+                        <img className="busanmap-bg" src={bgSrc} alt="" aria-hidden="true" draggable={false} />
+                        <img className="busanmap-bg busanmap-bg--align" src={bgSrc} alt="" aria-hidden="true" draggable={false} />
+                    </>
                 )}
 
                 {/* 그림자 */}
@@ -146,8 +151,8 @@ const BusanMap = ({ selectedDistrict = null, onDistrictChange, zoom = 1, draggab
                     );
                 })}
 
-                {/* 선택 구 캐릭터 (구 크기와 무관하게 고정 크기 + 상한) */}
-                {sel && (
+                {/* 선택 구 캐릭터 (구 크기와 무관하게 고정 크기 + 상한) — 공공데이터는 미표시 */}
+                {showCharacters && sel && (
                     <img
                         className="busanmap-char"
                         src="/people2.png"

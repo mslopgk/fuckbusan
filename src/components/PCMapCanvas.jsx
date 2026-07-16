@@ -31,12 +31,26 @@ const BUSAN_DEFAULT_LEVEL = 8;
 const CLUSTER_LEVEL_THRESHOLD = 7;
 
 function buildClusters(pins, level) {
-    // 기존엔 level < 임계치(많이 확대된 상태)면 클러스터링을 아예 껐는데, 확대된 상태에서도
-    // 핀들이 화면상 서로 겹칠 만큼 가까우면(예: 같은 건물/블록) 여전히 뭉텅이로 겹쳐 보이는
-    // 문제가 있었다 — 임계치 이하에서도 훨씬 촘촘한 격자로 클러스터링을 계속 적용한다.
+    // 최대 확대(레벨 1~2)에서는 클러스터를 만들지 않는다 — 더 확대할 수 없는 상태에서
+    // 뭉탱이 핀이 남으면 풀 방법이 없기 때문. 같은 건물 등 좌표가 사실상 동일한 핀들은
+    // 부채꼴로 미세하게 펼쳐 각각 보이고 클릭도 가능하게 처리.
+    if (level <= 2) {
+        const seen = Object.create(null);
+        return pins.map((p) => {
+            if (p.lat == null || p.lng == null) return { ...p, _isPin: true };
+            const key = `${p.lat.toFixed(5)}_${p.lng.toFixed(5)}`;
+            const n = (seen[key] = (seen[key] ?? -1) + 1);
+            if (n === 0) return { ...p, _isPin: true };
+            // 두 번째 핀부터 시계방향 부채꼴 오프셋 (레벨1 기준 ~15px 간격)
+            const angle = (n - 1) * (Math.PI / 3);
+            const r = 0.00012 * Math.ceil(n / 6);
+            return { ...p, _isPin: true, lat: p.lat + r * Math.cos(angle), lng: p.lng + r * Math.sin(angle) };
+        });
+    }
+    // 확대된 상태에서도 핀들이 화면상 서로 겹칠 만큼 가까우면(예: 같은 블록) 뭉쳐 보이는
+    // 문제가 있어, 임계치 이하에서도 줌에 비례한 촘촘한 격자로 클러스터링을 계속 적용한다.
     const cellDeg = level >= 12 ? 0.3 : level >= 10 ? 0.15 : level >= 8 ? 0.04 : level >= 7 ? 0.02
-        : level >= 6 ? 0.01 : level >= 5 ? 0.005 : level >= 4 ? 0.0025 : level >= 3 ? 0.0012
-        : level >= 2 ? 0.0006 : 0.0003;
+        : level >= 6 ? 0.01 : level >= 5 ? 0.005 : level >= 4 ? 0.0025 : 0.0012;
     const buckets = Object.create(null);
     pins.forEach((pin) => {
         if (pin.lat == null || pin.lng == null) return;

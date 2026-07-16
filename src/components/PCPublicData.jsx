@@ -203,9 +203,12 @@ export default function PCPublicData({ onNavigate }) {
                         zoom={mapZoom}
                         draggable
                         bgSrc="/assets/지도 배경 데스크탑.png"
+                        showCharacters={false}
                     />
-                    <MapToolbar zoom={mapZoom} onZoomIn={zoomIn} onZoomOut={zoomOut} onLocate={locateMe} />
                 </div>
+
+                {/* 지도 컨트롤바 — 우측 패널보다 더 오른쪽, 화면 맨 끝 (사용자 확정) */}
+                <MapToolbar zoom={mapZoom} onZoomIn={zoomIn} onZoomOut={zoomOut} onLocate={locateMe} />
 
                 {/* 좌측 구역별 필터 카드 */}
                 <div className="pubd-region-card">

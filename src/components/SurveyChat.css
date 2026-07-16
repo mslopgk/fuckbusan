@@ -501,9 +501,10 @@
 }
 
 .surveychat-avatar {
+    /* 카드 왼쪽 바깥, 상단 근처 — 카드와 겹치지 않게 (사용자 위치 지정 피드백) */
     position: absolute;
-    top: 0;
-    left: -26px;
+    top: 8px;
+    left: -68px;
     width: 52px;
     height: 52px;
     z-index: 2;

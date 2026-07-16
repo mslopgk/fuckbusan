@@ -42,6 +42,15 @@
     pointer-events: none;
     user-select: none;
 }
+/* 정합 레이어: PNG(1920x904)를 1.36배·스테이지 좌상 앵커로 환산한 % 기하 —
+   그려진 해안선이 사하/영도/남구~해운대~기장 남해안을 따라 지나간다 (지도 배경 데스크탑.png 실측). */
+.busanmap-bg--align {
+    left: -33.04%;
+    top: -12.25%;
+    width: 228.2%;
+    height: 140.7%;
+    object-fit: fill; /* 도형과 같은 % 좌표계로 스케일(비등방 포함) → 정합 유지 */
+}
 
 /* 그림자 (Figma shadow.svg, 흰 구역 뒤로 드리워짐) */
 .busanmap-shadow {
