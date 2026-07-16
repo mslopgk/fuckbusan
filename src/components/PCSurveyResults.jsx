@@ -139,7 +139,7 @@ export default function PCSurveyResults({ onNavigate, survey }) {
                 color: PIE_COLORS[i % PIE_COLORS.length],
             })).filter(d => d.value > 0),
         };
-    });
+    }).filter(section => section.data.length > 0);
 
     const derivedBarData = (() => {
         const multiQ = (resultsData?.questions || []).find(q => q.qtype === 'multi');

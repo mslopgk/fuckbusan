@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import MobileBottomNav from './MobileBottomNav';
 import './MSurveyDetail.css';
 import { API_URL } from '../utils/api';
 import { copyToClipboard } from '../utils/clipboard';
@@ -245,8 +244,6 @@ export default function MSurveyDetail2({ onNavigate, survey }) {
                     onClick={handleSubmit}
                 >참여하기</button>
             </div>
-
-            <MobileBottomNav currentView="mSurveyDetail2" onNavigate={onNavigate} />
         </div>
     );
 }

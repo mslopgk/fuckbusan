@@ -300,6 +300,7 @@ export default function MSurveyResults({ onNavigate, survey }) {
                 const qIdx  = resultsData.questions.indexOf(q);
                 const total = q.total || q.distribution.reduce((s, d) => s + (d.count || 0), 0) || 1;
                 return {
+                    qIdx,
                     title: `Q${qIdx + 1}. ${q.text}`,
                     slices: q.distribution
                         .map((d, i) => ({
@@ -334,18 +335,24 @@ export default function MSurveyResults({ onNavigate, survey }) {
         color: BUBBLE_COLORS[i % BUBBLE_COLORS.length],
     }));
 
-    // 세로 바 차트 (첫 번째 single 질문)
+    // 이미 도넛 섹션으로 렌더링된 질문 인덱스 (중복 렌더 방지)
+    const renderedDonutQIdx = new Set(
+        donutSections.filter(d => d.slices.length > 0).map(d => d.qIdx)
+    );
+
+    // 세로 바 차트 (도넛에 쓰이지 않은 첫 번째 single 질문)
+    const columnQuestion = (resultsData?.questions || []).find(
+        (q, idx) => q.qtype === 'single' && !renderedDonutQIdx.has(idx)
+    );
     const columnData = (() => {
-        const q = (resultsData?.questions || []).find(q => q.qtype === 'single');
+        const q = columnQuestion;
         if (!q?.distribution?.length) return [];
         const items = q.distribution.map(d => ({ label: d.label, value: d.count || 0 }));
         return items.some(d => d.value > 0) ? items : [];
     })();
     const columnTitle = (() => {
-        if (!resultsData) return null;
-        const q = resultsData.questions.find(q => q.qtype === 'single');
-        if (!q) return null;
-        return `Q${resultsData.questions.indexOf(q) + 1}. ${q.text}`;
+        if (!resultsData || !columnQuestion) return null;
+        return `Q${resultsData.questions.indexOf(columnQuestion) + 1}. ${columnQuestion.text}`;
     })();
 
     const hasSections =

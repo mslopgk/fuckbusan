@@ -92,17 +92,18 @@
     margin-bottom: 20px;
 }
 
-/* PC: 빠른시작 칩 — 오른쪽 세로 열 (같은 div 안에서 full-width로 분리된 느낌, 코드코리아 260713) */
+/* PC: 빠른시작 칩 — 설명 아래 한 칼럼으로 정렬 (좌우 분할 아님, 코드코리아 260713 재수정) */
 .surveychat-intro.pc {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    align-items: stretch;
-    flex: 0 0 240px;
+    align-items: center;
+    width: 100%;
 }
 
 .surveychat-intro.pc .surveychat-introchip {
     width: 100%;
+    max-width: 320px;
     min-width: 0;
 }
 
@@ -136,22 +137,26 @@
     line-height: 1;
 }
 
-/* PC layout: description on left, chips on right */
+/* PC layout: single full-width column — description on top, chips stacked below
+   (previously a 2-column space-between split; CEO flagged this as still broken 260713) */
 .surveychat-pc-body {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
     margin-bottom: 24px;
     gap: 24px;
 }
 
 .surveychat-pc-desc {
-    flex: 1;
+    flex: none;
+    width: 100%;
     font-size: 20px;
     font-weight: 400;
     color: #333;
     line-height: 1.4;
     letter-spacing: -0.8px;
+    text-align: center;
     margin: 0;
 }
 

@@ -1,7 +1,9 @@
 .m-survey-detail-page {
     min-height: 100vh;
     background: #fff;
-    padding-bottom: 80px;
+    /* MobileBottomNav intentionally omitted during active form flow (see MSurveyJoin) —
+       fixed nav previously overlapped consent radios/submit button and swallowed taps */
+    padding-bottom: 24px;
 }
 
 /* Figma: hero area is 285px tall, title at ~99px from top, card starts at 180px */
