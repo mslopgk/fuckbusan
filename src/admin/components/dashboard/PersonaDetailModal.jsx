@@ -190,14 +190,16 @@ export default function PersonaDetailModal({ persona, onClose }) {
                         </h3>
 
                         <div className="modal-effects-grid">
-                            {(persona.expected_effects || ['주민 안전 만족도 30% 증가', '야간 보행자 사고 50% 감소']).map((effect, idx) => (
+                            {persona.expected_effects && persona.expected_effects.length > 0 ? persona.expected_effects.map((effect, idx) => (
                                 <div key={idx} className="modal-effect-item">
                                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-rose-400 flex items-center justify-center shrink-0 shadow-lg font-bold text-lg" style={{ width: '40px', height: '40px', borderRadius: '9999px', background: 'linear-gradient(to bottom right, #E6235A, #fb7185)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontWeight: 700, fontSize: '1.125rem' }}>
                                         👍
                                     </div>
                                     <span className="text-lg font-bold" style={{ fontSize: '1.125rem', fontWeight: 700 }}>{effect}</span>
                                 </div>
-                            ))}
+                            )) : (
+                                <span className="text-sm" style={{ color: '#94a3b8' }}>준비중</span>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -42,6 +42,7 @@
 - [x] 좌측 대시보드 — 이미 Figma 일치(구역별 드롭다운 + 생활정보 9그리드 + 유형 카드 제보30/제안22). 무변경 확인
 - [x] 핀 클릭 시 디자인 변경 — 클릭(선택) 핀에 focus=true 전달 → `.pc-kakao-pin--focus`(scale 1.25+shadow). PCReportMap/PCProposeMap (`2d67875`, Playwright 검증)
 - [x] 좋아요(하트) 팝업 내용 중앙 정렬 — `.pc-kakao-pin-vote` inline-flex 중앙정렬 (`2d67875`). 제보/제안 동일(공유 PCMapCanvas). 모바일도 개선 적용
+- [x] **정책 정보 팝업 가짜 데이터 제거 (전수검증 중 발견, 2026-07-16)** — 모든 핀에서 동일하게 `245172번지`/`2446㎡`/`선정년도 2023` 하드코딩되어 있던 걸 실필드(region/title/address/category/date/status)로 교체, 없는 값은 '준비중'. PCReportMap.jsx/PCProposeMap.jsx. 부수로 `AdminCitizenPersonas`(PersonaDetailModal) 기대효과 fallback도 가짜 수치("30% 증가" 등) → 빈 상태 '준비중'으로 교체. Playwright로 핀별 값 상이함 검증
 
 ### 진단하기 (모바일 — `MDiagnosisList.jsx`/`MDiagnosisMap.jsx`)
 - [x] 카테고리 pill 통일 — 사용자 결정: 3개 도메인(제보/제안/진단) 모두 pill. CategoryRail `variant="pill"` 추가·적용 (`0a13672`, verify 검증). 지도뷰는 이미 pill

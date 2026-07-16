@@ -28,6 +28,7 @@ export default function PCReportMap({ onNavigate }) {
         category: r.category,
         categoryKey: CAT_TO_KEY[r.category] || 'safety',
         region: r.region,
+        address: r.location || r.detailed_address || null,
         date: r.date,
         views: r.views || 0,
         votes: r.likes || 0,
@@ -154,11 +155,12 @@ export default function PCReportMap({ onNavigate }) {
                             <table className="pc-map3-policy-table">
                                 <tbody>
                                     <tr><th>시도</th><td>부산광역시</td></tr>
-                                    <tr><th>시군구</th><td>{policyItem.region}</td></tr>
+                                    <tr><th>시군구</th><td>{policyItem.region || '준비중'}</td></tr>
                                     <tr><th>사업명</th><td>{policyItem.title}</td></tr>
-                                    <tr><th>위치</th><td>부산광역시 {policyItem.region} 245172번지 일원</td></tr>
-                                    <tr><th>면적(㎡)</th><td>2446㎡</td></tr>
-                                    <tr><th>선정년도</th><td>2023</td></tr>
+                                    <tr><th>위치</th><td>{policyItem.address || '주소 준비중'}</td></tr>
+                                    <tr><th>카테고리</th><td>{policyItem.category || '준비중'}</td></tr>
+                                    <tr><th>등록일</th><td>{policyItem.date || '준비중'}</td></tr>
+                                    <tr><th>진행상태</th><td>{policyItem.status || '준비중'}</td></tr>
                                 </tbody>
                             </table>
                             <div className="pc-map3-policy-actions">
