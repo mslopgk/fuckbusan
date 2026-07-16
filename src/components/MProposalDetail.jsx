@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
+import ImageLightbox from './common/ImageLightbox';
 import './MProposalDetail.css';
 import { API_URL } from '../utils/api';
 import { formatDate } from '../utils/format';
@@ -21,6 +22,7 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
     const [commenting, setCommenting] = useState(false);
     const submittingRef = useRef(false); // 동기 가드: state는 비동기라 연타 시 중복 POST 발생
     const [replyTo, setReplyTo] = useState(null);
+    const [lightbox, setLightbox] = useState(false);
     const commentInputRef = useRef(null);
     const [voted, setVoted] = useState(!!proposal?.has_voted);
     const [voting, setVoting] = useState(false);
@@ -186,7 +188,8 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                 {data.imageUrl && (
                     <div
                         className="m-detail-image"
-                        style={{ backgroundImage: `url(${data.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                        style={{ backgroundImage: `url(${data.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', cursor: 'zoom-in' }}
+                        onClick={() => setLightbox(true)}
                     />
                 )}
 
@@ -318,6 +321,14 @@ export default function MProposalDetail({ onNavigate, proposal, sourceView }) {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {lightbox && data.imageUrl && (
+                <ImageLightbox
+                    images={data.imageUrl}
+                    alt="제안 사진"
+                    onClose={() => setLightbox(false)}
+                />
             )}
         </div>
     );

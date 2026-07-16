@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import PCMapCanvas from './PCMapCanvas';
 import { CAT_STYLES } from './catStyles';
+import ImageLightbox from './common/ImageLightbox';
 import './MProposalDetail.css';
 import './MReportDetail.css';
 import { API_URL } from '../utils/api';
@@ -53,6 +54,7 @@ export default function MReportDetail({ onNavigate, report }) {
     const commentInputRef = useRef(null);
     const submittingRef = useRef(false); // 동시 제출 레이스 방지 (댓글 중복 등록 버그)
     const [myId, setMyId] = useState(null);
+    const [lightbox, setLightbox] = useState(false);
 
     // 소유자 판정용 현재 사용자 user_id
     useEffect(() => {
@@ -196,7 +198,8 @@ export default function MReportDetail({ onNavigate, report }) {
                 {data.imageUrl ? (
                     <div
                         className="m-detail-image"
-                        style={{ backgroundImage: `url(${data.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                        style={{ backgroundImage: `url(${data.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', cursor: 'zoom-in' }}
+                        onClick={() => setLightbox(true)}
                     />
                 ) : null}
 
@@ -368,6 +371,14 @@ export default function MReportDetail({ onNavigate, report }) {
                         )}
                     </div>
                 </div>
+            )}
+
+            {lightbox && data.imageUrl && (
+                <ImageLightbox
+                    images={data.imageUrl}
+                    alt="제보 사진"
+                    onClose={() => setLightbox(false)}
+                />
             )}
         </div>
     );

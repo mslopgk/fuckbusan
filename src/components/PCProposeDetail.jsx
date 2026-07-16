@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
+import ImageLightbox from './common/ImageLightbox';
 import './PCDetailShared.css';
 import './PCPropose.css';
 import { API_URL } from '../utils/api';
@@ -24,6 +25,7 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
     const [voted, setVoted] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const viewCalled = useRef(false);
+    const [lightbox, setLightbox] = useState(false);
 
     useEffect(() => {
         if (!proposal?.id) return;
@@ -160,6 +162,8 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                             src={photoSrc}
                             alt="제안 사진"
                             className="pcd-photo"
+                            style={{ cursor: 'zoom-in' }}
+                            onClick={() => setLightbox(true)}
                             onError={(e) => { e.target.style.display = 'none'; }}
                         />
                     )}
@@ -262,6 +266,14 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                             </p>
                         </div>
                     </div>
+                )}
+
+                {lightbox && photoSrc && (
+                    <ImageLightbox
+                        images={photoSrc}
+                        alt="제안 사진"
+                        onClose={() => setLightbox(false)}
+                    />
                 )}
             </div>
         </UserPCLayout>

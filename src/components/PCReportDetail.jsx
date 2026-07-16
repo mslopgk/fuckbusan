@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef} from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
+import ImageLightbox from './common/ImageLightbox';
 import './PCDetailShared.css';
 import './PCReportDetail.css';
 import { API_URL } from '../utils/api';
@@ -35,6 +36,8 @@ export default function PCReportDetail({ onNavigate, report }) {
     const [deleting, setDeleting] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const fetchCalled = useRef(false);
+    const [lightbox, setLightbox] = useState(false);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
 
     // 현재 로그인 사용자의 user_id (소유자 판정용 — 이름/닉네임 문자열 비교 대신 신뢰 가능한 id 비교)
     useEffect(() => {
@@ -235,6 +238,8 @@ export default function PCReportDetail({ onNavigate, report }) {
                                     src={src}
                                     alt={`제보 사진 ${i + 1}`}
                                     className="pcd-photo"
+                                    style={{ cursor: 'zoom-in' }}
+                                    onClick={() => { setLightboxIndex(i); setLightbox(true); }}
                                     onError={(e) => { e.target.style.display = 'none'; }}
                                 />
                             ))}
@@ -406,6 +411,15 @@ export default function PCReportDetail({ onNavigate, report }) {
                             </div>
                         </div>
                     </div>
+                )}
+
+                {lightbox && (
+                    <ImageLightbox
+                        images={images}
+                        index={lightboxIndex}
+                        alt="제보 사진"
+                        onClose={() => setLightbox(false)}
+                    />
                 )}
             </div>
         </UserPCLayout>
