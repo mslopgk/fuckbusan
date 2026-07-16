@@ -31,7 +31,7 @@
 - [x] 상단 이모지 겹침 — 실제는 여정지도(`PersonaReport`)의 하단 감정선 SVG 점이 상단 카드/이모지와 어긋난 것. 원인: 그리드 gap 8px vs SVG 점 균등분할 불일치. `PCAICitizen.css` gap:0+카드 margin:0 4px로 카드중심=(i+0.5)/n 일치시켜 정렬 (`bf5dd72`, Playwright 6스텝 diff 전부 0px 검증)
 
 ### 진단하기 (PC — `PCDiagnosisMap.jsx`/`PCDiagnosisDetail.jsx`)
-- [?] 좌측 대시보드 디자인이 Figma와 다름 — Figma 참조: 구역별 드롭다운 + 생활정보 9그리드 + **진단대상(전체/시민/전문가) 세그먼트 토글** + 공공/시설물 대분류·중분류·소분류 폼(취소/확인 버튼). **기존 TODO "🔴 PC Figma diff" `pcDiagnosisMap 우측패널 구조` 항목과 동일 사안으로 추정** — 디자이너 컨펌 시 함께 처리
+- [x] **좌측 대시보드 (2026-07-16 사용자 스크린샷 기준 재작업)** — 진단대상 세그먼트/공공시설물 대분류·중분류·소분류 폼은 이미 구현돼 있었음(코드 변경 불필요). Figma와 실제로 다르던 건 구역별(네이티브 select)·생활정보(3열 그리드) 두 카드뿐 — AI가상시민과 동일한 `filters/MapFilterPanel`(RegionFilterCard/LifeRail, accent=진단 teal #23BDBB)로 교체. `diagnosis.js` LIVING_CATS 순서/라벨도 Figma 순서로 정정. Playwright로 카테고리 토글·구역선택 동작 확인
 
 ### 공공데이터 (PC — `PCPublicData.jsx`)
 - [x] 우측 지표 카드 클릭 시 데이터값 미표시 — 근본원인: `!isAll` 게이트로 **전체 모드에서 카드 클릭 자체가 무반응**이었고 상세는 하드코딩 placeholder. 수정: 전체/카테고리 공통 클릭 + 상세에 백엔드 실값(값/연도/비고/출처) 렌더, 없으면 '준비중'. `hitFor()` 추가 (2026-07-15 Playwright 검증: 공공도서관 클릭→"4개관/2024년 기준/출처")
