@@ -91,6 +91,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
     const containerRef = useRef(null);
     const geoRef = useRef(null);
     const isFirstDistrictRun = useRef(true);
+    const listenerAttachedMapsRef = useRef(new WeakSet());
 
     useEffect(() => {
         loadGeo().then((d) => { if (d) { setGeo(d); geoRef.current = d; } });
@@ -209,7 +210,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
         suppressMapClickRef.current = true;
         // 클러스터 클릭은 급격한 zoom/center 변경을 유발해 카카오맵 내부 클릭 처리가
         // 지연될 수 있어 여유있게 잡는다(소비되면 지도 클릭 리스너에서 즉시 false로 리셋).
-        setTimeout(() => { suppressMapClickRef.current = false; }, 700);
+        setTimeout(() => { suppressMapClickRef.current = false; }, 500);
     };
 
     const handleClusterClick = (cluster) => {
@@ -235,7 +236,13 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
             mapTypeId={internalMapType === 'hybrid' ? 'HYBRID' : 'ROADMAP'}
             onCreate={(m) => {
                 mapInstance.current = m;
-                if (onMapClick) {
+                // React.StrictMode(개발모드)는 onCreate를 두 번 호출할 수 있어, 가드 없이
+                // addListener하면 같은 지도 인스턴스에 'click' 리스너가 중복 등록된다.
+                // 실제 클릭 시 첫 리스너가 suppress 플래그를 정상 소비(reset)한 뒤 두 번째
+                // 리스너가 이미 false가 된 플래그를 보고 오작동(지도 클릭 재발생)하는 게
+                // "클러스터 클릭 시 위치선택 CTA가 가끔씩 같이 뜨는" 간헐적 버그의 원인이었다.
+                if (onMapClick && !listenerAttachedMapsRef.current.has(m)) {
+                    listenerAttachedMapsRef.current.add(m);
                     window.kakao.maps.event.addListener(m, 'click', (mouseEvent) => {
                         if (suppressMapClickRef.current) { suppressMapClickRef.current = false; return; }
                         const lat = mouseEvent.latLng.getLat();
@@ -312,6 +319,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                             isCluster ? (
                                 <button
                                     type="button"
+                                    onMouseDown={suppressNextMapClick}
                                     onTouchStart={(e) => e.stopPropagation()}
                                     onTouchEnd={(e) => e.stopPropagation()}
                                     onClick={(e) => { e.stopPropagation(); handleClusterClick(pin); }}
@@ -329,6 +337,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                             ) : (
                                 <button
                                     type="button"
+                                    onMouseDown={suppressNextMapClick}
                                     onTouchStart={(e) => e.stopPropagation()}
                                     onTouchEnd={(e) => e.stopPropagation()}
                                     onClick={(e) => { e.stopPropagation(); suppressNextMapClick(); onPinClick && onPinClick(pin); }}
@@ -354,6 +363,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                             /* ── 제보/제안: Figma Union 말풍선 클러스터 ── */
                             <button
                                 type="button"
+                                onMouseDown={suppressNextMapClick}
                                 onClick={(e) => { e.stopPropagation(); handleClusterClick(pin); }}
                                 className="pc-kakao-cluster-balloon"
                                 aria-label={`${pin.count}건`}
@@ -369,6 +379,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                         ) : pin.count != null ? (
                             <button
                                 type="button"
+                                onMouseDown={suppressNextMapClick}
                                 onClick={(e) => { e.stopPropagation(); suppressNextMapClick(); onPinClick && onPinClick(pin); }}
                                 className="pc-kakao-pin pc-kakao-pin-count"
                                 style={{ background: pin.color || accentColor, '--pin-bg': pin.color || accentColor }}
@@ -380,6 +391,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                             <div className="pc-kakao-pin-wrap">
                                 <button
                                     type="button"
+                                    onMouseDown={suppressNextMapClick}
                                     onClick={(e) => { e.stopPropagation(); suppressNextMapClick(); onPinClick && onPinClick(pin); }}
                                     className={`pc-kakao-pin${pin.focus ? ' pc-kakao-pin--focus' : ''}`}
                                     aria-label={pin.title}
