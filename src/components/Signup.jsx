@@ -46,10 +46,11 @@ const BackHeader = ({ onBack }) => (
     </div>
 );
 
+/* 체크 인디케이터 — Figma 에셋 (302:3425). checked=에셋, unchecked=동일 형태의 빈 라운드 사각형 */
 const Check = ({ on }) => (
-    <span className={`msignup-check${on ? ' on' : ''}`} aria-hidden="true">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-    </span>
+    on
+        ? <img className="msignup-check on" src="/figma-assets/icons/terms_check.svg" alt="" width={20} height={20} aria-hidden="true" />
+        : <span className="msignup-check" aria-hidden="true" />
 );
 
 /* ===== 1단계: 약관동의 + 가입유형 ===== */
@@ -70,9 +71,12 @@ const ConsentStep = ({ onBack, onNext }) => {
         <div className="msignup">
             <BackHeader onBack={onBack} />
             <div className="msignup-body">
-                <button type="button" className={`msignup-all${allOn ? ' on' : ''}`} onClick={toggleAll}>
-                    <Check on={allOn} /> <span>모든 약관에 동의합니다</span>
-                </button>
+                <div className="msignup-all-box">
+                    <button type="button" className={`msignup-all${allOn ? ' on' : ''}`} onClick={toggleAll}>
+                        <Check on={allOn} /> <span>모든 약관에 동의합니다</span>
+                    </button>
+                    <p className="msignup-all-sub">전체 약관에 동의해야 서비스를 이용할 수 있습니다.</p>
+                </div>
 
                 <div className="msignup-terms-block">
                     <div className="msignup-terms-title">이용약관 <span className="req">(필수)</span></div>
@@ -86,7 +90,7 @@ const ConsentStep = ({ onBack, onNext }) => {
                     <div className="msignup-terms-title">개인정보처리방침 <span className="req">(필수)</span></div>
                     <div className="msignup-terms-box">{TERMS_PRIVACY}</div>
                     <button type="button" className={`msignup-agree${privacy ? ' on' : ''}`} onClick={() => setPrivacy((v) => !v)}>
-                        <Check on={privacy} /> <span>위 약관에 동의합니다.</span>
+                        <Check on={privacy} /> <span>위 개인정보처리방침에 동의합니다.</span>
                     </button>
                 </div>
 

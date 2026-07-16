@@ -22,10 +22,11 @@ const loadDaumPostcode = () =>
 const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,20}$/;
 
 /* ===== 약관동의 / 가입유형(권한선택) ===== Figma 회원가입>약관동의 */
+/* 체크 인디케이터 — Figma 에셋 (302:3425). checked=에셋, unchecked=동일 형태의 빈 라운드 사각형 */
 const Check = ({ on }) => (
-    <span className={`pcauth-check${on ? ' on' : ''}`} aria-hidden="true">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-    </span>
+    on
+        ? <img className="pcauth-check on" src="/figma-assets/icons/terms_check.svg" alt="" width={20} height={20} aria-hidden="true" />
+        : <span className="pcauth-check" aria-hidden="true" />
 );
 
 // Figma export 아이콘 (직접 그리지 않음)
@@ -46,7 +47,7 @@ const TermsBox = ({ title, body, agreed, onToggle }) => (
         <div className="pcauth-terms-title">{title} <span className="pcauth-terms-req">(필수)</span></div>
         <div className="pcauth-terms-body">{body}</div>
         <button type="button" className={`pcauth-terms-agree${agreed ? ' on' : ''}`} onClick={onToggle}>
-            <Check on={agreed} /> <span>위 내용에 동의합니다.</span>
+            <Check on={agreed} /> <span>위 {title}에 동의합니다.</span>
         </button>
     </div>
 );
