@@ -20,6 +20,36 @@ const TARGETS = [
     { label: '전문가', val: 'expert' },
 ];
 
+const PAGE_SIZE = 20;
+
+const mapRow = (item) => {
+    let dateStr = '23.01.01';
+    if (item.created_at) {
+        try {
+            dateStr = new Date(item.created_at).toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit' }).replace(/\./g, '').replace(/ /g, '.');
+        } catch (e) { }
+    }
+
+    return {
+        id: item.result_id,
+        type: item.district_code === 'expert' ? 'expert' : 'general',
+        date: dateStr,
+        bookmarked: false,
+        title: item.중분류 || item.대분류 || '진단 결과',
+        score: String(item.점수 || 0),
+        result: item.만족도 || 'suitable',
+        lat: item.위도,
+        lng: item.경도,
+        address: item.진단지역 || '주소 정보 없음',
+        scores: [],
+        desc: item.리뷰,
+        image: item.이미지경로 ? (item.이미지경로.startsWith('/uploads') ? `${API_URL}${item.이미지경로}` : item.이미지경로) : '/assets/diagnosis_street.png',
+        placeName: item.장소명 || item.placeName || '',
+        // raw API row, kept for building the PCDiagnosisMap-compatible detail payload on click
+        raw: item,
+    };
+};
+
 const DiagnosisList = ({ onBack, onNavigate }) => {
     // 'all' | 'general' | 'expert'
     const [activeTab, setActiveTab] = useState('all');
@@ -31,54 +61,63 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
     const [selectedCategory, setSelectedCategory] = useState('전체');
 
     const [listData, setListData] = useState([]);
+    const [hasMore, setHasMore] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+
+    const fetchPage = React.useCallback(async (skip, append) => {
+        try {
+            // Use fetchWithLogout to handle auth automatically
+            const token = localStorage.getItem('access_token');
+            const res = await fetchWithLogout(`${API_URL}/checklist/list?skip=${skip}&limit=${PAGE_SIZE}`, {
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const mapped = Array.isArray(data) ? data.map(mapRow) : [];
+                setListData(prev => append ? [...prev, ...mapped] : mapped);
+                setHasMore(mapped.length === PAGE_SIZE);
+            } else {
+                console.warn("Fetch List Failed:", res.status);
+                if (!append) setListData([]);
+                setHasMore(false);
+            }
+        } catch (e) {
+            console.error("Failed to fetch diagnosis list", e);
+            setHasMore(false);
+        }
+    }, []);
 
     React.useEffect(() => {
-        const fetchList = async () => {
-            try {
-                // Use fetchWithLogout to handle auth automatically
-                const token = localStorage.getItem('access_token');
-                const res = await fetchWithLogout(`${API_URL}/checklist/list`, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
+        fetchPage(0, false);
+    }, [fetchPage]);
 
-                if (res.ok) {
-                    const data = await res.json();
-                    // Map to card format
-                    const mapped = data.map(item => {
-                        let dateStr = '23.01.01';
-                        if (item.created_at) {
-                            try {
-                                dateStr = new Date(item.created_at).toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit' }).replace(/\./g, '').replace(/ /g, '.');
-                            } catch (e) { }
-                        }
+    const handleLoadMore = async () => {
+        if (loadingMore || !hasMore) return;
+        setLoadingMore(true);
+        await fetchPage(listData.length, true);
+        setLoadingMore(false);
+    };
 
-                        return {
-                            id: item.result_id,
-                            type: item.district_code === 'expert' ? 'expert' : 'general',
-                            date: dateStr,
-                            bookmarked: false,
-                            title: item.중분류 || item.대분류 || '진단 결과',
-                            score: String(item.점수 || 0),
-                            result: item.만족도 || 'suitable',
-                            lat: item.위도,
-                            lng: item.경도,
-                            address: item.진단지역 || '주소 정보 없음',
-                            scores: [],
-                            desc: item.리뷰,
-                            image: item.이미지경로 ? (item.이미지경로.startsWith('/uploads') ? `${API_URL}${item.이미지경로}` : item.이미지경로) : '/assets/diagnosis_street.png',
-                            placeName: item.장소명 || item.placeName || '',
-                        };
-                    });
-                    setListData(mapped);
-                } else {
-                    console.warn("Fetch List Failed:", res.status);
-                }
-            } catch (e) {
-                console.error("Failed to fetch diagnosis list", e);
-            }
-        };
-        fetchList();
-    }, []);
+    const handleItemClick = (item) => {
+        if (!onNavigate) return;
+        const raw = item.raw || {};
+        onNavigate('pcDiagnosisDetail', {
+            id: raw.result_id,
+            big: raw.대분류 || '주거',
+            mid: raw.중분류 || '',
+            name: raw.질문기준 || raw.대분류 || '진단',
+            score: raw.점수 != null ? Number(raw.점수).toFixed(1) : null,
+            reviewText: raw.리뷰 || '',
+            region: raw.진단지역 || '',
+            location: raw.진단지역 || raw.district_code || null,
+            date: raw.created_at ? String(raw.created_at).slice(0, 10) : null,
+            lat: raw.위도 != null ? Number(raw.위도) : null,
+            lng: raw.경도 != null ? Number(raw.경도) : null,
+            thumb: raw.이미지경로 ? (raw.이미지경로.startsWith('/uploads') ? `${API_URL}${raw.이미지경로}` : raw.이미지경로) : null,
+            targetType: raw.진단대상 || '',
+        });
+    };
 
     const toggleBookmark = (id) => {
         setListData(prev => prev.map(item =>
@@ -207,10 +246,32 @@ const DiagnosisList = ({ onBack, onNavigate }) => {
                                 key={item.id}
                                 item={item}
                                 onBookmark={toggleBookmark}
-                                onClick={() => {}}
+                                onClick={() => handleItemClick(item)}
                             />
                         ))}
                     </div>
+
+                    {hasMore && (
+                        <div style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
+                            <button
+                                type="button"
+                                onClick={handleLoadMore}
+                                disabled={loadingMore}
+                                style={{
+                                    padding: '10px 28px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ddd',
+                                    background: '#fff',
+                                    color: '#333',
+                                    fontSize: '14px',
+                                    cursor: loadingMore ? 'default' : 'pointer',
+                                    opacity: loadingMore ? 0.6 : 1,
+                                }}
+                            >
+                                {loadingMore ? '불러오는 중...' : '더보기'}
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -59,7 +59,8 @@ const ProposalList = ({ onNavigate, onBack }) => {
             });
             if (response.ok) {
                 const data = await response.json();
-                setAllProposals(Array.isArray(data) ? data : []);
+                const list = data.items ?? data;
+                setAllProposals(Array.isArray(list) ? list : []);
             } else {
                 setAllProposals([]);
             }

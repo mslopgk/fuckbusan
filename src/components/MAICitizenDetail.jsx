@@ -157,17 +157,25 @@ export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }
     const [avatarUrl, setAvatarUrl] = useState(null);
     const [loading, setLoading] = useState(false);
     const [chatOpen, setChatOpen] = useState(false);
+    const [notFound, setNotFound] = useState(false);
 
     useEffect(() => {
         if (!initialCitizen?.id) return;
         setLoading(true);
         fetch(`${API_URL}/api/ai-citizens/${initialCitizen.id}`)
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) throw new Error('not found');
+                return r.json();
+            })
             .then(data => {
                 setCitizen(data);
                 setDetail(data.detail || null);
             })
-            .catch(() => {})
+            .catch(() => {
+                // initialCitizen에 목록에서 넘어온 실제 데이터(name)가 없으면(딥링크 등으로
+                // id만 들고 진입) 깨진 반쪽짜리 화면 대신 "찾을 수 없음" 상태로 전환
+                if (!initialCitizen?.name) setNotFound(true);
+            })
             .finally(() => setLoading(false));
 
         fetch(`${API_URL}/api/ai-citizens/${initialCitizen.id}/avatar`)
@@ -178,7 +186,7 @@ export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }
             .catch(() => {});
     }, [initialCitizen?.id]);
 
-    if (!citizen) return (
+    if (!citizen || notFound) return (
         <>
             <div style={{ padding: '24px', textAlign: 'center', minHeight: 'calc(100vh - 76px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <p style={{ color: '#888', marginBottom: 16 }}>시민 정보를 찾을 수 없습니다.</p>

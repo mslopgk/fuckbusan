@@ -6,6 +6,7 @@ import { RegionFilterCard, LifeRail } from './filters/MapFilterPanel';
 import { catIcon } from './filters/catIcons';
 import { LIVING_CATS, CAT_TO_KEY, DISTRICTS } from '../constants/mapConstants';
 import { useReportsData } from '../hooks/useReportsData';
+import { thumbUrl } from '../utils/format';
 import './PCMapShared.css';
 import './PCMap3.css';
 import './PCReportMap.css';
@@ -34,6 +35,7 @@ export default function PCReportMap({ onNavigate }) {
         views: r.views || 0,
         votes: r.likes || 0,
         status: r.status,
+        image: (Array.isArray(r.images) && r.images.length > 0) ? r.images[0] : (r.image || null),
         lat: r.lat,
         lng: r.lng,
     })), [reports]);
@@ -175,7 +177,7 @@ export default function PCReportMap({ onNavigate }) {
                                 <div className="pc-map3-list-right">
                                     <div
                                         className="pc-map3-list-thumb"
-                                        style={{ backgroundImage: `url('/figma-assets/detail-hero-haeundae.png')` }}
+                                        style={{ backgroundImage: it.image ? `url(${thumbUrl(it.image) || it.image})` : "url('/figma-assets/detail-hero-haeundae.png')" }}
                                     />
                                     <div className="pc-map3-list-stats">
                                         <span>

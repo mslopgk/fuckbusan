@@ -6,7 +6,7 @@ import './MMyReportEdit.css';
 import { API_URL } from '../utils/api';
 import { compressImage } from '../utils/imageCompress';
 
-const CATS = ['주거', '환경', '교통', '안전'];
+const CATS = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 const POSITIONS = ['', '공공/시설물', '도로/보도', '하수/배수', '가로등/조명', '벤치/쉼터', '쓰레기/청소', '안내판/표지판'];
 const ISSUES = ['', '파손', '오염', '고장', '미흡', '안전위험', '기타'];
 
