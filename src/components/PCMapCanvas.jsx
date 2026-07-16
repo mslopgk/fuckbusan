@@ -31,8 +31,12 @@ const BUSAN_DEFAULT_LEVEL = 8;
 const CLUSTER_LEVEL_THRESHOLD = 7;
 
 function buildClusters(pins, level) {
-    if (level < CLUSTER_LEVEL_THRESHOLD) return pins.map((p) => ({ ...p, _isPin: true }));
-    const cellDeg = level >= 12 ? 0.3 : level >= 10 ? 0.15 : level >= 8 ? 0.04 : 0.02;
+    // 기존엔 level < 임계치(많이 확대된 상태)면 클러스터링을 아예 껐는데, 확대된 상태에서도
+    // 핀들이 화면상 서로 겹칠 만큼 가까우면(예: 같은 건물/블록) 여전히 뭉텅이로 겹쳐 보이는
+    // 문제가 있었다 — 임계치 이하에서도 훨씬 촘촘한 격자로 클러스터링을 계속 적용한다.
+    const cellDeg = level >= 12 ? 0.3 : level >= 10 ? 0.15 : level >= 8 ? 0.04 : level >= 7 ? 0.02
+        : level >= 6 ? 0.01 : level >= 5 ? 0.005 : level >= 4 ? 0.0025 : level >= 3 ? 0.0012
+        : level >= 2 ? 0.0006 : 0.0003;
     const buckets = Object.create(null);
     pins.forEach((pin) => {
         if (pin.lat == null || pin.lng == null) return;
@@ -219,9 +223,28 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
         // 클릭 제스처(mousedown→mouseup)의 나머지가 그 자리의 지도 자체로 떨어져 카카오맵이
         // 별도 지도 클릭으로 인식하는 경우가 있어, 한 프레임 지연시켜 제스처가 먼저 끝나게 한다.
         requestAnimationFrame(() => {
-            setCenter({ lat: cluster.lat, lng: cluster.lng });
-            // 클러스터가 여전히 겹칠 수 있도록 CLUSTER_LEVEL_THRESHOLD 이하까지 과감히 확대
-            setLevel((l) => Math.max(1, Math.min(l - 4, CLUSTER_LEVEL_THRESHOLD - 2)));
+            // 기존엔 레벨을 무조건 -4(최대 1까지) 확대해, 클러스터 멤버가 넓게 퍼져있으면
+            // 화면 밖으로 나가버렸다(78건 클러스터 확대 시 세부 핀들이 화면 밖에 위치하던 버그).
+            // 멤버들의 실제 bounding box를 계산해 중심/레벨을 span에 맞춰 산정한다 —
+            // "구역별 이동" 로직(아래 selectedDistrict useEffect)과 동일한 계산 방식.
+            const items = (cluster._items && cluster._items.length > 0) ? cluster._items : [cluster];
+            const lats = items.map((p) => p.lat);
+            const lngs = items.map((p) => p.lng);
+            const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+            const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+            const maxSpan = Math.max(Math.max(...lats) - Math.min(...lats), Math.max(...lngs) - Math.min(...lngs));
+            const fitLevel = maxSpan < 0.002 ? 2 : maxSpan < 0.005 ? 3 : maxSpan < 0.01 ? 4
+                : maxSpan < 0.02 ? 5 : maxSpan < 0.04 ? 6 : CLUSTER_LEVEL_THRESHOLD - 1;
+            const nextLevel = Math.max(1, Math.min(fitLevel, level - 1, CLUSTER_LEVEL_THRESHOLD - 1));
+            // 이미 최대 확대 상태라 더 zoom-in해도 멤버들이 여전히 뭉쳐있는 경우(같은 건물 등,
+            // 최소 격자 셀보다도 가까운 경우) — 줌으로는 절대 안 풀리므로 첫 항목을 바로 열어준다.
+            // (제보맵에서 "2건" 클러스터를 최대확대 상태로 눌러도 아무 반응 없던 버그)
+            if (nextLevel >= level && onPinClick) {
+                onPinClick(items[0]);
+                return;
+            }
+            setCenter({ lat: centerLat, lng: centerLng });
+            setLevel(nextLevel);
         });
     };
 

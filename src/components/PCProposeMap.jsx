@@ -164,7 +164,7 @@ export default function PCProposeMap({ onNavigate }) {
                                     className="pc-map3-policy-cta"
                                     onClick={() => onNavigate && onNavigate('pcProposeDetail', { ...policyItem, id: policyItem.rawId })}
                                 >
-                                    자세히 보기
+                                    상세보기
                                 </button>
                             </div>
                         </div>

@@ -134,7 +134,7 @@ export default function PCReportMap({ onNavigate }) {
                                     className="pc-map3-policy-cta"
                                     onClick={() => onNavigate && onNavigate('pcReportDetail', policyItem)}
                                 >
-                                    자세히 보기
+                                    상세보기
                                 </button>
                             </div>
                         </div>
