@@ -50,7 +50,8 @@ _BOT_SCHEMA = {
             "suggested_replies": {
                 "type": "array",
                 "items": {"type": "string"},
-                "description": "input_type=text 에서 바로 누를 수 있는 짧은 예시 보기(선택)",
+                "description": "input_type=text 이고 질문이 좁고 구체적일 때만 제공하는 짧은 예시 보기(2~3개). "
+                               "질문이 넓고 개방적이면(응답자가 자유롭게 무엇이든 꺼내도록 하는 질문) 편향 방지를 위해 빈 배열([])로 둘 것.",
             },
             "info_update": {
                 "type": ["object", "null"],

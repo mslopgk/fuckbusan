@@ -25,9 +25,11 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
     const [started, setStarted] = useState(false); // 인트로 → 대화 전환
     const [draft, setDraft] = useState('');
     const [busy, setBusy] = useState(false);
+    const [toast, setToast] = useState('');
     const sessionRef = useRef(null);   // 서버 세션 id
     const scrollRef = useRef(null);
     const startedRef = useRef(false);  // beginSurvey 1회만 실행 (더블클릭/StrictMode 이중 마운트 방지)
+    const fileInputRef = useRef(null); // 첨부파일 피커(현재 백엔드 미지원 — 안내만 노출)
 
     const nav = (target) => onNavigate && onNavigate(target);
 
@@ -97,6 +99,16 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
         setStarted(true);
         await start();
         if (firstMsg) send(firstMsg);
+    };
+
+    // 첨부파일 — /api/survey-chat/message 는 텍스트만 지원(백엔드 이미지 업로드 미구현).
+    // 파일 선택 자체는 동작하되, 전송 불가함을 안내만 한다.
+    const onAttachChange = (e) => {
+        const file = e.target.files?.[0];
+        e.target.value = '';
+        if (!file) return;
+        setToast('첨부파일은 아직 지원되지 않습니다.');
+        setTimeout(() => setToast(''), 2200);
     };
 
     const onIntro = (key) => {
@@ -217,13 +229,22 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                 )}
             </div>
 
+            {toast && <div className="surveychat-toast" role="status">{toast}</div>}
+
             {/* 입력바 — 대화 시작 후에만 노출 (인트로엔 없음) */}
             {started && (
                 <div className="surveychat-inputbar">
                     <div className="surveychat-field">
-                        <button type="button" className="surveychat-attach" aria-label="첨부">
+                        <button type="button" className="surveychat-attach" aria-label="첨부" onClick={() => fileInputRef.current?.click()}>
                             <img src="/figma-assets/icons/attach_icon.png" alt="" width="22" height="22" />
                         </button>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            onChange={onAttachChange}
+                        />
                         <input
                             className="surveychat-textfield"
                             placeholder={complete ? '설문이 완료되었습니다' : '질문하기'}
