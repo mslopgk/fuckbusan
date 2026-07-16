@@ -59,7 +59,22 @@ const CATS = [
 const GUGUN = ['부산진구', '해운대구', '사하구', '동래구', '북구', '남구', '연제구', '금정구',
     '사상구', '기장군', '수영구', '강서구', '서구', '영도구', '동구', '중구'];
 
-// 지도 우측 툴바 (Figma 302:8820). 아이콘은 Figma export PNG. map/analytics 는 active(teal) 상태.
+// 구·군청 대표 위경도(근사) — "내 위치" 버튼에서 브라우저 geolocation 결과와 최근접 구 매칭용.
+const GUGUN_LATLNG = {
+    강서구: [35.2124, 128.9806], 사상구: [35.1524, 128.9909], 북구: [35.1970, 129.0061],
+    금정구: [35.2430, 129.0921], 기장군: [35.2443, 129.2223], 동래구: [35.1955, 129.0835],
+    연제구: [35.1762, 129.0796], 부산진구: [35.1627, 129.0530], 해운대구: [35.1631, 129.1636],
+    수영구: [35.1455, 129.1132], 남구: [35.1365, 129.0843], 사하구: [35.1043, 128.9747],
+    서구: [35.0975, 129.0242], 동구: [35.1294, 129.0454], 중구: [35.1002, 129.0324],
+    영도구: [35.0912, 129.0680],
+};
+
+const MAP_ZOOM_MIN = 0.7;
+const MAP_ZOOM_MAX = 1.8;
+const MAP_ZOOM_STEP = 0.15;
+
+// 지도 우측 상단 툴바 (Figma 302:8820). 아이콘은 Figma export PNG. map/analytics 는 active(teal) 상태.
+// ⚠️ 이 지도는 카카오맵이 아닌 자체 SVG 구역 지도(BusanMap) — zoom/locate 는 CSS transform + geolocation 으로 직접 구현.
 const TOOLS_MAIN = [
     { icon: 'tb_locate', title: '내 위치' },
     { icon: 'tb_add', title: '확대' },
@@ -68,12 +83,30 @@ const TOOLS_MAIN = [
     { icon: 'tb_satellite', title: '위성' },
 ];
 
-function MapToolbar() {
+function MapToolbar({ zoom, onZoomIn, onZoomOut, onLocate }) {
+    const handlerFor = (icon) => {
+        if (icon === 'tb_add') return onZoomIn;
+        if (icon === 'tb_remove') return onZoomOut;
+        if (icon === 'tb_locate') return onLocate;
+        return undefined;
+    };
+    const disabledFor = (icon) => {
+        if (icon === 'tb_add') return zoom >= MAP_ZOOM_MAX;
+        if (icon === 'tb_remove') return zoom <= MAP_ZOOM_MIN;
+        return false;
+    };
     return (
         <div className="pubd-toolbar">
             <div className="pubd-tool-group">
                 {TOOLS_MAIN.map((t) => (
-                    <button key={t.icon} type="button" title={t.title} className={`pubd-tool-btn${t.active ? ' active' : ''}`}>
+                    <button
+                        key={t.icon}
+                        type="button"
+                        title={t.title}
+                        className={`pubd-tool-btn${t.active ? ' active' : ''}`}
+                        onClick={handlerFor(t.icon)}
+                        disabled={disabledFor(t.icon)}
+                    >
                         <img src={`/assets/publicdata/icons/${t.icon}.png`} alt="" aria-hidden="true" />
                     </button>
                 ))}
@@ -93,6 +126,7 @@ export default function PCPublicData({ onNavigate }) {
     const [stats, setStats] = useState([]);          // theme_stats (백엔드)
     const [sortAsc, setSortAsc] = useState(false);   // false = Figma 기본(카테고리 순서)
     const [selMetric, setSelMetric] = useState(null); // 카테고리 모드 선택 지표
+    const [mapZoom, setMapZoom] = useState(1);        // 지도 확대/축소 (CSS transform scale)
 
     useEffect(() => {
         const q = region ? `?region=${encodeURIComponent(region)}` : '';
@@ -101,6 +135,35 @@ export default function PCPublicData({ onNavigate }) {
             .then((d) => setStats(Array.isArray(d?.theme_stats) ? d.theme_stats : []))
             .catch(() => {});
     }, [region]);
+
+    const zoomIn = () => setMapZoom((z) => Math.min(MAP_ZOOM_MAX, +(z + MAP_ZOOM_STEP).toFixed(2)));
+    const zoomOut = () => setMapZoom((z) => Math.max(MAP_ZOOM_MIN, +(z - MAP_ZOOM_STEP).toFixed(2)));
+
+    // 내 위치: 브라우저 geolocation → 부산 구·군 중 최근접 구 선택(구역별 필터와 동일 state 재사용).
+    const locateMe = () => {
+        if (!navigator.geolocation) {
+            alert('이 브라우저는 위치 확인 기능을 지원하지 않습니다.');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                if (latitude < 34.8 || latitude > 35.5 || longitude < 128.5 || longitude > 129.5) {
+                    alert('부산 지역 밖에 있어 위치를 표시할 수 없습니다.');
+                    return;
+                }
+                let best = null;
+                let bestDist = Infinity;
+                for (const [name, [lat, lng]] of Object.entries(GUGUN_LATLNG)) {
+                    const d = Math.hypot(lat - latitude, lng - longitude);
+                    if (d < bestDist) { bestDist = d; best = name; }
+                }
+                if (best) setRegion(best);
+            },
+            () => alert('위치 정보를 가져올 수 없습니다. 브라우저 위치 권한을 확인해주세요.'),
+            { enableHighAccuracy: true, timeout: 8000 }
+        );
+    };
 
     const activeCat = CATS.find((c) => c.key === cat);
     const isAll = cat === 'all';
@@ -134,9 +197,15 @@ export default function PCPublicData({ onNavigate }) {
             <div className="pubd">
                 {/* 중앙 지도 */}
                 <div className="pubd-map">
-                    <BusanMap selectedDistrict={region} onDistrictChange={setRegion} />
+                    <BusanMap
+                        selectedDistrict={region}
+                        onDistrictChange={setRegion}
+                        zoom={mapZoom}
+                        draggable
+                        bgSrc="/assets/지도 배경 데스크탑.png"
+                    />
+                    <MapToolbar zoom={mapZoom} onZoomIn={zoomIn} onZoomOut={zoomOut} onLocate={locateMe} />
                 </div>
-                <MapToolbar />
 
                 {/* 좌측 구역별 필터 카드 */}
                 <div className="pubd-region-card">

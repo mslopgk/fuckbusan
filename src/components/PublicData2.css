@@ -1,13 +1,15 @@
 /* PC 공공데이터 (Figma TCuOzEqNhoLKjhF0reBDks 302:8774). accent teal #23bdbb, page bg #f4f4f4 */
-.pubd { position: relative; width: 100%; min-height: calc(100vh - 64px); background: #f4f4f4; overflow: hidden; }
+/* 배경: AI가상시민과 동일한 지형 등고선 자산 — 이미지는 BusanMap bgSrc(팬/줌 동기 이동)로 렌더,
+   여기는 팬 한계 밖에서만 보이는 fallback 색만 유지 */
+.pubd { position: relative; width: 100%; min-height: calc(100vh - 64px); background: #d4e8ee; overflow: hidden; }
 
 /* 중앙 지도 */
 .pubd-map { position: absolute; left: 180px; right: 560px; top: 0; bottom: 0;
     display: flex; align-items: center; justify-content: center; }
 .pubd-map .busanmap { width: 100%; max-width: 760px; }
 
-/* 지도 우측 툴바 */
-.pubd-toolbar { position: absolute; right: 24px; top: 50%; transform: translateY(-50%);
+/* 지도 우측 상단 툴바 — .pubd-map 기준 top-right 고정 (다른 지도 페이지 pc-map3-toolbar 컨벤션과 동일) */
+.pubd-toolbar { position: absolute; top: 16px; right: 16px;
     display: flex; flex-direction: column; gap: 16px; z-index: 6; }
 .pubd-tool-group { display: flex; flex-direction: column; border-radius: 12px; overflow: hidden;
     box-shadow: 0 4px 4px rgba(0,0,0,0.2); }
@@ -15,6 +17,7 @@
     background: #fff; border: none; border-bottom: 1px solid #e6e6e6; cursor: pointer; padding: 0; }
 .pubd-tool-group .pubd-tool-btn:last-child { border-bottom: none; }
 .pubd-tool-btn img { width: 24px; height: 24px; object-fit: contain; }
+.pubd-tool-btn:disabled { cursor: not-allowed; opacity: 0.35; }
 /* active 아이콘 PNG는 Figma export 자체가 '청록 사각형+흰 글리프' 완성본 —
    버튼 배경/반전 필터를 또 입히면 글리프가 사라져 빈 청록 네모로 보임(QA 지적).
    → 배경은 흰색 유지, 아이콘을 버튼 풀사이즈로 그대로 노출 */

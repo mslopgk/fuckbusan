@@ -19,7 +19,10 @@
 .pch2-hero-map .busanmap { width: min(40vw, 560px); }
 .pch2-hero-inner {
     position: relative; max-width: 1320px; margin: 0 auto; height: 600px; padding: 0 24px;
+    /* 투명 오버레이가 뒤 지도(.pch2-hero-map) 클릭을 전부 막는 문제 → 카드 자신만 이벤트 수신 */
+    pointer-events: none;
 }
+.pch2-hero-inner > * { pointer-events: auto; }
 
 /* 좌측 참여 현황 카드 */
 .pch2-stats {

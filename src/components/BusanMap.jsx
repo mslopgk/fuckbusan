@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './BusanMap.css';
 
 /*
@@ -39,8 +39,50 @@ const CENTROID = {
 
 const pct = (v, total) => `${(v / total) * 100}%`;
 
-const BusanMap = ({ selectedDistrict = null, onDistrictChange }) => {
+const DRAG_CLICK_THRESHOLD = 5; // px — 이내면 클릭, 초과면 드래그로 판정
+
+const BusanMap = ({ selectedDistrict = null, onDistrictChange, zoom = 1, draggable = false, bgSrc = null }) => {
     const [svgs, setSvgs] = useState({});
+    // 팬(드래그 이동) — draggable=true(공공데이터)일 때만 활성. 홈 등 기존 사용처는 영향 없음.
+    const [pan, setPan] = useState({ x: 0, y: 0 });
+    const [dragging, setDragging] = useState(false);
+    const dragRef = useRef(null);   // { startX, startY, panX, panY }
+    const movedRef = useRef(false); // 직전 제스처가 드래그였으면 click 무시
+
+    const onPointerDown = (e) => {
+        if (!draggable || e.button !== 0) return;
+        dragRef.current = { startX: e.clientX, startY: e.clientY, panX: pan.x, panY: pan.y };
+        movedRef.current = false;
+        // ⚠️ 여기서 setState/setPointerCapture 하면 pointerdown~mousedown 사이 리렌더·retarget 으로
+        //    구 클릭(click 합성)이 죽는다 → 실제 드래그로 판정된 뒤(onPointerMove)에만 수행.
+    };
+    const onPointerMove = (e) => {
+        const d = dragRef.current;
+        if (!d) return;
+        const dx = e.clientX - d.startX;
+        const dy = e.clientY - d.startY;
+        if (!movedRef.current) {
+            if (Math.abs(dx) <= DRAG_CLICK_THRESHOLD && Math.abs(dy) <= DRAG_CLICK_THRESHOLD) return; // 클릭 후보 — 팬 시작 안 함
+            movedRef.current = true;
+            setDragging(true);
+            e.currentTarget.setPointerCapture?.(e.pointerId);
+        }
+        setPan({ x: d.panX + dx, y: d.panY + dy });
+    };
+    const onPointerUp = (e) => {
+        if (!dragRef.current) return;
+        dragRef.current = null;
+        setDragging(false);
+        e.currentTarget.releasePointerCapture?.(e.pointerId);
+    };
+    // 드래그 직후 발생하는 click은 구 선택으로 처리하지 않음 (클릭 vs 드래그 구분)
+    const onClickCapture = (e) => {
+        if (movedRef.current) {
+            e.preventDefault();
+            e.stopPropagation();
+            movedRef.current = false;
+        }
+    };
 
     useEffect(() => {
         let alive = true;
@@ -63,10 +105,22 @@ const BusanMap = ({ selectedDistrict = null, onDistrictChange }) => {
     const sel = DISTRICTS.find((d) => d.name === selectedDistrict);
 
     return (
-        <div className="busanmap">
-            <div className="busanmap-stage">
+        <div
+            className={`busanmap${draggable ? ' draggable' : ''}${dragging ? ' dragging' : ''}`}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            onClickCapture={onClickCapture}
+        >
+            <div className="busanmap-stage" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}>
+                {/* 배경 (opt-in) — stage 내부라서 팬/줌 시 구역 도형과 한 몸으로 움직임 */}
+                {bgSrc && (
+                    <img className="busanmap-bg" src={bgSrc} alt="" aria-hidden="true" draggable={false} />
+                )}
+
                 {/* 그림자 */}
-                <img className="busanmap-shadow" src="/assets/districts/shadow.svg" alt="" aria-hidden="true" />
+                <img className="busanmap-shadow" src="/assets/districts/shadow.svg" alt="" aria-hidden="true" draggable={false} />
 
                 {/* 구역 도형 */}
                 {DISTRICTS.map((d) => {
@@ -99,6 +153,7 @@ const BusanMap = ({ selectedDistrict = null, onDistrictChange }) => {
                         src="/people2.png"
                         alt=""
                         aria-hidden="true"
+                        draggable={false}
                         style={{
                             left: pct(sel.x + sel.w / 2, VBW),
                             top: pct(sel.y + Math.min(sel.h * 0.4, 64), VBH),

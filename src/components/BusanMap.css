@@ -13,6 +13,34 @@
     aspect-ratio: 750.48 / 572.98;
     max-height: 100%;
     overflow: visible;
+    transition: transform 0.25s ease;
+    transform-origin: center center;
+}
+
+/* 드래그 팬 (draggable prop — 공공데이터 전용 opt-in) */
+.busanmap.draggable {
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.busanmap.dragging { cursor: grabbing; }
+.busanmap.dragging .busanmap-shape svg path { cursor: grabbing; }
+.busanmap.dragging .busanmap-stage { transition: none; }
+
+/* 배경 (bgSrc prop — 공공데이터 opt-in). stage 대비 500%로 넉넉히 깔아
+   팬/줌 범위 내에서 뷰포트가 비지 않게 함. 도형과 같은 transform 을 타고 함께 이동. */
+.busanmap-bg {
+    position: absolute;
+    left: -200%;
+    top: -200%;
+    width: 500%;
+    height: 500%;
+    max-width: none; /* Tailwind preflight(img{max-width:100%}) 무력화 */
+    object-fit: cover;
+    z-index: -1;
+    pointer-events: none;
+    user-select: none;
 }
 
 /* 그림자 (Figma shadow.svg, 흰 구역 뒤로 드리워짐) */
