@@ -166,7 +166,8 @@ function App() {
             'mPage', 'myPage', 'mySurveys', 'myDiagnosis', 'changePassword',
         ];
         if (stored && AUTH_REQUIRED_VIEWS.includes(stored) && !localStorage.getItem('access_token')) {
-            return 'home';
+            // myPage: match onNavigate('myPage') convention (line ~568) which sends unauth'd users to login, not home
+            return stored === 'myPage' ? 'login' : 'home';
         }
 
         return stored || 'home';
@@ -853,6 +854,7 @@ function App() {
                 {view === 'diagnosisList' && (
                     <DiagnosisList
                         onBack={() => setView('diagnosis')}
+                        onNavigate={(target, data) => onNavigate(target, data)}
                     />
                 )}
                 {view === 'myActivity' && (
@@ -1198,7 +1200,7 @@ function App() {
                     />
                 )}
                 {view === 'myPage' && (
-                    <MyPage onBack={() => setView('home')} />
+                    <MyPage onBack={() => setView('home')} onLoginRequired={() => setView('login')} />
                 )}
                 {view === 'mNotifications' && (
                     <MNotifications onNavigate={(target, data) => onNavigate(target, data)} />

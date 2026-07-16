@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './MyPage.css';
 import { API_URL } from '../utils/api';
 
-const MyPage = ({ onBack }) => {
+const MyPage = ({ onBack, onLoginRequired }) => {
     const [userInfo, setUserInfo] = useState({
         ID: '',
         name: '',
@@ -26,7 +26,7 @@ const MyPage = ({ onBack }) => {
             const token = localStorage.getItem('access_token');
             if (!token) {
                 alert('로그인이 필요합니다.');
-                onBack();
+                (onLoginRequired || onBack)();
                 return;
             }
             try {

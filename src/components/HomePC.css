@@ -62,6 +62,22 @@
 .pch2-top5-empty { color: #9aa3ab; font-size: 13.5px; line-height: 1.6; text-align: center;
     padding: 24px 8px; white-space: pre-line; }
 
+/* ===== 로딩 스켈레톤 ===== */
+@keyframes pch2-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+.pch2-skel {
+    display: inline-block; border-radius: 6px; background: rgba(255,255,255,0.35);
+    animation: pch2-pulse 1.3s ease-in-out infinite; color: transparent;
+}
+.pch2-stats-row-v.pch2-skel,
+.pch2-stats-row .pch2-skel { background: #e7f3f2; }
+.pch2-skel-total { width: 64px; height: 24px; background: rgba(255,255,255,0.35); }
+.pch2-skel-row { width: 44px; height: 15px; margin-left: auto; background: #e7f3f2; }
+.pch2-rank-skel-row { display: flex; align-items: center; gap: 10px; }
+.pch2-skel-rank { width: 24px; height: 24px; border-radius: 50%; background: #eef2f2; flex-shrink: 0; }
+.pch2-skel-name { width: 64px; height: 13px; background: #eef2f2; flex-shrink: 0; }
+.pch2-skel-bar { flex: 1; height: 8px; border-radius: 6px; background: #eef2f2; }
+.pch2-skel-cnt { width: 48px; height: 13px; background: #eef2f2; flex-shrink: 0; }
+
 /* ===== 빠른 액션 ===== */
 .pch2-actions {
     max-width: 1320px; margin: 0 auto; padding: 48px 24px 0;

@@ -24,7 +24,9 @@ const HomePC = ({ onNavigate }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [region, setRegion] = useState(null);   // null = 부산전체 (기본 선택 없음)
     const [stats, setStats] = useState(null);
+    const [statsLoading, setStatsLoading] = useState(true);
     const [ranking, setRanking] = useState([]);
+    const [rankingLoading, setRankingLoading] = useState(true);
     const [news, setNews] = useState([]);
 
     useEffect(() => {
@@ -33,13 +35,16 @@ const HomePC = ({ onNavigate }) => {
             .then((d) => setNews(d?.items?.length ? d.items : FALLBACK_NEWS)).catch(() => setNews(FALLBACK_NEWS));
         // 지역별 참여는 항상 구·군 랭킹(전체 기준)
         fetch(`${API_URL}/api/home/district-ranking?limit=5`)
-            .then((r) => r.ok ? r.json() : []).then((d) => setRanking(Array.isArray(d) ? d : [])).catch(() => {});
+            .then((r) => r.ok ? r.json() : []).then((d) => setRanking(Array.isArray(d) ? d : []))
+            .catch(() => {}).finally(() => setRankingLoading(false));
     }, []);
 
     // 좌측 시민 참여 현황만 선택 구에 따라 갱신 (미선택 시 부산전체)
     useEffect(() => {
+        setStatsLoading(true);
         const q = region ? `?region=${encodeURIComponent(region)}` : '';
-        fetch(`${API_URL}/api/home/stats${q}`).then((r) => r.ok ? r.json() : null).then(setStats).catch(() => {});
+        fetch(`${API_URL}/api/home/stats${q}`).then((r) => r.ok ? r.json() : null).then(setStats)
+            .catch(() => {}).finally(() => setStatsLoading(false));
     }, [region]);
 
     const go = (t) => onNavigate && onNavigate(t);
@@ -72,13 +77,17 @@ const HomePC = ({ onNavigate }) => {
                     </div>
                     <div className="pch2-stats-total">
                         <span>총 참여건수</span>
-                        <strong>{n(stats?.total)}건</strong>
+                        {statsLoading
+                            ? <strong className="pch2-skel pch2-skel-total" aria-hidden="true">&nbsp;</strong>
+                            : <strong>{n(stats?.total)}건</strong>}
                     </div>
                     <div className="pch2-stats-rows">
                         {catRows.map((c) => (
                             <button key={c.key} className="pch2-stats-row" onClick={() => (c.auth ? goAuthed(c.view) : go(c.view))}>
                                 <span className="pch2-stats-row-k">{c.key}</span>
-                                <span className="pch2-stats-row-v">{n(c.count)}건</span>
+                                {statsLoading
+                                    ? <span className="pch2-skel pch2-skel-row" aria-hidden="true">&nbsp;</span>
+                                    : <span className="pch2-stats-row-v">{n(c.count)}건</span>}
                                 <Arrow size={18} color="#c4c4c4" />
                             </button>
                         ))}
@@ -90,7 +99,17 @@ const HomePC = ({ onNavigate }) => {
                     <h3>지역별 참여 TOP 5</h3>
                     <span className="pch2-top5-sub">참여건수 기준</span>
                     <ul className="pch2-top5-list">
-                        {(ranking.length ? ranking : []).map((r, i) => (
+                        {rankingLoading && (
+                            Array.from({ length: 5 }).map((_, i) => (
+                                <li key={`skel-${i}`} className="pch2-rank-skel-row" aria-hidden="true">
+                                    <span className="pch2-skel pch2-skel-rank" />
+                                    <span className="pch2-skel pch2-skel-name" />
+                                    <span className="pch2-skel pch2-skel-bar" />
+                                    <span className="pch2-skel pch2-skel-cnt" />
+                                </li>
+                            ))
+                        )}
+                        {!rankingLoading && ranking.map((r, i) => (
                             <li key={r.region}>
                                 <span className="pch2-rank" style={{ background: RANK_COLORS[i] }}>{i + 1}</span>
                                 <span className="pch2-rank-name">{r.region}</span>
@@ -98,7 +117,7 @@ const HomePC = ({ onNavigate }) => {
                                 <span className="pch2-rank-cnt">{n(r.count)}건</span>
                             </li>
                         ))}
-                        {!ranking.length && <li className="pch2-top5-empty">참여 데이터를 집계 중입니다.</li>}
+                        {!rankingLoading && !ranking.length && <li className="pch2-top5-empty">참여 데이터를 집계 중입니다.</li>}
                     </ul>
                 </div>
                 </div>
