@@ -2,7 +2,8 @@ import { useState, useMemo, useRef } from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
 import MapToolbar from './PCMapToolbar';
-import CategoryRail from './filters/CategoryRail';
+import { RegionFilterCard, LifeRail } from './filters/MapFilterPanel';
+import { catIcon } from './filters/catIcons';
 import { LIVING_CATS, CAT_TO_KEY, DISTRICTS } from '../constants/mapConstants';
 import { useReportsData } from '../hooks/useReportsData';
 import './PCMapShared.css';
@@ -73,35 +74,21 @@ export default function PCReportMap({ onNavigate }) {
     return (
         <UserPCLayout currentView="pcReportMap" onNavigate={onNavigate}>
             <div className={`pc-map3-page report${sidebarOpen ? '' : ' pc-map3-sidebar-closed'}`}>
-                <div className="pc-map3-filter-stack">
-                    <aside className="pc-map3-filter-card">
-                        <div className="pc-map3-section-label">구역별</div>
-                        <div className="pc-map3-dropdown">
-                            <select value={district} onChange={(e) => setDistrict(e.target.value)}>
-                                <option value="">전체</option>
-                                {DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
-                            </select>
-                            <button className="pc-map3-dropdown-x" onClick={() => setDistrict('')} aria-label="초기화">×</button>
-                        </div>
-                    </aside>
+                <div className="pc-map3-filter-stack pc-map3-filter-stack--rail">
+                    <RegionFilterCard
+                        value={district || '전체'}
+                        onSelect={(v) => setDistrict(v === '전체' ? '' : v)}
+                        options={['전체', ...DISTRICTS]}
+                        accent="#542aa3"
+                        unsetValue="전체"
+                    />
 
-                    <aside className="pc-map3-filter-card pc-map3-filter-card--rail">
-                        <CategoryRail
-                            variant="rail"
-                            title="생활정보"
-                            categories={LIVING_CATS.map((c) => c.label)}
-                            isOn={(label) => {
-                                const c = LIVING_CATS.find((x) => x.label === label);
-                                return c ? livingCats.has(c.key) : false;
-                            }}
-                            onChange={(label) => {
-                                const c = LIVING_CATS.find((x) => x.label === label);
-                                if (c) toggleLivingCat(c.key);
-                            }}
-                            accent="#542aa3"
-                            tint="#efe9f7"
-                        />
-                    </aside>
+                    <LifeRail
+                        categories={LIVING_CATS.map((c) => ({ key: c.key, label: c.label, icon: catIcon(c.label) }))}
+                        isOn={(c) => livingCats.has(c.key)}
+                        onChange={(c) => toggleLivingCat(c.key)}
+                        accent="#542aa3"
+                    />
 
                     <aside className="pc-map3-filter-card">
                         <div className="pc-map3-section-label">유형</div>
