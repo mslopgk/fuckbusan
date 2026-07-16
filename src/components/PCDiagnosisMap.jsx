@@ -19,9 +19,6 @@ import './PCDiagnosisDetail.css';
 import './PCDiagnosisForm.css';
 import { API_URL, authHeaders } from '../utils/api';
 
-const FACILITY_BIG = ['공간 및 가로 환경', '공공시설물', '정보 및 서비스 매체'];
-
-
 const BIG_COLORS = {
     '주거': '#DFF8F8',
     '환경': '#C0E6C0',
@@ -54,7 +51,10 @@ const BIG_TO_KEY = {
 export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', initialItem = null }) {
     const [district, setDistrict] = useState('');
     const [livingCats, setLivingCats] = useState(() => new Set(['all']));
-    const [bigSel, setBigSel] = useState(new Set(['공간 및 가로 환경']));
+    // 대분류 체크박스 옵션은 '공공/시설물'(전문가 진단의 세부 시설 분류 체계)에서만 의미가 있음.
+    // 시민 대분류(주거/환경 등 생활정보)는 이미 좌측 LifeRail(livingCats)에서 다루므로 여기선 제외.
+    // 기본값은 미선택(전체) — 하드코딩된 라벨이 실제 데이터와 매칭되지 않아 전건이 걸러지는 것을 방지.
+    const [bigSel, setBigSel] = useState(() => new Set());
     const [facilityMid, setFacilityMid] = useState('');
     const [facilitySub, setFacilitySub] = useState('');
     const [target, setTarget] = useState('all');
@@ -153,6 +153,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
     let filtered = items;
     if (district) filtered = filtered.filter((it) => it.region === district);
     if (!livingCats.has('all')) filtered = filtered.filter((it) => livingCats.has(it.categoryKey));
+    if (bigSel.size > 0) filtered = filtered.filter((it) => bigSel.has(it.big));
     if (facilityMid) filtered = filtered.filter((it) => it.mid === facilityMid);
     if (target === 'citizen') filtered = filtered.filter((it) => it.targetType === '시민');
     else if (target === 'expert') filtered = filtered.filter((it) => it.targetType === '전문가');
@@ -217,7 +218,12 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                                 <div className="pc-diag-facility-title">공공/시설물</div>
                                 <div className="pc-diag-section-label">대분류</div>
                                 <div className="pc-diag-check-col">
-                                    {FACILITY_BIG.map((f) => (
+                                    {[...new Set(
+                                        items
+                                            .filter((it) => it.targetType === '전문가')
+                                            .map((it) => it.big)
+                                            .filter(Boolean)
+                                    )].sort().map((f) => (
                                         <label key={f} className={`pc-diag-check ${bigSel.has(f) ? 'on' : ''}`}>
                                             <input
                                                 type="checkbox"
