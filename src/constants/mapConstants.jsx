@@ -1,14 +1,15 @@
 // 제보/제안/지도 공통 상수 — PC + 모바일 공용
 
+// 순서 = Figma 302:5940 (전체/산업일자리/문화여가/안전/교육/보건복지/주거/환경/교통)
 export const LIVING_CATS = [
     { key: 'all',     label: '전체',       icon: 'grid',      cat: null },
-    { key: 'safety',  label: '안전',       icon: 'shield',    cat: '안전' },
-    { key: 'housing', label: '주거',       icon: 'home',      cat: '주거' },
     { key: 'work',    label: '산업·일자리', icon: 'briefcase', cat: '산업·일자리' },
-    { key: 'edu',     label: '교육',       icon: 'book',      cat: '교육' },
-    { key: 'env',     label: '환경',       icon: 'leaf',      cat: '환경' },
     { key: 'leisure', label: '문화·여가',  icon: 'heart',     cat: '문화·여가' },
+    { key: 'safety',  label: '안전',       icon: 'shield',    cat: '안전' },
+    { key: 'edu',     label: '교육',       icon: 'book',      cat: '교육' },
     { key: 'health',  label: '보건·복지',  icon: 'plus',      cat: '보건·복지' },
+    { key: 'housing', label: '주거',       icon: 'home',      cat: '주거' },
+    { key: 'env',     label: '환경',       icon: 'leaf',      cat: '환경' },
     { key: 'traffic', label: '교통',       icon: 'bus',       cat: '교통' },
 ];
 

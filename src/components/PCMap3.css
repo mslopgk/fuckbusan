@@ -51,10 +51,17 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-/* 2. 생활정보 */
+/* 2. 생활정보 — CategoryRail(variant=rail)이 자체 카드 박스(radius/shadow/padding)를 그리므로
+   바깥 filter-card 래퍼는 박스 스타일을 비운다 (이중 카드 방지) */
 .pc-map3-filter-card:nth-child(2) {
     border-radius: 19px;
     box-shadow: 0 4px 4px rgba(0,0,0,0.25);
+}
+.pc-map3-filter-card.pc-map3-filter-card--rail {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
 }
 
 /* 3. 유형 */

@@ -8,6 +8,7 @@ import './CategoryRail.css';
 export default function CategoryRail({
     categories,
     value,
+    isOn,
     onChange,
     accent = '#06AB69',
     tint = '#eef7f2',
@@ -21,7 +22,7 @@ export default function CategoryRail({
             {variant === 'rail' && title && <div className="cat-rail-title">{title}</div>}
             <div className="cat-rail-items">
                 {categories.map((c) => {
-                    const on = value === c;
+                    const on = isOn ? isOn(c) : value === c;
                     const onStyle = isPill
                         ? { background: accent, color: '#fff', borderColor: accent }
                         : { color: accent, background: tint };

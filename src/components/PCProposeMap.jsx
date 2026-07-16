@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import UserPCLayout from './UserPCLayout';
 import PCMapCanvas from './PCMapCanvas';
 import MapToolbar from './PCMapToolbar';
-import { LIVING_CATS, CAT_TO_KEY, CAT_COLOR, DISTRICTS, DISTRICT_CENTERS, CategoryIcon } from '../constants/mapConstants';
+import CategoryRail from './filters/CategoryRail';
+import { LIVING_CATS, CAT_TO_KEY, DISTRICTS, DISTRICT_CENTERS } from '../constants/mapConstants';
 import { useReportsData } from '../hooks/useReportsData';
 import { thumbUrl } from '../utils/format';
 import './PCMapShared.css';
@@ -111,20 +112,22 @@ export default function PCProposeMap({ onNavigate }) {
                         </div>
                     </aside>
 
-                    <aside className="pc-map3-filter-card">
-                        <div className="pc-map3-section-label">생활정보</div>
-                        <div className="pc-map3-cat-grid">
-                            {LIVING_CATS.map((c) => (
-                                <button
-                                    key={c.key}
-                                    className={`pc-map3-cat-btn ${livingCats.has(c.key) ? 'active' : ''}`}
-                                    onClick={() => toggleLivingCat(c.key)}
-                                >
-                                    <span className="pc-map3-cat-icon"><CategoryIcon kind={c.icon} /></span>
-                                    <span className="pc-map3-cat-label">{c.label}</span>
-                                </button>
-                            ))}
-                        </div>
+                    <aside className="pc-map3-filter-card pc-map3-filter-card--rail">
+                        <CategoryRail
+                            variant="rail"
+                            title="생활정보"
+                            categories={LIVING_CATS.map((c) => c.label)}
+                            isOn={(label) => {
+                                const c = LIVING_CATS.find((x) => x.label === label);
+                                return c ? livingCats.has(c.key) : false;
+                            }}
+                            onChange={(label) => {
+                                const c = LIVING_CATS.find((x) => x.label === label);
+                                if (c) toggleLivingCat(c.key);
+                            }}
+                            accent="#f74e7e"
+                            tint="#fde4ec"
+                        />
                     </aside>
 
                     <aside className="pc-map3-filter-card">

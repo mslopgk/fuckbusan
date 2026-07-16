@@ -39,7 +39,8 @@
 - [x] 특정 구 클릭 시 %값 미표시 — **답: 데이터 부재가 맞음**. `/api/public-data/overview` 실데이터는 4종(공공도서관 4개관/CCTV 1,130대/미세먼지 31㎍/교통사고 1,373건)만 시드. 나머지 60여 지표는 백엔드 미연동('준비중' 정상). 위 클릭 수정으로 실데이터 지표는 값 노출됨. 나머지는 공공데이터 백엔드 확장 필요(코드 아님, 데이터 수급 이슈)
 
 ### 제보/제안 (PC — 지도 화면)
-- [x] 좌측 대시보드 — 이미 Figma 일치(구역별 드롭다운 + 생활정보 9그리드 + 유형 카드 제보30/제안22). 무변경 확인
+- [x] **생활정보 필터 디자인 (2026-07-16 사용자 스크린샷 재확인)** — 3열 그리드였던 걸 Figma 302:5940 세로 rail(아이콘+라벨, 점선구분, 활성 pill)로 교체. 리스트페이지(ReportList/ProposalList)엔 이미 있던 `CategoryRail` 컴포넌트를 지도뷰에도 재사용(`variant="rail"`, `isOn` prop 추가해 기존 다중선택 유지). `LIVING_CATS` 순서도 Figma 순서(전체/산업일자리/문화여가/안전/교육/보건복지/주거/환경/교통)로 재정렬. 제보=보라(#542aa3)/제안=핑크(#f74e7e) 유지. Playwright로 순서·필터링·토글 동작 확인
+- [x] 좌측 대시보드(구역별/유형 카드) — 이미 Figma 일치(구역별 드롭다운 + 유형 카드 제보30/제안22). 무변경 확인
 - [x] 핀 클릭 시 디자인 변경 — 클릭(선택) 핀에 focus=true 전달 → `.pc-kakao-pin--focus`(scale 1.25+shadow). PCReportMap/PCProposeMap (`2d67875`, Playwright 검증)
 - [x] 좋아요(하트) 팝업 내용 중앙 정렬 — `.pc-kakao-pin-vote` inline-flex 중앙정렬 (`2d67875`). 제보/제안 동일(공유 PCMapCanvas). 모바일도 개선 적용
 - [x] **정책 정보 팝업 가짜 데이터 제거 (전수검증 중 발견, 2026-07-16)** — 모든 핀에서 동일하게 `245172번지`/`2446㎡`/`선정년도 2023` 하드코딩되어 있던 걸 실필드(region/title/address/category/date/status)로 교체, 없는 값은 '준비중'. PCReportMap.jsx/PCProposeMap.jsx. 부수로 `AdminCitizenPersonas`(PersonaDetailModal) 기대효과 fallback도 가짜 수치("30% 증가" 등) → 빈 상태 '준비중'으로 교체. Playwright로 핀별 값 상이함 검증
