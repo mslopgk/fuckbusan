@@ -121,6 +121,11 @@ export default function MemberEdit({ member, onNavigate }) {
                         style={{ background: '#f5f5f5', cursor: 'default' }} />
                 </div>
                 <div className="edit-form-row">
+                    <label className="edit-form-label">아이디</label>
+                    <input type="text" className="edit-form-input" value={formData.loginId || ''} readOnly
+                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                </div>
+                <div className="edit-form-row">
                     <label className="edit-form-label">닉네임</label>
                     <input type="text" className="edit-form-input" value={formData.nickname || ''}
                         onChange={(e) => set('nickname', e.target.value)} />

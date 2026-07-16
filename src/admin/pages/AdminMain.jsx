@@ -62,6 +62,11 @@ export default function AdminMain({ onNavigate }) {
                                     <img src={card.imgSrc} alt={card.label} style={{ width: 64, height: 64, objectFit: 'contain' }} />
                                 </div>
                             )}
+                            {STAT_KEY_BY_CARD[card.key] && (
+                                <div className="admin-card-stat">
+                                    {stats?.[STAT_KEY_BY_CARD[card.key]]?.toLocaleString?.() ?? '—'}
+                                </div>
+                            )}
                             <div className="admin-card-label">{card.label}</div>
                         </div>
                     );

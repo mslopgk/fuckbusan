@@ -123,6 +123,21 @@
     transition: color 0.15s ease;
 }
 
+.admin-card-stat {
+    position: absolute;
+    left: 32px;
+    bottom: 28px;
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a1a1b;
+    letter-spacing: -0.02em;
+    transition: color 0.15s ease;
+}
+
+.admin-card:hover:not(.empty):not(.disabled) .admin-card-stat {
+    color: #fff;
+}
+
 .admin-card.empty {
     background: #fff;
     border: 1px solid #e5e7eb;

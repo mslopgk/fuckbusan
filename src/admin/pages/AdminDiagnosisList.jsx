@@ -11,7 +11,9 @@ import { API_BASE } from '../api';
    Figma: TCuOzEqNhoLKjhF0reBDks node 302-28253. 디자인 시스템: dashboard_new.css. */
 
 const API = `${API_BASE}/admin/diagnosis-regions`;
+const DIAG_API = `${API_BASE}/admin/diagnoses`;
 const SIZE = 10;
+const DIAG_SIZE = 10;
 
 const auth = () => {
     const t = localStorage.getItem('access_token');
@@ -29,6 +31,12 @@ export default function AdminDiagnosisList({ onNavigate }) {
     const [loading, setLoading] = useState(false);
     const [editing, setEditing] = useState(null); // null | {} (new) | {id,...} (edit)
 
+    // 진단 지역(registry) 행 클릭 시 실제 진단기록(ChecklistResult) 드릴다운
+    const [drillRegion, setDrillRegion] = useState(null); // null | region name
+    const [diagData, setDiagData] = useState({ items: [], total: 0 });
+    const [diagLoading, setDiagLoading] = useState(false);
+    const [diagPage, setDiagPage] = useState(1);
+
     const fetchList = useCallback(async () => {
         setLoading(true);
         try {
@@ -41,6 +49,23 @@ export default function AdminDiagnosisList({ onNavigate }) {
     }, [page, q]);
 
     useEffect(() => { fetchList(); }, [fetchList]);
+
+    const fetchDiagnoses = useCallback(async () => {
+        if (!drillRegion) return;
+        setDiagLoading(true);
+        try {
+            const p = new URLSearchParams({ page: String(diagPage), size: String(DIAG_SIZE), region: drillRegion });
+            const d = await fetch(`${DIAG_API}?${p}`, { headers: auth() }).then((r) => r.json());
+            setDiagData(d && d.items ? d : { items: [], total: 0 });
+        } catch { setDiagData({ items: [], total: 0 }); }
+        finally { setDiagLoading(false); }
+    }, [drillRegion, diagPage]);
+
+    useEffect(() => { fetchDiagnoses(); }, [fetchDiagnoses]);
+
+    const openRegion = (name) => { setDrillRegion(name); setDiagPage(1); };
+    const closeRegion = () => { setDrillRegion(null); setDiagData({ items: [], total: 0 }); };
+    const diagTotalPages = Math.max(1, Math.ceil((diagData.total || 0) / DIAG_SIZE));
 
     const totalPages = Math.max(1, Math.ceil((data.total || 0) / SIZE));
     const doSearch = () => { setPage(1); setQ(qInput.trim()); };
@@ -121,17 +146,17 @@ export default function AdminDiagnosisList({ onNavigate }) {
                         ) : data.items.length === 0 ? (
                             <tr><td colSpan={5} style={{ padding: '40px 0', color: '#999' }}>등록된 진단 지역이 없습니다.</td></tr>
                         ) : data.items.map((r) => (
-                            <tr key={r.id}>
+                            <tr key={r.id} onClick={() => openRegion(r.name)} style={{ cursor: 'pointer' }}>
                                 <td style={{ textAlign: 'left', paddingLeft: 30, color: '#333' }}>{r.name}</td>
                                 <td>{r.diagnosis_count}</td>
                                 <td>{r.participant_count}</td>
                                 <td>{fmtDate(r.created_at)}</td>
                                 <td>
                                     <div className="action-btns-new">
-                                        <span className="btn-action-text" onClick={() => setEditing({
+                                        <span className="btn-action-text" onClick={(e) => { e.stopPropagation(); setEditing({
                                             id: r.id, name: r.name, district_code: r.district_code || '',
                                             latitude: r.latitude ?? '', longitude: r.longitude ?? '',
-                                        })}>수정</span> | <span className="btn-action-text" onClick={(e) => del(r.id, e)}>삭제</span>
+                                        }); }}>수정</span> | <span className="btn-action-text" onClick={(e) => del(r.id, e)}>삭제</span>
                                     </div>
                                 </td>
                             </tr>
@@ -161,6 +186,66 @@ export default function AdminDiagnosisList({ onNavigate }) {
                     </svg>
                 </div>
             </div>
+
+            {drillRegion && (
+                <div className="table-container-new" style={{ marginTop: 24 }}>
+                    <div className="content-header-new">
+                        <h2 className="content-title-new">"{drillRegion}" 진단 기록 ({diagData.total ?? 0}건)</h2>
+                        <button className="btn-search-new" onClick={closeRegion}>닫기</button>
+                    </div>
+                    <table className="admin-table-new">
+                        <thead>
+                            <tr>
+                                <th style={{ width: '18%', textAlign: 'left', paddingLeft: 30 }}>진단대상</th>
+                                <th>대분류</th>
+                                <th>중분류</th>
+                                <th>점수</th>
+                                <th>작성자</th>
+                                <th>작성일</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {diagLoading ? (
+                                <tr><td colSpan={6} style={{ padding: '40px 0', color: '#999' }}>불러오는 중…</td></tr>
+                            ) : diagData.items.length === 0 ? (
+                                <tr><td colSpan={6} style={{ padding: '40px 0', color: '#999' }}>이 지역에 등록된 진단 기록이 없습니다.</td></tr>
+                            ) : diagData.items.map((d) => (
+                                <tr key={d.result_id}>
+                                    <td style={{ textAlign: 'left', paddingLeft: 30, color: '#333' }}>{d.target}</td>
+                                    <td>{d.category || '-'}</td>
+                                    <td>{d.sub_category || '-'}</td>
+                                    <td>{d.score ?? '-'}</td>
+                                    <td>{d.author}</td>
+                                    <td>{fmtDate(d.created_at)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {diagTotalPages > 1 && (
+                        <div className="pagination-new">
+                            <svg
+                                width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                                style={{ transform: 'rotate(180deg)', cursor: 'pointer', opacity: diagPage === 1 ? 0.3 : 1 }}
+                                onClick={() => setDiagPage((p) => Math.max(1, p - 1))}
+                            >
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                            {Array.from({ length: Math.min(diagTotalPages, 10) }, (_, i) => i + 1).map((n) => (
+                                <span key={n} className={`page-num-new ${diagPage === n ? 'active' : ''}`} onClick={() => setDiagPage(n)}>{n}</span>
+                            ))}
+                            <svg
+                                width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                                style={{ cursor: 'pointer', opacity: diagPage === diagTotalPages ? 0.3 : 1 }}
+                                onClick={() => setDiagPage((p) => Math.min(diagTotalPages, p + 1))}
+                            >
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {editing && <RegionModal row={editing} onClose={() => setEditing(null)} onSave={save} />}
         </AdminLayout>

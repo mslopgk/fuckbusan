@@ -101,6 +101,7 @@ export default function AdminUserList({ onNavigate }) {
                     <thead>
                         <tr>
                             <th>회원이름</th>
+                            <th>아이디</th>
                             <th>닉네임</th>
                             <th>연락처</th>
                             <th>주소</th>
@@ -112,11 +113,11 @@ export default function AdminUserList({ onNavigate }) {
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan={7} style={{ padding: '40px 0', color: '#999' }}>불러오는 중...</td>
+                                <td colSpan={8} style={{ padding: '40px 0', color: '#999' }}>불러오는 중...</td>
                             </tr>
                         ) : visible.length === 0 ? (
                             <tr>
-                                <td colSpan={7} style={{ padding: '40px 0', color: '#999' }}>회원이 없습니다.</td>
+                                <td colSpan={8} style={{ padding: '40px 0', color: '#999' }}>회원이 없습니다.</td>
                             </tr>
                         ) : visible.map((item) => (
                             <tr key={item.id}>
@@ -126,6 +127,7 @@ export default function AdminUserList({ onNavigate }) {
                                         <span className="super-admin-crown" title="슈퍼관리자">👑</span>
                                     )}
                                 </td>
+                                <td>{item.loginId || '-'}</td>
                                 <td className="nickname-cell">{item.nickname}</td>
                                 <td>{item.phone}</td>
                                 <td>{item.address}</td>
