@@ -1,5 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import '../styles/admin_layout.css';
+import '../styles/dashboard_new.css'; // 셸 CSS — lazy 단독 진입 시에도 로드
 import { API_BASE } from '../api';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,

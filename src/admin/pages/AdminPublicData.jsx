@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import '../styles/admin_layout.css';
+import '../styles/dashboard_new.css'; // 셸(admin-content-new 등) — lazy 단독 진입 시에도 로드되도록 직접 import
 import './AdminCitizen.css';
 import './AdminExtra.css';
 

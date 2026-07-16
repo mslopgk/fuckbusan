@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/admin_layout.css';
+import '../styles/dashboard_new.css'; // 셸 CSS — lazy 단독 진입 시에도 로드
 import './AdminRAGDashboard.css';
 
 const API = `${(import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')}/api/admin/rag`;
