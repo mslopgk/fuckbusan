@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import PCMapCanvas from '../../components/PCMapCanvas';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import './AdminCitizen.css';
@@ -14,6 +15,9 @@ const API = `${API_BASE}/admin/diagnosis-regions`;
 const DIAG_API = `${API_BASE}/admin/diagnoses`;
 const SIZE = 10;
 const DIAG_SIZE = 10;
+// 전체 진단기록(ChecklistResult)이 ~7,598건이라 지도에 전부 찍으면 렌더 성능이 나빠짐.
+// 최신순 500건만 요청해 좌표가 있는 것만 핀으로 표시 (클러스터링은 PCMapCanvas가 처리).
+const MAP_PIN_SIZE = 500;
 
 const auth = () => {
     const t = localStorage.getItem('access_token');
@@ -36,6 +40,10 @@ export default function AdminDiagnosisList({ onNavigate }) {
     const [diagData, setDiagData] = useState({ items: [], total: 0 });
     const [diagLoading, setDiagLoading] = useState(false);
     const [diagPage, setDiagPage] = useState(1);
+
+    // 지도 핀(진단 기록 좌표) — 최초 1회 로드
+    const [mapPins, setMapPins] = useState([]);
+    const [mapLoading, setMapLoading] = useState(false);
 
     const fetchList = useCallback(async () => {
         setLoading(true);
@@ -63,8 +71,37 @@ export default function AdminDiagnosisList({ onNavigate }) {
 
     useEffect(() => { fetchDiagnoses(); }, [fetchDiagnoses]);
 
+    // 지도용 핀 — region 필터 없이 최신 MAP_PIN_SIZE건만 가져와 좌표 있는 것만 표시
+    useEffect(() => {
+        let cancelled = false;
+        setMapLoading(true);
+        const p = new URLSearchParams({ page: '1', size: String(MAP_PIN_SIZE) });
+        fetch(`${DIAG_API}?${p}`, { headers: auth() })
+            .then((r) => r.json())
+            .then((d) => {
+                if (cancelled) return;
+                const items = (d && d.items) || [];
+                const pins = items
+                    .filter((it) => it.lat != null && it.lng != null)
+                    .map((it) => ({
+                        id: it.result_id,
+                        lat: it.lat,
+                        lng: it.lng,
+                        targetType: it.target,
+                        big: it.category,
+                        title: it.title || it.category || '진단',
+                        region: it.region,
+                    }));
+                setMapPins(pins);
+            })
+            .catch(() => { if (!cancelled) setMapPins([]); })
+            .finally(() => { if (!cancelled) setMapLoading(false); });
+        return () => { cancelled = true; };
+    }, []);
+
     const openRegion = (name) => { setDrillRegion(name); setDiagPage(1); };
     const closeRegion = () => { setDrillRegion(null); setDiagData({ items: [], total: 0 }); };
+    const handlePinClick = (pin) => { if (pin.region) openRegion(pin.region); };
     const diagTotalPages = Math.max(1, Math.ceil((diagData.total || 0) / DIAG_SIZE));
 
     const totalPages = Math.max(1, Math.ceil((data.total || 0) / SIZE));
@@ -106,6 +143,28 @@ export default function AdminDiagnosisList({ onNavigate }) {
             <div className="content-header-new">
                 <h2 className="content-title-new">진단관리</h2>
                 <button className="btn-search-new" onClick={() => setEditing({ ...EMPTY })}>진단 지역 추가하기</button>
+            </div>
+
+            <div className="table-container-new" style={{ marginBottom: 30 }}>
+                <div className="content-header-new" style={{ marginBottom: 16 }}>
+                    <h3 style={{ fontSize: 17, fontWeight: 700, margin: 0 }}>
+                        진단 지도{!mapLoading && ` (핀 ${mapPins.length.toLocaleString()}건 표시${mapPins.length >= MAP_PIN_SIZE ? ` · 최신 ${MAP_PIN_SIZE}건 기준` : ''})`}
+                    </h3>
+                </div>
+                <div style={{ height: 460, borderRadius: 12, overflow: 'hidden', border: '1px solid #eee', position: 'relative' }}>
+                    {mapLoading && (
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', zIndex: 5, background: 'rgba(255,255,255,0.6)' }}>
+                            지도 불러오는 중…
+                        </div>
+                    )}
+                    <PCMapCanvas
+                        pins={mapPins}
+                        onPinClick={handlePinClick}
+                        accentColor="#23BDBB"
+                        pinVariant="diagnosis"
+                        selectedDistrict={drillRegion}
+                    />
+                </div>
             </div>
 
             <div className="search-box-new">
