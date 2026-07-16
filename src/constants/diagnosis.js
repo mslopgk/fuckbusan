@@ -135,15 +135,15 @@ export const DIAGNOSIS_TARGETS = [
     { key: 'expert',  label: '전문가' },
 ];
 
-// 생활정보 카테고리 (PC 대시보드 필터용 — icon kind 포함)
+// 생활정보 카테고리 (PC 대시보드 필터용). 순서/라벨 = Figma 302:5940 (mapConstants.LIVING_CATS와 동일)
 export const LIVING_CATS = [
-    { key: 'all',     label: '전체',        icon: 'grid' },
-    { key: 'safety',  label: '안전',        icon: 'shield' },
-    { key: 'housing', label: '주거',        icon: 'home' },
-    { key: 'work',    label: '산업\n일자리', icon: 'briefcase' },
-    { key: 'edu',     label: '교육',        icon: 'book' },
-    { key: 'env',     label: '환경',        icon: 'leaf' },
-    { key: 'leisure', label: '문화·여가',   icon: 'heart' },
-    { key: 'health',  label: '보건·복지',   icon: 'plus' },
-    { key: 'traffic', label: '교통',        icon: 'bus' },
+    { key: 'all',     label: '전체' },
+    { key: 'work',    label: '산업·일자리' },
+    { key: 'leisure', label: '문화·여가' },
+    { key: 'safety',  label: '안전' },
+    { key: 'edu',     label: '교육' },
+    { key: 'health',  label: '보건·복지' },
+    { key: 'housing', label: '주거' },
+    { key: 'env',     label: '환경' },
+    { key: 'traffic', label: '교통' },
 ];

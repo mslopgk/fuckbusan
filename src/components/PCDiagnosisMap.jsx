@@ -10,13 +10,14 @@ import {
     LIVING_CATS,
     DIAGNOSIS_TARGETS as TARGETS,
 } from '../constants/diagnosis';
+import { RegionFilterCard, LifeRail } from './filters/MapFilterPanel';
+import { catIcon } from './filters/catIcons';
 import './PCMapShared.css';
 import './PCMap3.css';
 import './PCDiagnosisMap.css';
 import './PCDiagnosisDetail.css';
 import './PCDiagnosisForm.css';
 import { API_URL, authHeaders } from '../utils/api';
-import { CategoryIcon } from '../constants/mapConstants';
 
 const FACILITY_BIG = ['공간 및 가로 환경', '공공시설물', '정보 및 서비스 매체'];
 
@@ -176,36 +177,23 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
         <UserPCLayout currentView="pcDiagnosisMap" onNavigate={onNavigate}>
             <div className={`pc-diag-page${sidebarOpen ? '' : ' pc-diag-sidebar-closed'}`}>
                 {/* LEFT FILTER STACK — 4 separate cards */}
-                <div className="pc-diag-filter-stack">
+                <div className="pc-diag-filter-stack pc-diag-filter-stack--rail">
                     {/* 1. 구역별 */}
-                    <aside className="pc-diag-filter-card">
-                        <div className="pc-diag-section-label">구역별</div>
-                        <div className="pc-diag-dropdown">
-                            <select value={district} onChange={(e) => setDistrict(e.target.value)}>
-                                <option value="">전체</option>
-                                {DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
-                            </select>
-                            <button className="pc-diag-dropdown-x" onClick={() => setDistrict('')} aria-label="초기화" type="button">×</button>
-                        </div>
-                    </aside>
+                    <RegionFilterCard
+                        value={district || null}
+                        onSelect={(v) => setDistrict(v || '')}
+                        options={DISTRICTS}
+                        accent="#23BDBB"
+                        placeholder="설정해주세요"
+                    />
 
                     {/* 2. 생활정보 */}
-                    <aside className="pc-diag-filter-card">
-                        <div className="pc-diag-facility-title">생활정보</div>
-                        <div className="pc-diag-cat-grid">
-                            {LIVING_CATS.map((c) => (
-                                <button
-                                    key={c.key}
-                                    type="button"
-                                    className={`pc-diag-cat-btn ${livingCats.has(c.key) ? 'active' : ''}`}
-                                    onClick={() => toggleLivingCat(c.key)}
-                                >
-                                    <span className="pc-diag-cat-icon"><CategoryIcon kind={c.icon} /></span>
-                                    <span className="pc-diag-cat-label">{c.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </aside>
+                    <LifeRail
+                        categories={LIVING_CATS.map((c) => ({ key: c.key, label: c.label, icon: catIcon(c.label) }))}
+                        isOn={(c) => livingCats.has(c.key)}
+                        onChange={(c) => toggleLivingCat(c.key)}
+                        accent="#23BDBB"
+                    />
 
                     {/* 3. 진단대상 */}
                     <aside className="pc-diag-filter-card">
