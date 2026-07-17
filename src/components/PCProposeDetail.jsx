@@ -171,8 +171,8 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                     {/* 카카오 지도 */}
                     <div className="pcd-map-wrap">
                         <PCMapCanvas
-                            pins={[{ id: 'this', lat, lng, color: '#E6235A', title: detail?.title || '' }]}
-                            accentColor="#E6235A"
+                            pins={[{ id: 'this', lat, lng, color: '#f74e7e', title: detail?.title || '' }]}
+                            accentColor="#f74e7e"
                             initialCenter={{ lat, lng }}
                             initialLevel={4}
                         />
@@ -257,7 +257,7 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                                     <path d="M58 6 L80 28 H58 Z" fill="white" stroke="#1a1a1a" strokeWidth="4.5" strokeLinejoin="round"/>
                                     {/* 핑크 체크마크 */}
                                     <g transform="translate(45,62) rotate(-5)">
-                                        <path d="M-18 2 L-5 16 L20 -14" stroke="#E6235A" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                                        <path d="M-18 2 L-5 16 L20 -14" stroke="#f74e7e" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                                     </g>
                                 </svg>
                             </div>

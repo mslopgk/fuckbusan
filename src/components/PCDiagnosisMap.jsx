@@ -12,6 +12,8 @@ import {
 } from '../constants/diagnosis';
 import { RegionFilterCard, LifeRail } from './filters/MapFilterPanel';
 import { catIcon } from './filters/catIcons';
+import { matchDistrict, nearestDistrict } from '../utils/format';
+import { DISTRICT_CENTERS } from '../constants/mapConstants';
 import './PCMapShared.css';
 import './PCMap3.css';
 import './PCDiagnosisMap.css';
@@ -81,7 +83,8 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
 
     useEffect(() => {
         setLoading(true);
-        fetch(`${API_URL}/checklist/list`, { headers: authHeaders() })
+        // 백엔드 기본 limit=100이라 최신 100건만 오던 문제 — 서버 상한(500)까지 요청
+        fetch(`${API_URL}/checklist/list?limit=500`, { headers: authHeaders() })
             .then((r) => (r.ok ? r.json() : []))
             .then((rows) => {
                 if (!Array.isArray(rows)) {
@@ -151,7 +154,11 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
     });
 
     let filtered = items;
-    if (district) filtered = filtered.filter((it) => it.region === district);
+    // 진단지역이 '부산역' 같은 장소명이라 구 이름 직접 비교로는 항상 0건이던 문제 —
+    // 장소명 매칭 실패 시 좌표 기반 최근접 구·군으로 판정 (모바일 제보/제안맵과 동일 패턴)
+    if (district) filtered = filtered.filter((it) =>
+        matchDistrict(it.region, district)
+        || matchDistrict(nearestDistrict(it.lat, it.lng, DISTRICT_CENTERS), district));
     if (!livingCats.has('all')) filtered = filtered.filter((it) => livingCats.has(it.categoryKey));
     if (bigSel.size > 0) filtered = filtered.filter((it) => bigSel.has(it.big));
     if (facilityMid) filtered = filtered.filter((it) => it.mid === facilityMid);

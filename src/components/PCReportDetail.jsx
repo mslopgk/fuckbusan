@@ -249,8 +249,8 @@ export default function PCReportDetail({ onNavigate, report }) {
                     {/* 카카오 지도 */}
                     <div className="pcd-map-wrap">
                         <PCMapCanvas
-                            pins={[{ id: 'this', lat, lng, color: '#E6235A', title: detail?.title || '' }]}
-                            accentColor="#E6235A"
+                            pins={[{ id: 'this', lat, lng, color: '#542aa3', title: detail?.title || '' }]}
+                            accentColor="#542aa3"
                             initialCenter={{ lat, lng }}
                             initialLevel={4}
                         />

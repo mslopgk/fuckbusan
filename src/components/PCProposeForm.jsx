@@ -192,10 +192,26 @@ export default function PCProposeForm({ onNavigate }) {
         handleSubmit();
     };
 
+    // 임시저장 draft 복원 (제보 폼 PCReportForm과 동일 패턴 — 기존엔 저장만 하고 불러오지 않았음)
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem(DRAFT_KEY);
+            if (!raw) return;
+            const saved = JSON.parse(raw);
+            if (saved && window.confirm('임시저장된 내용이 있습니다. 불러오시겠습니까?')) {
+                if (saved.type) setType(saved.type);
+                if (saved.title) setTitle(saved.title);
+                if (saved.body) setBody(saved.body);
+                if (saved.location) setLocation(saved.location);
+            }
+        } catch { /* ignore */ }
+    }, []);
+
     const handleDraft = () => {
         const draft = { type, title, body, location, savedAt: new Date().toISOString() };
         try {
             localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+            alert('임시저장되었습니다. 다음에 이어서 작성할 수 있어요.');
         } catch { }
     };
 

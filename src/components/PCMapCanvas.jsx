@@ -134,15 +134,23 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
     useEffect(() => {
         if (pins.length === 0 || hadPins.current) return;
         hadPins.current = true;
-        const t = setTimeout(() => {
+        // fetch가 지도 인스턴스 생성보다 먼저 끝나면 1회성 setTimeout이 no-op이 되어
+        // 핀이 안 그려지는 레이스가 있었음 — 지도가 준비될 때까지 재시도(최대 ~6초)
+        let tries = 0;
+        const timer = setInterval(() => {
             const map = mapInstance.current;
-            if (!map || !window.kakao?.maps) return;
+            tries += 1;
+            if (!map || !window.kakao?.maps) {
+                if (tries >= 30) clearInterval(timer);
+                return;
+            }
+            clearInterval(timer);
             if (typeof map.relayout === 'function') map.relayout();
             const c = map.getCenter();
             map.setCenter(new window.kakao.maps.LatLng(c.getLat() + 0.000001, c.getLng()));
             map.setCenter(c);
         }, 200);
-        return () => clearTimeout(t);
+        return () => clearInterval(timer);
     }, [pins.length]);
 
     // Fly to selected district (only on user-triggered changes, not on initial mount)

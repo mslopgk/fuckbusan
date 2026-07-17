@@ -343,6 +343,13 @@
     object-fit: cover;
 }
 
+/* 이미지 없는 제보 카드 — 깨진 이미지 아이콘 대신 은은한 플레이스홀더 */
+.rl-card-img--placeholder {
+    background:
+        radial-gradient(circle at 50% 42%, #e9edee 0 18px, transparent 19px),
+        linear-gradient(180deg, #f3f5f6 0%, #e9edee 100%);
+}
+
 .rl-card-body {
     padding: 14px 16px 16px;
     display: flex;

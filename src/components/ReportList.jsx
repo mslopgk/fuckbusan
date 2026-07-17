@@ -271,7 +271,16 @@ const ReportList = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, us
                     return (
                         <div key={report.id} className="rl-card" onClick={() => onNavigate('reportDetail', report)}>
                             <div className="rl-card-img-wrap">
-                                <img src={report.image} alt={report.title} className="rl-card-img" />
+                                {report.image ? (
+                                    <img
+                                        src={report.image}
+                                        alt={report.title}
+                                        className="rl-card-img"
+                                        onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement.classList.add('rl-card-img-empty'); }}
+                                    />
+                                ) : (
+                                    <div className="rl-card-img rl-card-img--placeholder" aria-hidden="true" />
+                                )}
                             </div>
                             <div className="rl-card-body">
                                 <div className="rl-badge-row">

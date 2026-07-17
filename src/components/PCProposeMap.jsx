@@ -90,7 +90,7 @@ export default function PCProposeMap({ onNavigate }) {
     // 클릭(선택)된 핀은 focus 디자인으로 변경 (코드코리아 260713)
     const pins = filtered
         .filter((it) => it.lat && it.lng)
-        .map((it) => ({ ...it, color: '#E6235A', focus: policyItem != null && String(it.id) === String(policyItem.id) }));
+        .map((it) => ({ ...it, color: '#f74e7e', focus: policyItem != null && String(it.id) === String(policyItem.id) }));
 
     return (
         <UserPCLayout currentView="pcProposeMap" onNavigate={onNavigate}>
@@ -120,7 +120,7 @@ export default function PCProposeMap({ onNavigate }) {
                         ref={mapRef}
                         pins={pins}
                         onPinClick={(p) => setPolicyItem(p)}
-                        accentColor="#E6235A"
+                        accentColor="#f74e7e"
                         selectedDistrict={district}
                     />
 

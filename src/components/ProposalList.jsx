@@ -16,17 +16,19 @@ const REGIONS_MOBILE = [
     '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'
 ];
 
-const CATEGORIES = ['전체', '주거', '환경', '교육', '안전', '산업 및 고용', '모빌리티', '문화 및 레저', '보건 및 복지'];
+// 실제 데이터 카테고리(백엔드 taxonomy = MReportForm 8종)와 동일하게 —
+// 예전 라벨(모빌리티/산업 및 고용 등)은 데이터와 불일치해 필터가 항상 0건이었음
+const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
 
 const CATEGORY_STYLES = {
     '주거': { background: '#FFF3E0', color: '#E65100' },
     '환경': { background: '#E8F5E9', color: '#2E7D32' },
-    '교육': { background: '#EDE7F6', color: '#4527A0' },
+    '교통': { background: '#E3F2FD', color: '#1565C0' },
     '안전': { background: '#FCE4EC', color: '#C62828' },
-    '산업 및 고용': { background: '#E0F2F1', color: '#00695C' },
-    '모빌리티': { background: '#E3F2FD', color: '#1565C0' },
-    '문화 및 레저': { background: '#FFF8E1', color: '#F57F17' },
-    '보건 및 복지': { background: '#F3E5F5', color: '#7B1FA2' },
+    '교육': { background: '#EDE7F6', color: '#4527A0' },
+    '산업·일자리': { background: '#E0F2F1', color: '#00695C' },
+    '문화·여가': { background: '#FFF8E1', color: '#F57F17' },
+    '보건·복지': { background: '#F3E5F5', color: '#7B1FA2' },
 };
 
 const ProposalList = ({ onNavigate, onBack }) => {

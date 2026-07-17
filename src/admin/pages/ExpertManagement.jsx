@@ -24,6 +24,7 @@ export default function ExpertManagement({ onNavigate }) {
                     setExperts(expertsOnly.map((u) => ({
                         id: u.user_id,
                         name: u.name || '-',
+                        loginId: u.ID || '-',
                         nickname: u.nickname || '-',
                         phone: u.phone_num || '-',
                         address: [u.address, u.detailed_address].filter(Boolean).join(' ') || '-',
@@ -94,6 +95,7 @@ export default function ExpertManagement({ onNavigate }) {
                     <thead>
                         <tr>
                             <th>회원이름</th>
+                            <th>아이디</th>
                             <th>닉네임</th>
                             <th>연락처</th>
                             <th>주소</th>
@@ -105,13 +107,14 @@ export default function ExpertManagement({ onNavigate }) {
                     <tbody>
                         {visible.length === 0 ? (
                             <tr>
-                                <td colSpan={7} style={{ padding: '40px 0', color: '#999' }}>
+                                <td colSpan={8} style={{ padding: '40px 0', color: '#999' }}>
                                     등록된 전문가가 없습니다.
                                 </td>
                             </tr>
                         ) : visible.map((item) => (
                             <tr key={item.id}>
                                 <td>{item.name}</td>
+                                <td>{item.loginId}</td>
                                 <td className="nickname-cell">{item.nickname}</td>
                                 <td>{item.phone}</td>
                                 <td>{item.address}</td>

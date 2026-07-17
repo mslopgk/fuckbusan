@@ -32,7 +32,8 @@ const mapRow = (item) => {
 
     return {
         id: item.result_id,
-        type: item.district_code === 'expert' ? 'expert' : 'general',
+        // district_code는 '부산역'/None 등이라 항상 general로 오분류되던 버그 — 진단대상 필드 사용
+        type: item.진단대상 === '전문가' ? 'expert' : 'general',
         date: dateStr,
         bookmarked: false,
         title: item.중분류 || item.대분류 || '진단 결과',

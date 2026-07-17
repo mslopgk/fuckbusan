@@ -25,7 +25,7 @@
     font-family: 'GmarketSans', sans-serif;
     font-size: 28px;
     font-weight: 900;
-    color: #E6235A;
+    color: #23BDBB;
     margin-bottom: 24px;
     margin-top: 10px;
 }
@@ -137,10 +137,10 @@
 }
 
 .tab-btn.active {
-    background: #E6235A;
+    background: #23BDBB;
     /* Default Primary Pink */
     color: #fff;
-    border-color: #E6235A;
+    border-color: #23BDBB;
 }
 
 /* Expert Logic for Tab Color? 
@@ -202,8 +202,8 @@
 }
 
 .type-badge.general {
-    color: #E6235A;
-    border-color: #E6235A;
+    color: #23BDBB;
+    border-color: #23BDBB;
     display: flex;
     /* Fixed user typo 'block' to 'flex' or kept block if intended but verified */
     justify-content: center;
@@ -282,7 +282,7 @@
 }
 
 .diagnosis-card .card-result.unsuitable {
-    color: #E6235A;
+    color: #23BDBB;
     /* Pink */
 }
 
