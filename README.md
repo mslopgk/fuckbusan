@@ -108,7 +108,7 @@ docker run -d -p 6333:6333 qdrant/qdrant
 # 이후 관리자 > AI 가상시민 > 데이터 관리 > '시스템 상태'에서 인덱싱 실행
 ```
 
-> 윈도우 개발/배포 서버 상세 절차는 **`WINDOWS_SETUP.md`** 참고 (한글 파일명·CRLF·venv·Qdrant 주의사항 포함).
+> 윈도우 개발/배포 서버 상세 절차는 **`docs/WINDOWS_SETUP.md`** 참고 (한글 파일명·CRLF·venv·Qdrant 주의사항 포함).
 
 ---
 
@@ -151,7 +151,7 @@ MINIMAX5=                # RAG LLM 최우선 키 (없으면 MINIMAX1~4 폴백)
 ├─ public/assets/             # 이미지·아이콘·폰트
 ├─ verify/                    # 자가검증(Playwright) 도구
 ├─ AI가상시민_상세설계서.docx / 가상시민_플랫폼_문의사항_답변서.docx
-├─ WINDOWS_SETUP.md · CLAUDE.md · TODO.md
+├─ CLAUDE.md · TODO.md · docs/ (WINDOWS_SETUP·CLAUDE_HANDOFF·FIGMA_DIFF_SPEC 등)
 ```
 
 ---
@@ -179,7 +179,7 @@ npm run verify:api -- --api=dashboard-summary   # 백엔드만
 - **RAG 동작 전제**: Qdrant(6333) 기동 + LLM 키(MINIMAX5 등) 필수. 없으면 가상시민 생성/챗봇만 비활성(서버는 정상 부팅).
 - **가상시민 수치**는 LLM 추론값 → 감사·재현성 필요 시 결정론적 산식으로 교체 가능(설계서 8장).
 - **HTTPS 필요**: 배포 시 geolocation·Firebase SMS는 평문 HTTP에서 차단됨.
-- **DB 이관**: `sql_app.db`(SQLite)는 미사용 잔재. 실제 DB는 MariaDB → 이관은 `database/busan_design_db_dump.sql` 사용.
+- **DB 이관**: `database/sql_app.db`(SQLite)는 미사용 잔재. 실제 DB는 MariaDB → 이관은 `database/busan_design_db_dump.sql` 사용.
 - **이미지 최적화 여지**: 일부 PNG가 큼(personas 1024² 등). 필요 시 리사이즈/WebP 전환 가능.
 - **미완/후속**: 진단 어드민 필터 확장, AI설문 키워드/스피드버튼 설정, 공공데이터 엑셀 업로드, 대표 가상시민 고정 UI(importance 기반) 등 — 문의 답변서에 정리됨.
 - **협업 주의**: 여러 개발자 병행. 작업 전 `git status`/`git log` 확인, PR 단위로 작게 유지.
