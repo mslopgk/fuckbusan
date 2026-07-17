@@ -244,11 +244,15 @@ export default function PCPublicData({ onNavigate }) {
                 {/* 우측 패널 (KPI + 상세) */}
                 <div className={`pubd-right${isAll ? ' is-all' : ''}`}>
                     <aside className="pubd-kpi">
+                        {/* Figma: 전체 모드 제목은 선택 구 이름(9314) 또는 '전체'(8776), 카테고리 모드는 카테고리명(9670).
+                            가나다순 정렬 컨트롤은 전체 모드에만 존재(9670 카테고리 패널엔 없음) */}
                         <div className="pubd-kpi-head">
-                            <h2>{activeCat?.label || '전체'}</h2>
-                            <button type="button" className="pubd-kpi-sort" onClick={() => setSortAsc((v) => !v)}>
-                                가나다순 <i className="pubd-caret" />
-                            </button>
+                            <h2>{isAll ? (region || '전체') : (activeCat?.label || '전체')}</h2>
+                            {isAll && (
+                                <button type="button" className="pubd-kpi-sort" onClick={() => setSortAsc((v) => !v)}>
+                                    가나다순 <i className="pubd-caret" />
+                                </button>
+                            )}
                         </div>
                         <div className="pubd-kpi-grid">
                             {cards.map((m, i) => {
@@ -275,28 +279,41 @@ export default function PCPublicData({ onNavigate }) {
                         값이 없으면 '준비중'(수치 날조 금지). TODO: 연도별 추이는 시계열 API 연동 시 recharts 렌더 */}
                     {selMetric && (() => {
                         const hit = hitFor(selMetric);
+                        // % 값이면 Figma(302:9810)처럼 0~100 스케일 진행 바 표시. 그 외 단위는 스케일 날조 금지 → 바 생략.
+                        const isPct = hit && (hit.unit === '%' || /^\s*-?\d+(\.\d+)?\s*%/.test(hit.value_text || ''));
+                        const pctNum = isPct ? parseFloat(hit.value_text) : NaN;
+                        const pct = Number.isFinite(pctNum) ? Math.min(100, Math.max(0, pctNum)) : null;
                         return (
                             <section className="pubd-detail">
                                 <div className="pubd-detail-head">
                                     <h3>{selMetric.label}</h3>
-                                    <span className="pubd-detail-region">{hit?.region || region || '부산'}</span>
-                                    <button type="button" className="pubd-detail-dl" disabled>다운로드</button>
+                                    <span className="pubd-detail-unit">
+                                        {hit?.unit ? `(단위:${hit.unit})` : (hit?.region || region || '부산')}
+                                    </span>
                                 </div>
                                 {hit ? (
                                     <div className="pubd-detail-body">
-                                        <p className="pubd-detail-value">{hit.value_text}{hit.unit ? ` ${hit.unit}` : ''}</p>
-                                        <p className="pubd-detail-meta">
-                                            {hit.year && <span>{hit.year}년 기준</span>}
-                                            {hit.note && <span> · {hit.note}</span>}
+                                        <p className="pubd-detail-row">
+                                            {hit.year && <span>{hit.year}년</span>}
+                                            <span className="pubd-detail-num">
+                                                {hit.value_text}{hit.unit && !(hit.value_text || '').includes(hit.unit) ? hit.unit : ''}
+                                            </span>
                                         </p>
-                                        {hit.source && <p className="pubd-detail-source">출처: {hit.source}</p>}
+                                        {pct !== null && <div className="pubd-detail-bar"><i style={{ width: `${pct}%` }} /></div>}
+                                        {hit.note && <p className="pubd-detail-note">{hit.note}</p>}
                                     </div>
                                 ) : (
-                                    <div className="pubd-detail-body">
+                                    <div className="pubd-detail-body is-empty">
                                         <p className="pubd-detail-na">데이터 준비중</p>
                                         <p className="pubd-detail-sub">공공데이터 연동 후 값·연도별 추이가 표시됩니다.</p>
                                     </div>
                                 )}
+                                <div className="pubd-detail-foot">
+                                    <span className="pubd-detail-updated">
+                                        {hit?.source ? `출처: ${hit.source}` : (hit?.year ? `${hit.year}년 기준` : '')}
+                                    </span>
+                                    <button type="button" className="pubd-detail-dl" disabled>다운로드</button>
+                                </div>
                             </section>
                         );
                     })()}
