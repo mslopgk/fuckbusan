@@ -644,7 +644,9 @@
     padding: 71px 20px 45px;
     background: #f4f4f4;
     display: flex;
+    /* 부모 .surveychat이 column flex — align-items가 수평 중앙, 수직은 상단 고정(패딩 71) */
     align-items: center;
+    justify-content: flex-start;
 }
 
 /* 카드 + 왼쪽 상단 페르소나 아바타 래퍼 (카드 563px — Figma 302:2695) */
@@ -670,31 +672,39 @@
     background: #fff;
     border-radius: 30px;
     border: 1px solid var(--line);
-    max-height: calc(100vh - 180px);
+    max-height: calc(100vh - 185px); /* Figma 302:2857: 뷰포트 960 - 카드탑 131 - 하단여백 54 = 775 */
     overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
 .surveychat.pc .surveychat-scroll {
-    padding: 30px 20px 16px;
+    /* 29/19 + 보더 1 = 카드 외곽 기준 30/20 (Figma 실측은 카드 rect 기준) */
+    padding: 29px 19px 16px;
     overflow-y: auto;
     flex: 1;
     min-height: 0;
 }
 
-/* 설문 시작하기 (Figma 302:2710: 273x52, 칩 하단과 140px 간격) */
-.surveychat.pc .surveychat-startwrap { margin: 140px 0 21px; }
+/* 설문 시작하기 (Figma 302:2710: 273x52, 칩 하단과 140px 간격, 카드 하단 37) */
+.surveychat.pc .surveychat-startwrap { margin: 140px 0 20px; }
 
-/* 말풍선 (Figma AI 302:2969: pad 12/22, 카드 좌측 30px / 유저 302:2959: 40px pill, 카드 우측 26px) */
-.surveychat.pc .surveychat-bubble { max-width: 88%; }
-.surveychat.pc .surveychat-bubble.ai { padding: 12px 22px; margin-left: 10px; }
+/* PC 대화 상단 헤더(타이틀+설명+칩) — Figma 302:2736: 칩 하단 → 첫 말풍선 20px */
+.surveychat-chathead { margin-bottom: 20px; }
+
+/* 말풍선 (Figma AI 302:2969: pad 12/22, 카드 좌측 30px / 유저 302:2959: 40px pill, 카드 우측 26px)
+   행 간격 20 (Figma 302:2747→2744: 581→601) */
+.surveychat.pc .surveychat-row { margin-bottom: 20px; }
+.surveychat.pc .surveychat-bubble { max-width: 88%; line-height: 22px; /* Figma 텍스트 h22 */ }
+.surveychat.pc .surveychat-bubble.ai { padding: 11px 20px; margin-left: 10px; /* 보더 포함 46px, 텍스트 인셋 21/12 */ }
 .surveychat.pc .surveychat-bubble.user { padding: 9px 16px; margin-right: 6px; }
 
-/* 선택지 칩 (Figma 302:2822~2832: 100x40 pill, #fff + #ddd, #111 400, 우측 정렬, gap 10/16) */
+/* 선택지 칩 (Figma 302:2822~2832: 100x40 pill, #fff + #ddd, #111 400, 우측 정렬, gap 10/16, 카드 우측 26) */
 .surveychat.pc .surveychat-options {
     justify-content: flex-end;
     gap: 16px 10px;
+    margin: 0 6px 20px auto;
+    max-width: 320px; /* Figma 302:2822~2832: 3+2 줄바꿈 (행폭 320) */
 }
 
 .surveychat.pc .surveychat-opt {
@@ -710,28 +720,33 @@
     box-sizing: border-box;
 }
 
+/* 선택지 hover — Figma 302:2823: #f4f4f4 채움 + #ddd 유지 (teal 채움은 전송된 유저 말풍선) */
 .surveychat.pc .surveychat-opt:hover,
 .surveychat.pc .surveychat-opt.selected {
-    background: var(--teal);
-    border-color: var(--teal);
-    color: #fff;
+    background: #f4f4f4;
+    border-color: var(--line);
+    color: #111;
 }
 
-/* 척도 (Figma 302:2944~2958: 287px 우측 정렬, 16px 도트 #fff/#ddd, 트랙 3px, 라벨 16px #777) */
+/* 척도 (Figma 302:2944~2958: 287px 우측 정렬(카드 우측 15), 16px 도트 #fff/#ddd, 트랙 271x3, 라벨 16px #777) */
 .surveychat.pc .surveychat-scale {
     width: 287px;
-    margin: 6px 3px 20px auto;
+    margin: 1px -5px 20px auto; /* 말풍선 하단→도트 21 (Figma 686→707) / 우측: pad 20 - 5 = 카드에서 15 */
     padding: 0 8px;
     box-sizing: border-box;
 }
 
 .surveychat.pc .surveychat-scale-track {
-    left: 16px;
-    right: 16px;
+    left: 8px;
+    right: 8px;
     top: 6.5px;
 }
 
-.surveychat.pc .surveychat-scale-dot { gap: 13px; }
+.surveychat.pc .surveychat-scale-dot {
+    flex: none;
+    width: 16px;
+    gap: 13px;
+}
 
 .surveychat.pc .surveychat-scale-bullet {
     border: 1px solid var(--line);
@@ -746,18 +761,29 @@
 
 .surveychat.pc .surveychat-scale-label {
     font-size: 16px;
+    line-height: 22px;
     letter-spacing: -0.64px;
 }
 
-/* 완료 CTA (Figma 302:2939/2941: 36px pill, 우측 정렬 — fill teal / ghost #f4f4f4+teal) */
-.surveychat.pc .surveychat-final { justify-content: flex-end; }
+/* PC도 라벨은 처음/가운데/끝 도트에만 (Figma 302:2869~2872: 낮음/보통/높음) */
+.surveychat.pc .surveychat-scale-dot:not(.labeled) .surveychat-scale-label { display: none; }
+
+/* 완료 CTA (Figma 302:2939/2941: 89x36 r30, gap 19, 카드 우측 23 — fill teal / ghost #f4f4f4+teal) */
+.surveychat.pc .surveychat-final {
+    justify-content: flex-end;
+    gap: 19px;
+    margin: 0 3px 14px 0;
+}
 
 .surveychat.pc .surveychat-cta {
     height: 36px;
+    min-width: 89px; /* Figma 302:2939/2941: 89x36 */
     padding: 0 17px;
-    border-radius: 100px;
+    border-radius: 30px;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .surveychat.pc .surveychat-cta.ghost {
@@ -765,9 +791,20 @@
     border: 1px solid var(--teal);
 }
 
-/* PC 입력바 (Figma 302:2962: 카드 좌우 20px, 필드 pill 49px + 전송 pill 96x49, gap 10) */
+/* 완료 안내 문구 (Figma 302:2940: 16px #777, 입력바 위 40px 중앙) */
+.surveychat-pc-note {
+    margin: 0 19px 40px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 22px;
+    color: #777;
+    letter-spacing: -0.64px;
+}
+
+/* PC 입력바 (Figma 302:2962: 카드 좌우 20px, 필드 pill 49px + 전송 pill 96x49, gap 10, 하단 19) */
 .surveychat.pc .surveychat-inputbar {
-    margin: 0 20px 18px;
+    margin: 0 19px 18px; /* + 보더 1 = 카드 외곽 기준 20/19 */
     gap: 10px;
     background: none;
     border: none;

@@ -128,7 +128,7 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                 <button
                     key={c.key}
                     type="button"
-                    className={`surveychat-introchip${!isPC && started && selectedIntro === c.key ? ' selected' : ''}`}
+                    className={`surveychat-introchip${started && selectedIntro === c.key ? ' selected' : ''}`}
                     onClick={() => onIntro(c.key)}
                 >
                     <span className="surveychat-introemoji">{c.emoji}</span>{c.label}
@@ -170,6 +170,16 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                     <>
                         {/* Figma 302:14525 — 대화 상단에도 빠른시작 칩 유지(선택 칩 teal) */}
                         {!isPC && <div className="surveychat-chatchips">{introChips}</div>}
+                        {/* Figma 302:2736 — PC 대화에도 타이틀+설명+칩이 대화 히스토리 상단에 유지 (스크롤과 함께 올라감) */}
+                        {isPC && (
+                            <div className="surveychat-chathead">
+                                <h1 className="surveychat-title">무엇을 도와드릴까요?</h1>
+                                <div className="surveychat-pc-body">
+                                    <p className="surveychat-pc-desc">생활 속에서 느낀 불편이나<br />개선이 필요한 공간에 대해 이야기해주세요.</p>
+                                    {introChips}
+                                </div>
+                            </div>
+                        )}
                         {messages.map((m, i) => (
                             <div key={i} className={`surveychat-row ${m.role}`}>
                                 <div className={`surveychat-bubble ${m.role}`}>{m.text}</div>
@@ -232,21 +242,33 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                             </>
                         )}
 
-                        {/* 종료: 새 설문 시작 / 홈으로 */}
+                        {/* 종료 — PC(Figma 302:2938): 제보하기(fill)/제안하기(ghost) 이동 버튼. 모바일: 새 설문/홈 */}
                         {complete && (
-                            <>
+                            isPC ? (
                                 <div className="surveychat-final">
-                                    <button type="button" className="surveychat-cta fill" onClick={() => start()}>새로운 설문 시작하기</button>
-                                    <button type="button" className="surveychat-cta ghost" onClick={() => nav('home')}>홈으로</button>
+                                    <button type="button" className="surveychat-cta fill" onClick={() => nav('pcReportMap')}>제보하기</button>
+                                    <button type="button" className="surveychat-cta ghost" onClick={() => nav('pcProposeMap')}>제안하기</button>
                                 </div>
-                                <p className="surveychat-note">소중한 의견 감사합니다.{'\n'}우리 동네 개선에 큰 도움이 됩니다.</p>
-                            </>
+                            ) : (
+                                <>
+                                    <div className="surveychat-final">
+                                        <button type="button" className="surveychat-cta fill" onClick={() => start()}>새로운 설문 시작하기</button>
+                                        <button type="button" className="surveychat-cta ghost" onClick={() => nav('home')}>홈으로</button>
+                                    </div>
+                                    <p className="surveychat-note">소중한 의견 감사합니다.{'\n'}우리 동네 개선에 큰 도움이 됩니다.</p>
+                                </>
+                            )
                         )}
                     </>
                 )}
             </div>
 
             {toast && <div className="surveychat-toast" role="status">{toast}</div>}
+
+            {/* 완료 안내 (Figma 302:2940 — 입력바 위 40px, #777 16px 중앙) */}
+            {started && complete && isPC && (
+                <p className="surveychat-pc-note">추가 의견이 있으신 경우 자유롭게 남겨주시기 바랍니다.</p>
+            )}
 
             {/* 입력바 — 대화 시작 후에만 노출 (인트로엔 없음) */}
             {started && (
@@ -264,7 +286,7 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                         />
                         <input
                             className="surveychat-textfield"
-                            placeholder={complete ? '설문이 완료되었습니다' : '질문하기'}
+                            placeholder={complete && !isPC ? '설문이 완료되었습니다' : '질문하기'}
                             value={draft}
                             onChange={(e) => setDraft(e.target.value)}
                             onKeyDown={(e) => {
