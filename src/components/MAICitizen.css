@@ -1,377 +1,477 @@
+/* 모바일 AI 가상시민 — Figma 302:14955 (메인1 302:15079 / 메인2 302:15313 / 지도클릭 302:14960 / 전체리스트 302:15172) */
+
 .m-ai-citizen {
-    display: flex;
-    flex-direction: column;
+    position: relative;
     height: 100dvh;
-    background: #f5f7f8;
-    position: relative;
+    background: #ffffff;
     overflow: hidden;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
 }
 
-/* 뒤로가기 (지도 위 좌상단 고정) — Figma 269:27184 */
-.m-ai-back {
+/* ── 지도 배경 (Figma "지도 배경": image24 아래 + image23 위) ── */
+.maic-bg {
     position: absolute;
-    top: 24px;
-    left: 20px;
-    z-index: 30;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
 }
-
-/* Map section */
-.m-ai-map-section {
-    position: relative;
-    flex-shrink: 0;
-    height: 46vh;
-    min-height: 300px;
-    padding-top: 12px;
-    box-sizing: border-box;
-}
-
-/* Quote bubble over map — Figma 최신: 민트(teal) 배경, 아바타 없음 */
-.m-ai-quote-bubble {
+.maic-bg__img24,
+.maic-bg__img23 {
     position: absolute;
-    top: 84px;
-    left: 18px;
-    right: 18px;
-    z-index: 20;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ── 지도 (Figma 지도 Group — 메인1/리스트: (-5,135) 421x321) ── */
+.maic-map {
+    position: absolute;
+    left: -5px;
+    top: 135px;
+    width: 421px;
+    height: 321px;
+}
+/* 메인2(둘러보기): Figma 지도 Group (-109,147) 626x478 (동일 비율 확대) */
+.maic-map--lg {
+    left: -109px;
+    top: 147px;
+    width: 626px;
+    height: 478px;
+}
+.maic-svgmap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(2px 3px 2px rgba(0, 0, 0, 0.35));
+    font-family: inherit;
+}
+.maic-svgmap path { cursor: pointer; }
+
+/* 지도 위 페르소나 아바타 (teal 원 + 아바타) */
+.maic-map-avatar {
+    position: absolute;
+    border-radius: 50%;
     background: #23bdbb;
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.5;
-    padding: 12px 16px;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(35, 189, 187, 0.25);
+    overflow: hidden;
+    z-index: 500;
+    pointer-events: none;
+}
+.maic-map-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* 메인1: Ellipse 123px @ (236,111) — 지도 좌표계 기준 */
+.maic-map-avatar--intro { left: 236px; top: 111px; width: 123px; height: 123px; }
+/* 메인2 슬롯1: 153px @ 프레임 (256,331) → 확대맵 컨테이너 (365,184)
+   슬롯2: 110px @ 프레임 (48,538) → (157,391) */
+.maic-map-avatar--b1 { left: 365px; top: 184px; width: 153px; height: 153px; }
+.maic-map-avatar--b2 { left: 157px; top: 391px; width: 110px; height: 110px; }
+
+/* ── 말풍선 (Figma Union: rgba(35,189,187,.30), r50, 꼬리 20x23) ── */
+.maic-bubble {
+    position: absolute;
+    background: rgba(35, 189, 187, 0.30);
+    border-radius: 50px;
+    z-index: 510;
     pointer-events: none;
     display: flex;
     align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 8px 18px;
 }
-
-.m-ai-quote-bubble p {
-    flex: 1;
+.maic-bubble p {
     margin: 0;
+    font-size: 14px;
+    line-height: 17px;
+    font-weight: 400;
+    color: #111111;
+    text-align: center;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    font-size: 14px;
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1.5;
 }
-
-.m-ai-quote-bubble__tail {
+.maic-bubble::after {
+    content: '';
     position: absolute;
-    bottom: -8px;
-    left: 40px;
-    width: 0;
-    height: 0;
-    border-left: 9px solid transparent;
-    border-right: 9px solid transparent;
-    border-top: 9px solid #23bdbb;
+    top: 100%;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 23px solid rgba(35, 189, 187, 0.30);
 }
+/* 메인1 버블: (39,23) 307x64 꼬리 x198 */
+.maic-bubble--intro { left: 39px; top: 23px; width: 307px; height: 64px; }
+.maic-bubble--intro::after { left: 198px; }
+/* 메인2 버블1: 프레임 (120,216) 240x75 → 확대맵 컨테이너 (229,69), 꼬리 x131 */
+.maic-bubble--b1 { left: 229px; top: 69px; width: 240px; height: 75px; }
+.maic-bubble--b1::after { left: 131px; }
+/* 메인2 버블2: 프레임 (-1,458) 211x64 → (108,311), 꼬리 x160 */
+.maic-bubble--b2 { left: 108px; top: 311px; width: 211px; height: 64px; }
+.maic-bubble--b2::after { left: 160px; }
 
-/* Bottom sheet */
-.m-ai-sheet {
-    flex: 1;
-    background: #fff;
-    border-radius: 30px 30px 0 0;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    padding-bottom: 76px; /* space for nav */
-}
-
-.m-ai-sheet__grip {
-    width: 36px;
-    height: 4px;
-    background: #ccc;
-    border-radius: 2px;
-    margin: 10px auto 0;
-    flex-shrink: 0;
-}
-
-.m-ai-title-teal { color: #23bdbb; }
-.m-ai-title-black { color: #242424; }
-
-/* 지역 타이틀 행 */
-.m-ai-region-row {
+/* ── 상단 바 (검색) ── */
+.maic-topbar {
+    position: absolute;
+    top: 17px;
+    left: 20px;
+    right: 20px;
+    z-index: 600;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 8px 20px 0;
-    flex-shrink: 0;
 }
-.m-ai-region-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.maic-back {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin-right: 17px;
     background: none;
     border: none;
-    padding: 0;
     cursor: pointer;
-    font-size: 22px;
-    font-weight: 800;
-    color: #242424;
-    letter-spacing: -0.04em;
+    flex-shrink: 0;
 }
-.m-ai-region-chevron {
+.maic-back img { width: 24px; height: 24px; display: block; }
+.maic-search {
+    flex: 1;
+    height: 55px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
     display: flex;
     align-items: center;
-    justify-content: center;
+    padding: 0 18px 0 15px;
+    box-sizing: border-box;
+}
+.maic-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.04em;
+    color: #111111;
+    font-family: inherit;
+    padding: 0;
+    min-width: 0;
+}
+.maic-search input::placeholder { color: #111111; }
+.maic-search--label { padding-left: 17px; }
+.maic-search--label span {
+    flex: 1;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.04em;
+    color: #111111;
+}
+.maic-search--label button {
     width: 20px;
     height: 20px;
-    border-radius: 50%;
-    background: #23bdbb;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
 }
-.m-ai-region-reset {
+.maic-search--label button img { width: 20px; height: 20px; display: block; }
+
+/* ── 인트로 카드 (Figma 302:15131~15138) ── */
+.maic-intro {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 533px;
+    bottom: 0;
+    background: #ffffff;
+    z-index: 620;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.maic-intro__close {
+    position: absolute;
+    top: 19px;
+    right: 17px;
+    width: 41px;
+    height: 41px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 3;
+}
+.maic-intro__close img { width: 41px; height: 41px; display: block; }
+.maic-intro__persona {
+    position: absolute;
+    top: 93px;
+    right: 3px;
+    width: 124px;
+    height: 155px;
+}
+.maic-intro__title {
+    margin: 0;
+    width: calc(100% - 60px);
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: #23bdbb;
+    word-break: keep-all;
+    position: relative;
+    z-index: 1;
+}
+.maic-intro__desc {
+    margin: 0;
+    width: 274px;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    color: #111111;
+    position: relative;
+    z-index: 1;
+}
+.maic-intro__cta {
+    display: block;
+    margin-top: 23px;
+    width: 190px;
+    height: 39px;
+    background: #23bdbb;
+    border: none;
+    border-radius: 20px;
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    font-family: inherit;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── 바텀 시트 (지도클릭: top 440 / 전체리스트: top 0) ── */
+.maic-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 440px;
+    bottom: 0;
+    background: #ffffff;
+    z-index: 610;
+    display: flex;
+    flex-direction: column;
+    transition: top 0.25s ease;
+}
+.maic-sheet--full { top: 0; }
+
+.maic-sheet__head { flex-shrink: 0; }
+
+/* 그립: 3줄 18x1 #777, 간격 5 (Figma Vector 134~136) */
+.maic-grip {
+    padding: 15px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+.maic-grip i {
+    display: block;
+    width: 18px;
+    height: 1px;
+    background: #777777;
+}
+
+/* 타이틀: 22px/31 700 -0.88 + teal 원형 버튼 24 (gap 12) */
+.maic-title-row {
+    display: flex;
+    align-items: center;
+    padding: 17px 20px 0;
+}
+.maic-sheet--full .maic-title-row { padding-top: 31px; }
+.maic-title {
+    font-size: 22px;
+    line-height: 31px;
+    font-weight: 700;
+    letter-spacing: -0.88px;
+    color: #111111;
+}
+.maic-title__btn {
+    width: 24px;
+    height: 24px;
+    margin-left: 12px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.maic-title__btn img { width: 24px; height: 24px; display: block; }
+
+/* 총 N명 / 중요도순 */
+.maic-count-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 20px 0;
+}
+/* 전체리스트: Figma 총N명 y72 (타이틀 하단 +10) */
+.maic-sheet--full .maic-count-row { padding-top: 10px; }
+.maic-count {
+    font-size: 14px;
+    line-height: 19px;
+    color: #777777;
+}
+.maic-sort {
+    display: flex;
+    align-items: center;
     background: none;
     border: none;
     padding: 0;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* 카테고리 칩 */
-.m-ai-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 14px 20px 4px;
-    flex-shrink: 0;
-}
-.m-ai-chip {
-    border: none;
-    background: #f2f2f2;
-    color: #666;
-    border-radius: 8px;
-    padding: 6px 14px;
     font-size: 14px;
-    font-weight: 500;
-    letter-spacing: -0.03em;
-    cursor: pointer;
+    line-height: 19px;
+    color: #777777;
+    font-family: inherit;
 }
-.m-ai-chip.active {
-    background: #23bdbb;
-    color: #fff;
-    font-weight: 700;
-}
+.maic-sort img { width: 20px; height: 20px; display: block; }
 
-/* 스크롤 영역 (지표 + 페르소나) */
-.m-ai-scroll {
+/* 카드 리스트 */
+.maic-list {
     flex: 1;
     overflow-y: auto;
-    padding-bottom: 12px;
-}
-
-/* 섹션 헤더 */
-.m-ai-section-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px 10px;
-}
-.m-ai-section-head--persona { padding-top: 22px; }
-.m-ai-section-title {
-    font-size: 17px;
-    font-weight: 800;
-    color: #242424;
-    letter-spacing: -0.03em;
-}
-
-.m-ai-count {
-    font-size: 14px;
-    color: #737373;
-}
-
-.m-ai-sort-btn {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    font-size: 14px;
-    color: #737373;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 0;
-}
-
-/* 지역 지표 카드 그리드 */
-.m-ai-stat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    padding: 0 20px;
-}
-.m-ai-stat-card {
-    background: #f5faf9;
-    border: 1px solid #e5efee;
-    border-radius: 12px;
-    padding: 12px 6px 14px;
+    -webkit-overflow-scrolling: touch;
+    padding: 18px 20px calc(76px + 20px);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    text-align: center;
+    gap: 17px;
 }
-.m-ai-stat-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #444;
-    letter-spacing: -0.03em;
-    line-height: 1.3;
-    word-break: keep-all;
-}
-.m-ai-stat-icon {
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
-}
-.m-ai-stat-value {
-    font-size: 11px;
-    font-weight: 600;
-    color: #9aa3ab;
-    letter-spacing: -0.02em;
-}
-
-/* Citizen list */
-.m-ai-list {
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.m-ai-loading,
-.m-ai-empty {
+.maic-msg {
     font-size: 14px;
-    color: #888;
+    color: #888888;
     text-align: center;
     margin-top: 32px;
 }
 
-/* Citizen card — Figma 최신: 아바타 없음, teal 테두리, 점선 divider */
-.m-ai-card {
-    display: flex;
-    gap: 12px;
-    background: #fff;
-    border: 1px solid #23bdbb;
+/* 카드 (Figma Rectangle 179: 335x174 r10 #fff border #ddd) */
+.maic-card {
+    position: relative;
+    min-height: 174px;
+    background: #ffffff;
+    border: 1px solid #dddddd;
     border-radius: 10px;
-    padding: 14px;
+    box-sizing: border-box;
     cursor: pointer;
-    transition: box-shadow 0.15s;
+    flex-shrink: 0;
 }
-
-.m-ai-card:hover {
-    box-shadow: 0 0 0 1px #23bdbb;
+/* 아바타 74x74 @ (18,11) */
+.maic-card__avatar {
+    position: absolute;
+    left: 18px;
+    top: 11px;
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f0ece6;
 }
-
-.m-ai-card__body {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+.maic-card__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
-
-.m-ai-card__top-row {
+.maic-card__avatar-fb {
     display: flex;
     align-items: center;
-    gap: 6px;
-}
-
-/* [2-5] 안내문구 / [1-5] 대표 배지·더보기 */
-.m-ai-guide {
-    margin: 0 16px 12px;
-    padding: 10px 13px;
-    background: #e6f7f7;
-    border-radius: 10px;
-    font-size: 12.5px;
-    color: #14807e;
-    line-height: 1.45;
-}
-.m-ai-guide b { font-weight: 800; color: #0f6b69; }
-.m-ai-card__rep {
-    padding: 1px 7px;
-    border-radius: 6px;
-    background: #f0a500;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 800;
-}
-.m-ai-more-btn {
-    width: calc(100% - 32px);
-    margin: 6px 16px 4px;
-    padding: 13px 0;
-    border: 1px solid #d8e8e8;
-    background: #f4fbfb;
-    color: #23807e;
-    font-size: 14px;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 24px;
     font-weight: 700;
-    border-radius: 10px;
-    cursor: pointer;
+    color: #23bdbb;
 }
-
-.m-ai-card__name {
+/* 이름/나이 @ (99,20) */
+.maic-card__head {
+    position: absolute;
+    left: 99px;
+    top: 20px;
+    display: flex;
+    align-items: baseline;
+}
+.maic-card__name {
     font-size: 18px;
+    line-height: 25px;
     font-weight: 700;
-    color: #242424;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.72px;
+    color: #111111;
 }
-
-.m-ai-card__age {
-    font-size: 16px;
-    color: #777;
-    letter-spacing: -0.03em;
+.maic-card__age {
+    margin-left: 7px;
+    font-size: 18px;
+    line-height: 25px;
+    font-weight: 400;
+    letter-spacing: -0.72px;
+    color: #777777;
 }
-
-.m-ai-card__arrow {
-    margin-left: auto;
+/* 화살표 24 @ (298,20) */
+.maic-card__arrow {
+    position: absolute;
+    right: 13px;
+    top: 20px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
     background: none;
     border: none;
-    padding: 0;
     cursor: pointer;
-    display: flex;
-    align-items: center;
 }
-
-.m-ai-card__tags {
+.maic-card__arrow img { width: 24px; height: 24px; display: block; }
+/* 해시태그 칩 @ (99,53), h20 r4 border teal, 12/16 700 */
+.maic-card__tags {
+    position: absolute;
+    left: 99px;
+    top: 53px;
+    right: 13px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
+    gap: 8px;
+    overflow: hidden;
 }
-
-.m-ai-card__tag {
+.maic-card__tag {
+    height: 20px;
+    padding: 2px 4px;
+    box-sizing: border-box;
     border: 1px solid #23bdbb;
-    border-radius: 5px;
-    padding: 1px 5px;
+    border-radius: 4px;
     font-size: 12px;
-    font-weight: 500;
+    line-height: 16px;
+    font-weight: 700;
+    letter-spacing: -0.48px;
     color: #23bdbb;
-    letter-spacing: -0.03em;
     white-space: nowrap;
 }
-
-.m-ai-card__divider {
-    height: 0;
-    border-top: 1px dashed #23bdbb;
-    margin: 2px 0;
-    opacity: 0.5;
+/* 점선 divider @ y94, x10~325 (#ddd dashed) */
+.maic-card__divider {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 94px;
+    border-top: 1px dashed #dddddd;
 }
-
-.m-ai-card__quote {
-    font-size: 13px;
-    color: #333;
-    line-height: 1.5;
+/* 인용문 @ (10,104) w307 14/20 */
+.maic-card__quote {
+    position: absolute;
+    left: 10px;
+    top: 104px;
+    width: calc(100% - 20px);
     margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: #111111;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;

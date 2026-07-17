@@ -1,574 +1,604 @@
-.m-ai-detail {
+/* 모바일 AI 가상시민 상세 — Figma 302:15408 (393 기준, 콘텐츠 여백 20) */
+
+.mdet {
+    position: relative;
+    height: 100dvh;
+    background: #ffffff;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
     display: flex;
     flex-direction: column;
-    height: 100dvh;
-    background: #f4f4f4;
+}
+
+/* 상단 바 (콘텐츠와 함께 스크롤) */
+.mdet-topbar {
     position: relative;
+    height: 71px;
+    margin: 0 -20px;
 }
-
-/* Top bar */
-.m-ai-detail__topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px;
-    background: #fff;
-    border-bottom: 1px solid #f0f0f0;
-    flex-shrink: 0;
-    z-index: 10;
-}
-
-.m-ai-detail__chat {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    background: #23bdbb;
-    color: #fff;
-    border: none;
-    border-radius: 18px;
-    padding: 7px 14px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    cursor: pointer;
-    font-family: 'Pretendard Variable', sans-serif;
-    box-shadow: 0 2px 8px rgba(35, 189, 187, 0.3);
-}
-.m-ai-detail__chat:active { transform: translateY(1px); }
-
-.m-ai-detail__back {
+/* 뒤로가기 (Figma Vector 33: #777 6.5x13 @ (24,33)) */
+.mdet-back {
+    position: absolute;
+    top: 25px;
+    left: 7px;
+    width: 40px;
+    height: 30px;
+    padding: 0;
     background: none;
     border: none;
-    padding: 4px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    flex-shrink: 0;
+    justify-content: center;
+}
+.mdet-back img { width: 7px; height: 13px; display: block; }
+
+/* 채팅하기 — Figma 상세 프레임에는 없으나 PersonaChat 진입점 유지 */
+.mdet-chat {
+    position: absolute;
+    top: 25px;
+    right: 20px;
+    background: #23bdbb;
+    color: #ffffff;
+    border: none;
+    border-radius: 15px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
 }
 
-/* Scrollable content */
-.m-ai-detail__scroll {
+.mdet-scroll {
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    padding: 0 20px calc(76px + 55px);
 }
 
-/* Hero: avatar left, info right */
-.m-ai-detail__hero {
-    display: flex;
-    gap: 14px;
-    padding: 16px;
-    background: #fff;
-    margin-bottom: 8px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.m-ai-detail__avatar-wrap {
-    width: 120px;
-    height: 150px;
+/* ── 공통 카드 ── */
+.mdet-card {
+    background: #f4f4f4;
     border-radius: 10px;
-    overflow: hidden;
-    flex-shrink: 0;
-    background: #f0ece6;
-    border: 1px solid #d9d9d9;
+    box-sizing: border-box;
+}
+.mdet-card-title {
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 700;
+    letter-spacing: -0.56px;
+    color: #111111;
 }
 
-.m-ai-detail__avatar-img {
+/* ── Hero ── */
+.mdet-hero {
+    position: relative;
+    display: flex;
+}
+.mdet-hero__avatar {
+    flex-shrink: 0;
+    width: 141px;
+    height: 182px;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+    background: #f0ece6;
+}
+.mdet-hero__avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
-
-.m-ai-detail__hero-info {
+.mdet-hero__info {
     flex: 1;
     min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    margin-left: 10px;
 }
-
-.m-ai-detail__name-row {
+.mdet-hero__name-row {
     display: flex;
-    flex-direction: row;
     align-items: baseline;
-    flex-wrap: wrap;
-    gap: 8px;
 }
-
-.m-ai-detail__name {
+.mdet-hero__name {
     font-size: 20px;
+    line-height: 24px;
     font-weight: 700;
-    color: #242424;
-    letter-spacing: -0.04em;
-    line-height: 1.2;
-}
-
-.m-ai-detail__age-gender {
-    font-size: 14px;
-    color: #737373;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-}
-
-.m-ai-detail__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-}
-
-.m-ai-detail__tag {
-    border: 1px solid #23bdba;
-    border-radius: 4px;
-    padding: 2px 7px;
-    font-size: 12px;
-    font-weight: 500;
-    color: #23bdba;
-    letter-spacing: -0.02em;
-    white-space: nowrap;
-}
-
-/* Similarity ratio */
-.m-ai-detail__ratio-section {
-    margin-top: 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.m-ai-detail__ratio-title {
-    font-size: 13px;
-    font-weight: 600;
+    letter-spacing: -0.8px;
     color: #111111;
-    letter-spacing: -0.02em;
 }
-
-.m-ai-detail__ratio-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-}
-
-.m-ai-detail__person-icons {
-    display: flex;
-    gap: 2px;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.m-ai-detail__ratio-pct {
-    font-size: 26px;
-    font-weight: 700;
-    color: #111111;
-    letter-spacing: -0.04em;
-    line-height: 1.1;
-    flex-shrink: 0;
-}
-
-.m-ai-detail__ratio-desc {
-    font-size: 11px;
-    color: #737373;
-    line-height: 1.4;
-    letter-spacing: -0.02em;
-}
-
-/* Section */
-.m-ai-detail__section {
-    background: #fff;
-    padding: 16px;
-    margin-bottom: 8px;
-}
-
-.m-ai-detail__section-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #111111;
-    letter-spacing: -0.02em;
-    margin: 0 0 12px;
-}
-
-/* Profile grid */
-.m-ai-detail__profile-grid {
-    display: flex;
-    flex-direction: column;
-}
-
-.m-ai-detail__profile-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 8px 0;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.m-ai-detail__profile-row.last {
-    border-bottom: none;
-}
-
-.m-ai-detail__profile-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #242424;
-    white-space: nowrap;
-    min-width: 60px;
-    padding-top: 1px;
-}
-
-.m-ai-detail__profile-value {
-    font-size: 12px;
+.mdet-hero__age {
+    margin-left: 12px;
+    font-size: 16px;
+    line-height: 22px;
     font-weight: 400;
-    color: #737373;
-    line-height: 1.4;
-    margin: 0;
+    letter-spacing: -0.64px;
+    color: #777777;
 }
-
-/* Quote block */
-.m-ai-detail__quote-block {
+.mdet-hero__tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+.mdet-tag {
+    height: 20px;
+    padding: 2px 4px;
+    box-sizing: border-box;
+    border: 1px solid #23bdbb;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 700;
+    letter-spacing: -0.48px;
+    color: #23bdbb;
+    white-space: nowrap;
+}
+/* 유사 시민 비율 (Figma Rectangle 186: 202x112 r10 #f4f4f4) */
+.mdet-ratio {
+    position: relative;
+    margin-top: 17px;
+    min-height: 112px;
     background: #f4f4f4;
     border-radius: 10px;
-    padding: 16px;
-    position: relative;
+    padding: 15px 15px 7px 15px;
+    box-sizing: border-box;
 }
-
-.m-ai-detail__quote-open {
-    font-size: 32px;
-    color: #23bdba;
-    line-height: 1;
-    display: block;
-    margin-bottom: 4px;
-    font-family: Georgia, serif;
-}
-
-.m-ai-detail__quote-close {
-    font-size: 32px;
-    color: #23bdba;
-    line-height: 1;
-    display: block;
-    text-align: right;
-    margin-top: 4px;
-    font-family: Georgia, serif;
-}
-
-.m-ai-detail__quote-text {
-    font-size: 15px;
-    font-weight: 400;
-    color: #242424;
-    line-height: 1.65;
-    margin: 0;
-    letter-spacing: -0.02em;
-}
-
-/* Voices list */
-.m-ai-detail__voices {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.m-ai-detail__voice-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    background: #f4f4f4;
-    border-radius: 30px;
-    padding: 10px 14px;
-}
-
-.m-ai-detail__voice-num {
-    font-size: 12px;
+.mdet-ratio__title {
+    font-size: 14px;
+    line-height: 20px;
     font-weight: 700;
-    color: #23bdba;
-    flex-shrink: 0;
-    line-height: 1.4;
-}
-
-.m-ai-detail__voice-text {
-    font-size: 13px;
-    color: #333;
-    line-height: 1.45;
-}
-
-/* Issues */
-.m-ai-detail__issues {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.m-ai-detail__issue-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    background: #f4f4f4;
-    border-radius: 30px;
-    padding: 10px 14px;
-}
-
-.m-ai-detail__issue-num {
-    font-size: 18px;
-    font-weight: 700;
-    color: #23bdba;
-    flex-shrink: 0;
-    line-height: 1;
-}
-
-.m-ai-detail__issue-text {
-    font-size: 13px;
+    letter-spacing: -0.56px;
     color: #111111;
-    line-height: 1.45;
-    padding-top: 2px;
+}
+.mdet-ratio__row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+.mdet-ratio__pct {
+    font-size: 24px;
+    line-height: 34px;
+    font-weight: 700;
+    letter-spacing: -0.96px;
+    color: #111111;
+}
+.mdet-persons {
+    display: flex;
+    gap: 3px;
+    padding-bottom: 4px;
+}
+.mdet-persons img { width: 14px; height: 30px; display: block; }
+.mdet-ratio__desc {
+    margin-top: 2px;
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: -0.48px;
+    color: #777777;
 }
 
-/* Journey table (horizontal) */
-.m-ai-detail__journey-table-wrap {
+/* ── 프로필 표 (Figma Rectangle 190: 353x182) ── */
+.mdet-profile {
+    margin-top: 12px;
+    padding: 1px 0 0;
+}
+.mdet-profile__row {
+    display: flex;
+    align-items: flex-start;
+    padding: 4px 13px;
+    border-bottom: 1px solid #dddddd;
+}
+.mdet-profile__row.last { border-bottom: none; }
+.mdet-profile__label {
+    flex-shrink: 0;
+    width: 106px;
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: 700;
+    color: #111111;
+}
+.mdet-profile__value {
+    flex: 1;
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: 400;
+    color: #777777;
+}
+
+/* ── 시민 체감 언어 (Figma Rectangle 191: h94) ── */
+.mdet-quote {
+    margin-top: 16px;
+    min-height: 94px;
+    padding: 11px 15px 12px;
+}
+.mdet-quote__body {
+    position: relative;
+    margin-top: 2px;
+    padding: 0 32px;
+}
+.mdet-quote__body p {
+    margin: 8px 0 0;
+    font-size: 16px;
+    line-height: 19px;
+    font-weight: 400;
+    color: #111111;
+    text-align: center;
+}
+.mdet-quote__open,
+.mdet-quote__close {
+    position: absolute;
+    width: 17px;
+    height: 17px;
+}
+.mdet-quote__open { left: 0; top: 0; }
+.mdet-quote__close { right: 0; bottom: 0; }
+
+/* ── 시민 목소리 / 핵심 이슈 (흰 라운드 행 h39 r30) ── */
+.mdet-rows {
+    margin-top: 15px;
+    min-height: 182px;
+    padding: 11px 10px 10px;
+}
+.mdet-rows .mdet-card-title { padding-left: 3px; }
+.mdet-rows--issues { padding: 11px 6px 10px; }
+.mdet-rows--issues .mdet-card-title { padding-left: 7px; }
+.mdet-row {
+    display: flex;
+    align-items: center;
+    height: 39px;
+    margin-top: 6px;
+    background: #ffffff;
+    border-radius: 30px;
+    padding: 0 12px 0 10px;
+    box-sizing: border-box;
+}
+.mdet-rows .mdet-row:first-of-type { margin-top: 11px; }
+.mdet-row__num {
+    flex-shrink: 0;
+    width: 38px;
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 700;
+    color: #23bdbb;
+}
+.mdet-row__text {
+    flex: 1;
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: 400;
+    color: #111111;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* ── 여정지도 (Figma Group 923: 696x248 가로 스크롤) ── */
+.mdet-journey-scroll {
+    margin: 20px -20px 0 -8px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
-
-.m-ai-detail__journey-table {
+.mdet-journey {
+    position: relative;
+    height: 248px;
     background: #f4f4f4;
     border-radius: 10px;
-    padding: 12px 8px;
-    min-width: 360px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
 }
-
-.m-ai-detail__journey-row {
-    display: grid;
-    gap: 4px;
-    align-items: start;
+.mdet-journey__title {
+    position: absolute;
+    left: 15px;
+    top: 20px;
 }
-
-.m-ai-detail__journey-circles-row {
-    margin-bottom: 4px;
-}
-
-.m-ai-detail__journey-row-label {
+.mdet-journey__lbl {
+    position: absolute;
+    left: 10px;
     font-size: 10px;
-    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: -0.4px;
     color: #111111;
-    padding-top: 4px;
-    width: 28px;
-    flex-shrink: 0;
-    text-align: right;
 }
-
-.m-ai-detail__journey-cell {
-    background: #fff;
-    border-radius: 8px;
-    padding: 8px 6px;
-    min-height: 60px;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+.mdet-journey__card {
+    position: absolute;
+    top: 52px;
+    width: 100px;
+    height: 182px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-sizing: border-box;
 }
-
-.m-ai-detail__journey-circle-cell {
-    background: none;
-    padding: 0;
-    min-height: auto;
-    align-items: center;
-    justify-content: center;
-}
-
-.m-ai-detail__journey-step-num {
-    width: 20px;
-    height: 20px;
+.mdet-journey__num {
+    position: absolute;
+    left: 40px;
+    top: 8px;
+    width: 19px;
+    height: 19px;
     border-radius: 50%;
-    color: #fff;
+    background: #777777;
+    color: #ffffff;
     font-size: 10px;
-    font-weight: 900;
+    line-height: 14px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto;
 }
-
-.m-ai-detail__journey-time {
-    font-size: 9px;
-    color: #aaa;
-    line-height: 1.2;
-}
-
-.m-ai-detail__journey-action {
+.mdet-journey__action {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 31px;
     font-size: 10px;
-    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: -0.4px;
     color: #111111;
-    line-height: 1.3;
+    text-align: center;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
-
-.m-ai-detail__journey-cell--feeling {
-    background: none;
-    padding: 4px 0;
-    min-height: auto;
-    align-items: center;
-}
-
-.m-ai-detail__journey-emotion {
+.mdet-journey__time {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 71px; /* Figma 감정1행 텍스트 = 카드 top +71 */
     font-size: 10px;
-    font-weight: 700;
-    line-height: 1;
+    line-height: 14px;
+    letter-spacing: -0.4px;
+    color: #111111;
+    text-align: center;
 }
-
-/* Policy signals */
-.m-ai-detail__policy-legend {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 10px;
+.mdet-journey__curve {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
 }
-
-.m-ai-detail__policy-badge {
-    font-size: 11px;
-    font-weight: 600;
+.mdet-journey__dot {
+    position: absolute;
+    width: 9px;
+    height: 7px;
     border-radius: 100px;
-    padding: 3px 10px;
-    border: 1.5px solid;
+}
+.mdet-journey__emo {
+    position: absolute;
+    width: 17px;
+    height: 17px;
+}
+.mdet-journey__emolbl {
+    position: absolute;
+    top: 209px;
+    width: 100px;
+    text-align: center;
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
 }
 
-.m-ai-detail__policy-badge--high {
-    color: #ff0000;
-    border-color: #ff0000;
+/* ── 정책 신호등 (Figma Rectangle 196) ── */
+.mdet-policy {
+    margin-top: 20px;
+    padding: 15px 16px 18px;
 }
-
-.m-ai-detail__policy-badge--medium {
-    color: #ff6100;
-    border-color: #ff6100;
-}
-
-.m-ai-detail__policy-badge--low {
-    color: #029e50;
-    border-color: #029e50;
-}
-
-.m-ai-detail__policies {
+.mdet-policy__head {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
 }
-
-.m-ai-detail__policy-row {
+.mdet-policy__legend {
+    display: flex;
+    gap: 4px;
+    margin-right: -6px; /* Figma: 카드 우측 인셋 10 (패딩 16 - 6) */
+}
+.mdet-policy__pill {
+    display: flex;
+    align-items: center;
+    width: 58px;
+    height: 28px;
+    border: 1px solid #777777;
+    border-radius: 100px;
+    box-sizing: border-box;
+    padding-left: 10px;
+}
+.mdet-policy__pill i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.mdet-policy__pill em {
+    font-style: normal;
+    margin-left: 8px;
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: 700;
+}
+.mdet-policy__row {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    background: #f4f4f4;
-    border-radius: 10px;
-    padding: 10px 12px;
+    margin-top: 19px;
 }
-
-.m-ai-detail__policy-light {
-    width: 20px;
-    height: 20px;
+.mdet-policy__row.divided {
+    margin: 12px -16px 0;
+    padding: 12px 16px 0;
+    border-top: 1px solid #dddddd;
+}
+.mdet-light {
+    flex-shrink: 0;
+    width: 56px;
+    height: 25px;
+    border-radius: 20px;
+    background: #777777;
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 1px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    gap: 4.5px;
 }
-
-.m-ai-detail__policy-dot {
-    width: 10px;
-    height: 10px;
+.mdet-light i {
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     display: block;
 }
-
-.m-ai-detail__policy-text {
-    font-size: 13px;
-    line-height: 1.5;
-    letter-spacing: -0.02em;
+.mdet-policy__text {
+    margin-left: 24px;
+    font-size: 12px;
+    line-height: 14px;
 }
+.mdet-policy__text--high { color: #ff0000; font-weight: 700; }
+.mdet-policy__text--medium { color: #e07700; font-weight: 400; }
+.mdet-policy__text--low { color: #039e50; font-weight: 400; }
 
-/* Participation vertical bars */
-.m-ai-detail__vbars {
+/* ── 공공데이터 참여 현황 (Figma Rectangle 211: h215) ── */
+.mdet-part {
+    margin-top: 17px;
+    min-height: 215px;
+    padding: 15px 13px 12px;
+}
+.mdet-chart {
+    position: relative;
+    margin: 13px 12px 0 3px;
+    height: 103px; /* Figma: 축(막대 바닥) = 카드 top +151 */
+}
+.mdet-chart__grid {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 5px; /* Figma 최상단 그리드선 = 카드 top +53 */
+    bottom: 0;
     display: flex;
-    gap: 8px;
-    align-items: flex-end;
-    height: 130px;
-    padding-top: 8px;
+    flex-direction: column;
+    justify-content: space-between;
 }
-
-.m-ai-detail__vbar-col {
-    flex: 1;
+.mdet-chart__grid i {
+    display: block;
+    height: 1px;
+    background: #dddddd;
+}
+.mdet-chart__cols {
+    position: absolute;
+    left: 22px;  /* Figma 첫 막대 중심 = 카드 +72 */
+    right: 16px; /* Figma 마지막 칼럼 우변 = 그리드 우변 -16 */
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+}
+.mdet-chart__col {
+    position: relative;
+    width: 68px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
-    height: 100%;
     justify-content: flex-end;
 }
-
-.m-ai-detail__vbar-pct {
-    font-size: 11px;
-    font-weight: 600;
-    color: #333;
-    letter-spacing: -0.02em;
-}
-
-.m-ai-detail__vbar-track {
-    width: 100%;
-    background: #edf7f7;
-    border-radius: 5px;
-    height: 90px;
-    display: flex;
-    align-items: flex-end;
-}
-
-.m-ai-detail__vbar-fill {
-    width: 100%;
-    background: #23bdba;
-    border-radius: 5px;
-    min-height: 4px;
-    transition: height 0.4s ease;
-}
-
-.m-ai-detail__vbar-label {
-    font-size: 11px;
-    color: #555;
-    text-align: center;
-    font-weight: 400;
-    letter-spacing: -0.02em;
-}
-
-.m-ai-detail__participation-note {
+.mdet-chart__pct {
     font-size: 12px;
-    font-weight: 300;
+    line-height: 17px;
+    letter-spacing: -0.48px;
     color: #111111;
-    margin: 10px 0 0;
-    line-height: 1.4;
-    letter-spacing: -0.02em;
+    margin-bottom: -2px; /* Figma: pct 하단이 막대 상단과 2px 겹침 */
 }
-
-/* Footer */
-.m-ai-detail__footer {
-    background: #fff;
-    padding: 20px 16px;
+.mdet-chart__bar {
+    width: 14px;
+    background: #23bdbb;
+    border-radius: 7px 7px 0 0; /* Figma: 상단 라운드 캡 */
+    display: block;
+}
+.mdet-chart__cat {
+    position: absolute;
+    top: 100%;
+    padding-top: 6px;
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: -0.48px;
+    color: #111111;
+}
+.mdet-part__note {
+    margin: 30px 8px 0; /* Figma: 축 +151 → 노트 텍스트 +181 */
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: -0.48px;
+    color: #111111;
     text-align: center;
-    margin-bottom: 8px;
+}
+
+/* ── 카테고리별 관심도 (Figma Rectangle 217: h253) ── */
+.mdet-radar-card {
+    margin-top: 15px;
+    min-height: 253px;
+    padding: 15px 12px 12px 13px;
+}
+.mdet-radar-card__head {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+/* 토글: 흰 트랙 37x18 r100 + teal 노브 15x14 */
+.mdet-toggle {
+    position: relative;
+    width: 37px;
+    height: 18px;
+    border: none;
+    border-radius: 100px;
+    background: #ffffff;
+    cursor: pointer;
+    padding: 0;
+    margin-top: -4px;
+    flex-shrink: 0;
+}
+.mdet-toggle i {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 15px;
+    height: 14px;
+    border-radius: 100px;
+    background: #23bdbb;
+    transition: left 0.15s ease;
+}
+.mdet-toggle.on i { left: 19px; }
+.mdet-radar {
+    position: relative;
+    width: 238px;
+    height: 187px;
+    margin: 8px 0 0 63px;
+}
+.mdet-radar svg { display: block; }
+.mdet-radar__lbl {
+    position: absolute;
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: -0.48px;
+    color: #111111;
+    white-space: nowrap;
 }
 
-.m-ai-detail__footer-desc {
-    font-size: 13px;
-    font-weight: 300;
+/* ── Footer ── */
+.mdet-footer__desc {
+    margin: 61px 0 0;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.56px;
     color: #111111;
-    line-height: 1.55;
-    margin: 0;
-    letter-spacing: -0.02em;
+    text-align: center;
 }
-
-.m-ai-detail__footer-btn {
-    font-size: 16px;
-    font-weight: 700;
-    color: #111111;
+.mdet-footer__btn {
+    display: block;
+    margin: 10px auto 0;
     background: none;
     border: none;
-    cursor: pointer;
-    font-family: inherit;
-    letter-spacing: -0.02em;
     padding: 0;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 700;
+    letter-spacing: -0.64px;
+    color: #111111;
+    font-family: inherit;
+    cursor: pointer;
 }

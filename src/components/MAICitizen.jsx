@@ -1,10 +1,15 @@
-import { useState, useEffect } from 'react';
-import { MapContainer, GeoJSON, Marker, Tooltip, CircleMarker, useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import './MAICitizen.css';
 import { API_URL } from '../utils/api';
+
+/* Figma 302:14955 (모바일 AI 가상시민 섹션)
+   - 메인1(인트로)  302:15079
+   - 메인2(둘러보기) 302:15313
+   - 지도클릭시(리스트) 302:14960
+   - 전체리스트     302:15172
+   에셋: public/figma-assets/mobile-aic (전부 Figma export) */
+const A = '/figma-assets/mobile-aic';
 
 const LABEL_OFFSETS = {
     '강서구': [0.14, 0.15], '사하구': [0.11, -0.011], '서구': [0.07, 0],
@@ -12,109 +17,90 @@ const LABEL_OFFSETS = {
     '해운대구': [-0.015, -0.005],
 };
 
-// 생활정보 카테고리 칩 (val = persona.categories 라벨과 일치, backend CATEGORY_MAP 값)
-const CATS = [
-    { label: '전체', val: null },
-    { label: '주거', val: '주거' },
-    { label: '환경', val: '환경' },
-    { label: '교통', val: '교통' },
-    { label: '안전', val: '안전' },
-    { label: '교육', val: '교육' },
-    { label: '산업·일자리', val: '산업일자리' },
-    { label: '문화·여가', val: '문화여가' },
-    { label: '보건·복지', val: '보건복지' },
-];
+/* Figma 지도 (421x321): 흰 구획 + #1f1f1f 윤곽, 선택 구 #23bdbb, 버블 페르소나 구 연한 teal 틴트.
+   GeoJSON을 421x321 박스에 축별 독립 스케일로 투영(Figma 아트처럼 가로로 채움). */
+const MAP_W = 421;
+const MAP_H = 321;
+function SvgMap({ geoData, selectedDistrict, tintDistricts, onDistrictClick }) {
+    const projected = useMemo(() => {
+        if (!geoData) return null;
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        const eachRing = (geom, cb) => {
+            const polys = geom.type === 'Polygon' ? [geom.coordinates] : geom.coordinates;
+            polys.forEach(rings => rings.forEach(cb));
+        };
+        geoData.features.forEach(f => eachRing(f.geometry, ring => ring.forEach(([x, y]) => {
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+        })));
+        const P = 4;
+        const sx = (MAP_W - P * 2) / (maxX - minX);
+        const sy = (MAP_H - P * 2) / (maxY - minY);
+        const px = (x) => P + (x - minX) * sx;
+        const py = (y) => MAP_H - P - (y - minY) * sy;
+        const feats = geoData.features.map(f => {
+            let d = '';
+            eachRing(f.geometry, ring => {
+                d += ring.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${px(x).toFixed(1)},${py(y).toFixed(1)}`).join('') + 'Z';
+            });
+            // 라벨: bounds 중심 + 오프셋 (기존 MiniMap과 동일 규칙)
+            let bMinX = Infinity, bMinY = Infinity, bMaxX = -Infinity, bMaxY = -Infinity;
+            const ring0 = f.geometry.type === 'Polygon' ? f.geometry.coordinates[0] : f.geometry.coordinates[0][0];
+            ring0.forEach(([x, y]) => {
+                if (x < bMinX) bMinX = x;
+                if (x > bMaxX) bMaxX = x;
+                if (y < bMinY) bMinY = y;
+                if (y > bMaxY) bMaxY = y;
+            });
+            const name = f.properties.name;
+            const [latOff, lngOff] = LABEL_OFFSETS[name] || [0, 0];
+            return {
+                name, d,
+                lx: px((bMinX + bMaxX) / 2 + lngOff),
+                ly: py((bMinY + bMaxY) / 2 + latOff),
+            };
+        });
+        return feats;
+    }, [geoData]);
 
-// 지역 지표 카드 (Figma 269:26854 상단 산업·일자리 섹션). 값은 공공데이터 백엔드 연동 전까지 준비중 표시.
-const STAT_CARDS = [
-    { label: '청년층 순 이동율', icon: '/assets/aicitizen/stat_move.png' },
-    { label: '고용율', icon: '/assets/aicitizen/stat_employ.png' },
-    { label: '실업율', icon: '/assets/aicitizen/stat_jobless.png' },
-];
-
-function BoundsFitter({ data }) {
-    const map = useMap();
-    useEffect(() => {
-        if (data) {
-            const layer = L.geoJSON(data);
-            map.fitBounds(layer.getBounds(), { padding: [6, 6] });
-        }
-    }, [data, map]);
-    return null;
-}
-
-function MiniMap({ geoData, selectedDistrict, onDistrictClick }) {
-    // Figma 최신: 흰 구획 + 선택 구는 큰 teal 원형 하이라이트
-    const districtStyle = (feature) => ({
-        fillColor: '#ffffff',
-        weight: 0.6, opacity: 0.7, color: '#bbb', fillOpacity: 1,
-    });
-
-    const onEachFeature = (feature, layer) => {
-        layer.on({ click: () => onDistrictClick(feature.properties.name) });
-    };
-
-    const getLabelPos = (feature) => {
-        const coords = feature.geometry.type === 'Polygon'
-            ? feature.geometry.coordinates[0]
-            : feature.geometry.coordinates[0][0];
-        const latlngs = coords.map(p => [p[1], p[0]]);
-        const center = L.latLngBounds(latlngs).getCenter();
-        const offset = LABEL_OFFSETS[feature.properties.name] || [0, 0];
-        return [center.lat + offset[0], center.lng + offset[1]];
-    };
-
-    if (!geoData) return null;
-
-    const selectedFeature = selectedDistrict
-        ? geoData.features.find(f => f.properties.name === selectedDistrict)
-        : null;
-    const selectedPos = selectedFeature ? getLabelPos(selectedFeature) : null;
+    if (!projected) return null;
 
     return (
-        <MapContainer
-            center={[35.1795, 129.0756]} zoom={10}
-            scrollWheelZoom={false} zoomControl={false} doubleClickZoom={false}
-            touchZoom={false} boxZoom={false} dragging={false} attributionControl={false}
-            style={{ height: '100%', width: '100%', background: 'transparent' }}
-        >
-            <BoundsFitter data={geoData} />
-            <GeoJSON
-                key={selectedDistrict}
-                data={geoData}
-                style={districtStyle}
-                onEachFeature={onEachFeature}
-            />
-            {selectedPos && (
-                <CircleMarker
-                    center={selectedPos}
-                    radius={34}
-                    pathOptions={{
-                        color: '#23bdbb',
-                        weight: 2,
-                        fillColor: '#23bdbb',
-                        fillOpacity: 0.85,
-                    }}
-                    eventHandlers={{ click: () => onDistrictClick(selectedDistrict) }}
-                />
-            )}
-            {geoData.features.map(f => {
-                const name = f.properties.name;
-                const pos = getLabelPos(f);
+        <svg className="maic-svgmap" width={MAP_W} height={MAP_H} viewBox={`0 0 ${MAP_W} ${MAP_H}`}>
+            {projected.map(f => {
+                let fill = '#ffffff';
+                if (f.name === selectedDistrict) fill = '#23bdbb';
+                else if (tintDistricts?.includes(f.name)) fill = '#dff8f8';
                 return (
-                    <Marker
-                        key={name}
-                        position={pos}
-                        icon={L.divIcon({ className: 'm-ai-invis-marker' })}
-                        eventHandlers={{ click: () => onDistrictClick(name) }}
-                    >
-                        <Tooltip permanent direction="center" className={`m-ai-district-label${name === selectedDistrict ? ' selected' : ''}`}>
-                            {name}
-                        </Tooltip>
-                    </Marker>
+                    <path
+                        key={f.name} d={f.d} fill={fill} data-name={f.name}
+                        stroke="#1f1f1f" strokeWidth="1" strokeLinejoin="round"
+                        onClick={() => onDistrictClick(f.name)}
+                    />
                 );
             })}
-        </MapContainer>
+            {projected.map(f => (
+                <text
+                    key={`t-${f.name}`} x={f.lx} y={f.ly}
+                    textAnchor="middle" dominantBaseline="middle"
+                    fontSize="7.5" fontWeight={f.name === selectedDistrict ? 700 : 500}
+                    fill={f.name === selectedDistrict ? '#ffffff' : '#111111'}
+                    style={{ pointerEvents: 'none' }}
+                >{f.name}</text>
+            ))}
+        </svg>
+    );
+}
+
+/* 지도 위 말풍선 (Figma Union: rgba(35,189,187,0.30) r50 + 꼬리) */
+function QuoteBubble({ text, className }) {
+    if (!text) return null;
+    return (
+        <div className={`maic-bubble ${className || ''}`}>
+            <p>{text}</p>
+        </div>
     );
 }
 
@@ -124,10 +110,10 @@ export default function MAICitizen({ onNavigate }) {
     const [geoData, setGeoData] = useState(null);
     const [selectedDistrict, setSelectedDistrict] = useState(null);
     const [sort, setSort] = useState('importance');
-    const [quoteCitizen, setQuoteCitizen] = useState(null);
     const [search, setSearch] = useState('');
-    const [cat, setCat] = useState(null);
-    const [expanded, setExpanded] = useState(false); // [1-5] 더보기
+    const [stage, setStage] = useState('intro'); // intro | browse | list | full
+    const [avatars, setAvatars] = useState({}); // id -> url
+    const touchRef = useRef(null);
 
     useEffect(() => {
         fetch('/assets/busan_districts_high.json')
@@ -138,188 +124,230 @@ export default function MAICitizen({ onNavigate }) {
 
     useEffect(() => {
         setLoading(true);
-        const params = new URLSearchParams();
-        if (selectedDistrict) params.set('district', selectedDistrict);
-        params.set('sort', sort);
-        fetch(`${API_URL}/api/ai-citizens?${params}`)
+        fetch(`${API_URL}/api/ai-citizens?sort=importance`)
             .then(r => r.json())
-            .then(data => {
-                setCitizens(data);
-                setQuoteCitizen(data[0] || null);
-            })
+            .then(data => setCitizens(Array.isArray(data) ? data : []))
             .catch(() => setCitizens([]))
             .finally(() => setLoading(false));
-    }, [selectedDistrict, sort]);
+    }, []);
+
+    // 아바타 URL 로드 (백엔드 캐시)
+    useEffect(() => {
+        citizens.forEach(c => {
+            if (avatars[c.id] !== undefined) return;
+            setAvatars(prev => ({ ...prev, [c.id]: null }));
+            fetch(`${API_URL}/api/ai-citizens/${c.id}/avatar`)
+                .then(r => r.json())
+                .then(d => { if (d.url) setAvatars(prev => ({ ...prev, [c.id]: `${API_URL}${d.url}` })); })
+                .catch(() => {});
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [citizens]);
 
     const handleDistrictClick = (name) => {
-        setSelectedDistrict(prev => {
-            const next = prev === name ? null : name;
-            setSearch(next || '');
-            return next;
-        });
-    };
-
-    const handleClearSearch = () => {
+        if (selectedDistrict === name && (stage === 'list' || stage === 'full')) {
+            setSelectedDistrict(null);
+            setStage('browse');
+            return;
+        }
+        setSelectedDistrict(name);
         setSearch('');
-        setSelectedDistrict(null);
+        setStage('list');
     };
 
-    const byCat = cat ? citizens.filter(c => (c.categories || []).includes(cat)) : citizens;
-    const filtered = search
-        ? byCat.filter(c => c.name?.includes(search) || c.district?.includes(search) || (c.tags || []).some(t => t.includes(search)))
-        : byCat;
+    const handleClear = () => {
+        setSelectedDistrict(null);
+        setSearch('');
+        setStage('browse');
+    };
 
-    // [2-5] 안내문구: 가장 문제로 꼽힌 영역 = 카테고리 최빈값
-    const REP_VISIBLE = 5;
-    const LIFE_AREAS = ['안전', '교통', '주거', '산업·일자리', '교육', '환경', '문화·여가', '보건·복지'];
-    const topArea = (() => {
-        const tally = {};
-        filtered.forEach(c => (c.categories || []).forEach(k => { tally[k] = (tally[k] || 0) + 1; }));
-        const s = Object.entries(tally).sort((a, b) => b[1] - a[1]);
-        return s.length ? s[0][0] : null;
-    })();
-    const visible = expanded ? filtered : filtered.slice(0, REP_VISIBLE);
-    const hiddenCount = filtered.length - visible.length;
-    useEffect(() => { setExpanded(false); }, [selectedDistrict, cat, search]);
+    const handleSearch = (v) => {
+        setSearch(v);
+        if (v.trim()) { setSelectedDistrict(null); setStage('list'); }
+    };
 
-    const titleDistrict = selectedDistrict || null;
-    const catLabel = CATS.find(c => c.val === cat)?.label || '전체';
+    // 정렬 (클라이언트)
+    const sorted = [...citizens].sort((a, b) => sort === 'age'
+        ? a.age - b.age
+        : (a.importance ?? 100) - (b.importance ?? 100) || a.id - b.id);
+    const byDistrict = selectedDistrict ? sorted.filter(c => c.district === selectedDistrict) : sorted;
+    const filtered = search.trim()
+        ? byDistrict.filter(c => c.name?.includes(search) || c.district?.includes(search) || (c.tags || []).some(t => t.includes(search)))
+        : byDistrict;
+
+    // 둘러보기 말풍선: 중요도 상위 2명
+    const bubble1 = sorted[0] || null;
+    const bubble2 = sorted[1] || null;
+    const tintDistricts = stage === 'browse'
+        ? [...new Set([bubble1?.district, bubble2?.district].filter(Boolean))]
+        : [];
+
+    const title = selectedDistrict || '부산전체';
+    const sheetOpen = stage === 'list' || stage === 'full';
+
+    // 시트 스와이프 (위: 전체, 아래: 축소)
+    const onTouchStart = (e) => { touchRef.current = e.touches[0].clientY; };
+    const onTouchEnd = (e) => {
+        if (touchRef.current == null) return;
+        const dy = e.changedTouches[0].clientY - touchRef.current;
+        touchRef.current = null;
+        if (dy < -40 && stage === 'list') setStage('full');
+        else if (dy > 40) {
+            if (stage === 'full') setStage('list');
+            else if (stage === 'list') handleClear();
+        }
+    };
+
+    const cleanTag = (t) => `# ${String(t).replace(/^#\s*/, '')}`;
+
+    const renderCard = (c) => (
+        <div key={c.id} className="maic-card" onClick={() => onNavigate?.('mAICitizenDetail', c)}>
+            <div className="maic-card__avatar">
+                {avatars[c.id] ? <img src={avatars[c.id]} alt="" /> : <span className="maic-card__avatar-fb">{c.avatar_initial || c.name?.[0]}</span>}
+            </div>
+            <div className="maic-card__head">
+                <span className="maic-card__name">{c.name}</span>
+                <span className="maic-card__age">{c.age}세</span>
+            </div>
+            <button
+                className="maic-card__arrow" type="button" aria-label="자세히 보기"
+                onClick={e => { e.stopPropagation(); onNavigate?.('mAICitizenDetail', c); }}
+            >
+                <img src={`${A}/expand_circle.png`} alt="" />
+            </button>
+            <div className="maic-card__tags">
+                {(c.tags || []).slice(0, 3).map(t => (
+                    <span key={t} className="maic-card__tag">{cleanTag(t)}</span>
+                ))}
+            </div>
+            <div className="maic-card__divider" />
+            <p className="maic-card__quote">{c.quote}</p>
+        </div>
+    );
 
     return (
         <div className="m-ai-citizen">
-            <style>{`
-                .leaflet-container { background: transparent !important; touch-action: pan-y !important; }
-                .m-ai-invis-marker { opacity: 0; }
-                .m-ai-district-label {
-                    background: transparent !important; border: none !important;
-                    box-shadow: none !important; color: #555 !important;
-                    font-size: 8px !important; font-weight: 500 !important;
-                    white-space: nowrap !important;
-                }
-                .m-ai-district-label.selected { color: #fff !important; font-weight: 700 !important; }
-            `}</style>
+            {/* 지도 배경 (Figma 지도 배경 group) */}
+            <div className="maic-bg" aria-hidden="true">
+                <img className="maic-bg__img24" src={`${A}/bg_image24.png`} alt="" />
+                <img className="maic-bg__img23" src={`${A}/bg_image23.png`} alt="" />
+            </div>
 
-            {/* 뒤로가기 — Figma 269:27184 */}
-            <button className="m-ai-back" type="button" onClick={() => onNavigate?.('home')} aria-label="뒤로">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-
-            {/* Map section */}
-            <div className="m-ai-map-section">
-                <MiniMap
+            {/* 지도 + 말풍선 오버레이 (메인2는 Figma 확대맵 626x478) */}
+            <div className={`maic-map${stage === 'browse' ? ' maic-map--lg' : ''}`}>
+                <SvgMap
                     geoData={geoData}
-                    selectedDistrict={selectedDistrict}
+                    selectedDistrict={sheetOpen ? selectedDistrict : null}
+                    tintDistricts={tintDistricts}
                     onDistrictClick={handleDistrictClick}
                 />
-            </div>
-
-            {/* Bottom sheet */}
-            <div className="m-ai-sheet">
-                <div className="m-ai-sheet__grip" />
-
-                {/* 지역 타이틀 + 부산전체 초기화 */}
-                <div className="m-ai-region-row">
-                    <button className="m-ai-region-title" type="button" onClick={handleClearSearch}>
-                        <span>{titleDistrict || '부산전체'}</span>
-                        <span className="m-ai-region-chevron" aria-hidden="true">
-                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                        </span>
-                    </button>
-                    <button className="m-ai-region-reset" type="button" onClick={handleClearSearch} aria-label="부산전체 보기">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="1.6"><circle cx="12" cy="12" r="6.5"/><line x1="12" y1="1.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22.5" y2="12"/></svg>
-                    </button>
-                </div>
-
-                {/* 생활정보 카테고리 칩 */}
-                <div className="m-ai-chips">
-                    {CATS.map(c => (
-                        <button
-                            key={c.label}
-                            type="button"
-                            className={`m-ai-chip${cat === c.val ? ' active' : ''}`}
-                            onClick={() => setCat(c.val)}
-                        >{c.label}</button>
-                    ))}
-                </div>
-
-                <div className="m-ai-scroll">
-                    {/* 지역 지표 (Figma 상단 산업·일자리 섹션 — 공공데이터 연동 전 준비중) */}
-                    <div className="m-ai-section-head">
-                        <span className="m-ai-section-title">{catLabel}</span>
-                    </div>
-                    <div className="m-ai-stat-grid">
-                        {STAT_CARDS.map(s => (
-                            <div className="m-ai-stat-card" key={s.label}>
-                                <span className="m-ai-stat-label">{s.label}</span>
-                                <img className="m-ai-stat-icon" src={s.icon} alt="" />
-                                <span className="m-ai-stat-value">데이터 준비중</span>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* 가상시민 목록 */}
-                    <div className="m-ai-section-head m-ai-section-head--persona">
-                        <span className="m-ai-section-title">
-                            <span className="m-ai-title-teal">{titleDistrict || '부산대표'}</span> AI 가상시민
-                        </span>
-                        <button className="m-ai-sort-btn" type="button" onClick={() => setSort(s => s === 'importance' ? 'age' : 'importance')}>
-                            {sort === 'importance' ? '중요도순' : '나이순'}
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
-                        </button>
-                    </div>
-
-                    {!loading && filtered.length > 0 && (
-                        <p className="m-ai-guide">
-                            {titleDistrict || '부산'}에서 {LIFE_AREAS.length}개 생활영역 중
-                            {topArea ? <> 가장 문제로 꼽힌 <b>‘{topArea}’</b> 등을</> : ' 주요 이슈를'} 대표하는
-                            가상시민 <b>{filtered.length}명</b>이에요.
-                        </p>
-                    )}
-                    <div className="m-ai-list">
-                    {loading && <div className="m-ai-loading">불러오는 중...</div>}
-                    {!loading && filtered.length === 0 && (
-                        <div className="m-ai-empty">해당 조건의 가상시민이 없습니다.</div>
-                    )}
-                    {!loading && visible.map(c => (
-                        <div
-                            key={c.id}
-                            className="m-ai-card"
-                            onClick={() => onNavigate?.('mAICitizenDetail', c)}
-                        >
-                            <div className="m-ai-card__body">
-                                <div className="m-ai-card__top-row">
-                                    {(c.importance ?? 100) === 0 && <span className="m-ai-card__rep">대표</span>}
-                                    <span className="m-ai-card__name">{c.name}</span>
-                                    <span className="m-ai-card__age">{c.age}세</span>
-                                    <button
-                                        className="m-ai-card__arrow"
-                                        type="button"
-                                        onClick={e => { e.stopPropagation(); onNavigate?.('mAICitizenDetail', c); }}
-                                        aria-label="자세히 보기"
-                                    >
-                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#23bdbb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <circle cx="12" cy="12" r="10"/><polyline points="12 8 16 12 12 16"/><line x1="8" y1="12" x2="16" y2="12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div className="m-ai-card__tags">
-                                    {c.tags.slice(0, 3).map(t => (
-                                        <span key={t} className="m-ai-card__tag">{t}</span>
-                                    ))}
-                                </div>
-                                <div className="m-ai-card__divider" />
-                                <p className="m-ai-card__quote">{c.quote}</p>
-                            </div>
+                {stage === 'intro' && bubble1 && (
+                    <>
+                        <QuoteBubble text={bubble1.quote} className="maic-bubble--intro" />
+                        <div className="maic-map-avatar maic-map-avatar--intro">
+                            {avatars[bubble1.id] && <img src={avatars[bubble1.id]} alt="" />}
                         </div>
-                    ))}
-                    {!loading && hiddenCount > 0 && (
-                        <button type="button" className="m-ai-more-btn" onClick={() => setExpanded(true)}>
-                            가상시민 {hiddenCount}명 더보기
-                        </button>
-                    )}
+                    </>
+                )}
+                {stage === 'browse' && (
+                    <>
+                        {bubble1 && (
+                            <>
+                                <QuoteBubble text={bubble1.quote} className="maic-bubble--b1" />
+                                <div className="maic-map-avatar maic-map-avatar--b1">
+                                    {avatars[bubble1.id] && <img src={avatars[bubble1.id]} alt="" />}
+                                </div>
+                            </>
+                        )}
+                        {bubble2 && (
+                            <>
+                                <QuoteBubble text={bubble2.quote} className="maic-bubble--b2" />
+                                <div className="maic-map-avatar maic-map-avatar--b2">
+                                    {avatars[bubble2.id] && <img src={avatars[bubble2.id]} alt="" />}
+                                </div>
+                            </>
+                        )}
+                    </>
+                )}
+            </div>
+
+            {/* 상단 바 */}
+            {(stage === 'intro' || stage === 'browse') && (
+                <div className="maic-topbar">
+                    <button className="maic-back" type="button" onClick={() => onNavigate?.('home')} aria-label="뒤로">
+                        <img src={`${A}/back_arrow.png`} alt="" />
+                    </button>
+                    <div className="maic-search">
+                        <input
+                            type="text" placeholder="검색" value={search}
+                            onChange={e => handleSearch(e.target.value)}
+                        />
                     </div>
                 </div>
-            </div>
+            )}
+            {stage === 'list' && (
+                <div className="maic-topbar maic-topbar--full">
+                    <div className="maic-search maic-search--label">
+                        <span>{search.trim() || title}</span>
+                        <button type="button" onClick={handleClear} aria-label="초기화">
+                            <img src={`${A}/search_clear.png`} alt="" />
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* 인트로 카드 (Figma 302:15132) */}
+            {stage === 'intro' && (
+                <div className="maic-intro">
+                    <button className="maic-intro__close" type="button" onClick={() => setStage('browse')} aria-label="닫기">
+                        <img src={`${A}/intro_close.png`} alt="" />
+                    </button>
+                    <img className="maic-intro__persona" src={`${A}/intro_persona.png`} alt="" />
+                    <h2 className="maic-intro__title">우리 지역을 대표하는 &lsquo;가상 시민&rsquo;을 만나보세요</h2>
+                    <p className="maic-intro__desc">
+                        AI 가상시민은 공공데이터와 시민 의견을<br />
+                        분석하여 생성된 가상의 시민 페르소나입니다.<br />
+                        지역의 생활환경과 문제, 요구를<br />
+                        &lsquo;시민의 모습&rsquo;으로  이해할 수 있습니다.
+                    </p>
+                    <button className="maic-intro__cta" type="button" onClick={() => { setSelectedDistrict(null); setStage('list'); }}>
+                        우리 지역 가상 시민 보기
+                    </button>
+                </div>
+            )}
+
+            {/* 바텀 시트 (list) / 전체 리스트 (full) */}
+            {sheetOpen && (
+                <div className={`maic-sheet${stage === 'full' ? ' maic-sheet--full' : ''}`}>
+                    <div className="maic-sheet__head" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+                        {stage === 'list' && (
+                            <div className="maic-grip" aria-hidden="true"><i /><i /><i /></div>
+                        )}
+                        <div className="maic-title-row">
+                            <span className="maic-title">{title}</span>
+                            <button
+                                className="maic-title__btn" type="button"
+                                aria-label={stage === 'full' ? '지도 보기' : '전체 리스트'}
+                                onClick={() => setStage(stage === 'full' ? 'list' : 'full')}
+                            >
+                                <img src={`${A}/expand_circle.png`} alt="" />
+                            </button>
+                        </div>
+                        <div className="maic-count-row">
+                            <span className="maic-count">총 {filtered.length}명</span>
+                            <button className="maic-sort" type="button" onClick={() => setSort(s => s === 'importance' ? 'age' : 'importance')}>
+                                {sort === 'importance' ? '중요도순' : '나이순'}
+                                <img src={`${A}/arrow_down.png`} alt="" />
+                            </button>
+                        </div>
+                    </div>
+                    <div className="maic-list">
+                        {loading && <div className="maic-msg">불러오는 중...</div>}
+                        {!loading && filtered.length === 0 && <div className="maic-msg">해당 조건의 가상시민이 없습니다.</div>}
+                        {!loading && filtered.map(renderCard)}
+                    </div>
+                </div>
+            )}
 
             <MobileBottomNav currentView="mAICitizen" onNavigate={onNavigate} />
         </div>

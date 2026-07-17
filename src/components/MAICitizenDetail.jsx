@@ -4,149 +4,146 @@ import PersonaChat from './PersonaChat';
 import { API_URL } from '../utils/api';
 import './MAICitizenDetail.css';
 
-const CATEGORY_LABELS = ['안전', '주거', '교통', '산업일자리', '교육', '환경', '문화여가', '보건'];
+/* 모바일 AI 가상시민 상세 — Figma 302:15408 (섹션 302:14955 "가상시민_상세")
+   에셋: public/figma-assets/mobile-aic (전부 Figma export) */
+const A = '/figma-assets/mobile-aic';
 
-const EMOTION_COLORS = {
-    '기대됨': '#0da000',
-    '개쾌함': '#0da000',
-    '집중됨': '#c7a300',
-    '보통': '#c7a300',
-    '불안함': '#ff7200',
-    '매우불안함': '#ff0000',
-    '매우 불안함': '#ff0000',
+// 감정 정규화 키 → 스타일 (Figma 여정지도 실측)
+const EMO = {
+    '기대됨':    { dot: '#0da000', label: '#0da000', y: 187, img: 'emo_expect.png' },
+    '개쾌함':    { dot: '#0da000', label: '#0da000', y: 187, img: 'emo_expect.png' },
+    '상쾌함':    { dot: '#0da000', label: '#0da000', y: 187, img: 'emo_expect.png' },
+    '집중함':    { dot: '#ffdb00', label: '#c8a300', y: 174, img: 'emo_focus.png' },
+    '집중됨':    { dot: '#ffdb00', label: '#c8a300', y: 174, img: 'emo_focus.png' },
+    '보통':      { dot: '#ffdb00', label: '#c8a300', y: 172, img: 'emo_normal.png' },
+    '불안함':    { dot: '#ff6200', label: '#ff7300', y: 166, img: 'emo_anxious.png' },
+    '매우불안함': { dot: '#ff0000', label: '#ff0000', y: 158, img: 'emo_very_anxious.png' },
 };
+const emoOf = (emotion) => EMO[String(emotion || '').replace(/\s/g, '')] || EMO['보통'];
 
-function PersonIconsRow({ total = 5, highlighted = 1 }) {
+/* 유사 시민 비율 아이콘 (Figma: 5개, 앞에서부터 강조) */
+function PersonIcons({ highlighted = 1 }) {
     return (
-        <div className="m-ai-detail__person-icons">
-            {Array.from({ length: Math.min(total, 8) }, (_, i) => {
-                const active = i >= total - highlighted;
-                return (
-                    <svg key={i} width="18" height="22" viewBox="0 0 16 20">
-                        <circle cx="8" cy="5" r="3.5" fill={active ? '#23bdba' : '#c8e8e8'} />
-                        <path d="M1 19c0-3.9 3.1-7 7-7s7 3.1 7 7" fill={active ? '#23bdba' : '#c8e8e8'} />
-                    </svg>
-                );
-            })}
-        </div>
-    );
-}
-
-function CategoryRadar({ scores }) {
-    if (!scores) return null;
-    const CATS = ['안전', '주거', '교통', '산업\n일자리', '교육', '환경', '문화\n여가', '보건'];
-    const SCORE_KEYS = ['안전', '주거', '교통', '산업일자리', '교육', '환경', '문화여가', '보건'];
-    const SIZE = 200;
-    const cx = SIZE / 2, cy = SIZE / 2;
-    const maxR = 66;
-    const n = CATS.length;
-    const step = (2 * Math.PI) / n;
-
-    const pt = (i, r) => {
-        const a = i * step - Math.PI / 2;
-        return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
-    };
-
-    const gridLevels = [0.25, 0.5, 0.75, 1.0];
-    const dataPts = SCORE_KEYS.map((k, i) => pt(i, ((scores[k] || 0) / 5) * maxR));
-    const dPath = dataPts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ') + 'Z';
-
-    return (
-        <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ display: 'block', margin: '8px auto 0' }}>
-            {gridLevels.map((lv, li) => {
-                const gPts = CATS.map((_, i) => pt(i, lv * maxR));
-                const gPath = gPts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ') + 'Z';
-                return <path key={li} d={gPath} fill="none" stroke="#d9d9d9" strokeWidth="1" />;
-            })}
-            {CATS.map((_, i) => {
-                const p = pt(i, maxR);
-                return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="#d9d9d9" strokeWidth="1" />;
-            })}
-            <path d={dPath} fill="rgba(35,189,186,0.2)" stroke="#23bdba" strokeWidth="2" />
-            {CATS.map((cat, i) => {
-                const p = pt(i, maxR + 22);
-                return cat.includes('\n') ? (
-                    <text key={i} x={p.x} y={p.y} textAnchor="middle" fontSize="10" fill="#111111">
-                        {cat.split('\n').map((ln, li) => (
-                            <tspan key={li} x={p.x} dy={li === 0 ? '-0.5em' : '1.2em'}>{ln}</tspan>
-                        ))}
-                    </text>
-                ) : (
-                    <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" fontSize="10" fill="#111111">{cat}</text>
-                );
-            })}
-        </svg>
-    );
-}
-
-function ParticipationBars({ data }) {
-    if (!data) return null;
-    const items = Object.entries(data);
-    const max = Math.max(...items.map(([, v]) => v), 1);
-    return (
-        <div className="m-ai-detail__vbars">
-            {items.map(([label, value]) => (
-                <div key={label} className="m-ai-detail__vbar-col">
-                    <span className="m-ai-detail__vbar-pct">{value}%</span>
-                    <div className="m-ai-detail__vbar-track">
-                        <div
-                            className="m-ai-detail__vbar-fill"
-                            style={{ height: `${Math.max(6, (value / max) * 90)}px` }}
-                        />
-                    </div>
-                    <span className="m-ai-detail__vbar-label">{label}</span>
-                </div>
+        <div className="mdet-persons">
+            {Array.from({ length: 5 }, (_, i) => (
+                <img key={i} src={`${A}/${i < highlighted ? 'person_on' : 'person_off'}.png`} alt="" />
             ))}
         </div>
     );
 }
 
-function JourneyTable({ journey }) {
+/* 여정지도 (Figma Group 923: 696x248, 가로 스크롤) */
+function Journey({ journey }) {
     if (!journey || journey.length === 0) return null;
-    const cols = journey.length;
-    const gridCols = `28px repeat(${cols}, 1fr)`;
+    const n = journey.length;
+    const width = 36 + n * 110; // Figma: 카드 시작 36, step 110, 우측 패딩 10(=110-100) — 6스텝=696
+    const pts = journey.map((s, i) => {
+        const e = emoOf(s.emotion || s.feeling);
+        return { x: 36 + i * 110 + 45 + 4.5, y: e.y + 3.5, e };
+    });
     return (
-        <div className="m-ai-detail__journey-table-wrap">
-            <div className="m-ai-detail__journey-table">
-                {/* Step circles row */}
-                <div className="m-ai-detail__journey-row m-ai-detail__journey-circles-row" style={{ gridTemplateColumns: gridCols }}>
-                    <span className="m-ai-detail__journey-row-label" />
-                    {journey.map((step, i) => (
-                        <div key={i} className="m-ai-detail__journey-cell m-ai-detail__journey-circle-cell">
-                            <div
-                                className="m-ai-detail__journey-step-num"
-                                style={{ background: EMOTION_COLORS[step.emotion] || '#c7a300' }}
-                            >
-                                {i + 1}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                {/* Action row */}
-                <div className="m-ai-detail__journey-row" style={{ gridTemplateColumns: gridCols }}>
-                    <span className="m-ai-detail__journey-row-label">행동</span>
-                    {journey.map((step, i) => (
-                        <div key={i} className="m-ai-detail__journey-cell">
-                            <div className="m-ai-detail__journey-time">{step.time}</div>
-                            <div className="m-ai-detail__journey-action">{step.action}</div>
-                        </div>
-                    ))}
-                </div>
-                {/* Feeling row */}
-                <div className="m-ai-detail__journey-row" style={{ gridTemplateColumns: gridCols }}>
-                    <span className="m-ai-detail__journey-row-label">감정</span>
-                    {journey.map((step, i) => (
-                        <div key={i} className="m-ai-detail__journey-cell m-ai-detail__journey-cell--feeling">
-                            <span
-                                className="m-ai-detail__journey-emotion"
-                                style={{ color: EMOTION_COLORS[step.emotion] || '#c7a300' }}
-                            >
-                                {step.emotion}
-                            </span>
-                        </div>
-                    ))}
-                </div>
+        <div className="mdet-journey-scroll">
+            <div className="mdet-journey" style={{ width }}>
+                <h3 className="mdet-card-title mdet-journey__title">여정지도</h3>
+                <span className="mdet-journey__lbl" style={{ top: 90 }}>행동</span>
+                <span className="mdet-journey__lbl" style={{ top: 128 }}>감정</span>
+                <span className="mdet-journey__lbl" style={{ top: 202 }}>감정</span>
+                {journey.map((s, i) => (
+                    <div key={i} className="mdet-journey__card" style={{ left: 36 + i * 110 }}>
+                        <div className="mdet-journey__num">{i + 1}</div>
+                        <div className="mdet-journey__action">{s.action}</div>
+                        <div className="mdet-journey__time">{s.time}</div>
+                    </div>
+                ))}
+                <svg className="mdet-journey__curve" width={width} height={248} viewBox={`0 0 ${width} 248`}>
+                    <polyline
+                        points={pts.map(p => `${p.x},${p.y}`).join(' ')}
+                        fill="none" stroke="#000000" strokeWidth="1.2"
+                        strokeDasharray="1 4" strokeLinecap="round"
+                    />
+                </svg>
+                {pts.map((p, i) => (
+                    <span key={i} className="mdet-journey__dot" style={{ left: p.x - 4.5, top: p.e.y, background: p.e.dot }} />
+                ))}
+                {pts.map((p, i) => (
+                    <img key={i} className="mdet-journey__emo" src={`${A}/${p.e.img}`} alt="" style={{ left: p.x - 9.5, top: p.e.y - 6 }} />
+                ))}
+                {journey.map((s, i) => {
+                    const e = emoOf(s.emotion || s.feeling);
+                    return (
+                        <span key={i} className="mdet-journey__emolbl" style={{ left: 36 + i * 110, color: e.label }}>
+                            {s.emotion || s.feeling}
+                        </span>
+                    );
+                })}
             </div>
+        </div>
+    );
+}
+
+/* 정책 신호등 줄 (Figma Group 661~663) */
+function TrafficLight({ level }) {
+    const active = { high: 0, medium: 1, low: 2 }[level] ?? 1;
+    const color = { high: '#ff0101', medium: '#ff6200', low: '#039e50' }[level];
+    return (
+        <span className="mdet-light">
+            {[0, 1, 2].map(i => (
+                <i key={i} style={{ background: i === active ? color : '#dddddd' }} />
+            ))}
+        </span>
+    );
+}
+
+/* 공공데이터 참여 현황 (Figma: 그리드 6줄 + teal 바, 최대 78px) */
+function ParticipationChart({ data }) {
+    const items = Object.entries(data);
+    const max = Math.max(...items.map(([, v]) => v), 1);
+    return (
+        <div className="mdet-chart">
+            <div className="mdet-chart__grid">
+                {Array.from({ length: 6 }, (_, i) => <i key={i} />)}
+            </div>
+            <div className="mdet-chart__cols">
+                {items.map(([label, value]) => (
+                    <div key={label} className="mdet-chart__col">
+                        <span className="mdet-chart__pct">{value}%</span>
+                        <span className="mdet-chart__bar" style={{ height: Math.max(5, Math.round((value / max) * 78)) }} />
+                        <span className="mdet-chart__cat">{label}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+/* 카테고리별 관심도 (8대 영역) — Figma 8각 그리드 + teal 폴리곤 */
+const RADAR_KEYS = ['안전', '주거', '산업일자리', '교육', '환경', '문화여가', '보건', '교통'];
+const RADAR_LABEL_POS = [
+    { left: 93, top: 0 }, { left: 161, top: 26 }, { left: 188, top: 85 }, { left: 161, top: 148 },
+    { left: 95, top: 170 }, { left: 9, top: 148 }, { left: 0, top: 86 }, { left: 25, top: 26 },
+];
+function Radar({ scores, showData }) {
+    const cx = 105.5, cy = 93.5, maxR = 75.5;
+    const radii = [75.5, 62.5, 50.5, 36.5, 25.5];
+    const pt = (i, r) => {
+        const a = (i * Math.PI) / 4 - Math.PI / 2;
+        return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
+    };
+    const dataPts = RADAR_KEYS.map((k, i) => pt(i, ((scores?.[k] || 0) / 5) * maxR)).join(' ');
+    return (
+        <div className="mdet-radar">
+            <svg width="238" height="187" viewBox="0 0 238 187">
+                {radii.map((r, li) => (
+                    <polygon key={li} points={RADAR_KEYS.map((_, i) => pt(i, r)).join(' ')}
+                        fill="none" stroke="#dddddd" strokeWidth="1" />
+                ))}
+                {showData && scores && (
+                    <polygon points={dataPts} fill="rgba(35,189,187,0.2)" stroke="#23bdbb" strokeWidth="2" strokeLinejoin="round" />
+                )}
+            </svg>
+            {RADAR_KEYS.map((k, i) => (
+                <span key={k} className="mdet-radar__lbl" style={RADAR_LABEL_POS[i]}>{k}</span>
+            ))}
         </div>
     );
 }
@@ -155,13 +152,12 @@ export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }
     const [citizen, setCitizen] = useState(initialCitizen || null);
     const [detail, setDetail] = useState(null);
     const [avatarUrl, setAvatarUrl] = useState(null);
-    const [loading, setLoading] = useState(false);
     const [chatOpen, setChatOpen] = useState(false);
     const [notFound, setNotFound] = useState(false);
+    const [radarOn, setRadarOn] = useState(true);
 
     useEffect(() => {
         if (!initialCitizen?.id) return;
-        setLoading(true);
         fetch(`${API_URL}/api/ai-citizens/${initialCitizen.id}`)
             .then(r => {
                 if (!r.ok) throw new Error('not found');
@@ -172,25 +168,20 @@ export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }
                 setDetail(data.detail || null);
             })
             .catch(() => {
-                // initialCitizen에 목록에서 넘어온 실제 데이터(name)가 없으면(딥링크 등으로
-                // id만 들고 진입) 깨진 반쪽짜리 화면 대신 "찾을 수 없음" 상태로 전환
                 if (!initialCitizen?.name) setNotFound(true);
-            })
-            .finally(() => setLoading(false));
+            });
 
         fetch(`${API_URL}/api/ai-citizens/${initialCitizen.id}/avatar`)
             .then(r => r.json())
-            .then(data => {
-                if (data.url) setAvatarUrl(`${API_URL}${data.url}`);
-            })
+            .then(data => { if (data.url) setAvatarUrl(`${API_URL}${data.url}`); })
             .catch(() => {});
-    }, [initialCitizen?.id]);
+    }, [initialCitizen?.id, initialCitizen?.name]);
 
     if (!citizen || notFound) return (
         <>
             <div style={{ padding: '24px', textAlign: 'center', minHeight: 'calc(100vh - 76px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <p style={{ color: '#888', marginBottom: 16 }}>시민 정보를 찾을 수 없습니다.</p>
-                <button onClick={() => onNavigate?.('mAICitizen')} style={{ padding: '8px 20px', background: '#5B2EAB', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit' }}>목록으로</button>
+                <button onClick={() => onNavigate?.('mAICitizen')} style={{ padding: '8px 20px', background: '#23bdbb', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit' }}>목록으로</button>
             </div>
             <MobileBottomNav currentView="mAICitizenDetail" onNavigate={onNavigate} />
         </>
@@ -200,224 +191,172 @@ export default function MAICitizenDetail({ citizen: initialCitizen, onNavigate }
     const participation = d.participation || {};
     const journey = d.journey || [];
     const ps = d.policy_signals || {};
-    const radarData = CATEGORY_LABELS.map(cat => ({
-        subject: cat,
-        value: d.category_scores?.[cat] ?? 1,
-    }));
-
     const policyItems = [
         ...(ps.high || []).map(s => ({ level: 'high', text: s })),
         ...(ps.medium || []).map(s => ({ level: 'medium', text: s })),
         ...(ps.low || []).map(s => ({ level: 'low', text: s })),
     ];
-
-    const totalMatch = (d.similar_desc || '').match(/약?\s*(\d+)명\s*중/);
-    const personTotal = totalMatch ? Math.min(parseInt(totalMatch[1]), 8) : 5;
-    // similar_ratio(예: "18.2%") 비율만큼 아이콘 강조 (최소 1개)
     const ratioPct = parseFloat(d.similar_ratio || '0') || 0;
-    const highlighted = Math.min(personTotal, Math.max(1, Math.round(personTotal * ratioPct / 100)));
+    const highlighted = Math.min(5, Math.max(1, Math.round(5 * ratioPct / 100)));
+    const profileRows = [
+        ['직업', d.job], ['가족', d.family], ['좌우명', d.motto], ['꿈꾸는 생활', d.dream_life],
+        ['관심사', d.interests], ['고민', d.concerns], ['취미', d.hobbies], ['활동', d.activities],
+    ].filter(([, v]) => v);
+    const cleanTag = (t) => `# ${String(t).replace(/^#\s*/, '')}`;
+    const hasScores = d.category_scores && Object.values(d.category_scores).some(v => v > 0);
 
     return (
-        <div className="m-ai-detail">
-            {/* Top bar */}
-            <div className="m-ai-detail__topbar">
-                <button
-                    className="m-ai-detail__back"
-                    type="button"
-                    onClick={() => onNavigate?.('mAICitizen')}
-                    aria-label="뒤로가기"
-                >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="15 18 9 12 15 6"/>
-                    </svg>
-                </button>
-                <button className="m-ai-detail__chat" type="button" onClick={() => setChatOpen(true)}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                    </svg>
-                    채팅하기
-                </button>
-            </div>
-
+        <div className="mdet">
             {chatOpen && (
-                <PersonaChat
-                    persona={{ ...citizen, avatarUrl }}
-                    onClose={() => setChatOpen(false)}
-                />
+                <PersonaChat persona={{ ...citizen, avatarUrl }} onClose={() => setChatOpen(false)} />
             )}
 
-            <div className="m-ai-detail__scroll">
-                {/* Hero: avatar + identity */}
-                <div className="m-ai-detail__hero">
-                    <div className="m-ai-detail__avatar-wrap">
-                        {avatarUrl ? (
-                            <img src={avatarUrl} alt="아바타" className="m-ai-detail__avatar-img" />
-                        ) : (
-                            <svg viewBox="0 0 75 94" width="100%" height="100%" style={{ display: 'block' }}>
-                                <rect width="75" height="94" fill="#f0ece6"/>
-                                <ellipse cx="37" cy="32" rx="16" ry="18" fill="#d4aa82"/>
-                                <path d="M5 94 C5 60 37 52 37 52 C37 52 70 60 70 94 Z" fill="#d4aa82"/>
-                            </svg>
-                        )}
+            <div className="mdet-scroll">
+                {/* 상단: 뒤로가기 (Figma Vector 33) + 채팅하기(기능 유지) */}
+                <div className="mdet-topbar">
+                    <button className="mdet-back" type="button" onClick={() => onNavigate?.('mAICitizen')} aria-label="뒤로가기">
+                        <img src={`${A}/detail_back.png`} alt="" />
+                    </button>
+                    <button className="mdet-chat" type="button" onClick={() => setChatOpen(true)}>채팅하기</button>
+                </div>
+
+                {/* Hero */}
+                <div className="mdet-hero">
+                    <div className="mdet-hero__avatar">
+                        {avatarUrl && <img src={avatarUrl} alt="아바타" />}
                     </div>
-                    <div className="m-ai-detail__hero-info">
-                        <div className="m-ai-detail__name-row">
-                            <span className="m-ai-detail__name">{citizen.name}</span>
-                            <span className="m-ai-detail__age-gender">
-                                {citizen.age}세{citizen.gender ? ` · ${citizen.gender}` : ''}
-                            </span>
+                    <div className="mdet-hero__info">
+                        <div className="mdet-hero__name-row">
+                            <span className="mdet-hero__name">{citizen.name}</span>
+                            <span className="mdet-hero__age">{citizen.age}세{citizen.gender ? ` · ${citizen.gender}` : ''}</span>
                         </div>
-                        <div className="m-ai-detail__tags">
+                        <div className="mdet-hero__tags">
                             {(citizen.tags || []).slice(0, 3).map(t => (
-                                <span key={t} className="m-ai-detail__tag">{t}</span>
+                                <span key={t} className="mdet-tag">{cleanTag(t)}</span>
                             ))}
                         </div>
-                        {/* Similarity ratio */}
-                        <div className="m-ai-detail__ratio-section">
-                            <div className="m-ai-detail__ratio-title">유사 시민 비율</div>
-                            <div className="m-ai-detail__ratio-row">
-                                <div className="m-ai-detail__ratio-pct">{d.similar_ratio || '-'}</div>
-                                <PersonIconsRow total={personTotal} highlighted={highlighted} />
+                        <div className="mdet-ratio">
+                            <div className="mdet-ratio__title">유사 시민 비율</div>
+                            <div className="mdet-ratio__row">
+                                <span className="mdet-ratio__pct">{d.similar_ratio || '-'}</span>
+                                <PersonIcons highlighted={highlighted} />
                             </div>
-                            <div className="m-ai-detail__ratio-desc">{d.similar_desc || `${citizen.district || ''} 유사 생활 유형`}</div>
+                            <div className="mdet-ratio__desc">
+                                {d.similar_desc || `${citizen.district || ''} 유사 생활 유형`}{d.similar_desc ? '이 이와 유사한 생활 유형을 보입니다.' : ''}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Profile grid */}
-                {(d.job || d.family || d.interests || d.hobbies || d.motto || d.dream_life || d.concerns || d.activities) && (
-                    <div className="m-ai-detail__section">
-                        <div className="m-ai-detail__profile-grid">
-                            {[
-                                ['직업', d.job],
-                                ['가족', d.family],
-                                ['좌우명', d.motto],
-                                ['꿈꾸는 생활', d.dream_life],
-                                ['관심사', d.interests],
-                                ['고민', d.concerns],
-                                ['취미', d.hobbies],
-                                ['활동', d.activities],
-                            ].filter(([, v]) => v).map(([label, value], i, arr) => (
-                                <div key={label} className={`m-ai-detail__profile-row${i < arr.length - 1 ? '' : ' last'}`}>
-                                    <dt className="m-ai-detail__profile-label">{label}</dt>
-                                    <dd className="m-ai-detail__profile-value">{value}</dd>
-                                </div>
-                            ))}
-                        </div>
+                {/* 프로필 표 */}
+                {profileRows.length > 0 && (
+                    <div className="mdet-card mdet-profile">
+                        {profileRows.map(([label, value], i) => (
+                            <div key={label} className={`mdet-profile__row${i === profileRows.length - 1 ? ' last' : ''}`}>
+                                <span className="mdet-profile__label">{label}</span>
+                                <span className="mdet-profile__value">{value}</span>
+                            </div>
+                        ))}
                     </div>
                 )}
 
-                {/* Quote section — 시민 체감 언어 */}
+                {/* 시민 체감 언어 */}
                 {(d.body_language || citizen.quote) && (
-                    <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">시민 체감 언어</h3>
-                        <div className="m-ai-detail__quote-block">
-                            <span className="m-ai-detail__quote-open">❝</span>
-                            <p className="m-ai-detail__quote-text">{d.body_language || citizen.quote}</p>
-                            <span className="m-ai-detail__quote-close">❞</span>
+                    <div className="mdet-card mdet-quote">
+                        <h3 className="mdet-card-title">시민 체감 언어</h3>
+                        <div className="mdet-quote__body">
+                            <img className="mdet-quote__open" src={`${A}/quote_open.png`} alt="" />
+                            <p>{d.body_language || citizen.quote}</p>
+                            <img className="mdet-quote__close" src={`${A}/quote_close.png`} alt="" />
                         </div>
                     </div>
                 )}
 
                 {/* 시민 목소리 */}
                 {d.voices && d.voices.length > 0 && (
-                    <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">시민 목소리</h3>
-                        <div className="m-ai-detail__voices">
-                            {d.voices.map((v, i) => (
-                                <div key={i} className="m-ai-detail__voice-item">
-                                    <span className="m-ai-detail__voice-num">0{i + 1}</span>
-                                    <span className="m-ai-detail__voice-text">{v}</span>
-                                </div>
-                            ))}
-                        </div>
+                    <div className="mdet-card mdet-rows">
+                        <h3 className="mdet-card-title">시민 목소리</h3>
+                        {d.voices.map((v, i) => (
+                            <div key={i} className="mdet-row">
+                                <span className="mdet-row__num">0{i + 1}</span>
+                                <span className="mdet-row__text">{v}</span>
+                            </div>
+                        ))}
                     </div>
                 )}
 
-                {/* 핵심 이슈 */}
+                {/* 핵심 이슈 TOP 3 */}
                 {d.top_issues && d.top_issues.length > 0 && (
-                    <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">핵심 이슈 TOP 3</h3>
-                        <div className="m-ai-detail__issues">
-                            {d.top_issues.map((issue, i) => (
-                                <div key={i} className="m-ai-detail__issue-item">
-                                    <span className="m-ai-detail__issue-num">0{i + 1}</span>
-                                    <span className="m-ai-detail__issue-text">{issue}</span>
-                                </div>
-                            ))}
-                        </div>
+                    <div className="mdet-card mdet-rows mdet-rows--issues">
+                        <h3 className="mdet-card-title">핵심 이슈 TOP 3</h3>
+                        {d.top_issues.map((issue, i) => (
+                            <div key={i} className="mdet-row">
+                                <span className="mdet-row__num">0{i + 1}</span>
+                                <span className="mdet-row__text">{issue}</span>
+                            </div>
+                        ))}
                     </div>
                 )}
 
                 {/* 여정지도 */}
-                {journey.length > 0 && (
-                    <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">여정지도</h3>
-                        <JourneyTable journey={journey} />
-                    </div>
-                )}
+                <Journey journey={journey} />
 
                 {/* 정책 신호등 */}
                 {policyItems.length > 0 && (
-                    <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">정책 신호등</h3>
-                        <div className="m-ai-detail__policy-legend">
-                            <span className="m-ai-detail__policy-badge m-ai-detail__policy-badge--high">높음</span>
-                            <span className="m-ai-detail__policy-badge m-ai-detail__policy-badge--medium">보통</span>
-                            <span className="m-ai-detail__policy-badge m-ai-detail__policy-badge--low">낮음</span>
+                    <div className="mdet-card mdet-policy">
+                        <div className="mdet-policy__head">
+                            <h3 className="mdet-card-title">정책 신호등</h3>
+                            <div className="mdet-policy__legend">
+                                {[['높음', '#ff0000'], ['보통', '#ff6200'], ['낮음', '#039e50']].map(([t, c]) => (
+                                    <span key={t} className="mdet-policy__pill">
+                                        <i style={{ background: c }} />
+                                        <em style={{ color: c }}>{t}</em>
+                                    </span>
+                                ))}
+                            </div>
                         </div>
-                        <div className="m-ai-detail__policies">
-                            {policyItems.map((p, i) => (
-                                <div key={i} className={`m-ai-detail__policy-row m-ai-detail__policy-row--${p.level}`}>
-                                    <div className="m-ai-detail__policy-light">
-                                        <span className="m-ai-detail__policy-dot" style={{
-                                            background: p.level === 'high' ? '#ff0000' : p.level === 'medium' ? '#ff6100' : '#029e50'
-                                        }} />
-                                    </div>
-                                    <span className="m-ai-detail__policy-text" style={{
-                                        color: p.level === 'high' ? '#ff0000' : p.level === 'medium' ? '#df7700' : '#333',
-                                        fontWeight: p.level === 'high' ? 600 : p.level === 'medium' ? 500 : 400,
-                                    }}>{p.text}</span>
-                                </div>
-                            ))}
-                        </div>
+                        {policyItems.map((p, i) => (
+                            <div key={i} className={`mdet-policy__row${i > 0 ? ' divided' : ''}`}>
+                                <TrafficLight level={p.level} />
+                                <span className={`mdet-policy__text mdet-policy__text--${p.level}`}>{p.text}</span>
+                            </div>
+                        ))}
                     </div>
                 )}
 
                 {/* 공공데이터 참여 현황 */}
                 {Object.keys(participation).length > 0 && (
-                    <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">공공데이터 참여 현황 (참여 비율)</h3>
-                        <ParticipationBars data={participation} />
-                        {d.participation_note && (
-                            <p className="m-ai-detail__participation-note">{d.participation_note}</p>
-                        )}
+                    <div className="mdet-card mdet-part">
+                        <h3 className="mdet-card-title">공공데이터 참여 현황 (참여 비율)</h3>
+                        <ParticipationChart data={participation} />
+                        {d.participation_note && <p className="mdet-part__note">{d.participation_note}</p>}
                     </div>
                 )}
 
                 {/* 카테고리별 관심도 */}
-                {radarData.some(d => d.value > 0) && (
-                    <div className="m-ai-detail__section">
-                        <h3 className="m-ai-detail__section-title">카테고리별 관심도 (8대 영역)</h3>
-                        <CategoryRadar scores={d.category_scores} />
+                {hasScores && (
+                    <div className="mdet-card mdet-radar-card">
+                        <div className="mdet-radar-card__head">
+                            <h3 className="mdet-card-title">카테고리별 관심도 (8대 영역)</h3>
+                            <button
+                                className={`mdet-toggle${radarOn ? ' on' : ''}`} type="button"
+                                onClick={() => setRadarOn(v => !v)} aria-label="관심도 표시 전환"
+                            >
+                                <i />
+                            </button>
+                        </div>
+                        <Radar scores={d.category_scores} showData={radarOn} />
                     </div>
                 )}
 
                 {/* Footer */}
-                <div className="m-ai-detail__footer">
-                    <p className="m-ai-detail__footer-desc">
-                        이 리포트는 {citizen.district || '부산'} 시민 의견과 공공데이터를 기반으로 AI 분석을 통해 생성된 가상 인물입니다.
-                    </p>
-                    <button
-                        className="m-ai-detail__footer-btn"
-                        type="button"
-                        onClick={() => onNavigate?.('mAICitizen')}
-                    >
-                        다른 시민 유형 보기 &gt;
-                    </button>
-                </div>
-
-                <div style={{ height: 80 }} />
+                <p className="mdet-footer__desc">
+                    이 리포트는 {citizen.district || '부산'} 시민 의견과 공공데이터를<br />
+                    기반으로 AI 분석을 통해 생성된 가상 인물입니다.
+                </p>
+                <button className="mdet-footer__btn" type="button" onClick={() => onNavigate?.('mAICitizen')}>
+                    다른 시민 유형 보기 &gt;
+                </button>
             </div>
 
             <MobileBottomNav currentView="mAICitizenDetail" onNavigate={onNavigate} />
