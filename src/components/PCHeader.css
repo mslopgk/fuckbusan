@@ -136,9 +136,10 @@
         color: #23BDBB;
     }
 
-    /* Figma 스펙(1920): 텍스트 간 130px — 12px 패딩 x2 + gap 106 */
+    /* Figma 스펙(1920): 텍스트 간 130px — 12px 패딩 x2 + gap 106.
+       1440 부근에선 고정 106px이 우측 액션(로그인 사용자명 영역)과 겹침 → 뷰포트에 따라 축소 */
     @media (min-width: 1440px) {
-        .pc-nav { gap: 106px; }
+        .pc-nav { gap: clamp(24px, calc((100vw - 1040px) / 7), 106px); }
     }
 
     /* 우측 액션 (Figma: 로그인|회원가입 10px 간격) */
