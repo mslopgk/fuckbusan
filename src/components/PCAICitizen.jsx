@@ -568,18 +568,16 @@ export default function PCAICitizen({ onNavigate }) {
 
                 {showMapIntro && (
                     <div className="aic-intro">
-                        {/* 캐릭터+말풍선을 한 그룹(px 좌표계)으로 묶어 좌하단 앵커 — viewport % 독립 배치로 인한
-                            비율별 겹침 방지 (그룹 내부는 px 오프셋이라 화면비가 변해도 상대 위치 고정) */}
-                        <div className="aic-intro-group">
-                        <img className="aic-intro-persona" src="/assets/aicitizen/intro_persona.png" alt="" draggable={false} />
+                        {/* Figma 302:3561 실측 배치: 캐릭터 302:3602 @(117,bottom0) 300px,
+                            말풍선 302:3628 @(466, bottom45) 945x168 r20 + 좌상단 위로 솟은 꼬리 */}
+                        <img className="aic-intro-persona" src="/assets/aicitizen/intro_persona_map.png" alt="" draggable={false} />
                         <div className="aic-intro-bubble">
                             <button type="button" className="aic-intro-close" aria-label="닫기" onClick={() => setShowMapIntro(false)}>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                                <img src="/figma-assets/icons/cancel_filled_36.png" alt="" width="36" height="36" />
                             </button>
                             <strong className="aic-intro-title">우리 지역을 대표하는 ‘가상 시민’을 만나보세요</strong>
                             <p className="aic-intro-desc">AI 가상시민은 공공데이터와 시민 의견을 분석하여 생성된 가상의 시민 페르소나입니다. 지역의 생활환경과 문제, 요구를 ‘시민의 모습’으로 이해할 수 있습니다.</p>
                             <button type="button" className="aic-intro-cta" onClick={() => setShowMapIntro(false)}>우리 지역 가상 시민 보기</button>
-                        </div>
                         </div>
                     </div>
                 )}

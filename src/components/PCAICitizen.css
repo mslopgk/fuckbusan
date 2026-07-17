@@ -897,64 +897,62 @@
 .aic-list:not(.aic-list--default) .aic-list-sub { margin-left: 12px; margin-right: 12px; }
 .aic-list:not(.aic-list--default) .aic-list-guide { margin-left: 12px; margin-right: 12px; }
 .aic-list:not(.aic-list--default) .aic-list-bar { padding-left: 12px; padding-right: 12px; }
-/* 진입 인트로: 여성 페르소나(좌하단) + 말풍선(하단 중앙). Figma 302:3561
-   .pubdata 직속 오버레이. 페르소나는 좌측 패널/말풍선/지도보다 위(최상단). */
-.aic-intro { position: absolute; inset: 0; z-index: 30; pointer-events: none; overflow: hidden; }
-/* 캐릭터+말풍선 그룹: 하단 앵커 + 가로 중앙 정렬(사용자 확정).
-   중앙 기준은 우측 패널(519+여백 36)을 제외한 지도 가시영역 — 패널과 절대 안 겹침.
-   내부 자식은 전부 px 오프셋 → 1100~1920px 어느 화면비에서도 캐릭터/말풍선이 서로 겹치지 않는다. */
-.aic-intro-group {
-    position: absolute; bottom: 0; height: 0;
-    /* 가시영역(좌측 생활정보 레일 154px ~ 우측 패널 619px) 안에서 중앙, 절대 레일/패널과 안 겹침:
-       width = min(상한 872, 화면 - 레일 154 - 패널 599 - 간격 20), left = 중앙값을 154px 로 하한 클램프 */
-    width: min(872px, calc(100% - 773px));
-    left: max(154px, calc((100% - 599px - min(872px, 100% - 773px)) / 2));
-    pointer-events: none;
-}
+/* 진입 인트로 — Figma 302:3561 실측 (1920x1080 기준):
+   캐릭터 302:3602 @(117, bottom0) 300x480 / 말풍선 302:3628 @(466, bottom45) 945x168 r20
+   (좌상단에서 위로 솟은 꼬리 26px) / 텍스트 인셋 30·20, 본문 폭 637 / CTA 206x34 r20 teal
+   / 닫기 cancel_filled 36px right9 top13.
+   z-index 4: Figma 레이어 순서상 좌측 레일·우측 패널(z5)이 인트로 위. */
+.aic-intro { position: absolute; inset: 0; z-index: 4; pointer-events: none; overflow: hidden; }
 .aic-intro-persona {
-    position: absolute; left: 0; bottom: 0; width: 224px; height: auto; /* 526x1215 원본 → 약 517px 높이 */
-    z-index: 40; pointer-events: none;
+    position: absolute; left: calc(100% * 117 / 1920); bottom: 0; width: 300px; height: auto;
+    pointer-events: none;
     user-select: none; -webkit-user-drag: none;
-    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.12));
     animation: aicPersonaIn 0.6s cubic-bezier(.22,1,.36,1) both;
 }
 @keyframes aicPersonaIn {
     from { opacity: 0; transform: translateY(48px); }
     to { opacity: 1; transform: translateY(0); }
 }
-/* 말풍선: 캐릭터(224px 폭) 오른쪽에 px 오프셋으로 고정 — 어깨~머리 높이에서 그룹으로 읽힘.
-   max-width는 그룹 폭(= 화면 - 좌우 앵커) 안으로 제한해 우측 페르소나 패널과 절대 안 겹침. */
+/* 좁은 화면에선 캐릭터(왼쪽 %앵커 + 300px) 오른쪽 20px 을 하한으로 밀어 겹침 방지 */
 .aic-intro-bubble {
-    position: absolute; left: 252px; bottom: 250px;
-    max-width: min(620px, calc(100% - 252px)); box-sizing: border-box; pointer-events: auto;
-    background: #fff; border-radius: 20px; padding: 26px 30px 22px;
+    position: absolute;
+    left: max(calc(100% * 117 / 1920 + 320px), calc(100% * 466 / 1920));
+    bottom: 45px;
+    width: 945px;
+    max-width: calc(100% - max(calc(100% * 117 / 1920 + 320px), calc(100% * 466 / 1920)) - 12px);
+    box-sizing: border-box; pointer-events: auto;
+    background: #fff; border-radius: 20px; padding: 20px 30px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.16);
     font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; letter-spacing: -0.02em;
     animation: aicBubbleIn 0.55s cubic-bezier(.22,1,.36,1) 0.28s both;
 }
+/* 꼬리: Figma Union — 말풍선 좌상단(왼쪽 가장자리 세로 유지)에서 위로 26px 솟음 */
 .aic-intro-bubble::before {
-    content: ''; position: absolute; left: -18px; top: 34px;
-    border-top: 13px solid transparent; border-bottom: 13px solid transparent;
-    border-right: 22px solid #fff;
-    filter: drop-shadow(-6px 2px 4px rgba(0,0,0,0.05));
+    content: ''; position: absolute; left: 20px; top: -26px;
+    border-bottom: 26px solid #fff;
+    border-right: 36px solid transparent;
 }
 @keyframes aicBubbleIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 .aic-intro-close {
-    position: absolute; top: 13px; right: 10px; width: 34px; height: 34px; /* Figma cancel_filled 36px */
+    position: absolute; top: 13px; right: 9px; width: 36px; height: 36px;
     display: flex; align-items: center; justify-content: center;
-    background: #f1f3f4; border: none; border-radius: 50%; color: #7a8388; cursor: pointer;
+    background: none; border: none; padding: 0; cursor: pointer;
 }
-.aic-intro-close:hover { background: #e5e8ea; color: #4a5257; }
-.aic-intro-title { display: block; font-size: 20px; font-weight: 700; color: #23bdbb; margin: 0 40px 10px 0; letter-spacing: -0.02em; }
-.aic-intro-desc { margin: 0 0 18px; font-size: 15px; line-height: 1.45; color: #242424; }
+.aic-intro-close img { width: 36px; height: 36px; display: block; }
+.aic-intro-close:hover { opacity: 0.75; }
+/* Figma 302:3632: 타이틀+본문 한 블록 85px (타이틀 lh28 + 본문 2줄 lh28.5), CTA까지 9px */
+.aic-intro-title { display: block; font-size: 20px; font-weight: 700; line-height: 28px; color: #23bdbb; margin: 0 50px 0 0; letter-spacing: -0.02em; }
+.aic-intro-desc { margin: 0 0 9px; max-width: 637px; font-size: 16px; line-height: 28.5px; color: #242424; }
 .aic-intro-cta {
-    display: inline-flex; align-items: center; background: #23bdbb; color: #fff;
-    border: none; border-radius: 17px; padding: 8px 21px; font-size: 15px; font-weight: 700; /* Figma 302:3631 206x34 r≈17 */
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 206px; height: 34px; padding: 0;
+    background: #23bdbb; color: #fff;
+    border: none; border-radius: 20px; font-size: 18px; font-weight: 700; /* Figma 302:3631/3633 */
     letter-spacing: -0.02em; cursor: pointer; font-family: inherit;
-    box-shadow: 0 4px 14px rgba(35,189,187,0.3); transition: background 0.15s, transform 0.1s;
+    transition: background 0.15s, transform 0.1s;
 }
 .aic-intro-cta:hover { background: #1aa6a4; }
 .aic-intro-cta:active { transform: translateY(1px); }
@@ -975,10 +973,13 @@
 .aic-select-clear { display: inline-flex; align-items: center; justify-content: center; margin-left: auto; margin-right: 8px; color: #b0b7bc; cursor: pointer; }
 .aic-select-clear:hover { color: #23bdbb; }
 
-/* 좁은 화면: 캐릭터 축소 + 말풍선 시작점 당김 — 1240에서도 말풍선 실사용 폭 확보 */
+/* 좁은 화면: 캐릭터만 소폭 축소 (Figma 비율 유지, 하단 앵커 동일) */
 @media (max-width: 1360px) {
-    .aic-intro-persona { width: 184px; }
-    .aic-intro-bubble { left: 206px; bottom: 220px; max-width: min(620px, calc(100% - 206px)); }
+    .aic-intro-persona { width: 240px; }
+    .aic-intro-bubble {
+        left: max(calc(100% * 117 / 1920 + 260px), calc(100% * 466 / 1920));
+        max-width: calc(100% - max(calc(100% * 117 / 1920 + 260px), calc(100% * 466 / 1920)) - 12px);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
