@@ -107,6 +107,7 @@
 
 /* input + 버튼 가로 결합 (주소검색/휴대폰인증) */
 .pcauth-row { display: flex; gap: 6px; align-items: stretch; }
+.pcauth-otp-row { margin-top: 6px; }
 .pcauth-row .pcauth-input { flex: 1 0 0; min-width: 0; }
 /* 인증번호 칸은 짧게 */
 .pcauth-row .pcauth-input.otp { flex: 0 0 170px; }

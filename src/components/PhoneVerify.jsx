@@ -15,7 +15,8 @@ const RecaptchaSlot = React.memo(function RecaptchaSlot() {
     return <div id="recaptcha-container" className="pcauth-recaptcha" />;
 });
 
-const PhoneVerify = ({ phone, setPhone, verified, setVerified, required = false, label = '휴대폰번호' }) => {
+/* showOtpBeforeSend: 인증번호 행을 발송 전에도 비활성 상태로 표시 (모바일 회원가입 Figma 302:14815 정합, 표시 전용) */
+const PhoneVerify = ({ phone, setPhone, verified, setVerified, required = false, label = '휴대폰번호', showOtpBeforeSend = false }) => {
     const [confirmation, setConfirmation] = useState(null);
     const [code, setCode] = useState('');
     const [sent, setSent] = useState(false);
@@ -106,13 +107,13 @@ const PhoneVerify = ({ phone, setPhone, verified, setVerified, required = false,
             {/* invisible reCAPTCHA 앵커 (체크박스 없음). 인증 누르면 백그라운드 실행 */}
             <RecaptchaSlot />
 
-            {sent && !verified && (
+            {(sent || showOtpBeforeSend) && !verified && (
                 <>
-                    <div className="pcauth-row" style={{ marginTop: 6 }}>
+                    <div className="pcauth-row pcauth-otp-row">
                         <div className="pcauth-otp-wrap otp">
                             <input className="pcauth-input" placeholder="인증번호 입력" inputMode="numeric" maxLength={6}
-                                value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} disabled={expired} />
-                            {!expired && <span className="pcauth-otp-timer">{fmt(ttl)}</span>}
+                                value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} disabled={expired || !sent} />
+                            {sent && !expired && <span className="pcauth-otp-timer">{fmt(ttl)}</span>}
                         </div>
                         <button type="button" className={`pcauth-inline-btn${code.length === 6 && !expired ? ' active' : ''}`}
                             onClick={verify} disabled={verifying || code.length < 6 || expired}>

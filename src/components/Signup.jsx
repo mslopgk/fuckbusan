@@ -14,15 +14,11 @@ import PhoneVerify from './PhoneVerify';
 const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,20}$/;
 const USERTYPE_TO_DISTRICT = { citizen: 'general', expert: 'expert', admin: 'admin' };
 
-const TYPE_ICON = {
-    admin: '/assets/auth/type_admin.png',
-    expert: '/assets/auth/type_expert.png',
-    citizen: '/assets/auth/type_citizen.svg',
-};
+/* Figma 302:14799/14800/14801 export. 아이콘 실측: 관리자 58, 전문가 66, 시민 62x49 */
 const USER_TYPES = [
-    { key: 'admin', label: '관리자' },
-    { key: 'expert', label: '전문가' },
-    { key: 'citizen', label: '시민' },
+    { key: 'admin', label: '관리자', icon: '/figma-assets/mobile-auth/icon_admin.png', w: 58, h: 58, dark: true },
+    { key: 'expert', label: '전문가', icon: '/figma-assets/mobile-auth/icon_expert.png', w: 66, h: 66, dark: true },
+    { key: 'citizen', label: '시민', icon: '/figma-assets/mobile-auth/icon_citizen.png', w: 62, h: 49, dark: false },
 ];
 
 const DAUM_POSTCODE_SRC = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
@@ -36,50 +32,40 @@ const loadDaumPostcode = () =>
         document.head.appendChild(s);
     });
 
-const BackHeader = ({ onBack }) => (
+const BackHeader = ({ onBack, title }) => (
     <div className="msignup-topbar">
         <button type="button" className="back-btn" onClick={onBack} aria-label="뒤로">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
-            </svg>
+            <img src="/figma-assets/mobile-auth/arrow_back.png" alt="" />
         </button>
+        {title && <div className="msignup-topbar-title">{title}</div>}
     </div>
 );
 
-/* 체크 인디케이터 — Figma 에셋 (302:3425). checked=에셋, unchecked=동일 형태의 빈 라운드 사각형 */
-const Check = ({ on }) => (
+/* 체크 인디케이터 — Figma 302:14778(흰 박스+청록 체크) / 302:14792(청록 박스+흰 체크) export.
+   unchecked = 흰 라운드 사각형 (302:14784) */
+const Check = ({ on, variant = 'light' }) => (
     on
-        ? <img className="msignup-check on" src="/figma-assets/icons/terms_check.svg" alt="" width={20} height={20} aria-hidden="true" />
+        ? <img className="msignup-check on" src={`/figma-assets/mobile-auth/check_on_${variant === 'teal' ? 'teal' : 'white'}.png`} alt="" width={20} height={20} aria-hidden="true" />
         : <span className="msignup-check" aria-hidden="true" />
 );
 
-/* ===== 1단계: 약관동의 + 가입유형 ===== */
+/* ===== 1단계: 약관동의 + 가입유형 (Figma 302:14763) ===== */
 const ConsentStep = ({ onBack, onNext }) => {
     const [service, setService] = useState(false);
     const [privacy, setPrivacy] = useState(false);
-    const [hint, setHint] = useState(false);
+    const [userType, setUserType] = useState(null);
     const allOn = service && privacy;
-    const toggleAll = () => { const v = !allOn; setService(v); setPrivacy(v); if (v) setHint(false); };
-
-    // 가입유형 선택 시 자동으로 다음 단계로 (약관 동의 필요)
-    const pickType = (key) => {
-        if (!allOn) { setHint(true); return; }
-        onNext({ service, privacy, userType: key });
-    };
+    const toggleAll = () => { const v = !allOn; setService(v); setPrivacy(v); };
+    const ready = allOn && !!userType;
 
     return (
         <div className="msignup">
             <BackHeader onBack={onBack} />
             <div className="msignup-body">
-                <div className="msignup-all-box">
-                    <button type="button" className={`msignup-all${allOn ? ' on' : ''}`} onClick={toggleAll}>
-                        <Check on={allOn} /> <span>모든 약관에 동의합니다</span>
-                    </button>
-                    <p className="msignup-all-sub">전체 약관에 동의해야 서비스를 이용할 수 있습니다.</p>
-                </div>
+                <h1 className="msignup-h1">약관 동의</h1>
 
                 <div className="msignup-terms-block">
-                    <div className="msignup-terms-title">이용약관 <span className="req">(필수)</span></div>
+                    <div className="msignup-terms-title">이용약관 (필수)</div>
                     <div className="msignup-terms-box">{TERMS_SERVICE}</div>
                     <button type="button" className={`msignup-agree${service ? ' on' : ''}`} onClick={() => setService((v) => !v)}>
                         <Check on={service} /> <span>위 이용약관에 동의합니다.</span>
@@ -87,23 +73,45 @@ const ConsentStep = ({ onBack, onNext }) => {
                 </div>
 
                 <div className="msignup-terms-block">
-                    <div className="msignup-terms-title">개인정보처리방침 <span className="req">(필수)</span></div>
+                    <div className="msignup-terms-title">개인정보처리방침 (필수)</div>
                     <div className="msignup-terms-box">{TERMS_PRIVACY}</div>
                     <button type="button" className={`msignup-agree${privacy ? ' on' : ''}`} onClick={() => setPrivacy((v) => !v)}>
-                        <Check on={privacy} /> <span>위 개인정보처리방침에 동의합니다.</span>
+                        <Check on={privacy} /> <span>위 이용약관에 동의합니다.</span>
                     </button>
                 </div>
 
-                <div className="msignup-pick-label">가입 유형을 선택하면 다음 단계로 이동합니다.</div>
+                <button type="button" className="msignup-all-box" onClick={toggleAll}>
+                    <Check on={allOn} variant="teal" />
+                    <span className="msignup-all-texts">
+                        <span className="msignup-all-title">모든 약관에 동의합니다</span>
+                        <span className="msignup-all-sub">전체 약관에 동의해야 서버스를 이용할 수 있습니다.</span>
+                    </span>
+                </button>
+
                 <div className="msignup-typecards">
                     {USER_TYPES.map((t) => (
-                        <button key={t.key} type="button" className="msignup-typecard" onClick={() => pickType(t.key)}>
-                            <img className="msignup-typeicon" src={TYPE_ICON[t.key]} alt="" />
+                        <button
+                            key={t.key}
+                            type="button"
+                            className={`msignup-typecard${userType === t.key ? ' selected' : ''}${t.dark ? '' : ' light-icon'}`}
+                            onClick={() => setUserType(t.key)}
+                        >
+                            <img className="msignup-typeicon" src={t.icon} alt="" style={{ width: t.w, height: t.h }} />
                             <span>{t.label}</span>
                         </button>
                     ))}
                 </div>
-                {hint && !allOn && <div className="msignup-typehint">약관에 모두 동의해주세요.</div>}
+
+                <div className="msignup-next">
+                    <button
+                        type="button"
+                        className={`login-submit-btn ${ready ? 'active' : 'disabled'}`}
+                        disabled={!ready}
+                        onClick={() => onNext({ service, privacy, userType })}
+                    >
+                        다음
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -155,7 +163,7 @@ const SignupForm = ({ onBack, onNavigate, consent }) => {
 
     return (
         <div className="msignup">
-            <BackHeader onBack={onBack} />
+            <BackHeader onBack={onBack} title="회원가입" />
             <div className="msignup-body">
                 <div className="msignup-intro">
                     <h1>더 나은 도시 환경을 위해 함께해주세요</h1>
@@ -165,7 +173,7 @@ const SignupForm = ({ onBack, onNavigate, consent }) => {
                 <div className="msignup-form">
                     <div className="input-group">
                         <label className="input-label">아이디<i className="req-dot" /></label>
-                        <input className="login-input" placeholder="abcdef1234" value={form.id} onChange={(e) => set('id', e.target.value)} />
+                        <input className="login-input" placeholder="아이디를 입력하세요" value={form.id} onChange={(e) => set('id', e.target.value)} />
                     </div>
                     <div className="input-group">
                         <label className="input-label">비밀번호<i className="req-dot" /></label>
@@ -196,7 +204,7 @@ const SignupForm = ({ onBack, onNavigate, consent }) => {
                             <input className="login-input clickable" placeholder="주소 검색" value={form.address} readOnly onClick={openPostcode} />
                             <button type="button" className="msignup-inline-btn" onClick={openPostcode}>검색</button>
                         </div>
-                        <input className="login-input" style={{ marginTop: 6 }} placeholder="상세주소를 입력" value={form.detailAddress} onChange={(e) => set('detailAddress', e.target.value)} />
+                        <input className="login-input" placeholder="상세주소를 입력" value={form.detailAddress} onChange={(e) => set('detailAddress', e.target.value)} />
                     </div>
                     <PhoneVerify
                         phone={form.phone}
@@ -204,6 +212,7 @@ const SignupForm = ({ onBack, onNavigate, consent }) => {
                         verified={phoneVerified}
                         setVerified={setPhoneVerified}
                         required
+                        showOtpBeforeSend
                     />
                 </div>
 

@@ -1,6 +1,6 @@
-/* Login Page Styles */
+/* ===== 모바일 로그인 (Figma 302:14636 / 302:14667) ===== */
 .login-container {
-    padding: 20px 24px;
+    padding: 0 20px calc(env(safe-area-inset-bottom) + 24px);
     min-height: 100vh;
     background-color: #fff;
     font-family: 'Pretendard Variable', sans-serif;
@@ -8,14 +8,17 @@
     flex-direction: column;
     max-width: 1280px;
     margin: 0 auto;
+    box-sizing: border-box;
 }
 
-/* Header (Back Button) */
+/* 상단바 — Figma: 375x72, 아이콘 24px @ x16 */
 .login-header {
-    height: 60px;
+    height: 72px;
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin: 0 -20px;
+    padding: 0 16px;
+    flex: none;
 }
 
 .back-btn {
@@ -23,10 +26,14 @@
     border: none;
     padding: 0;
     cursor: pointer;
+    display: flex;
+    align-items: center;
 }
+.back-btn img { display: block; width: 24px; height: 24px; }
 
-/* Title Section (Figma: gap 100px between title block and form block) */
+/* 타이틀 블록 — topbar 아래 16px, 폼과 100px 간격 */
 .login-title-section {
+    margin-top: 16px;
     margin-bottom: 100px;
 }
 
@@ -34,9 +41,10 @@
     font-family: 'Pretendard Variable', sans-serif;
     font-size: 28px;
     font-weight: 700;
+    line-height: 39px;
     letter-spacing: -1.12px;
     color: #23bdbb;
-    margin-bottom: 1.25rem;
+    margin-bottom: 20px;
 }
 
 .login-subtitle-main {
@@ -45,52 +53,34 @@
     font-weight: 700;
     letter-spacing: -0.8px;
     color: #111;
-    line-height: 1.4;
+    line-height: 28px;
     margin-bottom: 8px;
 }
 
 .login-subtitle-desc {
     font-size: 14px;
-    color: #1f1f1f;
+    color: #777;
     font-weight: 400;
-    line-height: 1.35;
+    line-height: 19px;
 }
 
-/* 아이디/비밀번호 찾기 탭 */
-.login-find-tabs {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 0.75rem;
-}
-.login-find-tab {
-    background: none;
-    border: none;
-    padding: 0 0 6px;
-    font-family: 'Pretendard Variable', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.8px;
-    color: #bdbdbd;
-    cursor: pointer;
-}
-.login-find-tab.active { color: #23bdbb; border-bottom: 2px solid #23bdbb; }
-
-/* Form Section */
+/* Form — 그룹 간 28px, 라벨-인풋 6px */
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 1.875rem;
+    gap: 28px;
 }
 
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 0.625rem;
+    gap: 6px;
 }
 
 .input-label {
     font-size: 14px;
-    color: #1f1f1f;
+    line-height: 19px;
+    color: #777;
     font-weight: 400;
 }
 
@@ -99,10 +89,12 @@
     height: 48px;
     padding: 0 12px;
     font-size: 16px;
+    font-family: 'Pretendard Variable', sans-serif;
     border: 1px solid #f4f4f4;
     border-radius: 8px;
     outline: none;
-    color: #242424;
+    color: #111;
+    background: #fff;
     box-sizing: border-box;
     transition: border-color 0.2s;
 }
@@ -111,35 +103,36 @@
     color: #aaa;
 }
 
+/* 내용 입력 상태 — Figma 302:14678: border #111 */
+.login-input:not(:placeholder-shown) {
+    border-color: #111;
+}
+
 .login-input:focus {
     border-color: #23bdbb;
 }
 
-/* Submit Button (Figma: gap 40px below form) */
+/* 버튼 — 폼 아래 40px */
 .login-btn-container {
     margin-top: 40px;
 }
 
 .login-submit-btn {
     width: 100%;
-    padding: 1.125rem;
-    font-size: 1rem;
-    font-weight: bold;
+    height: 56px;
+    padding: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.72px;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     cursor: pointer;
     font-family: 'Pretendard Variable', sans-serif;
     transition: background-color 0.2s;
 }
 
-.login-submit-btn {
-    height: 56px;
-    padding: 0;
-    border-radius: 8px;
-}
-
 .login-submit-btn.disabled {
-    background-color: #d9d9d9;
+    background-color: #ddd;
     color: #fff;
     cursor: not-allowed;
 }
@@ -149,22 +142,20 @@
     color: #fff;
 }
 
-/* Footer Links (Figma 269:20081: 3 items with pipe separators) */
+/* 하단 링크 — 버튼 아래 16px, 전체폭 양끝 정렬, 파이프 20% 블랙 */
 .login-footer-links {
-    margin-top: 1rem;
+    margin-top: 16px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0;
+    justify-content: space-between;
     font-size: 14px;
-    color: #1f1f1f;
-    padding: 0 4px;
+    line-height: 19px;
+    color: #777;
 }
 
 .login-footer-sep {
-    color: #ddd;
+    color: rgba(0, 0, 0, 0.2);
     font-size: 14px;
-    padding: 0 10px;
     user-select: none;
     pointer-events: none;
 }
@@ -172,20 +163,20 @@
 .text-link {
     background: none;
     border: none;
-    color: #1f1f1f;
+    color: #777;
     text-decoration: none;
     cursor: pointer;
     padding: 0;
     font-size: 14px;
     font-family: inherit;
-    line-height: 1.35;
+    line-height: 19px;
 }
 
-/* 간편 회원가입 (Figma: gap 16px from footer links, bg #111) */
+/* 간편 회원가입 — 링크 아래 40px, bg #111 (Figma 302:14662) */
 .login-simple-btn {
     width: 100%;
     height: 56px;
-    margin-top: 16px;
+    margin-top: 40px;
     border: none;
     border-radius: 8px;
     background: #111;
@@ -195,4 +186,328 @@
     font-weight: 700;
     letter-spacing: -0.72px;
     cursor: pointer;
+    flex: none;
+}
+
+/* ===== 아이디찾기/비밀번호 재설정 (Figma 302:14698~14751) ===== */
+.mfind {
+    min-height: 100vh;
+    background: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    color: #111;
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px calc(env(safe-area-inset-bottom) + 14px);
+    box-sizing: border-box;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* 상단바 — 얇은 chevron + 중앙 타이틀 18/400 (y=26) */
+.mfind-topbar {
+    position: relative;
+    height: 53px;
+    padding-top: 26px;
+    margin: 0 -20px;
+    box-sizing: content-box;
+    flex: none;
+}
+.mfind-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 27px;
+    letter-spacing: -0.41px;
+    color: #111;
+}
+.mfind-back {
+    position: absolute;
+    left: 12px;
+    top: 22px;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+}
+.mfind-back img { width: 8px; height: 14px; display: block; }
+
+/* 본인인증 방법 선택 (Figma 302:14721) */
+.mfind-guide {
+    margin: 125px 0 0;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 27px;
+    letter-spacing: -0.41px;
+    color: #111;
+    white-space: pre-line;
+}
+.mfind-card {
+    margin-top: 35px;
+    border: 1px solid #ddd;
+    background: #fff;
+    height: 207px;
+    box-sizing: border-box;
+    position: relative;
+}
+.mfind-card-desc {
+    margin: 63px 0 0;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: -0.37px;
+    color: #777;
+    white-space: pre-line;
+}
+.mfind-card-btns {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    top: 137px;
+    display: flex;
+    gap: 11px;
+}
+.mfind-method-btn {
+    flex: 1;
+    height: 42px;
+    border: none;
+    border-radius: 10px;
+    background: #23bdbb;
+    color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: -0.64px;
+    cursor: pointer;
+}
+
+/* 입력 단계 (본인확인 폼 — Figma 스타일 토큰 적용) */
+.mfind-form {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+.mfind-field { display: flex; flex-direction: column; }
+.mfind-label {
+    font-size: 14px;
+    line-height: 19px;
+    color: #777;
+    font-weight: 400;
+    display: inline-flex;
+    gap: 2px;
+}
+.mfind .req-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: #f74e7e; display: inline-block; margin-top: 2px; flex: none;
+}
+.mfind-input {
+    margin-top: 20px;
+    width: 100%;
+    height: 46px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    outline: none;
+    font-family: 'Pretendard Variable', sans-serif;
+    font-size: 16px;
+    color: #111;
+    background: #fff;
+}
+.mfind-input::placeholder { color: #aaa; }
+.mfind-input:not(:placeholder-shown) { border-color: #111; }
+.mfind-input:focus { border-color: #23bdbb; }
+.mfind-helper {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 19px;
+    color: #777;
+}
+.mfind-helper.ok { color: #23bdbb; }
+.mfind-helper.err { color: #e6235a; }
+
+/* 비밀번호 재설정 폼 헤딩 (Figma 302:14738: y=67) */
+.mfind-reset-heading {
+    margin: 14px 0 0;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 27px;
+    letter-spacing: -0.41px;
+    color: #111;
+    white-space: pre-line;
+}
+.mfind-reset-heading + .mfind-form { margin-top: 57px; }
+
+/* 아이디찾기 결과 (Figma 302:14714) */
+.mfind-result {
+    margin: 281px 0 0;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 27px;
+    letter-spacing: -0.41px;
+    color: #111;
+    white-space: pre-line;
+    word-break: break-all;
+}
+.mfind-result-btn {
+    margin: 43px auto 0;
+    display: block;
+    width: 157px;
+    height: 42px;
+    border: none;
+    border-radius: 10px;
+    background: #23bdbb;
+    color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: -0.64px;
+    cursor: pointer;
+}
+
+/* 하단 고정 CTA (Figma 302:14750: 335x52 r10, bottom 14) */
+.mfind-foot {
+    margin-top: auto;
+    padding-top: 24px;
+}
+.mfind-submit {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 10px;
+    background: #23bdbb;
+    color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.64px;
+    cursor: pointer;
+}
+.mfind-submit:disabled {
+    background: #ddd;
+    cursor: not-allowed;
+}
+.mfind-error {
+    margin-top: 14px;
+    color: #e6235a;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* PhoneVerify(pcauth-*) 모바일 오버라이드 — 표시만 Figma 토큰으로 */
+.mfind .pcauth-field { display: flex; flex-direction: column; }
+.mfind .pcauth-label {
+    font-size: 14px; line-height: 19px; color: #777; font-weight: 400; margin: 0;
+}
+.mfind .pcauth-label .req { font-size: 0; }
+.mfind .pcauth-label .req::after {
+    content: ''; display: inline-block; width: 4px; height: 4px; border-radius: 50%;
+    background: #f74e7e; vertical-align: top; margin: 2px 0 0 2px;
+}
+.mfind .pcauth-row { margin-top: 20px; display: flex; gap: 6px; align-items: stretch; }
+.mfind .pcauth-otp-row { margin-top: 20px; }
+.mfind .pcauth-row .pcauth-input { flex: 1 0 0; min-width: 0; }
+.mfind .pcauth-input {
+    height: 46px; padding: 0 12px; box-sizing: border-box;
+    border: 1px solid #aaa; border-radius: 8px; outline: none;
+    font-family: 'Pretendard Variable', sans-serif; font-size: 16px; color: #111; background: #fff;
+    width: 100%;
+}
+.mfind .pcauth-input::placeholder { color: #aaa; }
+.mfind .pcauth-input:not(:placeholder-shown) { border-color: #111; }
+.mfind .pcauth-input:focus { border-color: #23bdbb; }
+.mfind .pcauth-otp-wrap .pcauth-input { background: #f4f4f4; border: none; padding-right: 52px; }
+.mfind .pcauth-row .pcauth-otp-wrap.otp { flex: 1 0 0; position: relative; }
+.mfind .pcauth-otp-timer { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #e6235a; }
+.mfind .pcauth-inline-btn {
+    flex: none; width: 60px; height: 46px; border: none; border-radius: 8px;
+    background: #aaa; color: #fff; font-family: 'Pretendard Variable', sans-serif;
+    font-size: 16px; font-weight: 400; cursor: pointer; padding: 0;
+}
+.mfind .pcauth-inline-btn.active { background: #23bdbb; }
+.mfind .pcauth-inline-btn:disabled { cursor: default; }
+.mfind .pcauth-helper { margin-top: 10px; font-size: 14px; line-height: 19px; color: #777; }
+.mfind .pcauth-helper.err { color: #e6235a; }
+.mfind .pcauth-helper.ok { color: #23bdbb; }
+.mfind .pcauth-verified { display: inline-flex; align-items: center; gap: 4px; color: #23bdbb; font-size: 13px; margin-top: 10px; }
+.mfind .pcauth-recaptcha { margin-top: 0; }
+
+/* ===== 완료 화면 공용 (Figma 302:14752 / 302:14945) ===== */
+.mauth-done {
+    min-height: 100vh;
+    background: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    color: #111;
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px calc(env(safe-area-inset-bottom) + 19px);
+    box-sizing: border-box;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+}
+.mauth-done-topbar {
+    position: relative;
+    height: 72px;
+    margin: 0 -20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+}
+.mauth-done-topbar .back-btn {
+    position: absolute;
+    left: 16px;
+    top: 24px;
+}
+.mauth-done-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 25px;
+    letter-spacing: -0.72px;
+    color: #111;
+}
+.mauth-done-lead {
+    margin: 237px 0 0;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 28px;
+    letter-spacing: -0.8px;
+    color: #111;
+}
+.mauth-done-desc {
+    margin: 10px 0 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #777;
+    white-space: pre-line;
+}
+.mauth-done-foot {
+    margin-top: auto;
+    padding-top: 24px;
+}
+.mauth-done-btn {
+    width: 100%;
+    height: 56px;
+    border: none;
+    border-radius: 8px;
+    background: #23bdbb;
+    color: #fff;
+    font-family: 'Pretendard Variable', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.64px;
+    cursor: pointer;
+}
+.mauth-done-btn.lg {
+    font-size: 18px;
+    letter-spacing: -0.72px;
 }

@@ -38,12 +38,6 @@ const Login = ({ onBack, onSignup }) => {
         setFindInputs({ name: '', id: '', phone: '' });
         setFindVerified(false); setPwResetStep(false); setPwResetDone(false); setFindMethod(null); setNewPw(''); setNewPwConfirm('');
     };
-    const switchFind = (m) => {
-        setFindMode(m); setFindResult(null); setFindError(null);
-        setFindInputs({ name: '', id: '', phone: '' });
-        setFindVerified(false); setPwResetStep(false); setPwResetDone(false); setFindMethod(null); setNewPw(''); setNewPwConfirm('');
-    };
-
     const isFormValid = inputs.id.length > 0 && inputs.password.length > 0;
 
     // Force full width layout to match other desktop pages
@@ -157,60 +151,58 @@ const Login = ({ onBack, onSignup }) => {
     };
 
     if (findMode) {
-        const backHeader = (
-            <div className="login-header">
-                <button className="back-btn" onClick={resetFind} aria-label="뒤로">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="19" y1="12" x2="5" y2="12"></line>
-                        <polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
+        const findTitle = findMode === 'id' ? '아이디찾기' : '비밀번호 재설정';
+        const topbar = (
+            <div className="mfind-topbar">
+                <button className="mfind-back" onClick={resetFind} aria-label="뒤로">
+                    <img src="/figma-assets/mobile-auth/chevron_back.png" alt="" />
                 </button>
+                <div className="mfind-title">{findTitle}</div>
             </div>
         );
 
-        // 비밀번호 재설정 완료 화면
+        // 비밀번호 재설정 완료 (Figma 302:14752)
         if (findMode === 'pw' && pwResetDone) {
             return (
-                <div className="login-container">
-                    {backHeader}
-                    <div className="login-title-section">
-                        <div className="login-title">비밀번호 재설정</div>
+                <div className="mauth-done">
+                    <div className="mauth-done-topbar">
+                        <button className="back-btn" onClick={resetFind} aria-label="뒤로">
+                            <img src="/figma-assets/mobile-auth/arrow_back.png" alt="" />
+                        </button>
+                        <div className="mauth-done-title">비밀번호 재설정</div>
                     </div>
-                    <div style={{ margin: '24px', padding: '28px 16px', background: '#f0fffe', border: '1px solid #16B5B0', borderRadius: '12px', textAlign: 'center', lineHeight: 1.6 }}>
-                        <div style={{ fontSize: '17px', fontWeight: 'bold', color: '#16B5B0' }}>비밀번호 변경이 완료되었습니다!</div>
-                        <div style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>로그인 후 서비스를 이용하실 수 있습니다.</div>
-                    </div>
-                    <div className="login-btn-container">
-                        <button className="login-submit-btn active" onClick={resetFind}>로그인 페이지로 이동</button>
+                    <div className="mauth-done-lead">비밀번호 변경이 완료되었습니다!</div>
+                    <div className="mauth-done-desc">{'로그인 후 서비스를 이용하실 수 있습니다.\n로그인 페이지로 이동하시겠습니까?'}</div>
+                    <div className="mauth-done-foot">
+                        <button className="mauth-done-btn" onClick={resetFind}>로그인 페이지로 이동</button>
                     </div>
                 </div>
             );
         }
 
-        // 비밀번호 재설정 단계
+        // 비밀번호 재설정 단계 (Figma 302:14735)
         if (findMode === 'pw' && pwResetStep) {
             return (
-                <div className="login-container">
-                    {backHeader}
-                    <div className="login-title-section">
-                        <div className="login-title">비밀번호 재설정</div>
-                        <div className="login-subtitle-desc">인증되었습니다. 새 비밀번호를 입력해주세요.</div>
-                    </div>
-                    <div className="login-form">
-                        <div className="input-group">
-                            <label className="input-label">비밀번호</label>
-                            <input type="password" className="login-input" placeholder="새 비밀번호" autoComplete="new-password" value={newPw} onChange={(e) => setNewPw(e.target.value)} />
-                            <div className="helper-text" style={{ color: newPw.length === 0 ? undefined : (newPwValid ? '#16B5B0' : '#E6235A') }}>*영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요.</div>
+                <div className="mfind">
+                    {topbar}
+                    <div className="mfind-reset-heading">{'인증되었습니다\n비밀번호 재설정 해주세요'}</div>
+                    <div className="mfind-form">
+                        <div className="mfind-field">
+                            <label className="mfind-label">비밀번호<i className="req-dot" /></label>
+                            <input type="password" className="mfind-input" placeholder="새 비밀번호" autoComplete="new-password" value={newPw} onChange={(e) => setNewPw(e.target.value)} />
+                            <div className={`mfind-helper${newPw.length === 0 ? '' : (newPwValid ? ' ok' : ' err')}`}>*영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요.</div>
                         </div>
-                        <div className="input-group">
-                            <label className="input-label">비밀번호 확인</label>
-                            <input type="password" className="login-input" placeholder="새 비밀번호 확인" autoComplete="new-password" value={newPwConfirm} onChange={(e) => setNewPwConfirm(e.target.value)} />
-                            {newPwConfirm.length > 0 && <div className="helper-text" style={{ color: newPwMatch ? '#16B5B0' : '#E6235A' }}>{newPwMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.'}</div>}
+                        <div className="mfind-field">
+                            <label className="mfind-label">비밀번호 확인</label>
+                            <input type="password" className="mfind-input" placeholder="새 비밀번호 확인" autoComplete="new-password" value={newPwConfirm} onChange={(e) => setNewPwConfirm(e.target.value)} />
+                            <div className={`mfind-helper${newPwConfirm.length === 0 ? '' : (newPwMatch ? ' ok' : ' err')}`}>
+                                {newPwConfirm.length === 0 ? '*영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요.' : (newPwMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.')}
+                            </div>
                         </div>
                     </div>
-                    {findError && <div style={{ color: '#E6235A', textAlign: 'center', margin: '10px 24px', fontSize: '14px' }}>{findError}</div>}
-                    <div className="login-btn-container">
-                        <button className={`login-submit-btn ${newPwValid && newPwMatch && !findLoading ? 'active' : 'disabled'}`} disabled={!newPwValid || !newPwMatch || findLoading} onClick={handleResetPw}>
+                    {findError && <div className="mfind-error">{findError}</div>}
+                    <div className="mfind-foot">
+                        <button className="mfind-submit" disabled={!newPwValid || !newPwMatch || findLoading} onClick={handleResetPw}>
                             {findLoading ? '처리 중...' : '재설정 하기'}
                         </button>
                     </div>
@@ -218,42 +210,28 @@ const Login = ({ onBack, onSignup }) => {
             );
         }
 
-        // 아이디 찾기 결과
+        // 아이디 찾기 결과 (Figma 302:14714)
         if (findMode === 'id' && findResult) {
             return (
-                <div className="login-container">
-                    {backHeader}
-                    <div className="login-title-section">
-                        <div className="login-title">아이디 찾기</div>
-                    </div>
-                    <div style={{ margin: '24px', padding: '24px 16px', background: '#f0fffe', border: '1px solid #16B5B0', borderRadius: '12px', textAlign: 'center', lineHeight: 1.6 }}>
-                        <div style={{ fontSize: '15px', color: '#444' }}>가입하신 회원님의 아이디는</div>
-                        <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#16B5B0', margin: '6px 0' }}>{findResult.value}</div>
-                        <div style={{ fontSize: '15px', color: '#444' }}>입니다</div>
-                    </div>
-                    <div className="login-btn-container">
-                        <button className="login-submit-btn active" onClick={resetFind}>로그인하기</button>
-                    </div>
+                <div className="mfind">
+                    {topbar}
+                    <div className="mfind-result">{`가입하신 회원님의 아이디는\n${findResult.value}입니다`}</div>
+                    <button className="mfind-result-btn" onClick={resetFind}>로그인하기</button>
                 </div>
             );
         }
 
-        // 본인인증 방법 선택 (Figma 302:3015)
+        // 본인인증 방법 선택 (Figma 302:14698 / 302:14721)
         if (!findMethod) {
             return (
-                <div className="login-container">
-                    {backHeader}
-                    <div className="login-title-section">
-                        <div className="login-title">{findMode === 'id' ? '아이디 찾기' : '비밀번호 찾기'}</div>
-                        <div className="login-subtitle-desc">회원정보 확인을 위한 본인인증 단계입니다. 인증방법을 선택해주세요.</div>
-                    </div>
-                    <div style={{ margin: '24px', padding: '28px 16px', background: '#f8f8f8', borderRadius: '12px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '14px', color: '#666', lineHeight: 1.6, marginBottom: '18px' }}>
-                            휴대폰 인증 또는 아이핀 인증을 이용해서<br />{findMode === 'id' ? '아이디를 찾을' : '비밀번호를 재설정할'} 수 있습니다.
-                        </div>
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <button className="login-submit-btn active" style={{ flex: 1 }} onClick={() => setFindMethod('phone')}>휴대폰 인증하기</button>
-                            <button className="login-submit-btn" style={{ flex: 1, background: '#5fcfcd', color: '#fff' }} onClick={() => alert('아이핀 인증은 준비 중입니다. 휴대폰 인증을 이용해주세요.')}>아이핀 인증</button>
+                <div className="mfind">
+                    {topbar}
+                    <p className="mfind-guide">{'회원정보 확인을 위한 본인인증 단계입니다.\n인증방법을 선택해주세요.'}</p>
+                    <div className="mfind-card">
+                        <p className="mfind-card-desc">{'휴대폰 인증 또는 아이핀 인증을 이용해서\n아이디를 찾을 수 있습니다.'}</p>
+                        <div className="mfind-card-btns">
+                            <button className="mfind-method-btn" onClick={() => setFindMethod('phone')}>휴대폰 인증하기</button>
+                            <button className="mfind-method-btn" onClick={() => alert('아이핀 인증은 준비 중입니다. 휴대폰 인증을 이용해주세요.')}>아이핀 인증</button>
                         </div>
                     </div>
                 </div>
@@ -263,27 +241,18 @@ const Login = ({ onBack, onSignup }) => {
         // 입력 + 휴대폰 SMS 인증 (아이디/비번 공통)
         const ready = (findMode === 'id' ? findInputs.name : findInputs.id) && findVerified;
         return (
-            <div className="login-container">
-                {backHeader}
-                <div className="login-title-section">
-                    <div className="login-find-tabs">
-                        <button className={`login-find-tab ${findMode === 'id' ? 'active' : ''}`} onClick={() => switchFind('id')}>아이디 찾기</button>
-                        <button className={`login-find-tab ${findMode === 'pw' ? 'active' : ''}`} onClick={() => switchFind('pw')}>비밀번호 찾기</button>
-                    </div>
-                    <div className="login-subtitle-desc">
-                        {findMode === 'id' ? '이름과 휴대폰 인증으로 아이디를 찾을 수 있습니다.' : '아이디와 휴대폰 인증으로 비밀번호를 재설정할 수 있습니다.'}
-                    </div>
-                </div>
-                <div className="login-form">
+            <div className="mfind">
+                {topbar}
+                <div className="mfind-form">
                     {findMode === 'id' ? (
-                        <div className="input-group">
-                            <label className="input-label">이름</label>
-                            <input type="text" className="login-input" placeholder="이름을 입력해 주세요." value={findInputs.name} onChange={(e) => setFindInputs({ ...findInputs, name: e.target.value })} />
+                        <div className="mfind-field">
+                            <label className="mfind-label">이름<i className="req-dot" /></label>
+                            <input type="text" className="mfind-input" placeholder="이름을 입력해 주세요." value={findInputs.name} onChange={(e) => setFindInputs({ ...findInputs, name: e.target.value })} />
                         </div>
                     ) : (
-                        <div className="input-group">
-                            <label className="input-label">아이디</label>
-                            <input type="text" className="login-input" placeholder="아이디를 입력해 주세요." value={findInputs.id} onChange={(e) => setFindInputs({ ...findInputs, id: e.target.value })} />
+                        <div className="mfind-field">
+                            <label className="mfind-label">아이디<i className="req-dot" /></label>
+                            <input type="text" className="mfind-input" placeholder="아이디를 입력해 주세요." value={findInputs.id} onChange={(e) => setFindInputs({ ...findInputs, id: e.target.value })} />
                         </div>
                     )}
                     <PhoneVerify
@@ -294,10 +263,10 @@ const Login = ({ onBack, onSignup }) => {
                     />
                 </div>
 
-                {findError && <div style={{ color: '#E6235A', textAlign: 'center', margin: '10px 24px', fontSize: '14px' }}>{findError}</div>}
+                {findError && <div className="mfind-error">{findError}</div>}
 
-                <div className="login-btn-container">
-                    <button className={`login-submit-btn ${ready && !findLoading ? 'active' : 'disabled'}`} disabled={!ready || findLoading} onClick={handleFind}>
+                <div className="mfind-foot">
+                    <button className="mfind-submit" disabled={!ready || findLoading} onClick={handleFind}>
                         {findLoading ? '확인 중...' : (findMode === 'id' ? '아이디 찾기' : '다음')}
                     </button>
                 </div>
@@ -309,11 +278,8 @@ const Login = ({ onBack, onSignup }) => {
         <div className="login-container">
             {/* Header */}
             <div className="login-header">
-                <button className="back-btn" onClick={onBack}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="19" y1="12" x2="5" y2="12"></line>
-                        <polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
+                <button className="back-btn" onClick={onBack} aria-label="뒤로">
+                    <img src="/figma-assets/mobile-auth/arrow_back.png" alt="" />
                 </button>
             </div>
 
