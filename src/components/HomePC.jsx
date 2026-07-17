@@ -18,7 +18,14 @@ const FALLBACK_NEWS = [
     { created_at: '2025-05-16', title: '제보된 안전 위험 요소의 조치 현황을 확인하세요.' },
 ];
 
-const RANK_COLORS = ['#23bdbb', '#23bdbb', '#23bdbb', '#9ad8d6', '#9ad8d6'];
+// Figma 302:2574 — TOP5 카드는 3행 노출, 랭크 배지/게이지 모두 teal
+const TOP5_VISIBLE = 3;
+
+const Chevron = ({ size = 13, color = '#111111' }) => (
+    <svg width={Math.round(size * 6 / 13)} height={size} viewBox="0 0 6 13" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M0.75 0.75L5.25 6.5L0.75 12.25" />
+    </svg>
+);
 
 const HomePC = ({ onNavigate }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -57,14 +64,19 @@ const HomePC = ({ onNavigate }) => {
         { key: '진단', count: stats?.diagnoses_count, view: 'pcDiagnosisMap' },
         { key: '설문', count: stats?.surveys_count, view: 'pcSurveyList' },
     ];
-    const maxRank = Math.max(...ranking.map((r) => r.count), 1);
+    const maxRank = Math.max(...ranking.slice(0, TOP5_VISIBLE).map((r) => r.count), 1);
 
     return (
         <div className="pchome2">
             {/* ===== Hero: 참여 현황 + 지도 + TOP5 ===== */}
             <section className="pch2-hero">
                 <div className="pch2-hero-map">
-                    <BusanMap selectedDistrict={region} onDistrictChange={setRegion} />
+                    <BusanMap
+                        selectedDistrict={region}
+                        onDistrictChange={setRegion}
+                        bgSrc="/assets/지도 배경 데스크탑.png"
+                        showDeselectBadge
+                    />
                 </div>
 
                 <div className="pch2-hero-inner">
@@ -88,7 +100,7 @@ const HomePC = ({ onNavigate }) => {
                                 {statsLoading
                                     ? <span className="pch2-skel pch2-skel-row" aria-hidden="true">&nbsp;</span>
                                     : <span className="pch2-stats-row-v">{n(c.count)}건</span>}
-                                <Arrow size={18} color="#c4c4c4" />
+                                <Chevron />
                             </button>
                         ))}
                     </div>
@@ -100,21 +112,25 @@ const HomePC = ({ onNavigate }) => {
                     <span className="pch2-top5-sub">참여건수 기준</span>
                     <ul className="pch2-top5-list">
                         {rankingLoading && (
-                            Array.from({ length: 5 }).map((_, i) => (
-                                <li key={`skel-${i}`} className="pch2-rank-skel-row" aria-hidden="true">
-                                    <span className="pch2-skel pch2-skel-rank" />
-                                    <span className="pch2-skel pch2-skel-name" />
-                                    <span className="pch2-skel pch2-skel-bar" />
-                                    <span className="pch2-skel pch2-skel-cnt" />
+                            Array.from({ length: TOP5_VISIBLE }).map((_, i) => (
+                                <li key={`skel-${i}`} aria-hidden="true">
+                                    <div className="pch2-rank-line">
+                                        <span className="pch2-skel pch2-skel-rank" />
+                                        <span className="pch2-skel pch2-skel-name" />
+                                        <span className="pch2-skel pch2-skel-cnt" />
+                                    </div>
+                                    <div className="pch2-rank-bar"><div className="pch2-skel" style={{ width: '60%', height: '100%' }} /></div>
                                 </li>
                             ))
                         )}
-                        {!rankingLoading && ranking.map((r, i) => (
+                        {!rankingLoading && ranking.slice(0, TOP5_VISIBLE).map((r, i) => (
                             <li key={r.region}>
-                                <span className="pch2-rank" style={{ background: RANK_COLORS[i] }}>{i + 1}</span>
-                                <span className="pch2-rank-name">{r.region}</span>
-                                <div className="pch2-rank-bar"><div style={{ width: `${(r.count / maxRank) * 100}%`, background: RANK_COLORS[i] }} /></div>
-                                <span className="pch2-rank-cnt">{n(r.count)}건</span>
+                                <div className="pch2-rank-line">
+                                    <span className="pch2-rank">{i + 1}</span>
+                                    <span className="pch2-rank-name">{r.region}</span>
+                                    <span className="pch2-rank-cnt">{n(r.count)}건</span>
+                                </div>
+                                <div className="pch2-rank-bar"><div style={{ width: `${(r.count / maxRank) * 100}%` }} /></div>
                             </li>
                         ))}
                         {!rankingLoading && !ranking.length && <li className="pch2-top5-empty">참여 데이터를 집계 중입니다.</li>}
@@ -133,11 +149,11 @@ const HomePC = ({ onNavigate }) => {
                     <div><span className="pch2-act-title">제안하기</span><p>더 나은 부산을 위한<br />아이디어를 제안해 주세요.</p></div>
                     <img src="/assets/home/propose.png" alt="" />
                 </button>
-                <button className="pch2-act plain" onClick={() => go('pcDiagnosisMap')}>
+                <button className="pch2-act plain diagnose" onClick={() => go('pcDiagnosisMap')}>
                     <div><span className="pch2-act-title">진단하기</span><p>우리 동네 상태를<br />직접 진단해 주세요.</p></div>
                     <img src="/assets/home/diagnose.png" alt="" />
                 </button>
-                <button className="pch2-act plain" onClick={() => go('pcSurveyList')}>
+                <button className="pch2-act plain survey" onClick={() => go('pcSurveyList')}>
                     <div><span className="pch2-act-title">설문 참여</span><p>시민의 생각을 들려주세요.<br />설문에 참여해 주세요.</p></div>
                     <img src="/assets/home/survey.png" alt="" />
                 </button>
@@ -147,7 +163,6 @@ const HomePC = ({ onNavigate }) => {
             <section className="pch2-bottom">
                 <div className="pch2-news">
                     <h2>플랫폼 소식</h2>
-                    <div className="pch2-news-divider" />
                     <ul>
                         {news.slice(0, 4).map((it, i) => (
                             <li key={it.id ?? i}>
@@ -181,7 +196,7 @@ const HomePC = ({ onNavigate }) => {
                     </div>
                     <div className="pch2-footer-right">
                         <div className="pch2-footer-links"><a>이용약관</a><span>·</span><a>개인정보처리방침</a><span>·</span><a>문의하기</a></div>
-                        <button className="pch2-faq" onClick={() => go('pcAICitizen')}>자주 묻는 질문(FAQ) <Arrow size={18} color="#fff" /></button>
+                        <button className="pch2-faq" onClick={() => go('pcAICitizen')}>자주 묻는 질문(FAQ) <Arrow size={20} color="#fff" /></button>
                     </div>
                 </div>
             </footer>

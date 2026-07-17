@@ -41,7 +41,7 @@ const pct = (v, total) => `${(v / total) * 100}%`;
 
 const DRAG_CLICK_THRESHOLD = 5; // px — 이내면 클릭, 초과면 드래그로 판정
 
-const BusanMap = ({ selectedDistrict = null, onDistrictChange, zoom = 1, draggable = false, bgSrc = null, showCharacters = true }) => {
+const BusanMap = ({ selectedDistrict = null, onDistrictChange, zoom = 1, draggable = false, bgSrc = null, showCharacters = true, showDeselectBadge = false }) => {
     const [svgs, setSvgs] = useState({});
     // 팬(드래그 이동) — draggable=true(공공데이터)일 때만 활성. 홈 등 기존 사용처는 영향 없음.
     const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -147,6 +147,21 @@ const BusanMap = ({ selectedDistrict = null, onDistrictChange, zoom = 1, draggab
                             >
                                 {d.name}
                             </span>
+                            {/* 선택 해제 X 배지 (opt-in, Figma 302:2564 cancel_filled) — 홈에서만 사용 */}
+                            {isSel && showDeselectBadge && (
+                                <button
+                                    type="button"
+                                    className="busanmap-deselect"
+                                    style={{ left: `${c[0] * 100}%`, top: `${c[1] * 100}%` }}
+                                    aria-label={`${d.name} 선택 해제`}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onDistrictChange && onDistrictChange(null);
+                                    }}
+                                >
+                                    <img src="/figma-assets/icons/map_cancel.svg" alt="" draggable={false} />
+                                </button>
+                            )}
                         </div>
                     );
                 })}

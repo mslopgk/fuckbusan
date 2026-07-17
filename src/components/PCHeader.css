@@ -50,11 +50,12 @@
         color: #737373;
     }
 
-    /* 네비게이션 - 절대 위치로 중앙 정렬 */
+    /* 네비게이션 - 절대 위치로 중앙 정렬
+       Figma 302:2671 gnb: 메뉴 텍스트 간격 130px (1440 미만에선 축소) */
     .pc-nav {
         display: flex;
         align-items: center;
-        gap: 0;
+        gap: 24px;
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
@@ -66,9 +67,9 @@
         font-family: 'Pretendard Variable', sans-serif;
         font-size: 18px;
         font-weight: 700;
-        color: rgba(36, 36, 36, 0.8);
+        color: #111111;
         cursor: pointer;
-        padding: 8px 24px;
+        padding: 8px 12px;
         border-radius: 8px;
         display: flex;
         align-items: center;
@@ -135,11 +136,16 @@
         color: #23BDBB;
     }
 
-    /* 우측 액션 */
+    /* Figma 스펙(1920): 텍스트 간 130px — 12px 패딩 x2 + gap 106 */
+    @media (min-width: 1440px) {
+        .pc-nav { gap: 106px; }
+    }
+
+    /* 우측 액션 (Figma: 로그인|회원가입 10px 간격) */
     .pc-header-actions {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         flex-shrink: 0;
     }
 
@@ -154,7 +160,7 @@
         border: none;
         font-family: 'Pretendard Variable', sans-serif;
         font-size: 14px;
-        font-weight: 500;
+        font-weight: 400;
         color: #111111;
         cursor: pointer;
         padding: 4px 0;
