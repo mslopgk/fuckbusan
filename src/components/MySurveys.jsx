@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import './MySurveys.css';
 import { API_URL } from '../utils/api';
-import MobileBottomNav from './MobileBottomNav';
+
+const ASSET = '/figma-assets/mobile-myactivity';
 
 const PERIOD_OPTIONS = ['1개월', '6개월', '1년'];
 
@@ -142,14 +143,13 @@ const MySurveys = ({ onBack, onNavigate }) => {
 
     return (
         <div className={`ms-container${isPC ? ' ms-container--pc' : ''}`}>
-            {/* 모바일 뒤로가기 헤더 */}
+            {/* 모바일 헤더 — Figma 302:19515/19516: back (13,21) + 중앙 '나의설문' */}
             {!isPC && (
                 <header className="ms-mobile-header">
                     <button className="ms-back-btn" onClick={onBack} aria-label="뒤로가기">
-                        <svg width="10" height="16" viewBox="0 0 10 16" fill="none">
-                            <path d="M9 1L1 8L9 15" stroke="#1e1e1e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        <img src={`${ASSET}/icon_back.png`} alt="" width="24" height="24" />
                     </button>
+                    <h1 className="ms-mobile-title">나의설문</h1>
                 </header>
             )}
 
@@ -191,30 +191,18 @@ const MySurveys = ({ onBack, onNavigate }) => {
                                 role={isAi ? 'button' : undefined}
                                 tabIndex={isAi ? 0 : undefined}
                             >
-                                {/* 상단 행: 배지 + 종합결과보기 / AI 대화내역 보기 */}
+                                {/* 상단 행: 배지 + 종합결과보기 — Figma 302:19495/19505 */}
                                 <div className="ms-card-top">
                                     <span className={`ms-badge ${badgeClass}`}>{badgeLabel}</span>
-                                    {/* 폼 설문은 종합결과보기, AI 대화형 설문은 대화내역 보기 */}
-                                    {item.survey_id ? (
+                                    {(item.survey_id || isAi) && (
                                         <button
                                             className="ms-result-btn"
                                             onClick={() => handleResultClick(item)}
                                         >
                                             종합결과보기
-                                            <svg width="23" height="23" viewBox="0 0 23 23" fill="none" aria-hidden="true">
-                                                <circle cx="11.5" cy="11.5" r="11.5" fill="#23bdbb" />
-                                                <path d="M9 7l4.5 4.5L9 16" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
+                                            <img src={`${ASSET}/icon_expand_circle.png`} alt="" width="23" height="23" />
                                         </button>
-                                    ) : isAi ? (
-                                        <span className="ms-result-btn ms-result-btn--ai">
-                                            대화내역 보기
-                                            <svg width="23" height="23" viewBox="0 0 23 23" fill="none" aria-hidden="true">
-                                                <circle cx="11.5" cy="11.5" r="11.5" fill="#5b2eab" />
-                                                <path d="M9 7l4.5 4.5L9 16" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
-                                        </span>
-                                    ) : null}
+                                    )}
                                 </div>
                                 {/* 제목 */}
                                 <p className="ms-card-title">{item.title}</p>
@@ -234,8 +222,6 @@ const MySurveys = ({ onBack, onNavigate }) => {
                 </div>
             )}
 
-            {/* 모바일 하단 네비 */}
-            {!isPC && <MobileBottomNav currentView="myActivityHub" onNavigate={onNavigate} />}
         </div>
     );
 };

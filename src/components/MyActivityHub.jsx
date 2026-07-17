@@ -6,7 +6,7 @@ import PCMyActivity from './PCMyActivity';
 import { fetchWithLogout, API_URL } from '../utils/api';
 
 const DISTRICTS = ['전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구'];
-const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
+const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업•일자리', '문화•여가', '보건•복지'];
 
 /* 중립 실루엣 placeholder — 아바타 생성 전/실패 시 표시 (성별 추정 이미지 금지) */
 const NEUTRAL_AVATAR = '/assets/activity/info_person.svg';
@@ -128,24 +128,21 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
                     {lastLogin && <p className="mahub-last-login">{lastLogin}</p>}
                     <button className="mahub-profile-edit-btn" onClick={() => onNavigate('myPage')}>
                         프로필 수정
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#777" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
+                        <img src="/figma-assets/mobile-myactivity/profile_edit_person.png" alt="" className="mahub-profile-edit-icon" />
                     </button>
                 </div>
             </div>
 
+            {/* Figma 302:18688 — 나의 활동 + 관심서비스 설정을 감싸는 흰색 카드 */}
+            <div className="mahub-main-card">
             {/* 나의 활동 섹션 */}
             <div className="mahub-section">
                 <h2 className="mahub-section-title">나의 활동</h2>
                 <div className="mahub-activity-grid">
                     {/* 제보 */}
                     <button className="mahub-act-card mahub-act-card--report" onClick={() => onNavigate('myReportList')}>
-                        <div className="mahub-act-top">
-                            <span className="mahub-act-label">제보</span>
-                            <img className="mahub-act-icon" src="/assets/activity/icon_report.png" alt="제보" />
-                        </div>
+                        <span className="mahub-act-label">제보</span>
+                        <img className="mahub-act-icon mahub-act-icon--report" src="/figma-assets/mobile-myactivity/act_report.png" alt="" />
                         <div className="mahub-act-count">
                             <strong>{counts.report}</strong>건
                         </div>
@@ -154,10 +151,8 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
 
                     {/* 제안 */}
                     <button className="mahub-act-card mahub-act-card--proposal" onClick={() => onNavigate('myProposals')}>
-                        <div className="mahub-act-top">
-                            <span className="mahub-act-label">제안</span>
-                            <img className="mahub-act-icon" src="/assets/activity/icon_proposal.png" alt="제안" />
-                        </div>
+                        <span className="mahub-act-label">제안</span>
+                        <img className="mahub-act-icon mahub-act-icon--proposal" src="/figma-assets/mobile-myactivity/act_proposal.png" alt="" />
                         <div className="mahub-act-count">
                             <strong>{counts.proposal}</strong>건
                         </div>
@@ -166,10 +161,8 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
 
                     {/* 진단 */}
                     <button className="mahub-act-card mahub-act-card--diagnosis" onClick={() => onNavigate('myDiagnosis')}>
-                        <div className="mahub-act-top">
-                            <span className="mahub-act-label">진단</span>
-                            <img className="mahub-act-icon" src="/assets/activity/icon_diagnosis.png" alt="진단" />
-                        </div>
+                        <span className="mahub-act-label">진단</span>
+                        <img className="mahub-act-icon mahub-act-icon--diagnosis" src="/figma-assets/mobile-myactivity/act_diagnosis.png" alt="" />
                         <div className="mahub-act-count">
                             <strong>{counts.diagnosis}</strong>건
                         </div>
@@ -178,10 +171,8 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
 
                     {/* 설문 */}
                     <button className="mahub-act-card mahub-act-card--survey" onClick={() => onNavigate('mySurveys')}>
-                        <div className="mahub-act-top">
-                            <span className="mahub-act-label">설문</span>
-                            <img className="mahub-act-icon" src="/assets/activity/icon_survey.png" alt="설문" />
-                        </div>
+                        <span className="mahub-act-label">설문</span>
+                        <img className="mahub-act-icon mahub-act-icon--survey" src="/figma-assets/mobile-myactivity/act_survey.png" alt="" />
                         <div className="mahub-act-count">
                             <strong>{counts.survey}</strong>건
                         </div>
@@ -191,7 +182,7 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
             </div>
 
             {/* 관심서비스 설정 섹션 */}
-            <div className="mahub-section">
+            <div className="mahub-section mahub-section--interest">
                 <h2 className="mahub-section-title">관심서비스 설정</h2>
 
                 {/* 지역별 */}
@@ -208,54 +199,60 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
                             </button>
                         ))}
                     </div>
+                    {/* Figma 302:18706 — 장식용 스크롤바 */}
+                    <span className="mahub-district-scrollbar" aria-hidden="true" />
                 </div>
 
-                {/* 유형별 — Figma 269:24130: 좌 4개 / 우 5개 두 열 그룹 */}
+                {/* 유형별 — Figma 302:18689: 좌 4개(체크박스) / 우 5개(텍스트만) */}
                 <div className="mahub-interest-card mahub-interest-card--type">
                     <h3 className="mahub-interest-subtitle">유형별</h3>
                     <div className="mahub-category-cols">
-                        {[CATEGORIES.slice(0, 4), CATEGORIES.slice(4)].map((col, ci) => (
-                            <div key={ci} className="mahub-category-col">
-                                {col.map(cat => (
-                                    <label key={cat} className="mahub-cat-row">
-                                        <span className={`mahub-cat-checkbox ${activeCategories.has(cat) ? 'checked' : ''}`}>
-                                            {activeCategories.has(cat) && (
-                                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                                    <path d="M2 6l3 3 5-5" stroke="#23bdbb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                                                </svg>
-                                            )}
-                                        </span>
-                                        <span className="mahub-cat-name" onClick={() => toggleCategory(cat)}>{cat}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        ))}
+                        <div className="mahub-category-col">
+                            {CATEGORIES.slice(0, 4).map(cat => (
+                                <label key={cat} className="mahub-cat-row">
+                                    <span className={`mahub-cat-checkbox ${activeCategories.has(cat) ? 'checked' : ''}`}>
+                                        {activeCategories.has(cat) && (
+                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                                <path d="M2 6l3 3 5-5" stroke="#23bdbb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        )}
+                                    </span>
+                                    <span className="mahub-cat-name" onClick={() => toggleCategory(cat)}>{cat}</span>
+                                </label>
+                            ))}
+                        </div>
+                        <div className="mahub-category-col mahub-category-col--plain">
+                            {CATEGORIES.slice(4).map(cat => (
+                                <span key={cat} className="mahub-cat-name" onClick={() => toggleCategory(cat)}>{cat}</span>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
+            </div>{/* /mahub-main-card */}
 
-            {/* 빠른메뉴 섹션 */}
-            <div className="mahub-section">
+            {/* 빠른메뉴 섹션 — Figma 302:18703 흰색 카드 */}
+            <div className="mahub-quick-card">
                 <h2 className="mahub-section-title">빠른메뉴</h2>
                 <div className="mahub-quick-grid">
                     <button className="mahub-quick-item" onClick={() => {}}>
                         <div className="mahub-quick-top">
                             <span className="mahub-quick-label">관심목록</span>
-                            <img src="/assets/activity/icon_quick_bookmark.png" alt="" className="mahub-quick-icon" onError={e => e.target.style.display='none'} />
+                            <img src="/figma-assets/mobile-myactivity/quick_bookmark.png" alt="" className="mahub-quick-icon mahub-quick-icon--30" onError={e => e.target.style.display='none'} />
                         </div>
                         <span className="mahub-quick-sub">내가 찜한 글 보기</span>
                     </button>
                     <button className="mahub-quick-item" onClick={() => {}}>
                         <div className="mahub-quick-top">
                             <span className="mahub-quick-label">최근 본 글</span>
-                            <img src="/assets/activity/icon_quick_recent.png" alt="" className="mahub-quick-icon" onError={e => e.target.style.display='none'} />
+                            <img src="/figma-assets/mobile-myactivity/quick_recent.png" alt="" className="mahub-quick-icon mahub-quick-icon--33" onError={e => e.target.style.display='none'} />
                         </div>
                         <span className="mahub-quick-sub">최근 열람한 콘텐츠 보기</span>
                     </button>
                     <button className="mahub-quick-item" onClick={() => {}}>
                         <div className="mahub-quick-top">
                             <span className="mahub-quick-label">자주 본 글</span>
-                            <img src="/assets/activity/icon_quick_frequent.png" alt="" className="mahub-quick-icon" onError={e => e.target.style.display='none'} />
+                            <img src="/figma-assets/mobile-myactivity/quick_frequent.png" alt="" className="mahub-quick-icon mahub-quick-icon--28" onError={e => e.target.style.display='none'} />
                         </div>
                         <span className="mahub-quick-sub">자주 본 글보기</span>
                     </button>
@@ -268,7 +265,7 @@ const MyActivityHub = ({ onBack, onNavigate }) => {
                     <button className="mahub-quick-item" onClick={() => {}}>
                         <div className="mahub-quick-top">
                             <span className="mahub-quick-label">서비스 이용 동의</span>
-                            <img src="/assets/activity/icon_quick_consent.png" alt="" className="mahub-quick-icon" onError={e => e.target.style.display='none'} />
+                            <img src="/figma-assets/mobile-myactivity/quick_consent.png" alt="" className="mahub-quick-icon mahub-quick-icon--30" onError={e => e.target.style.display='none'} />
                         </div>
                         <span className="mahub-quick-sub">이용 동의 내역 관리</span>
                     </button>

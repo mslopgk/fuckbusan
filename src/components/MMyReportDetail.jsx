@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import PCMapCanvas from './PCMapCanvas';
-import { MY_CAT_STYLES as CAT_STYLES } from './catStyles';
 import './MProposalDetail.css';
 import './MReportDetail.css';
 import './MMyReportDetail.css';
@@ -33,8 +32,6 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
         lng: report?.lng || 129.063,
         image: report?.image,
     };
-    const style = CAT_STYLES[data.cat] || { bg: '#E0F4F1', color: '#2C9A8F' };
-
     const [comments, setComments] = useState([]);
     const [comment, setComment] = useState('');
     const [commenting, setCommenting] = useState(false);
@@ -115,11 +112,11 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
         <div className="m-prop-detail-page m-report-detail-page m-myreport-detail-page">
             <header className="m-detail-topbar m-myrdetail-topbar">
                 <button className="m-detail-back" onClick={() => onNavigate && onNavigate('myReportList')}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    <img src="/figma-assets/mobile-myactivity/icon_back.png" alt="" width="24" height="24" />
                 </button>
                 <div className="m-rdetail-tags">
                     {data.region && <span className="m-rdetail-region-tag">{data.region}</span>}
-                    {data.cat && <span className="m-prop-cat-tag" style={{ background: style.bg, color: style.color }}>{data.cat}</span>}
+                    {data.cat && <span className="m-prop-cat-tag">{data.cat}</span>}
                     {data.sub && <span className="m-report-sub-tag">{data.sub}</span>}
                 </div>
             </header>
@@ -158,15 +155,11 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
                     <span className="m-rdetail-stat-meta">{(data.createdAt || data.date) ? `${data.createdAt || data.date} · ` : ''}조회수 {data.views}</span>
                     <span className="m-rdetail-stat-icons">
                         <span>
-                            <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor">
-                                <path d="M9.0568 1.0811C10.4983 -0.360439 12.8359 -0.360292 14.2775 1.0811C15.7191 2.52272 15.7191 4.86019 14.2775 6.30181L8.78141 11.7989C8.47833 12.102 8.07586 12.2441 7.67887 12.2286C7.2822 12.2438 6.88013 12.1017 6.57731 11.7989L1.08121 6.30181C-0.360404 4.86019 -0.360404 2.52272 1.08121 1.0811C2.52285 -0.360296 4.86037 -0.36044 6.30192 1.0811L7.67887 2.45806L9.0568 1.0811Z"/>
-                            </svg>
+                            <img src="/figma-assets/mobile-myactivity/icon_heart_gray.png" alt="" className="m-myrdetail-stat-icon m-myrdetail-stat-icon--heart" />
                             {data.likes}
                         </span>
                         <span>
-                            <svg width="14" height="12" viewBox="0 0 14 11.8457" fill="currentColor">
-                                <path d="M9.1543 0C11.8305 0.000244114 14 2.1694 14 4.8457C14 7.52201 11.8305 9.69116 9.1543 9.69141H6.5127L3.23047 11.8457V9.41406C1.34871 8.74853 4.44368e-08 6.95541 0 4.8457C0 2.1694 2.16945 0.000244114 4.8457 0H9.1543Z"/>
-                            </svg>
+                            <img src="/figma-assets/mobile-myactivity/icon_comment.png" alt="" className="m-myrdetail-stat-icon m-myrdetail-stat-icon--comment" />
                             {comments.length || data.comments}
                         </span>
                     </span>
@@ -194,6 +187,8 @@ export default function MMyReportDetail({ onNavigate, report, onDelete, onEdit }
                                 <span>{c.date || ''}</span>
                             </div>
                             <p>{c.content}</p>
+                            {/* Figma 302:18994 — 답글쓰기 14px #737373 */}
+                            <button type="button" className="m-myrdetail-reply-link" onClick={() => document.querySelector('.m-comment-input')?.focus()}>답글쓰기</button>
                         </li>
                     ))}
                 </ul>

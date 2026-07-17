@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import MobileBottomNav from './MobileBottomNav';
 import './MyReports.css';
 import { API_URL } from '../utils/api';
+
+/* MyReports.jsx — 나의제보 모바일 리스트
+ * Figma 302:18818 (나의제보 탭) / 302:18907 (좋아요 제보글 탭) */
+const ASSET = '/figma-assets/mobile-myactivity';
 
 const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, userCreatedReports, updatedReportsMap }) => {
     const [activeTab, setActiveTab] = useState('mine'); // 'mine' | 'likes'
@@ -59,31 +62,24 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
         return true;
     });
 
-    // likes 탭에서의 좋아요 아이콘 색: 보라(#542aa3)
-    const heartColor = activeTab === 'likes' ? '#542aa3' : '#bfbfbf';
-    const heartFill  = activeTab === 'likes' ? '#542aa3' : 'none';
-
     return (
         <div className="my-reports-container">
-            {/* 헤더 — 뒤로가기 버튼만 (Figma: 좌측 chevron) */}
+            {/* 헤더 — Figma: 좌측 back(13,21 24px) + 중앙 타이틀 '나의제보' */}
             <header className="mr-header">
                 <button className="mr-back-btn" onClick={onBack} aria-label="뒤로가기">
-                    <svg width="7" height="13" viewBox="0 0 7 13" fill="none">
-                        <path d="M6 1L1 6.5L6 12" stroke="#1a1a1b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <img src={`${ASSET}/icon_back.png`} alt="" width="24" height="24" />
                 </button>
+                <h1 className="mr-header-title">나의제보</h1>
             </header>
 
-            {/* 탭 스위처 (나의 제보글 | 좋아요 제보글) */}
-            {/* Figma 215:14052: 나의 제보글 active → 보라 pill on left */}
-            {/* Figma 215:14160: 좋아요 제보글 active → 보라 pill on right */}
+            {/* 탭 스위처 (나의제보 | 좋아요 제보글) — Figma 302:18821/18957 보라 pill */}
             <div className="mr-tabs-container">
                 <div className="mr-tab-switcher">
                     <button
                         className={`mr-tab-btn ${activeTab === 'mine' ? 'active' : ''}`}
                         onClick={() => setActiveTab('mine')}
                     >
-                        나의 제보글
+                        나의제보
                     </button>
                     <button
                         className={`mr-tab-btn ${activeTab === 'likes' ? 'active' : ''}`}
@@ -94,7 +90,7 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
                 </div>
             </div>
 
-            {/* 상태 필터 — 나의 제보글 탭에만 표시 (Figma 215:14052) */}
+            {/* 상태 필터 — 나의제보 탭에만 표시 (Figma 302:18871~18904) */}
             {activeTab === 'mine' && (
                 <div className="mr-status-container">
                     <div className="mr-status-tabs">
@@ -112,7 +108,7 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
             )}
 
             {/* 리스트 */}
-            <div className="mr-list">
+            <div className={`mr-list ${activeTab === 'likes' ? 'mr-list--likes' : ''}`}>
                 {filteredReports.length === 0 && (
                     <div className="mr-empty">
                         {activeTab === 'likes'
@@ -120,9 +116,10 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
                             : `${statusFilter} 단계의 제보가 없습니다.`}
                     </div>
                 )}
-                {filteredReports.map(report => (
-                    <div key={report.id} className="mr-card" onClick={() => handleCardClick(report)}>
-                        <div className="mr-card-left">
+                {filteredReports.map(report => {
+                    const liked = likedIds && likedIds.has(report.id);
+                    return (
+                        <div key={report.id} className="mr-card" onClick={() => handleCardClick(report)}>
                             {/* 배지 행: 지역 / 카테고리 / 서브카테고리 */}
                             <div className="mr-badge-row">
                                 {report.region && (
@@ -137,58 +134,43 @@ const MyReports = ({ onBack, onNavigate, deletedIds, likedIds, onToggleLike, use
                             </div>
                             <h3 className="mr-card-title">{report.title}</h3>
                             <p className="mr-card-author">{report.author}</p>
-                            <div className="mr-card-stats">
-                                {/* 좋아요 */}
-                                <div className="mr-stat">
-                                    <svg
-                                        width="14" height="12"
-                                        viewBox="0 0 15.36 12.23"
-                                        fill={likedIds && likedIds.has(report.id) ? '#542aa3' : heartFill}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (onToggleLike) onToggleLike(report.id);
-                                        }}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <path d="M9.057 1.081C10.498-0.36 12.836-0.36 14.277 1.081 15.719 2.523 15.719 4.860 14.277 6.302L8.781 11.799C8.478 12.102 8.076 12.244 7.679 12.229 7.282 12.244 6.880 12.102 6.577 11.799L1.081 6.302C-0.360 4.860-0.360 2.523 1.081 1.081 2.523-0.360 4.860-0.360 6.302 1.081L7.679 2.458Z"
-                                            stroke={likedIds && likedIds.has(report.id) ? '#542aa3' : '#bfbfbf'} strokeWidth="0"/>
-                                    </svg>
-                                    <span style={{ color: likedIds && likedIds.has(report.id) ? '#542aa3' : '#bfbfbf' }}>
-                                        {(report.likes || 0) + (likedIds && likedIds.has(report.id) ? 1 : 0)}
-                                    </span>
-                                </div>
-                                {/* 댓글 */}
-                                <div className="mr-stat">
-                                    <svg width="13" height="12" viewBox="0 0 14 11.85" fill="#bfbfbf">
-                                        <path d="M9.154 0C11.831 0 14 2.169 14 4.846 14 7.522 11.831 9.691 9.154 9.691H6.513L3.230 11.846V9.414C1.349 8.749 0 6.955 0 4.846 0 2.169 2.169 0 4.846 0Z"/>
-                                    </svg>
-                                    <span>{report.comments ?? 0}</span>
-                                </div>
-                            </div>
-                        </div>
-                        {/* 썸네일 */}
-                        <div className="mr-card-right">
+
+                            {/* 썸네일 — Figma 55x55 r15 우상단 */}
                             {report.image && (
                                 <div className="mr-card-img-wrapper">
                                     <img src={report.image} alt={report.title} className="mr-card-img"
                                         onError={(e) => { e.target.closest('.mr-card-img-wrapper').style.display = 'none'; }} />
                                 </div>
                             )}
+
+                            {/* 통계 — Figma 우하단 (하트/댓글 14px #bfbfbf, 좋아요 시 #542aa3) */}
+                            <div className="mr-card-stats">
+                                <button
+                                    type="button"
+                                    className="mr-stat mr-stat--like"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (onToggleLike) onToggleLike(report.id);
+                                    }}
+                                >
+                                    <img
+                                        src={liked ? `${ASSET}/icon_heart_purple.png` : `${ASSET}/icon_heart_gray.png`}
+                                        alt=""
+                                        className="mr-stat-icon mr-stat-icon--heart"
+                                    />
+                                    <span style={liked ? { color: '#542aa3' } : undefined}>
+                                        {(report.likes || 0) + (liked ? 1 : 0)}
+                                    </span>
+                                </button>
+                                <span className="mr-stat">
+                                    <img src={`${ASSET}/icon_comment.png`} alt="" className="mr-stat-icon mr-stat-icon--comment" />
+                                    <span>{report.comments ?? 0}</span>
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
-
-            {/* FAB: + 제보하기 (Figma: 보라 pill 우하단) */}
-            <button className="mr-fab" onClick={() => onNavigate('mReportMap')}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/>
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                제보하기
-            </button>
-
-            <MobileBottomNav currentView="myReportList" onNavigate={onNavigate} />
         </div>
     );
 };

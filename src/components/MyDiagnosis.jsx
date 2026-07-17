@@ -4,7 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import './MyDiagnosis.css';
 import { fetchWithLogout, API_URL } from '../utils/api';
-import MobileBottomNav from './MobileBottomNav';
+
+const ASSET = '/figma-assets/mobile-myactivity';
 
 const PERIOD_OPTIONS = ['1개월', '6개월', '1년'];
 
@@ -93,19 +94,18 @@ const MyDiagnosis = ({ onBack, onNavigate, onCardClick }) => {
 
     return (
         <div className={`md-container${isPC ? ' md-container--pc' : ''}`}>
-            {/* 모바일 뒤로가기 헤더 */}
+            {/* 모바일 헤더 — Figma 302:19523/19560: back (13,21) + 중앙 '나의진단' */}
             {!isPC && (
                 <header className="md-mobile-header">
                     <button className="md-back-btn" onClick={onBack} aria-label="뒤로가기">
-                        <svg width="10" height="16" viewBox="0 0 10 16" fill="none">
-                            <path d="M9 1L1 8L9 15" stroke="#1e1e1e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        <img src={`${ASSET}/icon_back.png`} alt="" width="24" height="24" />
                     </button>
+                    <h1 className="md-mobile-title">나의진단</h1>
                 </header>
             )}
 
-            {/* 페이지 제목 */}
-            <h1 className="md-page-title">나의 진단</h1>
+            {/* 페이지 제목 (PC 전용) */}
+            {isPC && <h1 className="md-page-title">나의 진단</h1>}
 
             {/* 기간 필터 탭 */}
             <div className="md-period-bar">
@@ -165,8 +165,6 @@ const MyDiagnosis = ({ onBack, onNavigate, onCardClick }) => {
                 </div>
             )}
 
-            {/* 모바일 하단 네비 */}
-            {!isPC && <MobileBottomNav currentView="myActivityHub" onNavigate={onNavigate} />}
         </div>
     );
 };

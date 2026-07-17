@@ -145,77 +145,83 @@ const MyPage = ({ onBack, onLoginRequired }) => {
     };
 
     if (loading) {
-        return <div className="mp-loading">로딩 중...</div>;
+        return <div className="mypg-loading">로딩 중...</div>;
     }
 
     return (
-        <div className="mp-container">
-            {/* PC Header는 App.jsx의 PCHeader가 담당 — 모바일 전용 back 헤더 */}
-            <header className="mp-mobile-header">
-                <button className="mp-back-btn" onClick={onBack} aria-label="뒤로가기">
-                    <svg width="10" height="16" viewBox="0 0 10 16" fill="none">
-                        <path d="M9 1L1 8L9 15" stroke="#1e1e1e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+        <div className="mypg-container">
+            {/* PC Header는 App.jsx의 PCHeader가 담당 — 모바일 전용 back 헤더 (Figma 302:19149) */}
+            <header className="mypg-mobile-header">
+                <button className="mypg-back-btn" onClick={onBack} aria-label="뒤로가기">
+                    <img src="/figma-assets/mobile-myactivity/icon_back.png" alt="" width="24" height="24" />
                 </button>
             </header>
 
-            <div className="mp-page-title-row">
-                <h1 className="mp-page-title">내 정보 관리</h1>
+            {/* PC 전용 타이틀 (기존 유지) */}
+            <div className="mypg-page-title-row">
+                <h1 className="mypg-page-title">내 정보 관리</h1>
             </div>
 
-            <div className="mp-card">
+            {/* 모바일 타이틀 — Figma 302:19152 Frame 33 */}
+            <div className="mypg-hero">
+                <h1 className="mypg-hero-title">마이페이지</h1>
+                <p className="mypg-hero-heading">더 나은 부산을 위한 첫 걸음</p>
+                <p className="mypg-hero-caption">아직 계정이 없다면 회원가입을 진행해주세요.</p>
+            </div>
+
+            <div className="mypg-card">
                 {/* 아이디 */}
-                <div className="mp-field-group">
-                    <label className="mp-label">아이디</label>
-                    <div className="mp-input mp-input--readonly">{userInfo.ID || '—'}</div>
+                <div className="mypg-field-group">
+                    <label className="mypg-label">아이디</label>
+                    <div className="mypg-input mypg-input--readonly">{userInfo.ID || '—'}</div>
                 </div>
 
                 {/* 비밀번호 */}
-                <div className="mp-field-group">
-                    <label className="mp-label">비밀번호</label>
+                <div className="mypg-field-group">
+                    <label className="mypg-label">비밀번호</label>
                     <input
                         type="password"
-                        className="mp-input"
+                        className="mypg-input mypg-input--pw1"
                         placeholder="수정할 비밀번호를 입력해 주세요."
                         value={passwords.newPw}
                         onChange={(e) => setPasswords({ ...passwords, newPw: e.target.value })}
                     />
                     <input
                         type="password"
-                        className="mp-input mp-input--second"
+                        className="mypg-input mypg-input--second"
                         placeholder="비밀번호를 한번 더 입력해 주세요."
                         value={passwords.confirmPw}
                         onChange={(e) => setPasswords({ ...passwords, confirmPw: e.target.value })}
                     />
-                    <p className="mp-hint">*영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요.</p>
+                    <p className="mypg-hint">*영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요.</p>
                 </div>
 
                 {/* 이름 */}
-                <div className="mp-field-group">
-                    <label className="mp-label">이름</label>
-                    <div className="mp-input mp-input--readonly">{userInfo.name || '—'}</div>
+                <div className="mypg-field-group mypg-field-group--name">
+                    <label className="mypg-label">이름</label>
+                    <div className="mypg-input mypg-input--readonly">{userInfo.name || '—'}</div>
                 </div>
 
                 {/* 휴대폰번호 */}
-                <div className="mp-field-group">
-                    <label className="mp-label">휴대폰번호</label>
-                    <div className="mp-input mp-input--readonly mp-input--phone">
+                <div className="mypg-field-group">
+                    <label className="mypg-label">휴대폰번호</label>
+                    <div className="mypg-input mypg-input--readonly mypg-input--phone">
                         {userInfo.phone_num || '—'}
                     </div>
                 </div>
 
                 {/* 생년월일 */}
-                <div className="mp-field-group">
-                    <label className="mp-label">생년월일</label>
-                    <div className="mp-input mp-input--readonly">{userInfo.birth_date || '—'}</div>
+                <div className="mypg-field-group">
+                    <label className="mypg-label">생년월일</label>
+                    <div className="mypg-input mypg-input--readonly">{userInfo.birth_date || '—'}</div>
                 </div>
 
                 {/* 닉네임 */}
-                <div className="mp-field-group">
-                    <label className="mp-label">닉네임</label>
+                <div className="mypg-field-group">
+                    <label className="mypg-label">닉네임</label>
                     <input
                         type="text"
-                        className="mp-input"
+                        className="mypg-input"
                         placeholder="변경할 닉네임을 입력하세요"
                         value={userInfo.nickname}
                         onChange={(e) => setUserInfo({ ...userInfo, nickname: e.target.value })}
@@ -223,11 +229,11 @@ const MyPage = ({ onBack, onLoginRequired }) => {
                 </div>
 
                 {/* 이메일 */}
-                <div className="mp-field-group">
-                    <label className="mp-label">이메일</label>
+                <div className="mypg-field-group">
+                    <label className="mypg-label">이메일</label>
                     <input
                         type="email"
-                        className="mp-input"
+                        className="mypg-input"
                         placeholder="변경할 이메일을 입력하세요"
                         value={userInfo.email}
                         onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
@@ -235,22 +241,22 @@ const MyPage = ({ onBack, onLoginRequired }) => {
                 </div>
 
                 {/* 주소 */}
-                <div className="mp-field-group">
-                    <label className="mp-label">주소</label>
+                <div className="mypg-field-group mypg-field-group--addr">
+                    <label className="mypg-label">주소</label>
                     <input
                         type="text"
-                        className="mp-input"
+                        className="mypg-input"
                         placeholder="주소"
                         value={userInfo.address}
                         onChange={(e) => setUserInfo({ ...userInfo, address: e.target.value })}
                         readOnly
                     />
-                    <button className="mp-addr-search-btn" type="button" onClick={handleAddressSearch}>
+                    <button className="mypg-addr-search-btn" type="button" onClick={handleAddressSearch}>
                         주소검색
                     </button>
                     <input
                         type="text"
-                        className="mp-input"
+                        className="mypg-input"
                         placeholder="상세주소"
                         value={userInfo.detailed_address}
                         onChange={(e) => setUserInfo({ ...userInfo, detailed_address: e.target.value })}
@@ -259,13 +265,13 @@ const MyPage = ({ onBack, onLoginRequired }) => {
             </div>
 
             {/* 수정하기 버튼 */}
-            <div className="mp-submit-row">
+            <div className="mypg-submit-row">
                 <button
-                    className="mp-submit-btn"
+                    className="mypg-submit-btn"
                     onClick={handleConfirm}
                     disabled={saving}
                 >
-                    {saving ? '저장 중...' : '수정하기'}
+                    {saving ? '저장 중...' : '확인'}
                 </button>
             </div>
         </div>

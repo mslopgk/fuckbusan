@@ -11,24 +11,30 @@ const DISTRICTS_ROW2 = ['북구','해운대구','사하구','금정구','강서�
 const ALL_DISTRICTS = [...DISTRICTS_ROW1, ...DISTRICTS_ROW2];
 const CATEGORIES = ['전체','주거','환경','교통','안전','교육','산업·일자리','문화·여가','보건·복지'];
 
-/* 투표·댓글 아이콘 SVG (인라인, 아이콘 파일 없으므로) */
-const VoteIcon = ({ active }) => (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="11" fill={active ? '#23bdbb' : '#bfbfbf'} />
-        <polyline points="7 12 11 16 17 9" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+/* 투표·댓글 아이콘 — Figma 302:19215 / 302:19221 export */
+const ASSET = '/figma-assets/mobile-myactivity';
+
+const VoteIcon = () => (
+    <img src={`${ASSET}/icon_vote_pink.png`} alt="" className="mp-stat-icon mp-stat-icon--vote" />
 );
 
 const CommentIcon = () => (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="#bfbfbf">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
+    <img src={`${ASSET}/icon_comment.png`} alt="" className="mp-stat-icon mp-stat-icon--comment" />
 );
 
 const MyProposals = ({ onBack, onNavigate }) => {
     const [activeTab, setActiveTab] = useState('mine'); // 'mine' | 'voted'
     const [proposals, setProposals] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isMobileView, setIsMobileView] = useState(
+        () => typeof window !== 'undefined' && window.innerWidth < 1024
+    );
+
+    useEffect(() => {
+        const onResize = () => setIsMobileView(window.innerWidth < 1024);
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
     /* PC 필터 */
     const [search, setSearch] = useState('');
@@ -116,13 +122,12 @@ const MyProposals = ({ onBack, onNavigate }) => {
 
     return (
         <div className="mp-container">
-            {/* ── 모바일 헤더 ── */}
+            {/* ── 모바일 헤더 — Figma: back (13,21) + 중앙 타이틀 '나의제안' ── */}
             <header className="mp-mobile-header">
                 <button className="mp-back-btn" onClick={onBack} aria-label="뒤로가기">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="15 18 9 12 15 6" />
-                    </svg>
+                    <img src={`${ASSET}/icon_back.png`} alt="" width="24" height="24" />
                 </button>
+                <h1 className="mp-mobile-title">나의제안</h1>
             </header>
 
             {/* ── PC 페이지 제목 ── */}
@@ -187,7 +192,7 @@ const MyProposals = ({ onBack, onNavigate }) => {
                     <button
                         className={`mp-tab-btn${activeTab === 'mine' ? ' active' : ''}`}
                         onClick={() => setActiveTab('mine')}
-                    >나의 제안글</button>
+                    >{isMobileView ? '나의제안' : '나의 제안글'}</button>
                     <button
                         className={`mp-tab-btn${activeTab === 'voted' ? ' active' : ''}`}
                         onClick={() => setActiveTab('voted')}
@@ -247,8 +252,8 @@ const MyProposals = ({ onBack, onNavigate }) => {
                                         />
                                     )}
                                     <div className="mp-card-stats">
-                                        <span className="mp-stat">
-                                            <VoteIcon active={!!item.has_voted} />
+                                        <span className="mp-stat mp-stat--vote">
+                                            <VoteIcon />
                                             <span>{item.likes_count ?? 0}</span>
                                         </span>
                                         <span className="mp-stat">

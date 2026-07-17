@@ -5,34 +5,46 @@
     background: #fff;
     font-family: 'Pretendard Variable', sans-serif;
     color: #242424;
-    padding-bottom: 80px; /* 모바일 BottomNav 여백 */
+    padding-bottom: 40px;
 }
 
 .ms-container--pc {
     padding-bottom: 0;
 }
 
-/* ─── 모바일 헤더 ─── */
+/* ─── 모바일 헤더 — Figma: back (13,21) 24px / 타이틀 중앙 18px 700 #111 ─── */
 .ms-mobile-header {
+    position: relative;
     display: flex;
     align-items: center;
-    height: 52px;
-    padding: 0 20px;
+    justify-content: center;
+    height: 66px;
     background: #fff;
-    position: sticky;
-    top: 0;
-    z-index: 10;
 }
 
 .ms-back-btn {
+    position: absolute;
+    left: 13px;
+    top: 21px;
+    width: 24px;
+    height: 24px;
     background: none;
     border: none;
-    padding: 8px;
+    padding: 0;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: -8px;
+}
+
+.ms-mobile-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+    letter-spacing: -0.04em;
+    line-height: 25px;
+    font-family: 'Pretendard Variable', sans-serif;
 }
 
 /* ─── PC 제목 (그리드 좌측 정렬, 956px 중앙 컨테이너) ─── */
@@ -48,11 +60,11 @@
     letter-spacing: -0.02em;
 }
 
-/* ─── 기간 필터 바 ─── */
+/* ─── 기간 필터 바 — Figma: 헤더(66) 바로 아래, 리스트와 28px ─── */
 .ms-period-bar {
     display: flex;
     justify-content: center;
-    padding: 12px 20px 20px;
+    padding: 0 20px 28px;
 }
 
 .ms-period-track {
@@ -80,25 +92,26 @@
     transition: color 0.18s;
 }
 
-/* 모바일 활성: 보라(#542aa3) */
+/* Figma 302:19493 — 가운데(6개월) 세그먼트 112px 고정 (모바일 전용) */
+@media (max-width: 1023px) {
+    .ms-period-btn:nth-child(2) {
+        flex: 0 0 112px;
+    }
+}
+
+/* 활성: teal(#23bdbb) — Figma 302:19493 */
 .ms-period-btn--active {
-    background: #542aa3;
+    background: #23bdbb;
     border-radius: 30px;
     color: #fff;
     font-weight: 600;
 }
 
-/* PC 활성: teal(#23bdbb) */
-.ms-container--pc .ms-period-btn--active {
-    background: #23bdbb;
-    color: #fff;
-}
-
-/* ─── 카드 목록 ─── */
+/* ─── 카드 목록 — Figma: 카드 간 20px ─── */
 .ms-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 20px;
     padding: 0 20px;
 }
 
@@ -113,15 +126,16 @@
     margin: 0 auto;
 }
 
-/* ─── 카드 ─── */
+/* ─── 카드 — Figma 353x130 r15, 소프트 섀도 ─── */
 .ms-card {
     background: #fff;
     border-radius: 15px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 18px 16px 20px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    padding: 20px 15px 18px;
+    min-height: 130px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 8px;
 }
 
 .ms-card-top {
@@ -130,62 +144,52 @@
     justify-content: space-between;
 }
 
-/* ─── 상태 배지 ─── */
+/* ─── 상태 배지 — Figma: 흰 바탕 + 1px 검정 외곽선, r15, h24, 14px/700 ─── */
 .ms-badge {
     display: inline-flex;
     align-items: center;
     height: 24px;
-    padding: 0 10px;
-    border-radius: 12px;
+    padding: 0 15px;
+    border-radius: 15px;
+    border: 1px solid #000;
+    background: #fff;
     font-size: 14px;
     font-weight: 700;
-    letter-spacing: -0.56px;
+    letter-spacing: -0.04em;
     color: #242424;
+    box-sizing: border-box;
 }
 
-/* 완료 — 연녹색 */
-.ms-badge--done {
-    background: #c8f4cb;
-}
-
-/* 스크린아웃 — 연회색 */
-.ms-badge--screenout {
-    background: #e8e8e8;
-}
-
-/* 응답중 — 연노랑 */
-.ms-badge--ongoing {
-    background: #ffedb3;
-}
-
-/* ─── 종합결과보기 버튼 ─── */
+/* ─── 종합결과보기 버튼 — Figma: 14px/500 #111 + 아이콘 23px 밀착 ─── */
 .ms-result-btn {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 0;
     background: none;
     border: none;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
     color: #111;
-    letter-spacing: -0.56px;
+    letter-spacing: -0.04em;
     padding: 0;
     font-family: 'Pretendard Variable', sans-serif;
     transition: opacity 0.15s;
+}
+
+/* Figma: 아이콘 우측단 353 — 카드 우측(373)에서 20 (패딩 15 + 5), 모바일 전용 */
+@media (max-width: 1023px) {
+    .ms-result-btn {
+        margin-right: 5px;
+    }
 }
 
 .ms-result-btn:hover {
     opacity: 0.75;
 }
 
-.ms-result-btn svg {
+.ms-result-btn img {
     flex: none;
-}
-
-/* AI 대화형 설문: 대화내역 보기 (보라) */
-.ms-result-btn--ai {
-    color: #5b2eab;
 }
 
 /* 클릭 가능한 카드(AI 대화형 설문) */
@@ -200,42 +204,43 @@
     transform: translateY(1px);
 }
 
-/* ─── 카드 본문 ─── */
+/* ─── 카드 본문 — Figma: 배지→제목 16px, 제목→메타 11px ─── */
 .ms-card-title {
     font-size: 16px;
     font-weight: 500;
     color: #111;
-    margin: 0;
-    letter-spacing: -0.64px;
-    line-height: 1.4;
+    margin: 16px 0 0;
+    letter-spacing: -0.04em;
+    line-height: 22px;
 }
 
 .ms-card-meta {
     display: flex;
     align-items: center;
     gap: 0;
+    margin-top: 11px;
     font-size: 14px;
-    color: #1e1e1e;
-    line-height: 1.35;
+    color: #737373;
+    line-height: 19px;
 }
 
 .ms-card-date {
-    color: #1e1e1e;
+    color: #737373;
     font-size: 14px;
 }
 
-/* 세로 구분선 */
+/* 세로 구분선 — Figma 1x11 #ddd */
 .ms-card-sep {
     display: inline-block;
     width: 1px;
     height: 11px;
     background: #ddd;
-    margin: 0 8px;
+    margin: 0 10px;
     flex: none;
 }
 
 .ms-card-approval {
-    color: #1e1e1e;
+    color: #737373;
     font-size: 14px;
 }
 
@@ -247,9 +252,10 @@
     color: #888;
 }
 
-/* ─── PC 여백 보정 ─── */
+/* ─── PC 여백 보정 (PC 기존 디자인 유지) ─── */
 @media (min-width: 1024px) {
     .ms-period-bar {
+        padding-top: 12px;
         padding-bottom: 28px;
     }
 
@@ -257,6 +263,25 @@
         min-height: 130px;
         padding: 20px 15px;
         justify-content: flex-start;
-        gap: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
+
+    .ms-card-title {
+        margin-top: 10px;
+    }
+
+    .ms-card-meta {
+        margin-top: 10px;
+    }
+
+    /* PC 배지 — 기존 컬러 배지 유지 */
+    .ms-container--pc .ms-badge {
+        border: none;
+        padding: 0 10px;
+        border-radius: 12px;
+        letter-spacing: -0.56px;
+    }
+    .ms-container--pc .ms-badge--done { background: #c8f4cb; }
+    .ms-container--pc .ms-badge--screenout { background: #e8e8e8; }
+    .ms-container--pc .ms-badge--ongoing { background: #ffedb3; }
 }

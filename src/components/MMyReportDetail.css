@@ -1,109 +1,257 @@
+/* MMyReportDetail.css — 나의제보 상세 (Figma 302:18991 MO_나의제보 상세>삭제/수정) */
+
 .m-myreport-detail-page {
-    padding-bottom: 90px;
+    padding-bottom: 110px;
 }
 
-.m-myrdetail-topbar {
+/* Figma 302:18991 — back (13,21) 24px / 태그 행 (17,62) → gap 17 */
+.m-myreport-detail-page .m-myrdetail-topbar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 17px;
+    padding: 21px 20px 0 13px;
+    height: auto;
+}
+
+.m-myreport-detail-page .m-detail-back {
+    width: 24px;
+    height: 24px;
+    padding: 0;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
 }
 
-/* Author row: name/region-date block on the left, status badge on the right */
+/* ── 태그 pill — Figma: h24 r15, 지역 #dff8f8 / 카테고리 #ffef8a / 서브 #ffc9c9, x17 ── */
+.m-myreport-detail-page .m-rdetail-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-left: 4px; /* topbar padding-left 13 + 4 = Figma x17 */
+}
+
+.m-myreport-detail-page .m-rdetail-region-tag,
+.m-myreport-detail-page .m-prop-cat-tag,
+.m-myreport-detail-page .m-report-sub-tag {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: #242424;
+    box-sizing: border-box;
+}
+
+.m-myreport-detail-page .m-rdetail-region-tag { background: #dff8f8; }
+.m-myreport-detail-page .m-prop-cat-tag { background: #ffef8a; }
+.m-myreport-detail-page .m-report-sub-tag { background: #ffc9c9; font-weight: 600; padding: 0 7px; }
+
+/* ── 작성자 행 — Figma: 태그(86)→작성자(99) 13px, 이름 18/500 #111, 메타 14 #737373,
+   메타(148)→divider(165) 17px ── */
 .m-myrdetail-author-row {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 0;
+    padding-top: 13px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #ddd;
 }
 
 .m-myrdetail-author-row .m-rdetail-author-block {
     margin-bottom: 0;
+    gap: 0;
 }
 
-/* Status badge — Figma 0:5923: 접수 = mint pill. Other stages tinted variants. */
+.m-myreport-detail-page .m-rdetail-author {
+    font-size: 18px;
+    font-weight: 500;
+    color: #111;
+    letter-spacing: -0.04em;
+    line-height: 25px;
+}
+
+.m-myreport-detail-page .m-rdetail-author-sub {
+    font-size: 14px;
+    font-weight: 400;
+    color: #737373;
+    line-height: 19px;
+    margin-top: 5px;
+}
+
+/* ── 상태 배지 — Figma 302:19003: 78x43 r10 #542aa3, 16px/700 흰색 (전 단계 동일)
+   작성자(99)보다 3px 아래 (102) ── */
 .m-myrdetail-status-badge {
-    background: #dff8f8;
-    color: #23bdbb;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 11px;
+    margin-top: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 78px;
+    height: 43px;
+    padding: 0 16px;
+    background: #542aa3;
+    color: #fff;
+    border-radius: 10px;
+    font-size: 16px;
     font-weight: 700;
     flex-shrink: 0;
-    align-self: center;
+    align-self: flex-start;
+    box-sizing: border-box;
 }
 
-.m-myrdetail-status-badge.stage-review {
-    background: #fff3d6;
-    color: #d99a00;
-}
-
-.m-myrdetail-status-badge.stage-inspect {
-    background: #e3f1ff;
-    color: #2b7cd3;
-}
-
+.m-myrdetail-status-badge.stage-review,
+.m-myrdetail-status-badge.stage-inspect,
 .m-myrdetail-status-badge.stage-notice {
-    background: #ffdde7;
-    color: #f74e7e;
+    background: #542aa3;
+    color: #fff;
 }
 
+/* ── 제목 — Figma 302:19015: 18/500 #242424 ls-0.72, divider와 14px ── */
+.m-myreport-detail-page .m-detail-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #242424;
+    letter-spacing: -0.04em;
+    line-height: 25px;
+    margin: 14px 0 0;
+}
+
+/* Figma 302:18994 — 답글쓰기 14px/400 #737373, 본문과 7px */
 .m-myrdetail-reply-link {
     background: none;
     border: none;
     padding: 0;
-    margin-top: 4px;
-    font-size: 12px;
-    color: #999;
-    font-weight: 600;
+    margin: 0;
+    font-size: 14px;
+    line-height: 19px;
+    color: #737373;
+    font-weight: 400;
     font-family: inherit;
     cursor: pointer;
 }
 
+/* ── 이미지/지도 — Figma: 제목(205)→이미지(239) 34, r15 / 이미지(438)→지도(456) 18 ── */
+.m-myreport-detail-page .m-detail-image {
+    border-radius: 15px;
+    margin-bottom: 18px;
+}
+
+.m-myreport-detail-page .m-detail-title + .m-detail-image {
+    margin-top: 34px;
+}
+
+/* 지도(536)→날짜·조회수(558) 22 */
+.m-myreport-detail-page .m-detail-map {
+    margin-bottom: 22px;
+}
+
+/* ── 댓글 — Figma: divider #f4f4f4 full-bleed, 작성자 14/600, 본문 16/400 #242424,
+   간격: divider→작성자 18 / 작성자→본문 7 / 본문→답글쓰기 7 / →divider 11 ── */
+.m-myreport-detail-page .m-rdetail-comments {
+    margin: 0 -20px;
+    border-top: 1px solid #f4f4f4;
+}
+
+.m-myreport-detail-page .m-rdetail-comments li {
+    padding: 18px 20px 11px 17px;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.m-myreport-detail-page .m-comment-meta {
+    margin-bottom: 7px;
+}
+
+.m-myreport-detail-page .m-rdetail-comments p {
+    font-size: 16px;
+    color: #242424;
+    letter-spacing: -0.04em;
+    line-height: 22px;
+    margin: 0 0 7px;
+}
+
 .m-myrdetail-body {
-    font-size: 13px;
+    font-size: 14px;
     color: #1a1a1b;
     line-height: 1.6;
-    margin: 0 0 12px;
+    margin: 12px 0 0;
     word-break: keep-all;
 }
 
+/* ── 통계 행 — Figma: 날짜·조회수 14 #737373 (20,558) / 아이콘 #bfbfbf, 우측 7px 인셋
+   통계(577)→divider(594) 17 — divider는 댓글 ul border-top이 담당 ── */
+.m-myreport-detail-page .m-rdetail-stat-row {
+    padding: 0;
+    border-bottom: none;
+    margin-bottom: 17px;
+}
+
+.m-myreport-detail-page .m-rdetail-stat-meta {
+    font-size: 14px;
+    color: #737373;
+}
+
+.m-myreport-detail-page .m-rdetail-stat-icons {
+    color: #bfbfbf;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    margin-right: 7px;
+}
+
+.m-myrdetail-stat-icon {
+    object-fit: contain;
+}
+
+.m-myrdetail-stat-icon--heart   { width: 15px; height: 12px; }
+.m-myrdetail-stat-icon--comment { width: 14px; height: 12px; }
+
+/* ── 하단 액션 바 — Figma 302:19016: h95, 버튼 166x59 r15
+   삭제하기 = #f4f4f4 채움 #333 / 수정하기 = 흰 바탕 + #542aa3 외곽선 ── */
 .m-myrdetail-actions {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     background: #fff;
-    border-top: 1px solid #ececec;
+    border-top: none;
     display: flex;
-    gap: 10px;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    gap: 20px;
+    padding: 18px 20px calc(18px + env(safe-area-inset-bottom));
     z-index: 50;
     max-width: 393px;
     margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .m-myrdetail-btn {
     flex: 1;
-    height: 44px;
-    border-radius: 22px;
-    font-size: 14px;
+    height: 59px;
+    border-radius: 15px;
+    font-size: 18px;
     font-weight: 700;
+    letter-spacing: -0.04em;
     cursor: pointer;
     font-family: inherit;
     transition: opacity 0.15s;
 }
 
+/* 삭제하기 — Figma 302:19018/19020 */
 .m-myrdetail-btn.ghost {
+    background: #f4f4f4;
+    border: none;
+    color: #333;
+}
+
+/* 수정하기 — Figma 302:19019/19021 */
+.m-myrdetail-btn.primary {
     background: #fff;
     border: 1px solid #542aa3;
     color: #542aa3;
-}
-
-.m-myrdetail-btn.primary {
-    background: #542aa3;
-    border: none;
-    color: #fff;
 }
 
 .m-myrdetail-btn:active { opacity: 0.85; }
@@ -131,6 +279,25 @@
 .m-myrdetail-modal-actions {
     display: flex;
     gap: 10px;
+}
+
+/* 모달 버튼은 기존(채움 보라 확인) 유지 */
+.m-myrdetail-modal-actions .m-myrdetail-btn {
+    height: 44px;
+    border-radius: 22px;
+    font-size: 14px;
+}
+
+.m-myrdetail-modal-actions .m-myrdetail-btn.ghost {
+    background: #fff;
+    border: 1px solid #542aa3;
+    color: #542aa3;
+}
+
+.m-myrdetail-modal-actions .m-myrdetail-btn.primary {
+    background: #542aa3;
+    border: none;
+    color: #fff;
 }
 
 .m-myrdetail-modal-error {
