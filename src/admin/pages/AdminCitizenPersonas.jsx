@@ -3,9 +3,10 @@ import AdminLayout from '../components/AdminLayout';
 import PersonaReport from '../../components/PersonaReport';
 import './AdminCitizen.css';
 
-/* 가상시민 생성 관리 (Figma 263:6342/6708/7075)
+/* 가상시민 생성 관리 — Figma 302:30975/302:30242(생성2)/302:30608(생성3, 펼침)
    RAG로 생성된 페르소나 아코디언 목록 → 펼치면 전체 상세 리포트(공용 PersonaReport).
-   각 행: 편집(전 필드 모달) / JSON 내보내기 / 삭제. 상단: 지역+인원 자동 생성. */
+   각 행: 편집 / JSON 내보내기 / 삭제 / 펼침 (Figma 실측 아이콘 export 사용).
+   상단 지역 필터+RAG 자동 생성 바, 대표 지정 토글은 사용자 확정 기능(프레임 없음 — 스타일만 정합). */
 
 const API = `${(import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')}/api/admin/rag`;
 const API_BASE = `${(import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')}`;
@@ -26,9 +27,11 @@ const periodLabel = (p) => {
 };
 const fmtDate = (s) => (s ? s.slice(0, 10) : '');
 
-function Avatar({ url, initial, size = 44 }) {
+const ASSET = '/figma-assets/admin';
+
+function Avatar({ url, initial }) {
     return (
-        <span className="acp-avatar" style={{ width: size, height: size }}>
+        <span className="acp-avatar">
             {url ? <img src={url} alt="" /> : <span>{initial || '시'}</span>}
         </span>
     );
@@ -137,7 +140,6 @@ export default function AdminCitizenPersonas({ onNavigate }) {
             <div className="acp">
                 <div className="acd-head">
                     <h1>가상시민 생성 관리</h1>
-                    <span className="acd-total">총 <b>{list.length}</b>명</span>
                 </div>
 
                 {/* 자동 생성 + 지역 필터 */}
@@ -177,11 +179,13 @@ export default function AdminCitizenPersonas({ onNavigate }) {
                                     <Avatar url={avatarSrc(p.image_url)} initial={p.avatar_initial} />
                                     <div className="acp-item-info">
                                         <div className="acp-item-nameline">
-                                            <b>{p.name}</b> <em>{p.age}세 · {p.gender}</em>
-                                            <span className="acp-item-tags">{(p.tags || []).slice(0, 3).map((t) => <span key={t}>{t}</span>)}</span>
+                                            <b>{p.name} {p.age}세</b> <em>· {p.gender}</em>
+                                            <span className="acp-tags">
+                                                {(p.tags || []).slice(0, 3).map((t) => <span key={t}>{`# ${String(t).replace(/^#\s?/, '')}`}</span>)}
+                                            </span>
                                         </div>
                                         <div className="acp-item-meta">
-                                            {periodLabel(p.period)} · {fmtDate(p.generated_at)} 생성 · {p.district} · 원본 {p.evidence_count}건
+                                            {periodLabel(p.period)} · {fmtDate(p.generated_at)} 생성 · 원본 {p.evidence_count}건
                                         </div>
                                     </div>
                                 </button>
@@ -194,10 +198,16 @@ export default function AdminCitizenPersonas({ onNavigate }) {
                                     >
                                         {(p.importance ?? 100) === 0 ? '★ 대표' : '☆ 대표지정'}
                                     </button>
-                                    <button className="acp-act edit" onClick={() => openEdit(p.id)}>✎ 편집</button>
-                                    <button className="acp-act ghost" onClick={() => exportPersona(p.id, p.name)}>JSON 내보내기</button>
-                                    <button className="acp-act del" onClick={() => removePersona(p.id, p.name)} aria-label="삭제">🗑</button>
-                                    <button className="acp-act chev" onClick={() => expand(p.id)} aria-label="펼치기">{openId === p.id ? '⌃' : '⌄'}</button>
+                                    <button className="acp-act edit" onClick={() => openEdit(p.id)}>
+                                        <img src={`${ASSET}/acp_edit_pencil.png`} alt="" />편집
+                                    </button>
+                                    <button className="acp-act json" onClick={() => exportPersona(p.id, p.name)}>JSON 내보내기</button>
+                                    <button className="acp-act del" onClick={() => removePersona(p.id, p.name)} aria-label="삭제">
+                                        <img src={`${ASSET}/acp_trash.png`} alt="" />
+                                    </button>
+                                    <button className="acp-act chev" onClick={() => expand(p.id)} aria-label="펼치기">
+                                        <img src={`${ASSET}/acp_chevron.png`} alt="" />
+                                    </button>
                                 </div>
                             </div>
                             {openId === p.id && (

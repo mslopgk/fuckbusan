@@ -1,98 +1,239 @@
-/* 가상시민 데이터/생성 관리 공용 스타일 (Figma 263:5660~7075)
-   accent teal #23bdbb, 제보 보라 #542aa3 / 제안 핑크 #f74e7e */
+/* 가상시민 데이터/생성 관리 + 공공데이터 관리 공용 스타일
+   Figma WDC 관리자 캔버스 263:2627 —
+   공공데이터 302:28393/28599/28664/28895/28956/29019, 가상시민 302:29560/29764/29975/30975/30242/30608
+   버튼 teal: 공공데이터 #23bdbb / 가상시민 #43c1c1 (Figma 실측 — 프레임별 상이)
+   제보 보라 #542aa3 / 제안 핑크 #f74e7e / 설문 #777 / 진단 #333, 태그 스트로크 #23bdbb */
 
-.acd, .acp { padding: 32px 40px 80px; color: #242424; }
+.acd, .acp { padding: 0 0 80px; color: #242424; max-width: 1300px; }
 
-.acd-head, .acp .acd-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; }
-.acd-head h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin: 0; }
-.acd-total { font-size: 15px; color: #6b7280; }
-.acd-total b, .acd-head .acd-total b { color: #242424; font-weight: 800; }
+/* Figma: 목록·등록 화면 콘텐츠 배경은 흰색, 데이터추가 화면은 #f4f4f4 (셸 기본 #f6f6f6 오버라이드) */
+.admin-content-new:has(.acd), .admin-content-new:has(.acp) { background: #fff; }
+.admin-content-new:has(.apd-gray) { background: #f4f4f4; }
+.apd-gray { max-width: 1372px; }   /* 데이터추가 카드 1372 (Figma 302:28609) */
+.apd-gray .acd-head { margin-bottom: 30px; }   /* 타이틀-카드 간격 30 (302:28599) */
+.apm-wrap { max-width: 1184px; }   /* 공공데이터 등록 콘텐츠 1184 (Figma 302:29019) */
 
-/* 검색 패널 */
-.acd-searchbox { display: flex; align-items: center; gap: 28px; background: #f6f7f8; border: 1px solid #ececec;
-    border-radius: 14px; padding: 22px 28px; margin-bottom: 18px; }
-.acd-search-field { display: flex; align-items: center; gap: 16px; }
-.acd-search-field label { font-size: 14px; font-weight: 600; color: #555; min-width: 64px; }
-.acd-search-field select { min-width: 240px; height: 44px; border: 1px solid #ddd; border-radius: 10px;
-    padding: 0 14px; font-size: 14px; background: #fff; color: #242424; }
-.acd-search-btn { height: 44px; padding: 0 30px; border: none; border-radius: 10px; background: #23bdbb;
-    color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
-.acd-search-btn:hover { background: #1ba9a7; }
+/* 페이지 타이틀 — Figma 30px/700 #333 */
+.acd-head, .acp .acd-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 19px; }
+.apd-head { align-items: center; }  /* 목록: 등록 버튼(40h)과 세로 중앙 정렬 (302:28393) */
+.acd-head h1 { font-size: 30px; font-weight: 700; color: #333; letter-spacing: 0; margin: 0; line-height: 36px; }
+.acd-total { font-size: 18px; color: #111; font-family: Inter, Pretendard, sans-serif; font-weight: 400; }
+.acd-total b, .acd-head .acd-total b { color: #111; font-weight: 400; }
 
-/* 집계 카드 */
-.acd-counts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 18px; }
-.acd-count-card { background: #f6f7f8; border: 1px solid #ececec; border-radius: 12px; padding: 18px 20px;
-    display: flex; align-items: center; justify-content: space-between; }
-.acd-count-label { font-size: 14px; font-weight: 600; color: #6b7280; }
-.acd-count-val { font-size: 15px; color: #444; }
-.acd-count-val b { font-weight: 800; color: #242424; }
-.acd-count-val b.accent { color: #23bdbb; }
+/* ── 공공데이터 목록 (302:28393) ───────────────────────────── */
+.apd-regbtn { height: 40px; padding: 0 23px; border: none; border-radius: 10px; background: #23bdbb;
+    color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+.apd-regbtn:hover { background: #1ba9a7; }
 
-/* 툴바 */
-.acd-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
-.acd-searchinput { flex: 1 1 260px; min-width: 220px; position: relative; }
-.acd-searchinput input { width: 100%; height: 44px; border: 1px solid #ddd; border-radius: 10px;
-    padding: 0 44px 0 16px; font-size: 14px; }
-.acd-searchinput button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-    width: 34px; height: 34px; border: none; background: none; color: #9aa3ab; cursor: pointer; }
-.acd-tabs { display: flex; gap: 6px; }
-.acd-tab { height: 44px; padding: 0 18px; border: 1px solid #e2e2e2; background: #fff; border-radius: 10px;
-    font-size: 14px; font-weight: 600; color: #555; cursor: pointer; }
-.acd-tab.active { background: #23bdbb; border-color: #23bdbb; color: #fff; }
+.apd-search { display: flex; align-items: center; background: #f4f4f4; border-radius: 10px;
+    padding: 20px 30px; margin-bottom: 20px; }
+.apd-search-label { font-size: 16px; font-weight: 400; color: #333; margin-right: 18px; }
+.apd-search-inputwrap { position: relative; width: 290px; }
+.apd-search-inputwrap input { width: 100%; height: 50px; border: none; border-radius: 10px; background: #fff;
+    padding: 0 44px 0 20px; font-size: 16px; color: #111; }
+.apd-search-inputwrap input::placeholder { color: #777; }
+.apd-search-inputwrap img { position: absolute; right: 19px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; pointer-events: none; }
+.apd-search-btn { width: 84px; height: 50px; padding: 0; margin-left: 13px; border: none; border-radius: 10px;
+    background: #23bdbb; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+.apd-search-btn:hover { background: #1ba9a7; }
 
-.acd-catdrop { position: relative; }
-.acd-catdrop-btn { height: 44px; min-width: 110px; padding: 0 14px; border: 1px solid #ddd; background: #fff;
-    border-radius: 10px; font-size: 14px; display: flex; align-items: center; justify-content: space-between;
-    gap: 8px; cursor: pointer; color: #444; }
-.acd-catdrop-menu { position: absolute; z-index: 20; top: 48px; left: 0; min-width: 140px; background: #fff;
-    border: 1px solid #e2e2e2; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.1); padding: 6px;
-    list-style: none; margin: 0; }
-.acd-catdrop-menu button { width: 100%; text-align: left; padding: 9px 12px; border: none; background: none;
-    border-radius: 7px; font-size: 14px; cursor: pointer; color: #444; }
-.acd-catdrop-menu button:hover { background: #f1f5f5; }
-.acd-catdrop-menu button.sel { color: #23bdbb; font-weight: 700; }
-.acd-caret { width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
-    transform: rotate(45deg); display: inline-block; opacity: .55; }
-
-.acd-toolbar-right { display: flex; gap: 8px; margin-left: auto; }
-.acd-btn-dark { height: 44px; padding: 0 18px; border: none; border-radius: 10px; background: #2d2d2d;
-    color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
-.acd-btn-dark:hover { background: #000; }
-.acd-btn-convert { height: 44px; padding: 0 18px; border: none; border-radius: 10px; background: #23bdbb;
-    color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px; }
-.acd-btn-convert:hover { background: #1ba9a7; }
-
-/* 테이블 */
-.acd-table-wrap { border-top: 2px solid #2d2d2d; }
+/* ── 공통 테이블 — Figma: 헤더 상/하 #d4d4d4, 행 구분선 #eee, 행높이 51 ── */
+.acd-table-wrap { border-top: 1px solid #d4d4d4; }
 .acd-table { width: 100%; border-collapse: collapse; }
-.acd-table thead th { text-align: left; font-size: 14px; font-weight: 700; color: #444; padding: 14px 12px;
-    border-bottom: 1px solid #e5e5e5; }
-.acd-th-check, .acd-td-check { width: 44px; text-align: center; }
-.acd-th-type { width: 80px; }
-.acd-th-title { width: 42%; }
-.acd-table tbody td { padding: 14px 12px; font-size: 14px; color: #333; border-bottom: 1px solid #f0f0f0; }
+.acd-table thead th { text-align: left; font-size: 16px; font-weight: 700; color: #111; line-height: 22px;
+    letter-spacing: -0.04em; padding: 14px 12px 14px 0; border-bottom: 1px solid #d4d4d4; }
+.acd-table tbody td { padding: 14px 12px 14px 0; font-size: 16px; font-weight: 400; color: #242424;
+    line-height: 22px; letter-spacing: -0.04em; border-bottom: 1px solid #eee; }
 .acd-table tbody tr { cursor: pointer; }
 .acd-table tbody tr:hover { background: #fafcfc; }
-.acd-table tbody tr.sel { background: #e9f9f8; }
-.acd-td-title { color: #222; font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
-.acd-td-date { color: #8a8a8a; white-space: nowrap; }
-.acd-badge { display: inline-block; min-width: 44px; text-align: center; padding: 4px 10px; border-radius: 8px;
-    color: #fff; font-size: 12px; font-weight: 700; }
-.acd-empty { text-align: center; color: #9aa3ab; padding: 40px 0; font-size: 14px; }
-.acd-table input[type=checkbox] { width: 17px; height: 17px; accent-color: #23bdbb; cursor: pointer; }
+.acd-table tbody tr.sel { background: #dff8f8; }
+.acd-td-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acd-td-date { white-space: nowrap; }
+.acd-empty { text-align: center; color: #9aa3ab; padding: 40px 0 !important; font-size: 14px; }
 
-/* 페이지네이션 */
-.acd-pager { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px 0; }
-.acd-pager button { min-width: 34px; height: 34px; border: none; background: none; border-radius: 8px;
-    font-size: 14px; color: #666; cursor: pointer; }
-.acd-pager button.on { background: #23bdbb; color: #fff; font-weight: 700; }
+/* 가상시민데이터 컬럼 (Figma x: 체크 360 / 유형 408 / 제목 494 / 카테고리 1152 / 제출자 1275 / 연령 1379 / 등록일 1473~) */
+.aicd-table { table-layout: fixed; }
+.aicd-table thead th, .aicd-table tbody td { box-sizing: border-box; }
+.acd-th-check, .acd-td-check { width: 58px; padding-left: 10px !important; }
+.acd-th-type { width: 86px; }
+.acd-col-cat { width: 123px; }
+.acd-col-author { width: 104px; }
+.acd-col-age { width: 75px; }
+.acd-col-date { width: 196px; text-align: center !important; }
+
+/* 공공데이터 목록 전용 컬럼 (Figma x: 데이터명 412 / 지역 1079 / 영역 1208 / 등록일 1318~ / 메뉴 1538~) */
+.apd-table { table-layout: fixed; }
+.apd-table thead th, .apd-table tbody td { box-sizing: border-box; }
+.apd-table thead th:first-child, .apd-table tbody td:first-child { padding-left: 62px; }
+.apd-col-region { width: 129px; }
+.apd-col-theme { width: 110px; }
+.apd-col-date { width: 208px; text-align: center !important; }
+.apd-col-menu { width: 124px; text-align: center !important; white-space: nowrap; }
+.apd-col-menu button { border: none; background: none; font-size: 14px; color: #111; cursor: pointer;
+    padding: 0; letter-spacing: 0; }
+.apd-col-menu button:hover { text-decoration: underline; }
+.apd-col-menu i { font-style: normal; color: #111; font-size: 14px; margin: 0 10px; }
+
+/* 체크박스 — Figma 17x17 r2 #ddd, 체크 시 teal (302:30175 export) */
+.acd-table input[type=checkbox] { appearance: none; -webkit-appearance: none; width: 17px; height: 17px;
+    border: 1px solid #ddd; border-radius: 2px; background: #fff; cursor: pointer; vertical-align: middle; }
+.acd-table input[type=checkbox]:checked { border: none;
+    background: url('/figma-assets/admin/aicd_check_on.png') center / 17px 17px no-repeat; }
+
+/* ── 페이지네이션 — Figma: 배경 없는 텍스트, active teal 700 (공공 #23bdbb / 가상 #43c1c1) ── */
+.acd-pager { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 37px 0; }
+.acd-pager button { min-width: 10px; height: 19px; border: none; background: none; padding: 0;
+    font-size: 16px; color: #777; cursor: pointer; line-height: 19px;
+    display: inline-flex; align-items: center; justify-content: center; }
+.acd-pager button.on { color: #43c1c1; font-weight: 700; }
+.apd .acd-pager button.on { color: #23bdbb; }
+.acd-pager button img { height: 14px; width: auto; display: block; }
 .acd-pager button:disabled { opacity: .3; cursor: default; }
 
-/* 시스템 상태 (접이식) */
-.acd-sys { border: 1px solid #e5e5e5; border-radius: 12px; margin-top: 10px; overflow: hidden; }
+/* ── 공공데이터 데이터추가 (302:28599/28664) ───────────────── */
+.apd-card { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 40px 50px;
+    display: flex; flex-direction: column; gap: 20px; }
+.apd-frow { display: flex; align-items: center; }
+.apd-frow-top { align-items: flex-start; }
+.apd-flabel { flex: 0 0 101px; font-size: 16px; font-weight: 700; color: #333; line-height: 50px; }
+.apd-frow-top .apd-flabel { line-height: 50px; }
+.apd-input, .apd-select { height: 50px; border: 1px solid #ddd; border-radius: 10px; background: #fff;
+    padding: 0 17px; font-size: 16px; color: #111; letter-spacing: -0.04em; font-family: inherit; }
+.apd-input::placeholder { color: #777; }
+.apd-input:focus, .apd-select:focus { outline: none; border-color: #23bdbb; }
+.apd-select { appearance: none; -webkit-appearance: none; padding-right: 50px; cursor: pointer;
+    background-image: url('/figma-assets/admin/pd_select_chevron.png');
+    background-repeat: no-repeat; background-position: right 20px center; background-size: 20px 10px; }
+.apd-w300 { width: 300px; }
+.apd-w215 { width: 215px; }
+.apd-entries { display: flex; flex-direction: column; gap: 13px; }
+.apd-entry-row { display: flex; align-items: center; }
+.apd-entry-row .apd-select { margin-right: 20px; }
+.apd-entry-valwrap { position: relative; margin-right: 10px; }
+.apd-entry-valwrap .apd-input { width: 215px; padding-right: 44px; }
+.apd-entry-unit { position: absolute; right: 17px; top: 50%; transform: translateY(-50%);
+    font-size: 16px; color: #777; letter-spacing: -0.04em; pointer-events: none; }
+.apd-entry-add { width: 50px; height: 50px; flex: 0 0 50px; border: none; border-radius: 10px;
+    background: #f4f4f4; color: #111; font-size: 16px; line-height: 1; cursor: pointer; }
+.apd-entry-add:hover { background: #ececec; }
+.apd-file { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.apd-excel-btn { height: 46px; display: inline-flex; align-items: center; gap: 9px; padding: 0 14px 0 12px;
+    border: 1px solid #f4f4f4; border-radius: 10px; background: #fff; font-size: 16px; color: #111;
+    letter-spacing: -0.04em; cursor: pointer; }
+.apd-excel-btn img { width: 26px; height: 26px; }
+.apd-excel-btn:hover { border-color: #23bdbb; }
+.apd-file-chip { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 16px;
+    color: #111; letter-spacing: -0.04em; }
+.apd-file-chip button { width: 22px; height: 22px; border: none; border-radius: 50%; background: #ddd;
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+.apd-file-chip button img { width: 7px; height: 7px; }
+.apd-file-hint { margin: 8px 0 0; font-size: 12px; color: #9a9a9a; }
+.apd-foot { display: flex; justify-content: center; gap: 20px; margin-top: 30px; }
+.apd-btn-del { width: 150px; height: 50px; border: 1px solid #ddd; border-radius: 10px; background: #fff;
+    font-size: 18px; font-weight: 400; color: #aaa; cursor: pointer; }
+.apd-btn-del:hover { border-color: #bbb; color: #888; }
+.apd-btn-submit { width: 150px; height: 50px; border: none; border-radius: 10px; background: #23bdbb;
+    font-size: 18px; font-weight: 700; color: #fff; cursor: pointer; }
+.apd-btn-submit:hover { background: #1ba9a7; }
+.apd-btn-del:disabled, .apd-btn-submit:disabled { opacity: .5; cursor: default; }
+
+/* ── 공공데이터 등록/수정 (302:28895/28956/29019) ──────────── */
+.apm-hr { border: none; border-top: 1px solid #ddd; margin: 0; }
+.apm-body { padding: 18px 0 12px; display: flex; flex-direction: column; gap: 10px; }
+.apm-row { display: flex; align-items: center; }
+.apm-label { flex: 0 0 157px; padding-left: 30px; box-sizing: border-box; font-size: 16px;
+    font-weight: 700; color: #333; }   /* Figma: 라벨 380 / 입력 507 (302:29019) */
+.apm-count-btn { height: 50px; width: 121px; margin-left: 8px; border: none; border-radius: 10px;
+    background: #f4f4f4; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    font-size: 16px; color: #111; letter-spacing: -0.04em; cursor: pointer; }
+.apm-count-btn img { width: 14px; height: 14px; }
+.apm-count-btn:hover { background: #ececec; }
+.apm-w238 { width: 238px; }
+.apm-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
+.apm-download { width: 174px; height: 50px; border: none; border-radius: 10px; background: #ddd;
+    font-size: 18px; font-weight: 400; color: #111; cursor: pointer; }
+.apm-download:hover { background: #d0d0d0; }
+.apm-foot-r { display: flex; align-items: center; gap: 15px; }
+.apm-btn-del { width: 100px; height: 50px; border: none; border-radius: 10px; background: #f4f4f4;
+    font-size: 18px; font-weight: 400; color: #777; cursor: pointer; }
+.apm-btn-del:hover { background: #ececec; }
+.apm-btn-submit { width: 148px; height: 50px; border: none; border-radius: 10px; background: #23bdbb;
+    font-size: 18px; font-weight: 700; color: #fff; cursor: pointer; }
+.apm-btn-submit:hover { background: #1ba9a7; }
+.apm-btn-del:disabled, .apm-btn-submit:disabled { opacity: .5; cursor: default; }
+
+/* ── 가상시민데이터 관리 — 검색 패널 (302:29560) ───────────── */
+.acd-searchbox { display: flex; flex-direction: column; gap: 10px; background: #f4f4f4;
+    border-radius: 10px; padding: 20px 30px; margin-bottom: 19px; }
+.acd-search-row { display: flex; align-items: center; }
+.acd-search-row label { flex: 0 0 119px; font-size: 16px; font-weight: 400; color: #333; }
+.acd-search-row select { width: 290px; height: 50px; border: none; border-radius: 10px; background: #fff;
+    padding: 0 50px 0 20px; font-size: 16px; color: #111; appearance: none; -webkit-appearance: none;
+    cursor: pointer; background-image: url('/figma-assets/admin/pd_select_chevron.png');
+    background-repeat: no-repeat; background-position: right 19px center; background-size: 20px 10px; }
+.acd-search-btn { width: 100px; height: 50px; padding: 0; margin-left: 13px; border: none; border-radius: 10px;
+    background: #43c1c1; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+.acd-search-btn:hover { background: #2fb1b1; }
+
+/* 집계 카드 — 244x60 #f4f4f4 r10, 값 Inter 400 #111 */
+.acd-counts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 20px; }
+.acd-count-card { background: #f4f4f4; border-radius: 10px; height: 60px; padding: 0 20px;
+    display: flex; align-items: center; justify-content: space-between; }
+.acd-count-label { font-size: 16px; font-weight: 400; color: #333; }
+.acd-count-val { font-size: 16px; color: #111; font-weight: 400; font-family: Inter, Pretendard, sans-serif; }
+.acd-count-val b { font-weight: 400; color: #111; }
+
+/* 툴바 (302:29560/29764) */
+.acd-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.acd-searchinput { flex: 1 1 260px; min-width: 220px; position: relative; }
+.acd-searchinput input { width: 100%; height: 50px; border: 1px solid #ddd; border-radius: 10px;
+    padding: 0 44px 0 20px; font-size: 16px; color: #111; }
+.acd-searchinput input::placeholder { color: #777; }
+.acd-searchinput button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 34px; height: 34px; border: none; background: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; }
+.acd-searchinput button img { width: 18px; height: 18px; }
+.acd-tabs { display: flex; gap: 10px; }
+.acd-tab { width: 70px; height: 50px; padding: 0; border: 1px solid #ddd; background: #fff;
+    border-radius: 10px; font-size: 16px; font-weight: 700; color: #777; cursor: pointer; }
+.acd-tab.active { background: #43c1c1; border-color: #43c1c1; color: #fff; }
+
+.acd-catdrop { position: relative; }
+.acd-catdrop-btn { height: 50px; width: 132px; padding: 0 20px; border: 1px solid #ddd; background: #fff;
+    border-radius: 10px; font-size: 16px; display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; cursor: pointer; color: #777; }
+.acd-catdrop-btn img { width: 14px; height: 7px; }
+.acd-catdrop-menu { position: absolute; z-index: 20; top: 0; left: 0; width: 132px; background: #fff;
+    border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.08); padding: 9px 0;
+    list-style: none; margin: 0; box-sizing: border-box; }
+.acd-catdrop-menu button { width: 100%; text-align: left; padding: 0 20px; height: 40px; border: none;
+    background: none; font-size: 16px; cursor: pointer; color: #777; }
+.acd-catdrop-menu button:hover { background: #f5f5f5; }
+.acd-catdrop-menu button.sel { color: #43c1c1; font-weight: 700; }
+
+.acd-toolbar-right { display: flex; gap: 10px; margin-left: auto; }
+.acd-btn-dark { width: 120px; height: 50px; padding: 0; border: none; border-radius: 10px; background: #333;
+    color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+.acd-btn-dark:hover { background: #000; }
+.acd-btn-convert { height: 50px; padding: 0 23px; border: none; border-radius: 10px; background: #43c1c1;
+    color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.acd-btn-convert img { width: 15px; height: 15px; }
+.acd-btn-convert:hover { background: #2fb1b1; }
+
+/* 유형 배지 — 48x28 r10 14/400 (제보 #542aa3 / 제안 #f74e7e / 설문 #777 / 진단 #333) */
+.acd-badge { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 28px;
+    border-radius: 10px; color: #fff; font-size: 14px; font-weight: 400; letter-spacing: 0; }
+/* 배지 셀은 상하 11px — 행높이 51 유지 (텍스트 셀 14+22+14+1=51 과 동일) */
+.acd-td-badge { padding-top: 11px !important; padding-bottom: 11px !important; }
+
+/* 시스템 상태 (접이식 — 문의사항 답변서 반영 기능, Figma 프레임 없음) */
+.acd-sys { border: 1px solid #eee; border-radius: 10px; margin-top: 10px; overflow: hidden; }
 .acd-sys-head { width: 100%; display: flex; align-items: center; justify-content: space-between;
     padding: 14px 20px; background: #fafafa; border: none; cursor: pointer; }
 .acd-sys-title { font-size: 14px; font-weight: 700; color: #444; display: flex; align-items: center; gap: 10px; }
+.acd-caret { width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+    transform: rotate(45deg); display: inline-block; opacity: .55; }
 .acd-sys.open .acd-sys-title .acd-caret { transform: rotate(225deg); }
 .acd-sys-dots { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
 .acd-sys-dots em { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 10px; }
@@ -103,111 +244,154 @@
 .acd-sys-grid span { font-size: 12px; color: #888; }
 .acd-sys-grid b { font-size: 14px; } .acd-sys-grid b.ok { color: #1ba9a7; } .acd-sys-grid b.off { color: #e0463b; }
 .acd-sys-actions { display: flex; align-items: center; gap: 8px; }
-.acd-sys-actions button { height: 38px; padding: 0 16px; border: none; border-radius: 9px; background: #23bdbb;
+.acd-sys-actions button { height: 38px; padding: 0 16px; border: none; border-radius: 10px; background: #23bdbb;
     color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; }
 .acd-sys-actions button.ghost { background: #fff; border: 1px solid #ddd; color: #555; }
 .acd-sys-actions button:disabled { opacity: .45; cursor: default; }
 .acd-sys-hint { font-size: 12px; color: #b08; }
 
-/* 변환 모달 */
-.acd-modal-backdrop, .acp-edit-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45);
+/* ── 가상시민 변환 모달 (302:29975) — 704 r30 ─────────────── */
+.acd-modal-backdrop, .acp-edit-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.7);
     display: flex; align-items: center; justify-content: center; z-index: 1000; }
 .acd-modal { width: 560px; max-width: calc(100vw - 40px); background: #fff; border-radius: 18px; padding: 26px; }
 .acd-modal-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
-.acd-modal-head h3 { font-size: 20px; font-weight: 800; margin: 0 0 4px; }
-.acd-modal-head p { font-size: 13px; color: #8a8a8a; margin: 0; }
-.acd-modal-x, .acp-edit-head button { border: none; background: none; font-size: 26px; line-height: 1; color: #999; cursor: pointer; }
-.acd-conv-note { border: 1.5px solid #23bdbb; border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; }
-.acd-conv-note b { display: block; font-size: 15px; color: #199; margin-bottom: 6px; }
-.acd-conv-note p { font-size: 13px; color: #555; line-height: 1.6; margin: 0; }
-.acd-conv-rows { background: #f6f7f8; border-radius: 12px; padding: 6px 18px; margin-bottom: 14px; }
-.acd-conv-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 0;
-    border-bottom: 1px solid #eaeaea; font-size: 14px; }
-.acd-conv-row:last-child { border-bottom: none; }
-.acd-conv-row > span { color: #666; font-weight: 600; }
-.acd-conv-row select { height: 38px; border: 1px solid #ddd; border-radius: 8px; padding: 0 12px; font-size: 14px; }
+.acd-modal-head h3 { font-size: 20px; font-weight: 700; color: #000; margin: 0 0 5px; line-height: 27px; }
+.acd-modal-head p { font-size: 16px; color: #777; margin: 0; line-height: 22px; letter-spacing: -0.04em; }
+.acd-modal-x, .acp-edit-head button { border: none; background: none; padding: 0; cursor: pointer;
+    font-size: 26px; line-height: 1; color: #999; }
+.acd-modal-x img { width: 20px; height: 20px; display: block; }
+
+.acd-modal.acd-conv-modal { width: 704px; max-width: calc(100vw - 40px); border-radius: 30px;
+    padding: 30px 18px 20px; max-height: calc(100vh - 40px); overflow-y: auto; box-sizing: border-box; }
+.acd-conv-modal > * { margin-left: 2px; margin-right: 2px; }
+.acd-conv-note { display: flex; gap: 10px; border: 1px solid #23bdbb; border-radius: 30px;
+    padding: 20px 26px 20px 20px; margin-bottom: 20px; }
+.acd-conv-note img { width: 14px; height: 14px; margin-top: 4px; flex-shrink: 0; }
+.acd-conv-note b { display: block; font-size: 16px; font-weight: 700; color: #000; letter-spacing: -0.04em;
+    margin-bottom: 4px; }
+.acd-conv-note p { font-size: 16px; color: #000; letter-spacing: -0.04em; line-height: 22px; margin: 0; }
+.acd-conv-rows { background: #f4f4f4; border-radius: 30px; padding: 16px 20px; margin-bottom: 20px; }
+.acd-conv-row { display: flex; align-items: center; justify-content: space-between; height: 40px;
+    font-size: 16px; padding: 0 2px; }
+.acd-conv-row > span { color: #000; font-weight: 700; }
+.acd-conv-row > b { color: #000; font-weight: 700; }
+/* Figma: 값은 우측 정렬 볼드 텍스트 — select도 테두리 없는 텍스트형으로 */
+.acd-conv-row select { height: 40px; border: none; border-radius: 8px; background-color: transparent;
+    padding: 0 22px 0 8px; font-size: 16px; font-weight: 700; color: #000; cursor: pointer;
+    appearance: none; -webkit-appearance: none; text-align: right;
+    background-image: url('/figma-assets/admin/pd_select_chevron.png');
+    background-repeat: no-repeat; background-position: right center; background-size: 14px 7px; }
+.acd-conv-row select option { text-align: left; font-weight: 400; }
 .acd-perioddrop { position: relative; }
-.acd-perioddrop > button { height: 38px; min-width: 150px; border: 1px solid #ddd; border-radius: 8px;
-    background: #fff; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; }
-.acd-perioddrop ul { position: absolute; right: 0; top: 42px; z-index: 30; list-style: none; margin: 0; padding: 6px;
-    background: #fff; border: 1px solid #e2e2e2; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.12); min-width: 150px; }
-.acd-perioddrop li button { width: 100%; text-align: left; border: none; background: none; padding: 9px 12px;
-    border-radius: 7px; font-size: 14px; cursor: pointer; }
-.acd-perioddrop li button.sel { color: #23bdbb; font-weight: 700; }
-.acd-conv-warn { border: 1.5px solid #f74e7e; border-radius: 10px; padding: 12px 16px; font-size: 13px;
-    color: #d6336c; margin-bottom: 14px; }
+.acd-perioddrop > button { height: 40px; border: none; background: none; padding: 0;
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+    font-size: 16px; font-weight: 700; color: #000; }
+.acd-perioddrop > button img { width: 14px; height: 7px; }
+.acd-perioddrop ul { position: absolute; right: 0; top: 0; z-index: 30; list-style: none; margin: 0;
+    padding: 4px 0; background: #fff; border: 1px solid #ddd; border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12); width: 164px; box-sizing: border-box; }
+.acd-perioddrop li button { width: 100%; text-align: left; border: none; background: none; padding: 0 22px;
+    height: 36px; font-size: 16px; color: #777; cursor: pointer; }
+.acd-perioddrop li button:hover { background: #f5f5f5; }
+.acd-perioddrop li button.sel { color: #777; }
+
+/* 생성 예상/결과 가상시민 박스 (302:30202 — 668x180 r30 #f4f4f4) */
+.acd-conv-preview { background: #f4f4f4; border-radius: 30px; padding: 30px 31px 28px; margin-bottom: 20px; }
+.acd-conv-preview h4 { font-size: 18px; font-weight: 700; color: #000; margin: 0 0 9px; line-height: 21px; }
+.acd-conv-preview-row { display: flex; align-items: flex-start; gap: 5px; }
+.acd-conv-preview-row .acp-avatar { width: 51px; height: 51px; }
+.acd-conv-preview-info { padding-top: 0; }
+.acd-conv-preview-name { font-size: 16px; color: #000; line-height: 19px; margin-bottom: 10px; }
+.acd-conv-preview-empty { font-size: 16px; color: #777; line-height: 22px; margin: 2px 0 10px; }
+.acd-conv-preview-note { font-size: 16px; color: #777; line-height: 19px; margin: 20px 0 0; }
+.acp-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.acp-tags span { display: inline-flex; align-items: center; height: 20px; padding: 0 6px;
+    border: 1px solid #23bdbb; border-radius: 5px; color: #23bdbb; font-size: 12px; font-weight: 500;
+    font-family: Montserrat, Pretendard, sans-serif; letter-spacing: -0.04em; white-space: nowrap; }
+
+.acd-conv-warn { display: flex; align-items: center; gap: 10px; border: 1px solid #f74e7e;
+    border-radius: 30px; height: 42px; padding: 0 22px; box-sizing: border-box; font-size: 18px;
+    letter-spacing: -0.04em; color: #000; margin-bottom: 20px; }
+.acd-conv-warn img { width: 18px; height: 18px; flex-shrink: 0; }
 .acd-conv-result { border-radius: 10px; padding: 13px 16px; font-size: 13px; margin-bottom: 14px; line-height: 1.6; }
 .acd-conv-result.ok { background: #e9f9f8; color: #157; }
 .acd-conv-result.err { background: #fde8ec; color: #c0392b; }
 .acd-conv-goto { display: inline-block; margin-left: 8px; border: none; background: none; color: #1ba9a7;
     font-weight: 700; cursor: pointer; }
-.acd-modal-foot, .acp-edit-foot { display: flex; justify-content: center; gap: 12px; }
-.acd-btn-cancel { height: 46px; padding: 0 30px; border: none; border-radius: 10px; background: #2d2d2d;
-    color: #fff; font-weight: 700; cursor: pointer; }
-.acd-btn-run { height: 46px; padding: 0 30px; border: none; border-radius: 10px; background: #23bdbb;
-    color: #fff; font-weight: 700; cursor: pointer; }
+.acd-modal-foot, .acp-edit-foot { display: flex; justify-content: center; gap: 10px; }
+.acd-btn-cancel { width: 100px; height: 50px; border: none; border-radius: 10px; background: #333;
+    color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+.acd-btn-run { height: 50px; padding: 0 30px; border: none; border-radius: 10px; background: #43c1c1;
+    color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.acd-conv-modal .acd-btn-run { width: 200px; padding: 0; }
+.acd-btn-run img { width: 15px; height: 15px; }
 .acd-btn-run:disabled, .acd-btn-cancel:disabled { opacity: .5; cursor: default; }
 
-/* ── 생성 관리 페이지 ── */
+/* ── 가상시민 생성 관리 (302:30975/30242) ─────────────────── */
 .acp-genbar { display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    background: #f6f7f8; border: 1px solid #ececec; border-radius: 14px; padding: 18px 24px; margin-bottom: 16px; flex-wrap: wrap; }
-.acp-genbar-l { display: flex; align-items: center; gap: 12px; }
-.acp-genbar-l label { font-size: 14px; font-weight: 600; color: #555; }
-.acp-genbar-l select, .acp-genbar-r select { height: 42px; border: 1px solid #ddd; border-radius: 10px;
-    padding: 0 12px; font-size: 14px; background: #fff; }
-.acp-genbar-r { display: flex; align-items: center; gap: 8px; }
-.acp-gen-label { font-size: 13px; font-weight: 700; color: #199; }
-.acp-gen-btn { height: 42px; padding: 0 20px; border: none; border-radius: 10px; background: #23bdbb;
-    color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
+    background: #f4f4f4; border-radius: 10px; padding: 20px 30px; margin-bottom: 24px; flex-wrap: wrap; }
+.acp-genbar-l { display: flex; align-items: center; gap: 18px; }
+.acp-genbar-l label { font-size: 16px; font-weight: 400; color: #333; }
+.acp-genbar-l select, .acp-genbar-r select { height: 50px; border: none; border-radius: 10px;
+    padding: 0 44px 0 20px; font-size: 16px; color: #111; background-color: #fff; cursor: pointer;
+    appearance: none; -webkit-appearance: none;
+    background-image: url('/figma-assets/admin/pd_select_chevron.png');
+    background-repeat: no-repeat; background-position: right 16px center; background-size: 20px 10px; }
+.acp-genbar-r { display: flex; align-items: center; gap: 10px; }
+.acp-gen-label { font-size: 14px; font-weight: 700; color: #199; }
+.acp-gen-btn { height: 50px; padding: 0 20px; border: none; border-radius: 10px; background: #43c1c1;
+    color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
 .acp-gen-btn:disabled { opacity: .5; cursor: default; }
 .acp-gen-hint { font-size: 12px; color: #b08; }
 .acp-gen-result { border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-bottom: 14px; }
 .acp-gen-result.ok { background: #e9f9f8; color: #157; }
 .acp-gen-result.err { background: #fde8ec; color: #c0392b; }
 
-.acp-list { display: flex; flex-direction: column; gap: 12px; }
-.acp-item { border: 1px solid #e7e7e7; border-radius: 14px; background: #fff; overflow: hidden; }
-.acp-item.open { border-color: #23bdbb; box-shadow: 0 0 0 1px #23bdbb inset; }
-.acp-item-head { display: flex; align-items: center; gap: 10px; padding: 16px 18px; }
-.acp-item-main { flex: 1; display: flex; align-items: center; gap: 14px; border: none; background: none;
-    cursor: pointer; text-align: left; min-width: 0; }
-.acp-avatar { border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #23bdbb; display: flex;
-    align-items: center; justify-content: center; color: #fff; font-weight: 800; }
+.acp-list { display: flex; flex-direction: column; gap: 20px; }
+.acp-item { border: 1px solid #ddd; border-radius: 10px; background: #fff; overflow: hidden; }
+.acp-item.open { border-color: #43c1c1; }
+.acp-item-head { display: flex; align-items: center; gap: 10px; padding: 19px 20px 19px 23px; min-height: 89px;
+    box-sizing: border-box; }
+.acp-item-main { flex: 1; display: flex; align-items: center; gap: 8px; border: none; background: none;
+    cursor: pointer; text-align: left; min-width: 0; padding: 0; }
+.acp-avatar { width: 45px; height: 45px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+    background: #ece5d3; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; }
 .acp-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .acp-item-info { min-width: 0; }
-.acp-item-nameline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.acp-item-nameline b { font-size: 16px; font-weight: 800; }
-.acp-item-nameline em { font-size: 13px; color: #888; font-style: normal; }
-.acp-item-tags { display: flex; gap: 5px; }
-.acp-item-tags span { font-size: 11px; color: #199; background: #e3f6f5; border-radius: 20px; padding: 2px 9px; }
-.acp-item-meta { font-size: 12.5px; color: #9aa3ab; margin-top: 4px; }
-.acp-item-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.acp-act { height: 36px; padding: 0 12px; border: 1px solid #e2e2e2; background: #fff; border-radius: 9px;
-    font-size: 13px; font-weight: 600; color: #555; cursor: pointer; }
-.acp-act.edit { color: #199; border-color: #b8e7e6; }
-.acp-act.rep { color: #a1750a; border-color: #eddcae; }
+.acp-item-nameline { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.acp-item-nameline b { font-size: 16px; font-weight: 700; color: #000; line-height: 19px; }
+.acp-item-nameline em { font-size: 16px; color: #000; font-style: normal; font-weight: 400; margin-right: 4px;
+    line-height: 19px; }
+.acp-item-meta { font-size: 16px; color: #777; margin-top: 11px; line-height: 19px; }
+.acp-item-actions { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+.acp-act { border: none; background: none; padding: 0; font-size: 16px; font-weight: 400; color: #777;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 10px; }
+.acp-act img { display: block; }
+.acp-act.edit img { width: 25px; height: 25px; }
+.acp-act.json { width: 120px; height: 50px; border: 1px solid #ddd; border-radius: 10px;
+    justify-content: center; gap: 0; }
+.acp-act.json:hover { background: #f5f5f5; }
+.acp-act.del img { width: 19px; height: 20px; }
+.acp-act.chev img { width: 20px; height: 10px; transition: transform .15s; }
+.acp-item.open .acp-act.chev img { transform: rotate(180deg); }
+.acp-act.rep { height: 36px; padding: 0 12px; border: 1px solid #eddcae; border-radius: 10px;
+    font-size: 13px; font-weight: 600; color: #a1750a; }
 .acp-act.rep.on { color: #fff; background: #f0a500; border-color: #f0a500; }
 .acp-act.rep.on:hover { background: #e09800; }
-.acp-act.del { color: #d6336c; border-color: #f6cad7; }
-.acp-act.chev { width: 36px; padding: 0; font-size: 15px; }
-.acp-act:hover { background: #f5f5f5; }
-.acp-item-body { border-top: 1px solid #eee; background: #fafbfb; padding: 8px 18px 18px; }
+.acp-item-body { border-top: 1px solid #eee; background: #fff; padding: 8px 20px 20px; }
 
-/* 편집 모달 — 탭 구조 · 세로 단일 컬럼 (가로 스크롤 방지) */
+/* 편집 모달 — 탭 구조 (Figma 프레임 없음 — 기존 디자인 언어 유지) */
 .acp-edit { width: 560px; max-width: calc(100vw - 32px); max-height: 90vh; background: #fff; border-radius: 16px;
     display: flex; flex-direction: column; }
 .acp-edit-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px;
     border-bottom: 1px solid #eee; }
 .acp-edit-head h3 { font-size: 18px; font-weight: 800; margin: 0; }
-
-/* 탭 네비 */
 .acp-edit-tabs { display: flex; gap: 4px; padding: 10px 24px 0; border-bottom: 1px solid #eee; flex-wrap: wrap; }
 .acp-edit-tab { border: none; background: none; padding: 10px 14px; font-size: 14px; font-weight: 700;
     color: #999; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
 .acp-edit-tab.on { color: #23bdbb; border-bottom-color: #23bdbb; }
-
 .acp-edit-body { padding: 20px 24px; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 14px; }
-/* minmax(0,1fr) — 자식 내용이 넘쳐도 트랙이 늘어나지 않아 가로 스크롤이 생기지 않음 */
 .acp-edit-grid4 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .acp-edit-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .acp-edit-body label { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: #555; min-width: 0; }
@@ -222,6 +406,7 @@
 .acp-edit-json textarea { font-family: ui-monospace, monospace; font-size: 12px; resize: vertical; }
 .acp-edit-err { background: #fde8ec; color: #c0392b; border-radius: 9px; padding: 10px 14px; font-size: 13px; }
 .acp-edit-foot { padding: 16px 24px; border-top: 1px solid #eee; }
+.acp-edit-foot .acd-btn-cancel { width: auto; padding: 0 30px; }
 
 @media (max-width: 1100px) {
     .acd-counts { grid-template-columns: repeat(3, 1fr); }
