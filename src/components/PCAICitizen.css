@@ -764,20 +764,37 @@
 }
 .aic-leftcol > * { pointer-events: auto; }
 
-/* 구역별 카드 */
+/* 구역별 카드 — Figma 302:3603 (305x103, r12, 라벨 14/400 #737373, 셀렉트 46px r8 보더 #242424) */
 .aic-region-card {
-    width: 268px;
+    width: 305px;
     background: #fff;
-    border-radius: 16px;
+    border-radius: 12px;
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
     padding: 16px;
     box-sizing: border-box;
     flex: none;
 }
+.aic .aic-region-card .pubdata-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #737373;
+    margin-bottom: 6px;
+}
+.aic .aic-region-card .pubdata-select-btn {
+    height: 46px;
+    border-radius: 8px;
+    border-color: #242424;
+    font-size: 16px;
+}
+.aic .aic-region-card .pubdata-caret {
+    border-left-width: 6px;
+    border-right-width: 6px;
+    border-top: 7px solid #242424; /* Figma keyboard_arrow_down 다크 */
+}
 
-/* 생활정보 세로 레일 (떠있는 흰 카드) */
+/* 생활정보 세로 레일 (떠있는 흰 카드) — Figma 302:3687 (122px, r19, 라벨 14/500 #737373) */
 .aic-liferail {
-    width: 112px;
+    width: 122px;
     background: #fff;
     border-radius: 19px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
@@ -821,7 +838,7 @@
     font-family: inherit;
     font-size: 14px;
     font-weight: 500;
-    color: #1e1e1e;
+    color: #737373;
     letter-spacing: -0.04em;
     line-height: 1.35;
     white-space: nowrap;
@@ -849,7 +866,7 @@
 .aic-chatbot-btn:hover { background: #1aa6a4; }
 .aic-chatbot-btn:active { transform: translateY(1px); }
 .aic-chatbot-btn--rail {
-    width: 112px;
+    width: 122px;
     height: 44px;
     border-radius: 14px;
     font-size: 14px;
@@ -869,13 +886,17 @@
 /* ── 우측 페르소나 리스트 ── */
 .aic-list {
     position: absolute; top: 20px; right: 80px; /* 우측 끝 툴바(48px)+간격 자리 확보 (사용자 확정) */
-    width: 384px; z-index: 5;
+    width: 483px; z-index: 5; /* Figma 302:4169 필터 패널 483px */
     display: flex; flex-direction: column;
     max-height: calc(100% - 40px); /* 내용에 맞춰 늘어나되 지도 영역 안에서 캡 (긴 목록은 내부 스크롤) */
-    padding: 22px 20px 14px;
+    padding: 24px 16px 16px; /* Figma 302:4169 — 카드 인셋 16, 텍스트는 x28(아래 인셋 12 추가) */
     font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
     letter-spacing: -0.02em;
 }
+.aic-list:not(.aic-list--default) .aic-list-title,
+.aic-list:not(.aic-list--default) .aic-list-sub { margin-left: 12px; margin-right: 12px; }
+.aic-list:not(.aic-list--default) .aic-list-guide { margin-left: 12px; margin-right: 12px; }
+.aic-list:not(.aic-list--default) .aic-list-bar { padding-left: 12px; padding-right: 12px; }
 /* 진입 인트로: 여성 페르소나(좌하단) + 말풍선(하단 중앙). Figma 302:3561
    .pubdata 직속 오버레이. 페르소나는 좌측 패널/말풍선/지도보다 위(최상단). */
 .aic-intro { position: absolute; inset: 0; z-index: 30; pointer-events: none; overflow: hidden; }
@@ -884,9 +905,10 @@
    내부 자식은 전부 px 오프셋 → 1100~1920px 어느 화면비에서도 캐릭터/말풍선이 서로 겹치지 않는다. */
 .aic-intro-group {
     position: absolute; bottom: 0; height: 0;
-    left: calc((100% - 599px) / 2); /* 우측 패널(519)+패널 우측여백(80) 제외 영역의 중앙 */
-    transform: translateX(-50%);
-    width: min(872px, calc(100% - 619px)); /* 캐릭터 224+간격 28+말풍선 620 상한, 패널과 20px 간격 */
+    /* 가시영역(좌측 생활정보 레일 154px ~ 우측 패널 619px) 안에서 중앙, 절대 레일/패널과 안 겹침:
+       width = min(상한 872, 화면 - 레일 154 - 패널 599 - 간격 20), left = 중앙값을 154px 로 하한 클램프 */
+    width: min(872px, calc(100% - 773px));
+    left: max(154px, calc((100% - 599px - min(872px, 100% - 773px)) / 2));
     pointer-events: none;
 }
 .aic-intro-persona {
@@ -921,26 +943,26 @@
     to { opacity: 1; transform: translateY(0); }
 }
 .aic-intro-close {
-    position: absolute; top: 16px; right: 16px; width: 28px; height: 28px;
+    position: absolute; top: 13px; right: 10px; width: 34px; height: 34px; /* Figma cancel_filled 36px */
     display: flex; align-items: center; justify-content: center;
     background: #f1f3f4; border: none; border-radius: 50%; color: #7a8388; cursor: pointer;
 }
 .aic-intro-close:hover { background: #e5e8ea; color: #4a5257; }
-.aic-intro-title { display: block; font-size: 20px; font-weight: 800; color: #0f8f8c; margin: 0 40px 10px 0; letter-spacing: -0.02em; }
-.aic-intro-desc { margin: 0 0 18px; font-size: 15px; line-height: 1.55; color: #3f4a4a; }
+.aic-intro-title { display: block; font-size: 20px; font-weight: 700; color: #23bdbb; margin: 0 40px 10px 0; letter-spacing: -0.02em; }
+.aic-intro-desc { margin: 0 0 18px; font-size: 15px; line-height: 1.45; color: #242424; }
 .aic-intro-cta {
     display: inline-flex; align-items: center; background: #23bdbb; color: #fff;
-    border: none; border-radius: 10px; padding: 11px 22px; font-size: 14px; font-weight: 800;
+    border: none; border-radius: 17px; padding: 8px 21px; font-size: 15px; font-weight: 700; /* Figma 302:3631 206x34 r≈17 */
     letter-spacing: -0.02em; cursor: pointer; font-family: inherit;
     box-shadow: 0 4px 14px rgba(35,189,187,0.3); transition: background 0.15s, transform 0.1s;
 }
 .aic-intro-cta:hover { background: #1aa6a4; }
 .aic-intro-cta:active { transform: translateY(1px); }
 
-/* 선택 지역 해제 칩 (지도 위 선택 구·군, Figma 302:4116) */
+/* 선택 지역 해제 칩 (지도 위 선택 구·군, Figma 302:4166 — cancel_filled 28px, 라벨 바로 아래) */
 .aic-deselect-chip {
     display: flex; align-items: center; justify-content: center;
-    width: 26px; height: 26px; padding: 0; border-radius: 50%;
+    width: 28px; height: 28px; padding: 0; border-radius: 50%;
     background: #fff; border: none; cursor: pointer;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     animation: aicChipIn 0.25s ease both;
@@ -953,6 +975,12 @@
 .aic-select-clear { display: inline-flex; align-items: center; justify-content: center; margin-left: auto; margin-right: 8px; color: #b0b7bc; cursor: pointer; }
 .aic-select-clear:hover { color: #23bdbb; }
 
+/* 좁은 화면: 캐릭터 축소 + 말풍선 시작점 당김 — 1240에서도 말풍선 실사용 폭 확보 */
+@media (max-width: 1360px) {
+    .aic-intro-persona { width: 184px; }
+    .aic-intro-bubble { left: 206px; bottom: 220px; max-width: min(620px, calc(100% - 206px)); }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .aic-intro-persona, .aic-intro-bubble, .aic-deselect-chip { animation: none; }
 }
@@ -962,9 +990,9 @@
     0% { opacity: 0; transform: translate(-50%, calc(-50% + 16px)) scale(0.7); }
     100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
-.aic-list-title { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: #333; }
+.aic-list-title { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: #242424; letter-spacing: -0.04em; }
 .aic-list-title span { color: #23bdbb; }
-.aic-list-sub { margin: 0 0 16px; font-size: 14px; color: #1f1f1f; line-height: 1.35; }
+.aic-list-sub { margin: 0 0 16px; font-size: 14px; color: #737373; line-height: 1.35; letter-spacing: 0; }
 /* [2-5] 구별 대표 가상시민 안내문구 */
 .aic-list-guide { margin: 0 0 16px; padding: 11px 14px; background: #e6f7f7; border-radius: 10px;
     font-size: 13px; color: #14807e; line-height: 1.45; }
@@ -976,9 +1004,9 @@
     background: #f4fbfb; color: #23807e; font-size: 14px; font-weight: 700; border-radius: 10px; cursor: pointer; }
 .aic-more-btn:hover { background: #e8f6f6; }
 .aic-list-bar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; }
-.aic-list-count { font-size: 14px; font-weight: 400; color: #1f1f1f; }
+.aic-list-count { font-size: 14px; font-weight: 400; color: #737373; }
 .aic-sort { position: relative; }
-.aic-sort-btn { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; font-size: 13px; font-weight: 600; color: #555; cursor: pointer; font-family: inherit; }
+.aic-sort-btn { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; font-size: 14px; font-weight: 400; color: #737373; cursor: pointer; font-family: inherit; }
 .aic-sort-menu { position: absolute; top: 100%; right: 0; margin: 4px 0 0; padding: 4px; list-style: none; background: #fff; border: 1px solid #ececec; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 10; }
 .aic-sort-menu button { display: block; width: 100%; text-align: left; white-space: nowrap; padding: 8px 16px; border: none; background: none; font-size: 13px; color: #444; cursor: pointer; border-radius: 7px; font-family: inherit; }
 .aic-sort-menu button:hover, .aic-sort-menu button.sel { background: #e6f8f8; color: #1aa6a4; font-weight: 700; }
@@ -1046,35 +1074,35 @@
    카드 크기가 px 고정이라 내부 요소는 Figma 절대좌표 그대로 배치. */
 .aic-list--default {
     width: 519px;
-    padding: 22px 26px 18px; overflow: hidden; /* 피크 카드를 패널 모서리에서 클립 */
+    padding: 30px 26px 18px; overflow: hidden; /* 피크 카드를 패널 모서리에서 클립. 타이틀 y≈32 (Figma 302:3637) */
 }
 
-/* ── 구/군 선택 상태 — 컴팩트 세로 리스트 (사용자 확정 레퍼런스) ──
-   카드: 56px 아바타 + 이름/나이 + 해시태그 칩 + 2줄 말줄임 인용. 화살표/점선구분선 없음. */
+/* ── 구/군 선택 상태 — 컴팩트 세로 리스트 (사용자 확정 레퍼런스, 토큰은 Figma 302:4169) ──
+   카드 446x148 r8 보더 #e6e6e6 / 80px 아바타 / 이름·나이 16px 500 / 칩 12px / 인용 16px 600 2줄. 화살표/점선구분선 없음. */
 .aic-rlist {
     flex: 1; min-height: 0; overflow-y: auto;
-    display: flex; flex-direction: column; gap: 10px; padding-bottom: 4px;
+    display: flex; flex-direction: column; gap: 14px; padding-bottom: 4px;
 }
 .aic-rcard {
     flex: none; display: block; width: 100%; box-sizing: border-box; text-align: left;
     font-family: inherit; cursor: pointer;
-    background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 12px 14px;
+    background: #fff; border: 1px solid #e6e6e6; border-radius: 8px; padding: 14px 16px 16px 12px;
     transition: border-color 0.13s, box-shadow 0.13s, background 0.13s;
 }
 .aic-rcard:hover { border-color: #c8eceb; box-shadow: 0 4px 14px rgba(35,189,187,0.12); }
 .aic-rcard.active { border-color: #23bdbb; background: #f6fcfc; }
-.aic-rcard-head { display: flex; align-items: center; gap: 12px; }
-.aic-rcard-headtext { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-.aic-rcard-namerow { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
-.aic-rcard-name { font-size: 16px; font-weight: 800; color: #222; }
-.aic-rcard-age { font-size: 13px; font-weight: 500; color: #7a8388; }
-.aic-rcard-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.aic-rcard-head { display: flex; align-items: flex-start; gap: 10px; }
+.aic-rcard-headtext { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 0; }
+.aic-rcard-namerow { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.aic-rcard-name { font-size: 16px; font-weight: 500; color: #242424; letter-spacing: -0.04em; }
+.aic-rcard-age { font-size: 16px; font-weight: 500; color: #737373; letter-spacing: -0.04em; }
+.aic-rcard-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .aic-rcard-tags span {
-    font-size: 11px; font-weight: 500; color: #23bdbb;
-    border: 1px solid #23bdbb; border-radius: 4px; padding: 1px 5px; white-space: nowrap;
+    font-size: 12px; font-weight: 500; color: #23bdbb; letter-spacing: -0.04em;
+    border: 1px solid #23bdbb; border-radius: 4px; padding: 1px 4px; line-height: 16px; white-space: nowrap;
 }
 .aic-rcard-quote {
-    margin: 8px 0 0; font-size: 13px; color: #444; line-height: 1.5;
+    margin: 10px 0 0; font-size: 16px; font-weight: 600; color: #242424; line-height: 1.4;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 /* 지도 툴바: 화면 오른쪽 끝 고정, 패널 상단과 정렬 (사용자 확정 — 패널 상태와 무관) */
@@ -1106,20 +1134,21 @@
     position: absolute; left: 0; top: 250px; width: 100%;
     display: flex; justify-content: center; gap: 8px;
 }
+.aic-dcard-tags { gap: 4px; } /* Figma 302:3645 칩 간격 4 */
 .aic-dcard-tags span {
-    border: 1px solid #23bdbb; border-radius: 4px; padding: 1px 4px;
-    font-size: 12px; font-weight: 500; line-height: 16px; color: #23bdbb; white-space: nowrap;
+    border: 1px solid #23bdbb; border-radius: 5px; padding: 1px 6px;
+    font-size: 12px; font-weight: 500; line-height: 16px; color: #23bdbb; letter-spacing: -0.04em; white-space: nowrap;
 }
 .aic-dcard-divider { position: absolute; left: 13px; top: 280px; width: 324px; border-top: 1px solid #d9d9d9; }
 .aic-dcard-quote {
-    /* 좌우 55px 거터 — 양끝 17px 따옴표 이미지(30px/320px 지점)가 텍스트를 절대 가리지 않게 분리 */
-    position: absolute; left: 55px; top: 290px; width: 241px; margin: 0;
-    font-size: 16px; font-weight: 600; color: #242424; line-height: 22px; letter-spacing: -0.04em;
+    /* Figma 302:3652 — 카드기준 x35 w291 y290, 16px 500 lh22.4 ls0, 따옴표는 (13,282)/(320,334) */
+    position: absolute; left: 35px; top: 290px; width: 291px; margin: 0;
+    font-size: 16px; font-weight: 500; color: #242424; line-height: 22.4px; letter-spacing: 0;
     text-align: center;
     display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 .aic-dcard-q { position: absolute; width: 17px; height: 17px; }
-.aic-dcard-q--open { left: 30px; top: 299px; transform: rotate(180deg); }
+.aic-dcard-q--open { left: 13px; top: 282px; transform: rotate(180deg); }
 .aic-dcard-q--close { left: 320px; top: 334px; }
 /* 다음 카드 피크: 카드 우측 21px 간격, 패널 overflow:hidden 으로 우측 모서리에서 잘림 */
 .aic-dpeek { position: absolute; left: 372px; top: 0; width: 351px; height: 383px; pointer-events: none; z-index: 1; }
@@ -1260,8 +1289,13 @@
 .aic-rp-foot span { font-size: 12px; font-weight: 300; color: #111111; }
 .aic-rp-foot button { background: none; border: none; color: #111111; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
 
-/* 좁은 화면: 컴팩트(구/군 선택) 패널만 축소 — 기본(부산대표) 패널은 카드가 351px 고정이라 519 유지 */
-@media (max-width: 1280px) { .aic-list:not(.aic-list--default) { width: 340px; } }
+/* 좁은 화면: 컴팩트(구/군 선택) 패널만 축소 — 기본(부산대표) 패널은 카드가 351px 고정이라 519 유지.
+   (지도 가용폭 계산 FigmaDistrictMap panelW 와 반드시 동기: ≤1280 → 360) */
+@media (max-width: 1280px) {
+    .aic-list:not(.aic-list--default) { width: 360px; }
+    .aic-rcard .aic-avatar { width: 64px !important; height: 64px !important; }
+    .aic-rcard-quote { font-size: 14px; }
+}
 
 /* Header section */
 .pc-ai-detail-header {

@@ -70,6 +70,14 @@ const DISTRICTS_POS = [
     { name: '해운대구', left: 1083.53, top: 457.83, w: 229.72, h: 242.648, lx: -19.16, ly: 7.22 },
 ];
 const TEAL_FILTER = 'brightness(0) invert(67%) sepia(37%) saturate(586%) hue-rotate(136deg) brightness(0.9)';
+// 겹치는 버튼 사각형 때문에 작은 구(연제/동래/수영/동구/중구…) 히트박스가 큰 구 라벨을 가리는 문제 →
+// 면적 내림차순으로 z-index 부여 (작은 구가 항상 위) — 모든 구 라벨 지점이 자기 버튼에 명중함을 검산함.
+const AREA_RANK = Object.fromEntries(
+    [...DISTRICTS_POS].sort((a, b) => (b.w * b.h) - (a.w * a.h)).map((d, i) => [d.name, i + 1])
+);
+// 스테이지 좌표계에서 구 라벨이 존재하는 가로 구간 (강서구 좌측 ~ 기장군 라벨 우측 여유 포함)
+const MAP_CONTENT_LEFT = 370;
+const MAP_CONTENT_RIGHT = 1330;
 
 function FigmaDistrictMap({ selectedDistrict, onDistrictClick, onDeselect, hoveredDistrict, onDistrictHover, onDistrictLeave, hoverCitizen, hoverAvatarUrl, zoom = 1 }) {
     const selPos = selectedDistrict ? DISTRICTS_POS.find((d) => d.name === selectedDistrict) : null;
@@ -80,13 +88,20 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, onDeselect, hover
         const update = () => {
             if (!containerRef.current) return;
             const { width, height } = containerRef.current.getBoundingClientRect();
-            const sc = Math.min(width / 1920, height / 1080);
-            setLayout({ scale: sc, offsetX: (width - 1920 * sc) / 2, offsetY: (height - 1080 * sc) / 2 });
+            // 우측 페르소나 패널이 지도를 덮어 구 버튼 클릭 불가(1240px에서 7개) → 패널 폭만큼
+            // 가용폭을 빼고 스테이지를 좌측으로 밀거나(우선) 축소해 모든 구 라벨을 패널 밖에 유지.
+            const panelW = selectedDistrict ? (width <= 1280 ? 360 : 483) : 519;
+            const avail = Math.max(320, width - (80 + 16 + panelW));
+            const span = MAP_CONTENT_RIGHT - MAP_CONTENT_LEFT;
+            const sc = Math.min(width / 1920, height / 1080, avail / span);
+            let ox = Math.min((width - 1920 * sc) / 2, avail - MAP_CONTENT_RIGHT * sc);
+            ox = Math.max(ox, -MAP_CONTENT_LEFT * sc);
+            setLayout({ scale: sc, offsetX: ox, offsetY: (height - 1080 * sc) / 2 });
         };
         update();
         window.addEventListener('resize', update);
         return () => window.removeEventListener('resize', update);
-    }, []);
+    }, [selectedDistrict]);
 
     const hoverBubble = (() => {
         if (!hoveredDistrict || !hoverCitizen) return null;
@@ -115,7 +130,7 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, onDeselect, hover
                         onClick={() => onDistrictClick(d.name)}
                         onMouseEnter={() => onDistrictHover && onDistrictHover(d.name)}
                         onMouseLeave={onDistrictLeave}
-                        style={{ position: 'absolute', left: d.left, top: d.top, width: d.w, height: d.h, background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+                        style={{ position: 'absolute', left: d.left, top: d.top, width: d.w, height: d.h, background: 'none', border: 'none', padding: 0, cursor: 'pointer', zIndex: AREA_RANK[d.name] }}>
                         <img src={`/assets/districts/${d.name}.svg`} alt={d.name} draggable={false}
                             style={{ width: '100%', height: '100%', display: 'block', userSelect: 'none' }} />
                         {selectedDistrict === d.name && (
@@ -137,20 +152,21 @@ function FigmaDistrictMap({ selectedDistrict, onDistrictClick, onDeselect, hover
                         style={{
                             position: 'absolute',
                             left: selPos.left + selPos.w / 2 + selPos.lx,
-                            top: selPos.top + selPos.h / 2 + selPos.ly + 30,
-                            transform: 'translate(-50%, 0)', zIndex: 13,
+                            top: selPos.top + selPos.h / 2 + selPos.ly + 14, /* Figma 302:4166 — 라벨 바로 아래 */
+                            transform: 'translate(-50%, 0)', zIndex: 20, /* AREA_RANK(≤16) 위 — 작은 구 히트박스가 X칩을 가리지 않게 */
                         }}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#23bdbb" strokeWidth="2.6" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#23bdbb" strokeWidth="2.6" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
                     </button>
                 )}
                 {hoverBubble && hoverCitizen && (
                     <div key={hoveredDistrict} className="aic-hovwrap" style={{ position: 'absolute', left: hoverBubble.cx, top: hoverBubble.cy, transform: 'translate(-50%, -50%)', pointerEvents: 'none', zIndex: 15 }}>
-                        <div style={{ position: 'absolute', [hoverBubble.showAbove ? 'bottom' : 'top']: 82, left: '50%', transform: 'translateX(-50%)', width: 320, background: '#fff', borderRadius: 14, padding: '14px 18px', boxShadow: '0 4px 20px rgba(0,0,0,0.18)', textAlign: 'center' }}>
-                            <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#111', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{hoverCitizen.quote}</p>
-                            <div style={{ position: 'absolute', [hoverBubble.showAbove ? 'bottom' : 'top']: -10, left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', [hoverBubble.showAbove ? 'borderTop' : 'borderBottom']: '10px solid #fff' }} />
+                        {/* Figma 302:3809(Group 605) — 청록 알약 말풍선(r=50, 흰 700 텍스트) + 아래 꼬리 + 아바타 원 */}
+                        <div style={{ position: 'absolute', [hoverBubble.showAbove ? 'bottom' : 'top']: 86, left: '50%', transform: 'translateX(-50%)', width: 'max-content', maxWidth: 340, background: '#23bdbb', borderRadius: 32, padding: '11px 26px', boxShadow: '0 6px 18px rgba(35,189,187,0.35)', textAlign: 'center', boxSizing: 'border-box' }}>
+                            <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#fff', lineHeight: 1.2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{hoverCitizen.quote}</p>
+                            <div style={{ position: 'absolute', [hoverBubble.showAbove ? 'bottom' : 'top']: -13, left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '12px solid transparent', borderRight: '12px solid transparent', [hoverBubble.showAbove ? 'borderTop' : 'borderBottom']: '14px solid #23bdbb' }} />
                         </div>
-                        <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: 140, height: 140, borderRadius: '50%', background: '#23bdbb', border: '6px solid rgba(35,189,187,0.35)', boxShadow: '0 6px 24px rgba(35,189,187,0.45)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
-                            {hoverAvatarUrl ? <img src={hoverAvatarUrl} alt="" style={{ width: 128, height: 128, borderRadius: '50%', objectFit: 'cover' }} /> : <span style={{ fontSize: 40, fontWeight: 800, color: '#fff' }}>{hoverCitizen.avatar_initial}</span>}
+                        <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: 140, height: 140, borderRadius: '50%', background: '#23bdbb', border: '3px solid rgba(255,255,255,0.9)', boxShadow: '0 6px 24px rgba(35,189,187,0.4)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
+                            {hoverAvatarUrl ? <img src={hoverAvatarUrl} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} /> : <span style={{ fontSize: 40, fontWeight: 800, color: '#fff' }}>{hoverCitizen.avatar_initial}</span>}
                         </div>
                     </div>
                 )}
@@ -352,7 +368,7 @@ function PersonaList({ region, citizens, avatars, sort, setSort, loaded, onSelec
                                 className={`aic-rcard${selectedId === c.id ? ' active' : ''}`}
                                 onClick={() => onSelect(c)}>
                                 <span className="aic-rcard-head">
-                                    <Avatar url={avatarSrc(avatars[c.id])} initial={c.avatar_initial} size={56} />
+                                    <Avatar url={avatarSrc(avatars[c.id])} initial={c.avatar_initial} size={80} />
                                     <span className="aic-rcard-headtext">
                                         <span className="aic-rcard-namerow">
                                             {(c.importance ?? 100) === 0 && <span className="aic-card-rep">대표</span>}
@@ -363,9 +379,9 @@ function PersonaList({ region, citizens, avatars, sort, setSort, loaded, onSelec
                                         <span className="aic-rcard-tags">
                                             {(c.tags || []).slice(0, 3).map((t) => <span key={t}># {String(t).replace(/^#\s*/, '')}</span>)}
                                         </span>
+                                        <p className="aic-rcard-quote">{c.quote}</p>
                                     </span>
                                 </span>
-                                <p className="aic-rcard-quote">{c.quote}</p>
                             </button>
                         ))}
                     </div>
@@ -504,12 +520,19 @@ export default function PCAICitizen({ onNavigate }) {
 
     const startChat = (c) => {
         setShowMapIntro(false);
-        const base = c || detail || selected || citizens[0];
-        if (base) setChatPersona({ ...base, avatarUrl: avatarSrc(avatars[base.id]) });
+        // 시민 0명 구에서도 무반응 금지 — 부산 전체 대표(importance 0) → 전체 첫 시민 순 폴백
+        const fallback = citizens[0] || all.find((x) => (x.importance ?? 99) === 0) || all[0];
+        const base = c || detail || selected || fallback;
+        if (!base) {
+            alert('가상시민 데이터를 아직 불러오지 못했어요. 잠시 후 다시 시도해주세요.');
+            return;
+        }
+        setChatPersona({ ...base, avatarUrl: avatarSrc(avatars[base.id]) });
     };
 
     const reportCitizen = detail || selected;
-    const hoverCitizen = hovered ? all.find((c) => c.district === hovered) : null;
+    // 선택된 구 위에서는 말풍선 숨김 — Figma 302:4116 선택 구는 라벨+X만 노출
+    const hoverCitizen = hovered && hovered !== region ? all.find((c) => c.district === hovered) : null;
 
     return (
         <UserPCLayout currentView="pcAICitizen" onNavigate={onNavigate}>
