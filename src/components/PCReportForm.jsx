@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Map, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk';
+import { Map, useKakaoLoader } from 'react-kakao-maps-sdk';
 import UserPCLayout from './UserPCLayout';
 import './PCFormShared.css';
 import './PCReportForm.css';
@@ -62,14 +62,12 @@ function LocationPickerModal({ onCancel, onConfirm }) {
             <div className="pc-loc-picker-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="pc-loc-picker-head">
                     <button className="pc-loc-picker-close" onClick={onCancel} aria-label="닫기">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        <img src="/figma-assets/icons/locate-modal/close_x.png" alt="" width="14" height="14" />
                     </button>
                     <p className="pc-loc-picker-title">우리동네 공공디자인을<br/>제보하고 싶은 장소를 선택해주세요.</p>
                 </div>
                 <div className="pc-loc-picker-search">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pc-loc-search-icon">
-                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                    </svg>
+                    <img className="pc-loc-search-icon" src="/figma-assets/icons/locate-modal/search.png" alt="" width="24" height="24" />
                     <input
                         type="text"
                         className="pc-loc-search-input"
@@ -80,7 +78,7 @@ function LocationPickerModal({ onCancel, onConfirm }) {
                     />
                     {search && (
                         <button className="pc-loc-search-clear" onClick={() => setSearch('')}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            <img src="/figma-assets/icons/locate-modal/clear_x.png" alt="" width="14" height="14" />
                         </button>
                     )}
                 </div>
@@ -97,16 +95,14 @@ function LocationPickerModal({ onCancel, onConfirm }) {
                                 setCenter({ lat: c.getLat(), lng: c.getLng() });
                             }}
                         >
-                            <MapMarker position={center} />
                         </Map>
                     ) : (
                         <div className="pc-loc-map-loading">지도 로딩 중...</div>
                     )}
+                    <img className="pc-loc-pin" src="/figma-assets/icons/locate-modal/pin.png" alt="" />
                     <div className="pc-loc-picker-hint">지도를 움직여서 선택해보세요</div>
                     <button className="pc-loc-current-btn" onClick={handleCurrentLocation} title="현재 위치">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
-                        </svg>
+                        <img src="/figma-assets/icons/locate-modal/mylocation_purple.png" alt="" width="24" height="24" />
                     </button>
                 </div>
                 <button className="pc-loc-picker-confirm pc-loc-picker-confirm--report" onClick={handleConfirm}>
@@ -325,7 +321,7 @@ export default function PCReportForm({ onNavigate }) {
                         <div className="pc-form-loc-row">
                             <button className={`pc-form-input pc-form-clickable${errors.location ? ' error' : ''}`} onClick={() => setShowMap(true)}>
                                 <span className={location ? '' : 'placeholder'}>{locationLabel}</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="10" r="3"/><path d="M12 22s7-7.5 7-13a7 7 0 0 0-14 0c0 5.5 7 13 7 13z"/></svg>
+                                <img src="/figma-assets/icons/locate-modal/field_locate_gray.png" alt="" width="24" height="24" />
                             </button>
                             <input
                                 type="text"
