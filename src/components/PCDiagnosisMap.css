@@ -10,15 +10,15 @@
 /* ───── 좌측 필터 스택: 4개 카드가 분리된 흰 카드로 세로 배치 ───── */
 .pc-diag-filter-stack {
     position: absolute;
-    top: 16px;
+    top: 20px; /* Figma 302:4768 — 패널류 상단 여백 20 */
     left: 16px;
     width: 305px;
-    max-height: calc(100% - 32px);
+    max-height: calc(100% - 40px);
     overflow-y: auto;
     z-index: 5;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 20px; /* Figma: 구역별 하단 → 다음 카드 20 */
     font-family: inherit;
     /* 스크롤바 숨기기 */
     scrollbar-width: none;
@@ -32,19 +32,19 @@
     width: auto;
     align-items: flex-start;
 }
-/* 2행: 생활정보 rail(112px) | 진단대상+공공시설물(268px, 세로 2장) — Figma 302:3872 진단 대시보드 */
+/* 2행: 생활정보 rail | 진단대상+공공시설물(305px, 세로 2장) — Figma 302:4768 진단 섹션 */
 .pc-diag-filter-row2 {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: 20px; /* Figma: rail(122) ↔ 카드 20 */
 }
 .pc-diag-filter-col2 {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 20px; /* Figma: 진단대상 ↔ 공공/시설물 21≈20 */
 }
 .pc-diag-filter-col2 .pc-diag-filter-card {
-    width: 268px;
+    width: 305px; /* Figma 302:6398/6411: 305px */
     box-sizing: border-box;
 }
 
@@ -56,17 +56,30 @@
 }
 
 .pc-diag-section-label {
+    /* Figma 302:8658 "진단대상": 14px w400 #737373 */
     font-size: 14px;
-    color: var(--diag-text-sub);
+    color: #737373;
     margin-bottom: 6px;
-    font-weight: 500;
+    font-weight: 400;
+    line-height: 1.35;
 }
 
 .pc-diag-facility-title {
+    /* Figma 302:6427 "공공/시설물": 16px w600 #000 */
     font-size: 16px;
-    font-weight: 700;
-    color: var(--diag-text);
-    margin-bottom: 8px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+/* 대분류/중분류/소분류 소제목 — Figma 302:6418~6420: 16px w600 #000 */
+.pc-diag-sub-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+    line-height: 1.4;
+    margin-bottom: 10px;
 }
 
 .pc-diag-dropdown {
@@ -159,38 +172,44 @@
     margin-top: 4px;
 }
 
-/* 공공/시설물 대분류 — 세로 1열 */
+/* 공공/시설물 대분류 — 세로 1열. Figma 302:6429: 행간 24px(박스 20 + 4) */
 .pc-diag-check-col {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 6px;
+    gap: 4px;
+    margin-top: 10px;
 }
 
-/* 구분선 */
+/* 구분선 — Figma: 점선 (302:6411 export 확인) */
 .pc-diag-facility-divider {
-    height: 1px;
-    background: #eee;
-    margin: 12px 0 8px;
+    height: 0;
+    background: none;
+    border-top: 1px dashed #d9d9d9;
+    margin: 16px 0 14px;
 }
 
-/* 중/소분류 셀렉트 박스 */
+/* 중/소분류 셀렉트 박스 — Figma 302:6421/6424: 273x35, r8, stroke #d9d9d9 */
 .pc-diag-sub-select {
-    margin-top: 4px;
+    margin-top: 0;
     margin-bottom: 0;
 }
 .pc-diag-sub-select select {
-    height: 38px;
+    height: 35px;
     font-size: 14px;
+    border-color: #d9d9d9;
+    color: #737373;
+    padding: 0 36px 0 12px;
 }
 
 .pc-diag-check {
+    /* Figma 302:6431: 14px, 체크박스 20px + gap 4 */
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 13px;
-    color: var(--diag-text-sub);
+    font-size: 14px;
+    color: #737373;
     cursor: pointer;
+    line-height: 1.35;
 }
 
 .pc-diag-check.on {
@@ -198,27 +217,41 @@
     font-weight: 600;
 }
 
+/* Figma Icons/check_box(_outline_blank) 20x20 재현 */
 .pc-diag-check input[type="checkbox"] {
-    accent-color: var(--diag-teal);
-    width: 16px;
-    height: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    border: 1.5px solid #d9d9d9;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.pc-diag-check input[type="checkbox"]:checked {
+    border-color: var(--diag-teal);
+    background: var(--diag-teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 9.16L8.90244 13L15 7' stroke='white' stroke-width='2'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
 }
 
 .pc-diag-filter-actions {
     display: flex;
-    gap: 8px;
-    margin-top: 14px;
+    gap: 11px; /* Figma: 131+11+131=273 */
+    margin-top: 20px;
 }
 
 .pc-diag-btn-cancel,
 .pc-diag-btn-confirm {
+    /* Figma 302:6414/6416: 131x35, r8, 14px w500 */
     flex: 1;
-    height: 38px;
+    height: 35px;
     border-radius: 8px;
     border: 1px solid var(--diag-border);
     background: #fff;
-    color: var(--diag-text-sub);
+    color: #737373;
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
     font-family: inherit;
 }
@@ -227,23 +260,23 @@
     background: var(--diag-teal);
     color: #fff;
     border-color: var(--diag-teal);
-    font-weight: 700;
 }
 
-/* 진단대상 */
+/* 진단대상 — Figma 302:6404: 버튼 85.7x46, gap 8, 16px */
 .pc-diag-target-row {
     display: flex;
-    gap: 6px;
+    gap: 8px;
 }
 
 .pc-diag-target-btn {
     flex: 1;
-    height: 42px;
+    height: 46px;
     border: 1px solid var(--diag-border);
     border-radius: 8px;
     background: #fff;
-    color: var(--diag-text-sub);
-    font-size: 14px;
+    color: #737373;
+    font-size: 16px;
+    font-weight: 400;
     cursor: pointer;
     font-family: inherit;
 }
@@ -252,13 +285,13 @@
     background: var(--diag-teal);
     color: #fff;
     border-color: var(--diag-teal);
-    font-weight: 700;
+    font-weight: 600;
 }
 
 /* ───── 툴바: 우측 패널(395px) 왼쪽에 배치. 패널 닫히면 화면 오른쪽 끝으로 ───── */
 .pc-diag-canvas .pc-map3-toolbar {
-    right: 427px;
-    top: 16px;
+    right: 431px; /* 패널 395 + 우측 16 + 간격 20 (Figma 302:6328: 패널↔툴바 20) */
+    top: 20px;
 }
 .pc-diag-sidebar-closed .pc-map3-toolbar {
     right: 16px;
@@ -276,7 +309,7 @@
 
 .pc-diag-cta-wrap {
     position: absolute;
-    bottom: 24px;
+    bottom: 31px; /* Figma 302:5621: 하단 여백 31 */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -287,6 +320,7 @@
 }
 
 .pc-diag-cta {
+    /* Figma 302:5621: 239x67, r100, 20px w700, ls -0.8px */
     width: 239px;
     height: 67px;
     border: none;
@@ -295,6 +329,7 @@
     color: #fff;
     font-size: 20px;
     font-weight: 700;
+    letter-spacing: -0.04em;
     cursor: pointer;
     box-shadow: 0 6px 16px rgba(35, 189, 187, 0.35);
     font-family: inherit;
@@ -360,10 +395,10 @@
 /* ───── 우측 패널 (list/detail/form/done 공용 컨테이너) ───── */
 .pc-diag-right {
     position: absolute;
-    top: 16px;
+    top: 20px; /* Figma: gnb 아래 19~20 */
     right: 16px;
     width: 395px;
-    bottom: 16px;
+    bottom: 20px;
     background: #fff;
     border-radius: 20px;
     box-shadow: 0 0 20px rgba(0,0,0,0.25);
@@ -390,34 +425,35 @@
     padding: 20px 20px 0;
 }
 
-.pc-diag-right-list { padding: 16px 16px 0; }
+.pc-diag-right-list { padding: 20px 20px 0; } /* Figma 302:5562: 패널 내 20 */
 
-/* Figma 스타일 카드 태그 — Figma 269:10408 목록 카드: 중립 회색 #e6e6e6 */
+/* Figma 스타일 카드 태그 — Figma 302:5571: #dff8f8, r15, h24, 14px w600 #242424 */
 .pc-diag-tag-fig {
     height: 24px;
-    padding: 0 12px;
-    background: #e6e6e6;
+    padding: 0 10px;
+    background: #dff8f8;
     border-radius: 15px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: #242424;
     display: inline-flex;
     align-items: center;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
     white-space: nowrap;
 }
 
-/* Figma 카드 name + score row */
+/* Figma 카드 name + score row — 태그 아래 40px (302:5566) */
 .pc-diag-card-name-row {
     display: flex;
     align-items: baseline;
     gap: 8px;
-    margin: 6px 0 4px;
+    margin: 38px 0 0;
     flex-wrap: wrap;
 }
 
 .pc-diag-card-name {
-    font-size: 18px;
+    /* Figma 302:5575: 20px w700 #23bdbb ls -0.8px */
+    font-size: 20px;
     font-weight: 700;
     color: #23bdbb;
     letter-spacing: -0.04em;
@@ -428,18 +464,21 @@
 }
 
 .pc-diag-card-score {
-    font-size: 22px;
+    /* Figma 302:5568: 26px w700 #000 */
+    font-size: 26px;
     font-weight: 700;
-    color: #242424;
+    color: #000;
     line-height: 1.3;
-    letter-spacing: -0.03em;
+    letter-spacing: 0;
     flex-shrink: 0;
 }
 
 .pc-diag-card-review {
+    /* Figma 302:5570: 14px w400 #000 */
     margin: 0;
-    font-size: 13px;
-    color: #242424;
+    font-size: 14px;
+    color: #000;
+    line-height: 1.3;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -490,11 +529,14 @@
 }
 
 .pc-diag-card {
+    /* Figma 302:5567: 355x140 r10, 카드 간격 20 */
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    padding: 14px 16px;
-    margin-bottom: 10px;
+    padding: 16px 17px;
+    margin-bottom: 20px;
+    min-height: 140px;
+    box-sizing: border-box;
     display: flex;
     gap: 14px;
     cursor: pointer;
@@ -578,8 +620,9 @@
 }
 
 .pc-diag-card-thumb {
-    width: 80px;
-    height: 80px;
+    /* Figma 302:5569: 86x84 r10 #d9d9d9 */
+    width: 86px;
+    height: 84px;
     border-radius: 10px;
     background-color: #d9d9d9;
     background-size: cover;
@@ -619,93 +662,105 @@
     font-family: inherit;
 }
 
-/* ───── form 패널 안 슬림 적응 ───── */
+/* ───── form 패널 안 (Figma 302:8063 진단하기_시민) ───── */
 .pc-diag-right-form .pc-diagform-title {
-    /* Figma 269:13157 — right panel: keep 24px but reduce margin */
-    margin: 0 0 16px;
-    font-size: 20px;
+    /* Figma 302:8174: 24px w700 ls -0.96px, 패널 상단에서 76 (padding 20 + 56), 아래 30 (섹션 padding 15 포함) */
+    margin: 56px 0 15px;
+    font-size: 24px;
     line-height: 1.4;
 }
 .pc-diag-right-form .pc-diagform-section {
-    padding: 14px 0;
+    padding: 15px 0;
+    border-bottom: none; /* Figma: 구분선 없음 */
 }
 .pc-diag-right-form .pc-diagform-photo {
+    /* Figma 302:8184: 80x80 r15 stroke #dcdcdc */
     width: 80px;
     height: 80px;
     border-radius: 15px;
+    border: 1px solid #dcdcdc;
+    border-style: solid;
+    background: #fff;
 }
-.pc-diag-right-form .pc-diagform-q-text { font-size: 13px; }
-.pc-diag-right-form .pc-diagform-q-num { width: 22px; height: 22px; font-size: 12px; }
+.pc-diag-right-form .pc-diagform-q-text { font-size: 16px; }
+.pc-diag-right-form .pc-diagform-q-num { width: 20px; height: 20px; font-size: 12px; }
 .pc-diag-right-form .pc-diagform-scale {
-    height: 56px;
-    padding: 0 24px;
+    /* Figma 302:8198: 폭 287 (dots 271), dot 16, faces +8 */
+    height: 62px;
+    padding: 0 33px 0 35px;
     max-width: 100%;
 }
 .pc-diag-right-form .pc-diagform-scale-track {
-    left: 36px;
-    right: 36px;
-    top: 16px;
+    left: 35px;
+    right: 33px;
+    top: 6.5px;
 }
-.pc-diag-right-form .pc-diagform-scale-face { font-size: 18px; margin-top: 8px; }
+.pc-diag-right-form .pc-diagform-scale-face { margin-top: 8px; }
 .pc-diag-right-form .pc-diagform-actions {
-    margin-top: 16px;
-    padding-bottom: 24px;
-    gap: 8px;
+    margin-top: 60px; /* Figma: 리뷰 하단 → 버튼 60 */
+    padding-bottom: 30px;
+    gap: 10px; /* Figma: 103+10+230 */
     justify-content: stretch;
 }
-/* Figma 269:13157 — 임시저장 103px, 작성완료 fills rest; both 59px tall rounded-15 */
+/* Figma 302:8178/8179 — 임시저장 103px, 작성완료 fills rest; both 59px tall rounded-15 */
 .pc-diag-right-form .pc-diagform-btn-secondary {
     flex: 0 0 103px;
-    height: 56px;
-    font-size: 16px;
+    height: 59px;
+    font-size: 18px;
 }
 .pc-diag-right-form .pc-diagform-btn-primary {
     flex: 1;
-    height: 56px;
-    font-size: 16px;
+    height: 59px;
+    font-size: 18px;
 }
 
-/* ───── done 패널 ───── */
+/* ───── done 패널 (Figma 302:8709) — 콘텐츠 중앙, 버튼 하단 고정 ───── */
 .pc-diag-done-panel {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     text-align: center;
-    padding: 24px;
+    padding: 0 6px 30px; /* Figma: 버튼 하단 여백 30 */
 }
 .pc-diag-done-check {
-    /* Figma 269:14100 — icon itself is the circle, no outer wrapper background */
+    /* Figma 302:8712 — check_circle_filled 40x40, 아래 20 */
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 24px;
+    margin: auto 0 20px; /* margin-top auto → 위 공간 흡수 (콘텐츠 수직 중앙) */
 }
 .pc-diag-done-title {
-    /* Figma 269:14100 — 28px bold teal */
-    margin: 0 0 12px;
+    /* Figma 302:8713 — 28px bold teal, ls -1.12px, 아래 20 */
+    margin: 0 0 20px;
     font-size: 28px;
     font-weight: 700;
     color: var(--diag-teal);
     letter-spacing: -0.04em;
+    line-height: 1.4;
 }
 .pc-diag-done-sub {
-    margin: 0 0 6px;
-    font-size: 16px;
+    /* Figma 302:8715 — 20px w700 #242424 ls -0.8px */
+    margin: 0 0 8px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--diag-text);
+    letter-spacing: -0.04em;
+    line-height: 1.4;
 }
 .pc-diag-done-detail {
-    margin: 0 0 32px;
-    font-size: 13px;
-    color: var(--diag-text-mute);
+    /* Figma 302:8716 — 14px w400 #737373 */
+    margin: 0 0 auto; /* margin-bottom auto → 아래 공간 흡수, 버튼은 하단 고정 */
+    font-size: 14px;
+    color: #737373;
+    line-height: 1.35;
 }
 .pc-diag-done-close {
+    /* Figma 302:8717 — 343x56, r8, 18px w700 */
     width: 100%;
     height: 56px;
+    flex-shrink: 0;
     border: none;
-    /* Figma 269:14100 — rounded-[8px], NOT pill */
     border-radius: 8px;
     background: var(--diag-teal);
     color: #fff;

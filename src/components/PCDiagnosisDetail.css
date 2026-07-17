@@ -105,11 +105,22 @@
     min-height: 0;
 }
 
-/* "시민 진단정보" 헤더 */
+/* 뒤로가기 chevron — Figma 302:6381 (6.5x13, 타이틀 위) */
+.pc-diagpanel-back {
+    background: none;
+    border: none;
+    padding: 4px;
+    margin: 0 0 12px -4px;
+    cursor: pointer;
+    align-self: flex-start;
+    line-height: 0;
+}
+
+/* "시민 진단정보" 헤더 — Figma 302:6380: 18px w500 teal, 아래 20 */
 .pc-diagpanel-title {
-    margin: 0 0 14px;
+    margin: 0 0 20px;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 500;
     color: #23bdbb;
     letter-spacing: -0.72px;
     line-height: 1.4;
@@ -173,49 +184,84 @@
 }
 
 .pc-diagpanel-chart-title {
+    /* Figma 302:6946: 11.65px, "1.87"만 bold */
     margin: 0 0 8px;
     font-size: 11.652px;
-    font-weight: 700;
+    font-weight: 400;
     color: #242424;
     text-align: center;
     letter-spacing: -0.4661px;
     line-height: 1.4;
 }
+.pc-diagpanel-chart-title strong { font-weight: 700; }
 
 .pc-diagpanel-chart-canvas {
     width: 100%;
     height: 210px;
 }
 
-/* ─── 전문가 score 카드 ─── */
+/* ─── 전문가 진단정보 (Figma 302:7220) ─── */
+/* 전문가 테이블 레이블 열은 100px (시민 76px) — Figma 302:7192 */
+.pc-diagpanel-table--expert th {
+    width: 100px;
+    min-width: 100px;
+}
+
+/* 외곽 카드: 218x146, r8, stroke #e6e6e6 */
+.pc-diagpanel-expert-card {
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    padding: 12px 16px 21px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 카드 타이틀: 16px w500 #242424 ls -0.64px 중앙 */
+.pc-diagpanel-expert-title {
+    margin: 0 0 20px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #242424;
+    text-align: center;
+    letter-spacing: -0.04em;
+    line-height: 1.4;
+}
+
 .pc-diagpanel-expert-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    margin-top: 4px;
+    gap: 8px; /* Figma: 56.7*3 + 8*2 = 186 */
+    margin-top: 0;
 }
 
+/* 서브 카드: 56.7x80, r8, bg #f5f1fd */
 .pc-diagpanel-score-card {
-    background: #ffe5e5;
-    border-radius: 4px;
-    padding: 6px 4px;
+    background: #f5f1fd;
+    border-radius: 8px;
+    height: 80px;
+    padding: 0 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
+    box-sizing: border-box;
 }
-
-.pc-diagpanel-score-card:nth-child(2) { background: #ffe0e0; }
-.pc-diagpanel-score-card:nth-child(3) { background: #dff5dc; }
 
 .pc-diagpanel-score-key {
-    font-size: 9px;
+    font-size: 14px;
     color: #737373;
-    font-weight: 600;
+    font-weight: 400;
+    line-height: 1.35;
 }
 
 .pc-diagpanel-score-val {
-    margin-top: 2px;
-    font-size: 13px;
-    font-weight: 800;
-    color: #242424;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #000;
+    letter-spacing: -0.04em;
+    line-height: 1.35;
 }
 
 /* ─── 진단하기 CTA ─── */

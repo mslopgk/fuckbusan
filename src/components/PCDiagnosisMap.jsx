@@ -223,7 +223,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                             {/* 4. 공공/시설물 */}
                             <aside className="pc-diag-filter-card">
                                 <div className="pc-diag-facility-title">공공/시설물</div>
-                                <div className="pc-diag-section-label">대분류</div>
+                                <div className="pc-diag-sub-title">대분류</div>
                                 <div className="pc-diag-check-col">
                                     {[...new Set(
                                         items
@@ -244,7 +244,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
 
                                 <div className="pc-diag-facility-divider" />
 
-                                <div className="pc-diag-section-label">중분류</div>
+                                <div className="pc-diag-sub-title">중분류</div>
                                 <div className="pc-diag-dropdown pc-diag-sub-select">
                                     <select value={facilityMid} onChange={(e) => setFacilityMid(e.target.value)}>
                                         <option value="">선택해주세요</option>
@@ -256,7 +256,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
 
                                 <div className="pc-diag-facility-divider" />
 
-                                <div className="pc-diag-section-label">소분류</div>
+                                <div className="pc-diag-sub-title">소분류</div>
                                 <div className="pc-diag-dropdown pc-diag-sub-select">
                                     {/* 진단 데이터에 소분류 차원 없음 — 추후 데이터 추가 시 활성화 */}
                                     <select value={facilitySub} onChange={(e) => setFacilitySub(e.target.value)} disabled>
@@ -313,6 +313,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                         mapRef={mapRef}
                         onToggleSidebar={() => setSidebarOpen((v) => !v)}
                         sidebarOpen={sidebarOpen}
+                        showPerson={false}
                     />
 
                     {panel === 'list' && (

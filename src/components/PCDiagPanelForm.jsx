@@ -140,7 +140,7 @@ export default function PCDiagPanelForm({ onCancel, onSubmit, location, mode = '
             {sub && (
                 <>
                     <div className="pc-diagform-section">
-                        <h3 className="pc-diagform-label">만족도 평가</h3>
+                        <h3 className="pc-diagform-label pc-diagform-label--strong">만족도 평가</h3>
                         <p className="pc-diagform-sublabel">해당 시설물의 만족도를 평가해 주세요.</p>
                         <ol className="pc-diagform-questions">
                             {QUESTIONS.map((q, idx) => (

@@ -4,6 +4,7 @@ import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } fro
 
 const RADAR_AXES = ['접근성', '이동성', '안전성', '정보제공성', '포용성', '심미성'];
 
+// Figma 302:7186 전문가 진단정보 — 전체 평균/시설물별/구역별/인원별 4행
 const EXPERT_ROWS = [
     {
         id: 'all',
@@ -15,6 +16,18 @@ const EXPERT_ROWS = [
         id: 'facility',
         label: '시설물별',
         title: '시설물별 전체(All) 세부 정보',
+        cards: [{ k: '적합', v: '14/40' }, { k: '부적합', v: '14/40' }, { k: '만족도 평가', v: '2.1' }],
+    },
+    {
+        id: 'district',
+        label: '구역별',
+        title: '구역별 전체(All) 세부 정보',
+        cards: [{ k: '적합', v: '14/40' }, { k: '부적합', v: '14/40' }, { k: '만족도 평가', v: '2.1' }],
+    },
+    {
+        id: 'people',
+        label: '인원별',
+        title: '인원별 전체(All) 세부 정보',
         cards: [{ k: '적합', v: '14/40' }, { k: '부적합', v: '14/40' }, { k: '만족도 평가', v: '2.1' }],
     },
 ];
@@ -79,29 +92,22 @@ export default function PCDiagPanelDetail({ item, onAddDiagnosis, onBack, mode =
 
     return (
         <div className="pc-diagpanel-detail">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <h2 className="pc-diagpanel-title" style={{ margin: 0 }}>
-                    {isExpert ? '전문가 진단정보' : '시민 진단정보'}
-                </h2>
-                {onBack && (
-                    <button
-                        type="button"
-                        onClick={onBack}
-                        style={{
-                            background: 'none', border: '1px solid #ddd', borderRadius: 8,
-                            padding: '6px 12px', cursor: 'pointer', fontSize: 13, color: '#555',
-                            display: 'flex', alignItems: 'center', gap: 4,
-                        }}
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                            <polyline points="15 18 9 12 15 6" />
-                        </svg>
-                        목록
-                    </button>
-                )}
-            </div>
+            {/* Figma 302:6380/6381 — back chevron 위, 타이틀 아래 (18px w500 teal) */}
+            {onBack && (
+                <button
+                    type="button"
+                    className="pc-diagpanel-back"
+                    onClick={onBack}
+                    aria-label="목록으로"
+                >
+                    <img src="/figma-assets/icons/icon_back_arrow.svg" alt="" width="8" height="14" />
+                </button>
+            )}
+            <h2 className="pc-diagpanel-title">
+                {isExpert ? '전문가 진단정보' : '시민 진단정보'}
+            </h2>
 
-            <table className="pc-diagpanel-table">
+            <table className={`pc-diagpanel-table${isExpert ? ' pc-diagpanel-table--expert' : ''}`}>
                 <tbody>
                     <tr>
                         <th>위치</th>
@@ -140,7 +146,7 @@ export default function PCDiagPanelDetail({ item, onAddDiagnosis, onBack, mode =
                                 <div className="pc-diagpanel-chart-card">
                                     <p className="pc-diagpanel-chart-title">
                                         {avgScore
-                                            ? `${avgScore} 전체 평균 (${peers.length})`
+                                            ? <><strong>{avgScore}</strong> 전체 평균 ({peers.length})</>
                                             : '전체 평균'}
                                     </p>
                                     <div className="pc-diagpanel-chart-canvas">
@@ -171,8 +177,9 @@ export default function PCDiagPanelDetail({ item, onAddDiagnosis, onBack, mode =
                         <tr key={row.id}>
                             <th>{row.label}</th>
                             <td>
-                                <div className="pc-diagpanel-chart-card">
-                                    <p className="pc-diagpanel-chart-title">{row.title}</p>
+                                {/* Figma 302:7220 — 218x146 r8 stroke #e6e6e6 카드 */}
+                                <div className="pc-diagpanel-expert-card">
+                                    <p className="pc-diagpanel-expert-title">{row.title}</p>
                                     <div className="pc-diagpanel-expert-cards">
                                         {row.cards.map((c) => (
                                             <div key={c.k} className="pc-diagpanel-score-card">
