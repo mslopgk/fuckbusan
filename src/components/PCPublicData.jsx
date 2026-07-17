@@ -73,26 +73,30 @@ const MAP_ZOOM_MIN = 0.7;
 const MAP_ZOOM_MAX = 1.8;
 const MAP_ZOOM_STEP = 0.15;
 
-// 지도 우측 상단 툴바 (Figma 302:8820). 아이콘은 Figma export PNG. map/analytics 는 active(teal) 상태.
-// ⚠️ 이 지도는 카카오맵이 아닌 자체 SVG 구역 지도(BusanMap) — zoom/locate 는 CSS transform + geolocation 으로 직접 구현.
+// 지도 우측 상단 툴바 (Figma 302:8820 실측): 버튼 48x48, 아이콘 전부 24px.
+// 지도 버튼만 teal(#23bdbb) 배경+흰 아이콘, 애널리틱스 버튼도 teal+흰 아이콘(r12 별도 카드).
+// 아이콘은 Figma 302:8823~8834 아이콘 노드를 4x PNG 로 직접 export (글리프 색 원본 그대로,
+// CSS 필터·대체 에셋 사용 안 함).
+// ⚠️ 이 지도는 카카오맵이 아닌 자체 SVG 구역 지도(BusanMap) — zoom/locate 는 CSS transform + geolocation.
+const TB = '/figma-assets/icons/pubd-toolbar';
 const TOOLS_MAIN = [
-    { icon: 'tb_locate', title: '내 위치' },
-    { icon: 'tb_add', title: '확대' },
-    { icon: 'tb_remove', title: '축소' },
-    { icon: 'tb_map', title: '지도', active: true },
-    { icon: 'tb_satellite', title: '위성' },
+    { icon: `${TB}/tb_my_location.png`, title: '내 위치', key: 'locate' },
+    { icon: `${TB}/tb_add.png`, title: '확대', key: 'in' },
+    { icon: `${TB}/tb_remove.png`, title: '축소', key: 'out' },
+    { icon: `${TB}/tb_map.png`, title: '지도', key: 'map', active: true },
+    { icon: `${TB}/tb_satellite.png`, title: '위성', key: 'sat' },
 ];
 
 function MapToolbar({ zoom, onZoomIn, onZoomOut, onLocate }) {
-    const handlerFor = (icon) => {
-        if (icon === 'tb_add') return onZoomIn;
-        if (icon === 'tb_remove') return onZoomOut;
-        if (icon === 'tb_locate') return onLocate;
+    const handlerFor = (key) => {
+        if (key === 'in') return onZoomIn;
+        if (key === 'out') return onZoomOut;
+        if (key === 'locate') return onLocate;
         return undefined;
     };
-    const disabledFor = (icon) => {
-        if (icon === 'tb_add') return zoom >= MAP_ZOOM_MAX;
-        if (icon === 'tb_remove') return zoom <= MAP_ZOOM_MIN;
+    const disabledFor = (key) => {
+        if (key === 'in') return zoom >= MAP_ZOOM_MAX;
+        if (key === 'out') return zoom <= MAP_ZOOM_MIN;
         return false;
     };
     return (
@@ -100,20 +104,20 @@ function MapToolbar({ zoom, onZoomIn, onZoomOut, onLocate }) {
             <div className="pubd-tool-group">
                 {TOOLS_MAIN.map((t) => (
                     <button
-                        key={t.icon}
+                        key={t.key}
                         type="button"
                         title={t.title}
                         className={`pubd-tool-btn${t.active ? ' active' : ''}`}
-                        onClick={handlerFor(t.icon)}
-                        disabled={disabledFor(t.icon)}
+                        onClick={handlerFor(t.key)}
+                        disabled={disabledFor(t.key)}
                     >
-                        <img src={`/assets/publicdata/icons/${t.icon}.png`} alt="" aria-hidden="true" />
+                        <img src={t.icon} alt="" aria-hidden="true" />
                     </button>
                 ))}
             </div>
-            <div className="pubd-tool-group">
+            <div className="pubd-tool-group pubd-tool-group--analytics">
                 <button type="button" title="통계" className="pubd-tool-btn active">
-                    <img src="/assets/publicdata/icons/tb_analytics.png" alt="" aria-hidden="true" />
+                    <img src={`${TB}/tb_analytics.png`} alt="" aria-hidden="true" />
                 </button>
             </div>
         </div>
@@ -202,7 +206,6 @@ export default function PCPublicData({ onNavigate }) {
                         onDistrictChange={setRegion}
                         zoom={mapZoom}
                         draggable
-                        bgSrc="/assets/지도 배경 데스크탑.png"
                         showCharacters={false}
                     />
                 </div>
