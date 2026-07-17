@@ -1,0 +1,543 @@
+/* ── 관리자 제보/제안 (Figma 302:27902 제보_메인 / 302:28083 제보상세 / 302:27789 제안_메인 / 302:28015 제안상세) ──
+   실측 기준: 콘텐츠 시작 x=350 (사이드바 300 + 콘텐츠 패딩 50), 목록 폭 1300, 상세 폭 1184 */
+
+.rpa-page {
+    font-family: 'Pretendard', 'Pretendard Variable', sans-serif;
+    color: #333;
+}
+
+/* 페이지 타이틀 — 30/700 #333, lh 36 (Figma 35.8) */
+.rpa-title {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 36px;
+    letter-spacing: 0;
+    color: #333333;
+}
+
+/* ── 검색 박스 (1300x150 #f4f4f4 r10, 제안_메인 302:27873 기준) ── */
+.rpa-searchbox {
+    box-sizing: border-box;
+    width: 1300px;
+    height: 150px;
+    margin-top: 21px;
+    padding: 20px 0 20px 30px;
+    background: #f4f4f4;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rpa-search-row {
+    display: flex;
+    align-items: center;
+}
+
+/* 라벨 x380→인풋 x499 : 라벨 칸 119px */
+.rpa-search-label {
+    width: 119px;
+    flex-shrink: 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #333333;
+}
+
+.rpa-search-input-wrap {
+    position: relative;
+    height: 50px;
+}
+
+.rpa-search-input-wrap--member { width: 290px; }
+.rpa-search-input-wrap--title { width: 647px; }
+
+.rpa-search-input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 50px;
+    padding: 0 40px 0 20px;
+    background: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 16px;
+    color: #333333;
+    outline: none;
+}
+
+.rpa-search-input::placeholder {
+    color: #777777;
+}
+
+/* 돋보기 — 두 인풋 모두 x752 (인풋 좌측 +253) 위치 (Figma 실측) */
+.rpa-search-icon {
+    position: absolute;
+    left: 253px;
+    top: 16px;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+}
+
+.rpa-search-btn {
+    width: 100px;
+    height: 50px;
+    margin-left: 15px;
+    background: #23bdbb;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+/* ── 목록 테이블 (1300폭, 헤더 상하 1px #aaaaaa, 행 구분 1px #dddddd) ── */
+.rpa-table {
+    width: 1300px;
+    margin-top: 30px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.rpa-table th {
+    height: 50px;
+    border-top: 1px solid #aaaaaa;
+    border-bottom: 1px solid #aaaaaa;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #777777;
+    text-align: left;
+}
+
+.rpa-table td {
+    height: 50px;
+    border-bottom: 1px solid #dddddd;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #111111;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 컬럼: 제목 867(들여쓰기 62) / 작성자ID 180(중앙, 중심 x1307) / 유형 150(좌, x1427) / 위치 103(좌, x1577) */
+.rpa-col-title { width: 867px; }
+.rpa-col-id { width: 180px; }
+.rpa-col-cat { width: 150px; }
+.rpa-col-loc { width: 103px; }
+
+.rpa-table th.rpa-cell-title,
+.rpa-table td.rpa-cell-title { padding-left: 62px; padding-right: 20px; }
+.rpa-table th.rpa-cell-id,
+.rpa-table td.rpa-cell-id { text-align: center; }
+.rpa-table th.rpa-cell-cat,
+.rpa-table td.rpa-cell-cat { padding-left: 30px; }
+.rpa-table th.rpa-cell-loc,
+.rpa-table td.rpa-cell-loc { padding-left: 30px; }
+
+.rpa-table td.rpa-cell-title {
+    font-weight: 700;
+    letter-spacing: -0.64px;
+    line-height: 22px;
+}
+
+.rpa-table td.rpa-cell-id {
+    letter-spacing: -0.64px;
+    line-height: 22px;
+}
+
+.rpa-table tbody tr { cursor: pointer; }
+.rpa-table tbody tr:hover { background: #fafafa; }
+
+/* 첫 데이터 행은 57px (Figma: 헤더하단 427 → 첫 구분선 484, 이후 50 피치) */
+.rpa-table tbody tr:first-child td { height: 57px; }
+
+.rpa-table td.rpa-cell-empty {
+    text-align: center;
+    color: #999999;
+    padding: 40px 0;
+    height: auto;
+    cursor: default;
+}
+
+/* ── 페이지네이션 (테이블 하단 30px, 항목 폭 30px 피치) ── */
+.rpa-pagination {
+    width: 1300px;
+    margin-top: 38px; /* 표 하단 934 → 숫자 y972 */
+    padding-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.rpa-page-arrow {
+    width: 30px;
+    height: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.rpa-page-arrow img { height: 10px; display: block; }
+.rpa-page-arrow:disabled { cursor: default; opacity: 0.45; }
+
+.rpa-page-num {
+    width: 30px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #777777;
+    cursor: pointer;
+    user-select: none;
+}
+
+.rpa-page-num.active {
+    color: #23bdbb;
+    font-weight: 700;
+}
+
+/* ── 상세 공통 (폭 1184) ── */
+.rpa-detail { width: 1184px; }
+
+/* 타이틀 아래 구분선 — 1px #aaaaaa, 타이틀 하단 +29 (y205) */
+.rpa-detail-divider {
+    width: 1184px;
+    height: 1px;
+    margin-top: 29px;
+    background: #aaaaaa;
+}
+
+.rpa-detail-body { margin-top: 22px; } /* 구분선(205~206) → 첫 박스 228 */
+
+.rpa-drow {
+    display: flex;
+    align-items: center;
+    padding-left: 30px;
+    margin-bottom: 20px;
+}
+
+.rpa-drow--top { align-items: flex-start; }
+
+/* 위치정보(586)→첨부이미지(601) 15 / 첨부(681)→작성자ID(698) 17 — Figma 실측 */
+.rpa-drow--loc { margin-bottom: 15px; }
+.rpa-drow--attach { margin-bottom: 17px; }
+
+/* 제안상세(302:28015) 편집일 행: 작성일(888)→편집일 899 = 11 간격 (mb20과 상쇄 → 20-9=11) */
+.rpa-drow--edited-tight { margin-top: -9px; }
+
+/* 라벨 x380 → 값 x507 : 라벨 칸 127px */
+.rpa-dlabel {
+    width: 127px;
+    flex-shrink: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 19px;
+    color: #333333;
+}
+
+.rpa-drow--top .rpa-dlabel { padding-top: 16px; }
+
+/* 제보현황 pill 행: 편집일 박스 하단(958)→988 = 30 간격 (이전 행 mb20과 마진 상쇄 → max 적용) */
+.rpa-drow--pills { margin-top: 30px; margin-bottom: 0; }
+.rpa-drow--pills .rpa-dlabel { padding-top: 0; }
+
+/* 값 박스 300x50, 1px #dddddd r10 */
+.rpa-dbox {
+    box-sizing: border-box;
+    width: 300px;
+    height: 50px;
+    padding: 0 19px;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #777777;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+input.rpa-dbox { display: block; outline: none; }
+input.rpa-dbox:focus { border-color: #23bdbb; }
+
+.rpa-dbox--title {
+    font-weight: 700;
+    color: #111111;
+    letter-spacing: -0.64px;
+    line-height: 22px;
+}
+
+.rpa-dbox--addr {
+    color: #aaaaaa;
+    letter-spacing: -0.64px;
+    line-height: 22px;
+}
+
+.rpa-dbox--addr2 {
+    color: #111111;
+    letter-spacing: -0.64px;
+    line-height: 22px;
+}
+
+/* 자세한설명 812x148 */
+.rpa-ddesc {
+    box-sizing: border-box;
+    width: 812px;
+    height: 148px;
+    padding: 19px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    background: #ffffff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: -0.64px;
+    color: #111111;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    resize: none;
+    outline: none;
+}
+
+textarea.rpa-ddesc:focus { border-color: #23bdbb; }
+
+/* 제안상세(302:28047)는 lh 22.4 */
+.rpa-ddesc--tight { line-height: 22.4px; }
+
+.rpa-ddesc::-webkit-scrollbar { width: 7px; }
+.rpa-ddesc::-webkit-scrollbar-thumb { background: #f4f4f4; border-radius: 30px; }
+.rpa-ddesc::-webkit-scrollbar-track { background: transparent; }
+
+.rpa-dlocation { display: flex; gap: 10px; }
+
+/* 첨부 이미지 80x80 r10 */
+.rpa-dthumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+    display: block;
+}
+
+.rpa-dthumb-empty {
+    box-sizing: border-box;
+    width: 80px;
+    height: 80px;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+}
+
+/* ── 제보현황 상태 pill (118x31 r30, active #f74e7e) ── */
+.rpa-pills { display: flex; gap: 15px; }
+
+.rpa-pill {
+    box-sizing: border-box;
+    width: 118px;
+    height: 31px;
+    border: none;
+    border-radius: 30px;
+    background: #dddddd;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 17px;
+    color: #777777;
+    cursor: pointer;
+}
+
+.rpa-pill.active {
+    background: #f74e7e;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.rpa-pill-check {
+    width: 17px;
+    height: 17px;
+    border-radius: 2px;
+    background: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.rpa-pill-check img { width: 9px; height: 4px; display: block; }
+
+/* ── 검토 의견 패널 (1184x268 #f4f4f4 r30) ── */
+.rpa-review {
+    box-sizing: border-box;
+    width: 1184px;
+    min-height: 268px;
+    margin-top: 36px;
+    padding: 25px 0 15px 30px;
+    background: #f4f4f4;
+    border-radius: 30px;
+}
+
+.rpa-review-row { display: flex; align-items: flex-start; }
+
+.rpa-review-label {
+    width: 127px;
+    flex-shrink: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 19px;
+    color: #333333;
+}
+
+.rpa-review-textarea {
+    box-sizing: border-box;
+    width: 812px;
+    height: 148px;
+    padding: 19px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    background: #ffffff;
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 22.4px;
+    letter-spacing: -0.64px;
+    color: #111111;
+    resize: none;
+    outline: none;
+}
+
+.rpa-review-textarea:focus { border-color: #23bdbb; }
+
+.rpa-review-write-btn {
+    width: 100px;
+    height: 50px;
+    margin-left: 15px;
+    background: #dddddd;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111111;
+    cursor: pointer;
+}
+
+.rpa-review-write-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* 결과사진 타일 70x70 r10 — 텍스트영역 하단 +10, 값 칼럼(x507) 정렬 */
+.rpa-review-photos {
+    margin: 10px 0 0 127px;
+    display: flex;
+    gap: 10px;
+}
+
+.rpa-photo-tile { position: relative; }
+
+.rpa-photo-tile img.rpa-photo {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+    display: block;
+}
+
+.rpa-photo-add {
+    box-sizing: border-box;
+    width: 70px;
+    height: 70px;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: 20px;
+    line-height: 26px;
+    color: #aaaaaa;
+    cursor: pointer;
+    padding: 0;
+}
+
+.rpa-photo-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: #333333;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0;
+}
+
+/* ── 상세 푸터 ── */
+.rpa-detail-footer {
+    width: 1184px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 제안상세: 푸터 위 구분선(1px #aaaaaa) — 마지막 행 mb20이 간격 담당 (949→969) */
+.rpa-footer-divider {
+    width: 1184px;
+    height: 1px;
+    margin-top: 0;
+    background: #aaaaaa;
+}
+
+.rpa-delete-btn {
+    width: 100px;
+    height: 50px;
+    background: #f4f4f4;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    color: #777777;
+    cursor: pointer;
+}
+
+.rpa-save-btn {
+    width: 200px;
+    height: 50px;
+    background: #23bdbb;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.rpa-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }

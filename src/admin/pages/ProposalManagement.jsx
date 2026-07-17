@@ -2,22 +2,15 @@ import { useEffect, useState, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
+import '../styles/report_propose_admin.css';
 import { API_BASE } from '../api';
 
-const SearchIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-);
-
-// 제안 카테고리(유형) — MProposalForm.jsx TYPES와 동일 taxonomy
-const CATEGORIES = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
-
+// Figma 302:27789 (제안_메인) — 회원검색(이름) + 제목 검색 2행 검색박스, 4컬럼 목록
 export default function ProposalManagement({ onNavigate }) {
     const [proposals, setProposals] = useState([]);
     const [total, setTotal] = useState(0);
-    const [keyword, setKeyword] = useState('');
-    const [category, setCategory] = useState('전체');
+    const [authorKw, setAuthorKw] = useState('');
+    const [titleKw, setTitleKw] = useState('');
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const itemsPerPage = 10;
@@ -27,15 +20,13 @@ export default function ProposalManagement({ onNavigate }) {
         try {
             const token = localStorage.getItem('access_token');
             const params = new URLSearchParams({ page: currentPage, size: itemsPerPage });
-            if (category && category !== '전체') params.set('category', category);
             const res = await fetch(`${API_BASE}/admin/proposals?${params}`, {
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
 
-            // 키워드: 제목·작성자 통합 검색 (클라이언트)
-            const match = (p) => !keyword
-                || (p.title || '').includes(keyword)
-                || (p.author || p.nickname || '').includes(keyword);
+            // 회원검색(작성자)·제목 검색 (클라이언트)
+            const match = (p) => (!authorKw || (p.author || p.nickname || '').includes(authorKw))
+                && (!titleKw || (p.title || '').includes(titleKw));
 
             if (res.ok) {
                 const data = await res.json();
@@ -54,9 +45,7 @@ export default function ProposalManagement({ onNavigate }) {
             const fb = await fetch(`${API_BASE}/reports/proposals`);
             if (fb.ok) {
                 const arr = await fb.json();
-                const filtered = arr.filter((p) =>
-                    (category === '전체' || (p.category || '') === category) && match(p)
-                );
+                const filtered = arr.filter(match);
                 setTotal(filtered.length);
                 setProposals(filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
             }
@@ -65,12 +54,7 @@ export default function ProposalManagement({ onNavigate }) {
         } finally {
             setLoading(false);
         }
-    }, [category, keyword, itemsPerPage]);
-
-    useEffect(() => {
-        setPage(1);
-        fetchProposals(1);
-    }, [category]);
+    }, [authorKw, titleKw, itemsPerPage]);
 
     useEffect(() => {
         fetchProposals(page);
@@ -85,97 +69,105 @@ export default function ProposalManagement({ onNavigate }) {
 
     return (
         <AdminLayout onNavigate={onNavigate} currentView="proposalManagement">
-            <div className="content-header-new">
-                <h2 className="content-title-new">제안</h2>
-                <div className="total-count-text">전체 제안 <span>{total}건</span></div>
-            </div>
+            <div className="rpa-page">
+                <h2 className="rpa-title">제안</h2>
 
-            <div className="search-box-new-col">
-                <div className="search-row">
-                    <div className="search-label-new search-label-fixed">카테고리 선택</div>
-                    <select
-                        className="search-select-new"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                    >
-                        <option value="전체">전체</option>
-                        {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                </div>
-                <div className="search-row">
-                    <div className="search-label-new search-label-fixed">검색</div>
-                    <div className="search-input-wrapper-new" style={{ maxWidth: 'none' }}>
-                        <input
-                            type="text"
-                            className="search-input-new"
-                            placeholder="제목·작성자로 검색해주세요"
-                            value={keyword}
-                            onChange={(e) => setKeyword(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                            style={{ paddingRight: 40 }}
-                        />
-                        <SearchIcon />
+                <div className="rpa-searchbox">
+                    <div className="rpa-search-row">
+                        <label className="rpa-search-label" htmlFor="rpa-proposal-author">회원검색</label>
+                        <div className="rpa-search-input-wrap rpa-search-input-wrap--member">
+                            <input
+                                id="rpa-proposal-author"
+                                type="text"
+                                className="rpa-search-input"
+                                placeholder="이름을 입력해 주세요"
+                                value={authorKw}
+                                onChange={(e) => setAuthorKw(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            />
+                            <img className="rpa-search-icon" src="/figma-assets/admin/rp_search.png" alt="" />
+                        </div>
                     </div>
-                    <button className="btn-search-new" onClick={handleSearch}>검색</button>
+                    <div className="rpa-search-row">
+                        <label className="rpa-search-label" htmlFor="rpa-proposal-title">제목</label>
+                        <div className="rpa-search-input-wrap rpa-search-input-wrap--title">
+                            <input
+                                id="rpa-proposal-title"
+                                type="text"
+                                className="rpa-search-input"
+                                placeholder="제목을 입력해 주세요"
+                                value={titleKw}
+                                onChange={(e) => setTitleKw(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            />
+                            <img className="rpa-search-icon" src="/figma-assets/admin/rp_search.png" alt="" />
+                        </div>
+                        <button className="rpa-search-btn" onClick={handleSearch}>검색</button>
+                    </div>
                 </div>
-            </div>
 
-            <div className="table-container-new">
-                <table className="admin-table-new">
+                <table className="rpa-table">
+                    <colgroup>
+                        <col className="rpa-col-title" />
+                        <col className="rpa-col-id" />
+                        <col className="rpa-col-cat" />
+                        <col className="rpa-col-loc" />
+                    </colgroup>
                     <thead>
                         <tr>
-                            <th style={{ width: '55%', textAlign: 'left' }}>제안 제목</th>
-                            <th>작성자 ID</th>
-                            <th>유형</th>
-                            <th>위치</th>
+                            <th className="rpa-cell-title">제안제목</th>
+                            <th className="rpa-cell-id">작성자 ID</th>
+                            <th className="rpa-cell-cat">유형</th>
+                            <th className="rpa-cell-loc">위치</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan={4} style={{ padding: '40px 0', color: '#999' }}>불러오는 중…</td></tr>
+                            <tr><td className="rpa-cell-empty" colSpan={4}>불러오는 중…</td></tr>
                         ) : proposals.length === 0 ? (
-                            <tr><td colSpan={4} style={{ padding: '40px 0', color: '#999' }}>등록된 제안이 없습니다.</td></tr>
+                            <tr><td className="rpa-cell-empty" colSpan={4}>등록된 제안이 없습니다.</td></tr>
                         ) : proposals.map((p) => (
                             <tr
                                 key={p.id}
-                                style={{ cursor: 'pointer' }}
                                 onClick={() => onNavigate && onNavigate('adminProposalDetail', p)}
                             >
-                                <td style={{ textAlign: 'left' }}>{p.title}</td>
-                                <td>{p.author || p.nickname || '-'}</td>
-                                <td>{p.category || '-'}</td>
-                                <td>{p.region || '-'}</td>
+                                <td className="rpa-cell-title">{p.title}</td>
+                                <td className="rpa-cell-id">{p.author || p.nickname || '-'}</td>
+                                <td className="rpa-cell-cat">{p.category || '-'}</td>
+                                <td className="rpa-cell-loc">{p.region || '-'}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
 
-                <div className="pagination-new">
-                    <svg
-                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        style={{ transform: 'rotate(180deg)', cursor: 'pointer', opacity: page === 1 ? 0.3 : 1 }}
+                <div className="rpa-pagination">
+                    <button
+                        type="button"
+                        className="rpa-page-arrow"
+                        disabled={page === 1}
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        aria-label="이전 페이지"
                     >
-                        <polyline points="9 18 15 12 9 6" />
-                    </svg>
+                        <img src="/figma-assets/admin/rp_page_prev.png" alt="" />
+                    </button>
                     {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map((n) => (
                         <span
                             key={n}
-                            className={`page-num-new ${page === n ? 'active' : ''}`}
+                            className={`rpa-page-num ${page === n ? 'active' : ''}`}
                             onClick={() => setPage(n)}
                         >
                             {n}
                         </span>
                     ))}
-                    <svg
-                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        style={{ cursor: 'pointer', opacity: page === totalPages ? 0.3 : 1 }}
+                    <button
+                        type="button"
+                        className="rpa-page-arrow"
+                        disabled={page === totalPages}
                         onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        aria-label="다음 페이지"
                     >
-                        <polyline points="9 18 15 12 9 6" />
-                    </svg>
+                        <img src="/figma-assets/admin/rp_page_next.png" alt="" />
+                    </button>
                 </div>
             </div>
         </AdminLayout>

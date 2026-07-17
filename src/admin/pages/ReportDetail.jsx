@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
+import '../styles/report_propose_admin.css';
 import { API_BASE } from '../api';
 
+// Figma 302:28083 (제보 상세) — 좌 라벨(127) + 값 박스, 제보현황 pill, 검토 의견 패널
 const STAGES = [
     { key: 'received', label: '접수', step: 1 },
     { key: 'reviewing', label: '검토중', step: 2 },
@@ -154,7 +156,6 @@ export default function ReportDetail({ report, onNavigate }) {
                 body: JSON.stringify({ content: `[관리자 답변] ${reply.trim()}` }),
             });
             if (res1.ok) {
-                setReply('');
                 alert('수정되었습니다.');
             } else {
                 alert('저장 실패: ' + res1.status);
@@ -171,166 +172,148 @@ export default function ReportDetail({ report, onNavigate }) {
 
     return (
         <AdminLayout onNavigate={onNavigate} currentView="adminReportDetail">
-            <div className="content-header-new">
-                <h2 className="content-title-new">제보현황</h2>
-                <button
-                    className="btn-search-new"
-                    style={{ height: 40, padding: '0 24px', background: '#f1f3f5', color: '#333' }}
-                    onClick={() => onNavigate && onNavigate('reportManagement')}
-                >
-                    ← 목록으로
-                </button>
-            </div>
+            <div className="rpa-page rpa-detail">
+                <h2 className="rpa-title">제보현황</h2>
+                <div className="rpa-detail-divider" />
 
-            <div className="rfd-body">
-                {/* 제보제목 */}
-                <div className="rfd-row">
-                    <span className="rfd-label">제보제목</span>
-                    <div className="rfd-input">{data.title || '-'}</div>
-                </div>
-
-                {/* 유형 */}
-                <div className="rfd-row">
-                    <span className="rfd-label">유형</span>
-                    <div className="rfd-input">{data.category || data.type || '-'}</div>
-                </div>
-
-                {/* 자세한설명 */}
-                <div className="rfd-row rfd-row--top">
-                    <span className="rfd-label">자세한설명</span>
-                    <div className="rfd-textarea">{data.content || '-'}</div>
-                </div>
-
-                {/* 위치정보 */}
-                <div className="rfd-row">
-                    <span className="rfd-label">위치정보</span>
-                    <div className="rfd-location">
-                        <div className="rfd-input">{data.region || data.location || '-'}</div>
-                        <div className="rfd-input">{data.detailed_address || '-'}</div>
+                <div className="rpa-detail-body">
+                    {/* 제보제목 (Figma 라벨 '제안제목'은 제보 화면 오탈자 → 제보제목 유지) */}
+                    <div className="rpa-drow">
+                        <span className="rpa-dlabel">제보제목</span>
+                        <div className="rpa-dbox rpa-dbox--title">{data.title || '-'}</div>
                     </div>
-                </div>
 
-                {/* 첨부이미지파일 */}
-                <div className="rfd-row rfd-row--top">
-                    <span className="rfd-label">첨부이미지파일</span>
-                    <div className="rfd-attachments">
+                    {/* 유형 */}
+                    <div className="rpa-drow">
+                        <span className="rpa-dlabel">유형</span>
+                        <div className="rpa-dbox">{data.category || data.type || '-'}</div>
+                    </div>
+
+                    {/* 자세한설명 */}
+                    <div className="rpa-drow rpa-drow--top">
+                        <span className="rpa-dlabel">자세한설명</span>
+                        <div className="rpa-ddesc">{data.content || '-'}</div>
+                    </div>
+
+                    {/* 위치정보 */}
+                    <div className="rpa-drow rpa-drow--loc">
+                        <span className="rpa-dlabel">위치정보</span>
+                        <div className="rpa-dlocation">
+                            <div className="rpa-dbox rpa-dbox--addr">{data.region || data.location || '-'}</div>
+                            <div className="rpa-dbox rpa-dbox--addr2">{data.detailed_address || '-'}</div>
+                        </div>
+                    </div>
+
+                    {/* 첨부이미지파일 */}
+                    <div className="rpa-drow rpa-drow--top rpa-drow--attach">
+                        <span className="rpa-dlabel">첨부이미지파일</span>
                         {data.image ? (
-                            <img src={data.image} alt="첨부" className="rfd-thumb" />
+                            <img src={data.image} alt="첨부" className="rpa-dthumb" />
                         ) : (
-                            <div className="rfd-thumb-empty" />
+                            <div className="rpa-dthumb-empty" />
                         )}
                     </div>
-                </div>
 
-                {/* 작성자 ID */}
-                <div className="rfd-row">
-                    <span className="rfd-label">작성자 ID</span>
-                    <div className="rfd-input">{data.author_id ?? data.user_id ?? '-'}</div>
-                </div>
+                    {/* 작성자 ID */}
+                    <div className="rpa-drow">
+                        <span className="rpa-dlabel">작성자 ID</span>
+                        <div className="rpa-dbox">{data.author_id ?? data.user_id ?? '-'}</div>
+                    </div>
 
-                {/* 작성자 닉네임 */}
-                <div className="rfd-row">
-                    <span className="rfd-label">작성자 닉네임</span>
-                    <div className="rfd-input">{data.nickname || data.author || '-'}</div>
-                </div>
+                    {/* 작성자 닉네임 */}
+                    <div className="rpa-drow">
+                        <span className="rpa-dlabel">작성자 닉네임</span>
+                        <div className="rpa-dbox">{data.nickname || data.author || '-'}</div>
+                    </div>
 
-                {/* 작성일 */}
-                <div className="rfd-row">
-                    <span className="rfd-label">작성일</span>
-                    <div className="rfd-input">{createdAt}</div>
-                </div>
+                    {/* 작성일 */}
+                    <div className="rpa-drow">
+                        <span className="rpa-dlabel">작성일</span>
+                        <div className="rpa-dbox">{createdAt}</div>
+                    </div>
 
-                {/* 편집일 */}
-                <div className="rfd-row">
-                    <span className="rfd-label">편집일</span>
-                    <div className="rfd-input">{updatedAt}</div>
-                </div>
+                    {/* 편집일 */}
+                    <div className="rpa-drow">
+                        <span className="rpa-dlabel">편집일</span>
+                        <div className="rpa-dbox">{updatedAt}</div>
+                    </div>
 
-                {/* 제보현황 */}
-                <div className="rfd-row">
-                    <span className="rfd-label">제보현황</span>
-                    <div className="rfd-status-pills">
-                        {STAGES.map((s) => (
-                            <button
-                                key={s.key}
-                                className={`rfd-status-pill${stage === s.key ? ' active' : ''}`}
-                                onClick={() => handleStageClick(s.key)}
-                            >
-                                <span className="rfd-pill-check">{stage === s.key ? '✓' : ''}</span>
-                                {s.label}
-                                <span className="rfd-pill-arrow">▾</span>
-                            </button>
-                        ))}
+                    {/* 제보현황 */}
+                    <div className="rpa-drow rpa-drow--top rpa-drow--pills">
+                        <span className="rpa-dlabel">제보현황</span>
+                        <div className="rpa-pills">
+                            {STAGES.map((s) => (
+                                <button
+                                    key={s.key}
+                                    type="button"
+                                    className={`rpa-pill${stage === s.key ? ' active' : ''}`}
+                                    onClick={() => handleStageClick(s.key)}
+                                >
+                                    <span className="rpa-pill-check">
+                                        <img
+                                            src={stage === s.key
+                                                ? '/figma-assets/admin/rp_pill_chevron_pink.png'
+                                                : '/figma-assets/admin/rp_pill_chevron_gray.png'}
+                                            alt=""
+                                        />
+                                    </span>
+                                    {s.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="rfd-divider" />
-
-            {/* 답글 작성 */}
-            <div className="rfd-body">
-                <div className="rfd-row rfd-row--top">
-                    <span className="rfd-label">답글 작성</span>
-                    <div className="rfd-reply-wrap">
+                {/* 검토 의견 — 결과 답변 + 결과사진 (결과안내(개선완료) 시 사용자 상세 결과보기에 노출) */}
+                <div className="rpa-review">
+                    <div className="rpa-review-row">
+                        <span className="rpa-review-label">검토 의견</span>
                         <textarea
-                            className="rfd-reply-textarea"
+                            className="rpa-review-textarea"
                             value={reply}
                             onChange={(e) => setReply(e.target.value)}
-                            rows={5}
                         />
                         <button
-                            className="rfd-write-btn"
+                            type="button"
+                            className="rpa-review-write-btn"
                             onClick={handleSave}
                             disabled={saving}
                         >
                             {saving ? '…' : '작성'}
                         </button>
                     </div>
-                </div>
-
-                {/* 개선 결과사진 — 결과안내(개선완료) 시 사용자 상세의 결과보기에 노출됨 */}
-                <div className="rfd-row rfd-row--top">
-                    <span className="rfd-label">결과사진</span>
-                    <div className="rfd-attachments" style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                        {resultImage ? (
-                            <div style={{ position: 'relative' }}>
-                                <img src={resultImage} alt="개선 결과" className="rfd-thumb" />
+                    <div className="rpa-review-photos">
+                        {resultImage && (
+                            <div className="rpa-photo-tile">
+                                <img src={resultImage} alt="개선 결과" className="rpa-photo" />
                                 <button
                                     type="button"
+                                    className="rpa-photo-remove"
                                     onClick={() => setResultImage('')}
                                     aria-label="결과사진 삭제"
-                                    style={{
-                                        position: 'absolute', top: -8, right: -8, width: 22, height: 22,
-                                        borderRadius: '50%', border: 'none', background: '#333', color: '#fff',
-                                        cursor: 'pointer', fontSize: 12, lineHeight: 1,
-                                    }}
                                 >×</button>
                             </div>
-                        ) : (
-                            <div className="rfd-thumb-empty" />
                         )}
                         <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleResultImageChange} />
                         <button
                             type="button"
-                            className="btn-search-new"
-                            style={{ height: 36, padding: '0 16px', background: '#f1f3f5', color: '#333' }}
+                            className="rpa-photo-add"
                             onClick={() => fileRef.current?.click()}
                             disabled={uploadingImg}
+                            aria-label="결과사진 업로드"
                         >
-                            {uploadingImg ? '업로드 중…' : (resultImage ? '사진 변경' : '사진 업로드')}
+                            {uploadingImg ? '…' : '+'}
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <div className="rfd-divider" />
-
-            {/* 하단 버튼 */}
-            <div className="rfd-footer">
-                <button className="rfd-delete-btn" onClick={handleDelete}>글 삭제</button>
-                <button className="rfd-save-btn" onClick={handleSave} disabled={saving}>
-                    {saving ? '저장 중…' : '수정하기'}
-                </button>
+                {/* 하단 버튼 */}
+                <div className="rpa-detail-footer">
+                    <button className="rpa-delete-btn" onClick={handleDelete}>글 삭제</button>
+                    <button className="rpa-save-btn" onClick={handleSave} disabled={saving}>
+                        {saving ? '저장 중…' : '수정하기'}
+                    </button>
+                </div>
             </div>
         </AdminLayout>
     );

@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
+import '../styles/report_propose_admin.css';
 import { API_BASE } from '../api';
 
+// Figma 302:28015 (제안2 상세) — 좌 라벨(127) + 값 박스, 푸터 위 1px #aaaaaa 구분선
 export default function AdminProposalDetail({ proposal, onNavigate }) {
     const [data, setData] = useState(null);
     const [form, setForm] = useState(null);
@@ -126,108 +128,103 @@ export default function AdminProposalDetail({ proposal, onNavigate }) {
 
     return (
         <AdminLayout onNavigate={onNavigate} currentView="adminProposalDetail">
-            <div className="content-header-new">
-                <h2 className="content-title-new">제안현황</h2>
-                <button
-                    className="btn-search-new"
-                    style={{ height: 40, padding: '0 24px', background: '#f1f3f5', color: '#333' }}
-                    onClick={() => onNavigate && onNavigate('proposalManagement')}
-                >
-                    ← 목록으로
-                </button>
-            </div>
+            <div className="rpa-page rpa-detail">
+                <h2 className="rpa-title">제안현황</h2>
+                <div className="rpa-detail-divider" />
 
-            <div className="rfd-body">
-                <div className="rfd-row">
-                    <span className="rfd-label">제안제목</span>
-                    <input
-                        className="rfd-input"
-                        style={{ background: '#fff', border: '1px solid #d0d0d0', borderRadius: 6, padding: '0 10px', width: '100%' }}
-                        value={form.title || ''}
-                        onChange={set('title')}
-                    />
-                </div>
-
-                <div className="rfd-row">
-                    <span className="rfd-label">유형</span>
-                    <input
-                        className="rfd-input"
-                        style={{ background: '#fff', border: '1px solid #d0d0d0', borderRadius: 6, padding: '0 10px' }}
-                        value={form.category || ''}
-                        onChange={set('category')}
-                    />
-                </div>
-
-                <div className="rfd-row rfd-row--top">
-                    <span className="rfd-label">자세한설명</span>
-                    <textarea
-                        className="rfd-textarea"
-                        style={{ background: '#fff', border: '1px solid #d0d0d0', borderRadius: 6, padding: '10px', resize: 'vertical' }}
-                        value={form.content || ''}
-                        onChange={set('content')}
-                        rows={6}
-                    />
-                </div>
-
-                <div className="rfd-row">
-                    <span className="rfd-label">위치정보</span>
-                    <div className="rfd-location">
+                <div className="rpa-detail-body">
+                    {/* 제안제목 */}
+                    <div className="rpa-drow">
+                        <span className="rpa-dlabel">제안제목</span>
                         <input
-                            className="rfd-input"
-                            style={{ background: '#fff', border: '1px solid #d0d0d0', borderRadius: 6, padding: '0 10px' }}
-                            value={form.region || ''}
-                            onChange={set('region')}
-                            placeholder="구/군"
-                        />
-                        <input
-                            className="rfd-input"
-                            style={{ background: '#fff', border: '1px solid #d0d0d0', borderRadius: 6, padding: '0 10px' }}
-                            value={form.detailed_address || ''}
-                            onChange={set('detailed_address')}
-                            placeholder="상세 주소"
+                            className="rpa-dbox rpa-dbox--title"
+                            value={form.title || ''}
+                            onChange={set('title')}
                         />
                     </div>
-                </div>
 
-                <div className="rfd-row rfd-row--top">
-                    <span className="rfd-label">첨부이미지파일</span>
-                    <div className="rfd-attachments">
+                    {/* 유형 */}
+                    <div className="rpa-drow">
+                        <span className="rpa-dlabel">유형</span>
+                        <input
+                            className="rpa-dbox"
+                            value={form.category || ''}
+                            onChange={set('category')}
+                        />
+                    </div>
+
+                    {/* 자세한설명 */}
+                    <div className="rpa-drow rpa-drow--top">
+                        <span className="rpa-dlabel">자세한설명</span>
+                        <textarea
+                            className="rpa-ddesc rpa-ddesc--tight"
+                            value={form.content || ''}
+                            onChange={set('content')}
+                        />
+                    </div>
+
+                    {/* 위치정보 */}
+                    <div className="rpa-drow rpa-drow--loc">
+                        <span className="rpa-dlabel">위치정보</span>
+                        <div className="rpa-dlocation">
+                            <input
+                                className="rpa-dbox rpa-dbox--addr"
+                                value={form.region || ''}
+                                onChange={set('region')}
+                                placeholder="구/군"
+                            />
+                            <input
+                                className="rpa-dbox rpa-dbox--addr2"
+                                value={form.detailed_address || ''}
+                                onChange={set('detailed_address')}
+                                placeholder="상세 주소"
+                            />
+                        </div>
+                    </div>
+
+                    {/* 첨부이미지파일 */}
+                    <div className="rpa-drow rpa-drow--top rpa-drow--attach">
+                        <span className="rpa-dlabel">첨부이미지파일</span>
                         {form.image ? (
-                            <img src={form.image} alt="첨부" className="rfd-thumb" />
+                            <img src={form.image} alt="첨부" className="rpa-dthumb" />
                         ) : (
-                            <div className="rfd-thumb-empty" />
+                            <div className="rpa-dthumb-empty" />
                         )}
                     </div>
+
+                    {/* 작성자 ID */}
+                    <div className="rpa-drow">
+                        <span className="rpa-dlabel">작성자 ID</span>
+                        <div className="rpa-dbox">{form.author_id ?? '-'}</div>
+                    </div>
+
+                    {/* 작성자 닉네임 */}
+                    <div className="rpa-drow">
+                        <span className="rpa-dlabel">작성자 닉네임</span>
+                        <div className="rpa-dbox">{form.nickname || '-'}</div>
+                    </div>
+
+                    {/* 작성일 */}
+                    <div className="rpa-drow">
+                        <span className="rpa-dlabel">작성일</span>
+                        <div className="rpa-dbox">{createdAt}</div>
+                    </div>
+
+                    {/* 편집일 — Figma 899 (작성일과 61 피치) */}
+                    <div className="rpa-drow rpa-drow--edited-tight">
+                        <span className="rpa-dlabel">편집일</span>
+                        <div className="rpa-dbox">{updatedAt}</div>
+                    </div>
                 </div>
 
-                <div className="rfd-row">
-                    <span className="rfd-label">작성자 ID</span>
-                    <div className="rfd-input">{form.author_id ?? '-'}</div>
+                {/* 푸터 위 구분선 + 하단 버튼 */}
+                <div className="rpa-footer-divider" />
+                <div className="rpa-detail-footer">
+                    <button className="rpa-delete-btn" onClick={handleDelete}>글 삭제</button>
+                    <button className="rpa-save-btn" onClick={handleSave} disabled={saving}>
+                        {saving ? '저장 중…' : '수정하기'}
+                    </button>
                 </div>
-
-                <div className="rfd-row">
-                    <span className="rfd-label">작성자 닉네임</span>
-                    <div className="rfd-input">{form.nickname || '-'}</div>
-                </div>
-
-                <div className="rfd-row">
-                    <span className="rfd-label">작성일</span>
-                    <div className="rfd-input">{createdAt}</div>
-                </div>
-
-                <div className="rfd-row">
-                    <span className="rfd-label">편집일</span>
-                    <div className="rfd-input">{updatedAt}</div>
-                </div>
-            </div>
-
-            <div className="rfd-divider" />
-
-            <div className="rfd-footer">
-                <button className="rfd-delete-btn" onClick={handleDelete}>글 삭제</button>
-                <button className="rfd-save-btn" onClick={handleSave} disabled={saving}>
-                    {saving ? '저장 중…' : '수정하기'}
-                </button>
             </div>
         </AdminLayout>
     );
