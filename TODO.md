@@ -60,6 +60,10 @@
 ### 설문화면 (PC — 스피드 버튼 영역, 설문 진입 카드)
 - [x] "무엇을 도와드릴까요?" 카드에서 우측 스피드 버튼 3개를 같은 div 안에서 full-width로 분리 (SurveyChat.css `.surveychat-intro.pc` stretch + flex 240px, 칩 width:100% — 2026-07-15 검증)
 
+### 설문화면 (모바일 — AI 대화형 설문, Figma 설문 섹션 302:14523)
+- [x] `SurveyChat` 모바일 인트로/대화 Figma 정합 — 설문메인 `302:14614`(타이틀 y170 24px, 칩 175x45 gap15, 설명 20px, CTA 273x52 하단 40) + 설문챗 `302:14525`(상단바 타이틀, 대화 중 칩 유지+선택 teal, 선택지 100x40 흰칩, 척도 287px 라벨 3개 16px, 유저버블 40px pill, 입력바 353x50). 아이콘 3종 Figma export(`public/figma-assets/mobile-survey/`). Playwright 390x844 실측 ±1px 검증, verify:fe 통과 (2026-07-17, 미커밋)
+- 참고: Figma 섹션 302:14523에는 설문 프레임이 인트로/대화 2개뿐 — `MSurveyDetail1/2·Join·Done·Results`는 이 섹션에 대응 프레임 없음
+
 ### AI 가상시민 (`MAICitizen.jsx` 모바일 / PC 리스트 공통)
 - [ ] 스크롤 없도록 사이즈 조정
 - [ ] 지도의 구 영역을 **클릭하지 않은 상태**(부산대표 AI 가상시민, 총 11명 등 전체 리스트)의 리스트 디자인이 Figma와 다름 — Figma 참조: 좌측 구역별 드롭다운+생활정보 9그리드 지도, 우측 "부산대표 AI 가상시민" 카드 리스트(이름/나이/해시태그 3개/한줄 코멘트, 중요도순 정렬)

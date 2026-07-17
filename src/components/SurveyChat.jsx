@@ -5,7 +5,8 @@ import UserPCLayout from './UserPCLayout';
 import { API_URL, authHeaders } from '../utils/api';
 
 /* AI 대화형 설문 (구글폼 → 챗봇 형태 리뉴얼)
-   Figma: TCuOzEqNhoLKjhF0reBDks  인트로 302:2694 / 대화 302:2936 (teal 테마)
+   Figma PC: 인트로 302:2694 / 대화 302:2936 (teal 테마)
+   Figma 모바일(설문 섹션 302:14523): 설문메인 302:14614 / 설문챗 302:14525
    백엔드: /api/survey-chat (start/message) — shain1912/test4 인터뷰 엔진 이식 (OpenAI 전용)
    - 서버가 응답하는 AI 메시지 + suggested_replies(보기 칩)로 진행 (로컬 목업 없음)
    - 인트로 화면(무엇을 도와드릴까요? + 칩 + 설문 시작하기) → "설문 시작하기"로 세션 시작 */
@@ -23,6 +24,7 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
     const [activeInput, setActiveInput] = useState({ type: 'text', choices: [], scale: null });
     const [complete, setComplete] = useState(false);
     const [started, setStarted] = useState(false); // 인트로 → 대화 전환
+    const [selectedIntro, setSelectedIntro] = useState(null); // 대화 중 상단 칩 선택 상태 (Figma 302:14541 teal)
     const [draft, setDraft] = useState('');
     const [busy, setBusy] = useState(false);
     const [toast, setToast] = useState('');
@@ -114,14 +116,21 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
     const onIntro = (key) => {
         if (key === 'diagnose') { nav(isPC ? 'pcDiagnosisMap' : 'mDiagnosisList'); return; }
         const chip = INTRO.find((c) => c.key === key);
-        beginSurvey(chip ? chip.label : '');
+        setSelectedIntro(key);
+        if (!startedRef.current) { beginSurvey(chip ? chip.label : ''); return; }
+        send(chip ? chip.label : '');
     };
 
-    // 인트로 칩 목록
+    // 인트로 칩 목록 (대화 중에는 선택된 칩 teal 강조 — Figma 302:14541)
     const introChips = (
         <div className={`surveychat-intro ${isPC ? 'pc' : 'mobile'}`}>
             {INTRO.map((c) => (
-                <button key={c.key} type="button" className="surveychat-introchip" onClick={() => onIntro(c.key)}>
+                <button
+                    key={c.key}
+                    type="button"
+                    className={`surveychat-introchip${!isPC && started && selectedIntro === c.key ? ' selected' : ''}`}
+                    onClick={() => onIntro(c.key)}
+                >
                     <span className="surveychat-introemoji">{c.emoji}</span>{c.label}
                 </button>
             ))}
@@ -146,9 +155,11 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                             </div>
                         </div>
                     ) : (
+                        /* Figma 302:14614 — 타이틀(y170) → 칩 3개(gap 15) → 설명(20px) → CTA(273x52, 하단 고정) */
                         <div className="surveychat-introwrap mobile">
-                            <p className="surveychat-pc-desc mobile">생활 속에서 느낀 불편이나<br />개선이 필요한 공간에 대해 이야기해주세요.</p>
+                            <h1 className="surveychat-title mobile">무엇을 도와드릴까요?</h1>
                             {introChips}
+                            <p className="surveychat-pc-desc mobile">생활 속에서 느낀 불편이나<br />개선이 필요한 공간에 대해 이야기해주세요.</p>
                             <div className="surveychat-startwrap">
                                 <button type="button" className="surveychat-startbtn" onClick={() => beginSurvey()}>설문 시작하기</button>
                             </div>
@@ -157,6 +168,8 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                 ) : (
                     /* ===== 대화 ===== */
                     <>
+                        {/* Figma 302:14525 — 대화 상단에도 빠른시작 칩 유지(선택 칩 teal) */}
+                        {!isPC && <div className="surveychat-chatchips">{introChips}</div>}
                         {messages.map((m, i) => (
                             <div key={i} className={`surveychat-row ${m.role}`}>
                                 <div className={`surveychat-bubble ${m.role}`}>{m.text}</div>
@@ -177,20 +190,24 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                                     <div className="surveychat-scale" role="radiogroup" aria-label="척도 선택">
                                         <span className="surveychat-scale-track" />
                                         <div className="surveychat-scale-dots">
-                                            {activeInput.scale.labels.map((lbl, i) => (
-                                                <button
-                                                    key={lbl + i}
-                                                    type="button"
-                                                    role="radio"
-                                                    aria-checked="false"
-                                                    aria-label={lbl}
-                                                    className="surveychat-scale-dot"
-                                                    onClick={() => send(lbl)}
-                                                >
-                                                    <span className="surveychat-scale-bullet" />
-                                                    <span className="surveychat-scale-label">{lbl}</span>
-                                                </button>
-                                            ))}
+                                            {activeInput.scale.labels.map((lbl, i, arr) => {
+                                                // Figma 302:14586~14590 — 라벨은 처음/가운데/끝 도트에만 노출 (모바일)
+                                                const labeled = i === 0 || i === arr.length - 1 || i === Math.floor(arr.length / 2);
+                                                return (
+                                                    <button
+                                                        key={lbl + i}
+                                                        type="button"
+                                                        role="radio"
+                                                        aria-checked="false"
+                                                        aria-label={lbl}
+                                                        className={`surveychat-scale-dot${labeled ? ' labeled' : ''}`}
+                                                        onClick={() => send(lbl)}
+                                                    >
+                                                        <span className="surveychat-scale-bullet" />
+                                                        <span className="surveychat-scale-label">{lbl}</span>
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )}
@@ -236,7 +253,7 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                 <div className="surveychat-inputbar">
                     <div className="surveychat-field">
                         <button type="button" className="surveychat-attach" aria-label="첨부" onClick={() => fileInputRef.current?.click()}>
-                            <img src="/figma-assets/icons/attach_icon.png" alt="" width="22" height="22" />
+                            <img src={isPC ? '/figma-assets/icons/attach_icon.png' : '/figma-assets/mobile-survey/icon_attach.png'} alt="" width="22" height="22" />
                         </button>
                         <input
                             type="file"
@@ -265,7 +282,7 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                         aria-label="전송"
                     >
                         <span className="surveychat-send-label">전송</span>
-                        <img src="/figma-assets/icons/send_icon.svg" alt="" />
+                        <img src={isPC ? '/figma-assets/icons/send_icon.svg' : '/figma-assets/mobile-survey/icon_send.png'} alt="" />
                     </button>
                 </div>
             )}
@@ -291,9 +308,10 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
         <div className="surveychat">
             <div className="surveychat-topbar">
                 <button type="button" className="surveychat-back" onClick={() => nav('home')} aria-label="뒤로">
-                    <img src="/figma-assets/icons/icon_back_arrow.svg" alt="" width="8" height="14" />
+                    <img src="/figma-assets/mobile-survey/icon_back.png" alt="" width="24" height="24" />
                 </button>
-                <h1 className="surveychat-title-inline">무엇을 도와드릴까요?</h1>
+                {/* Figma: 인트로(302:14614)는 타이틀이 본문 중앙(y170), 대화(302:14525)는 상단 바에 위치 */}
+                {started && <h1 className="surveychat-title-inline">무엇을 도와드릴까요?</h1>}
             </div>
             <div className="surveychat-card">{cardInner}</div>
             <MobileBottomNav currentView="mSurveyList" onNavigate={onNavigate} />

@@ -565,7 +565,7 @@
       "view": "mSurveyList",
       "path": "/",
       "auth": false,
-      "waitFor": ".m-survey-list-page"
+      "waitFor": ".surveychat-startbtn"
     },
     {
       "id": "mSurveyJoin",
