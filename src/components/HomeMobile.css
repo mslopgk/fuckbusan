@@ -1,91 +1,121 @@
-/* 모바일 홈 리뉴얼 (Figma 269:19829). accent teal #23bdbb */
-.hmob2 { background: #fff; min-height: 100vh; padding-bottom: 96px; overflow-x: hidden; }
+/* 모바일 홈 — Figma WDC 302:14384 실측 정합. accent teal #23bdbb
+ * 모든 좌표/크기/타이포는 Figma 노드 실측값 (mh_dump 2026-07-17) */
+.hmob2 { background: #fff; min-height: 100vh; padding-bottom: calc(125px + env(safe-area-inset-bottom)); overflow-x: hidden; }
 
-/* 상단 헤더 — 파란 배너 카드 안에 겹쳐 배치 (로고/벨) */
-.hmob2-header { display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 20px 0; position: relative; z-index: 2; background: transparent; }
-.hmob2-logo { border: none; background: none; padding: 0; cursor: pointer; }
+/* ── 가상시민 배너 (302:14388 #e2f1fd 393x301 r20) ───────────────── */
+.hmob2-aic { position: relative; height: 301px; background: #e2f1fd; border-radius: 20px; overflow: hidden; }
+/* 로고 — WDC가 정답 (Figma PDDP(18,19)는 outdated). PDDP 글리프 중심 y≈39.5에 맞춤 */
+.hmob2-logo { position: absolute; left: 18px; top: 25px; z-index: 2; border: none; background: none; padding: 0; cursor: pointer; }
 .hmob2-logo img { height: 30px; display: block; }
-.hmob2-bell { position: relative; border: none; background: none; cursor: pointer; }
+/* 벨 (302:14415 image 53 — (349,26) 24x24) */
+.hmob2-bell { position: absolute; right: 20px; top: 26px; z-index: 2; border: none; background: none; padding: 0; cursor: pointer; }
+.hmob2-bell img { width: 24px; height: 24px; display: block; }
 .hmob2-bell-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px;
     background: #e6235a; color: #fff; font-size: 10px; font-weight: 700; border-radius: 8px;
     display: flex; align-items: center; justify-content: center; }
-
-/* 가상시민 배너 — 로고·텍스트·일러스트를 한 카드에 담고 일러스트가 상단까지 크게 올라옴 */
-.hmob2-aic {
-    position: relative; margin: 0; width: 100%;
-    border-radius: 0; min-height: 340px; overflow: hidden;
-    background: #e2f1fd;
-}
-.hmob2-aic-text { position: relative; z-index: 1; display: block; width: 100%;
-    border: none; background: none; text-align: left; cursor: pointer; padding: 16px 20px 0; }
-.hmob2-aic-text h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.04em; color: #111; line-height: 1.35; }
+/* 타이틀 (302:14421 (20,77) 20/700 lh24 ls-0.04em #111, "가상 시민"=#23bdbb) */
+.hmob2-aic-text { position: absolute; left: 20px; top: 77px; z-index: 1; display: block;
+    border: none; background: none; text-align: left; cursor: pointer; padding: 0; }
+.hmob2-aic-text h2 { margin: 0; font-size: 20px; font-weight: 700; line-height: 24px; letter-spacing: -0.04em; color: #111111; }
 .hmob2-aic-text h2 span { color: #23bdbb; }
-.hmob2-aic-text p { margin: 10px 0 0; font-size: 13px; color: #5b6b6a; line-height: 1.5; }
-/* 일러스트: 카드 하단 전체폭 블리드 + 크게 배치해 시민 머리가 텍스트/로고 영역까지 올라옴 */
-.hmob2-aic-img { position: absolute; left: 50%; transform: translateX(-50%); bottom: 0; z-index: 0;
-    width: 130%; max-width: none; height: auto; display: block; }
+/* 서브 (302:14423 (20,137) 14/400 lh17 ls-0.04em #111) */
+.hmob2-aic-text p { margin: 12px 0 0; font-size: 14px; font-weight: 400; line-height: 17px; letter-spacing: -0.04em; color: #111111; }
+/* 일러스트 (302:14391 (6,150) — 프레임 클립 후 387x151) */
+.hmob2-aic-img { position: absolute; left: 6px; bottom: 0; z-index: 0; width: 387px; max-width: none; height: auto; display: block; }
 
-/* 공공데이터 카드 */
-.hmob2-pubdata {
-    margin: 12px 16px 0; width: calc(100% - 32px); border: none; cursor: pointer; text-align: left;
-    border-radius: 18px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between;
-    background: #e2f1fd;
-}
-.hmob2-pubdata-title { font-size: 18px; font-weight: 800; color: #111; letter-spacing: -0.03em; }
-.hmob2-pubdata p { margin: 6px 0 0; font-size: 13px; color: #5b6b73; line-height: 1.5; }
-.hmob2-pubdata img { width: 54px; height: 54px; object-fit: contain; }
+/* ── 공공데이터 카드 (302:14419 (22,329) 351x123 r20 #e2f1fd) ────── */
+.hmob2-pubdata { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
+    margin: 28px 20px 0 22px; width: calc(100% - 42px); height: 123px; box-sizing: border-box;
+    border: none; border-radius: 20px; background: #e2f1fd; cursor: pointer; text-align: left; padding: 30px 0 0 20px; }
+/* 제목 (302:14422 (42,359) 20/700 lh24 #111) */
+.hmob2-pubdata-title { display: block; font-size: 20px; font-weight: 700; line-height: 24px; letter-spacing: -0.04em; color: #111111; }
+/* 서브 (302:14424 (42,388) 14/400 lh17) */
+.hmob2-pubdata p { margin: 5px 0 0; font-size: 14px; font-weight: 400; line-height: 17px; letter-spacing: -0.04em; color: #111111; }
+/* 폴더 일러스트 (302:14420 (250,335) 111x111 — 카드 우측 12/상단 6) */
+.hmob2-pubdata img { position: absolute; right: 12px; top: 6px; width: 111px; height: 111px; }
 
-/* 참여 현황 */
-.hmob2-stats { padding: 26px 20px 8px; }
-.hmob2-region { color: #23bdbb; font-size: 16px; font-weight: 800; }
-.hmob2-stats-head strong { font-size: 16px; font-weight: 800; color: #242424; }
-.hmob2-stats-head p { margin: 4px 0 0; font-size: 13px; color: #8a8a8a; }
-.hmob2-total { margin: 14px 0; background: #23bdbb; border-radius: 16px;
-    padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; color: #fff; }
-.hmob2-total span { font-size: 14px; font-weight: 700; }
-.hmob2-total strong { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
-.hmob2-count-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.hmob2-count { display: flex; align-items: center; justify-content: space-between; border: 1px solid #d9d9d9;
-    border-radius: 14px; padding: 16px 18px; box-sizing: border-box; min-width: 0; }
-.hmob2-count span { font-size: 14px; font-weight: 700; color: #111; }
-.hmob2-count b { font-size: 16px; font-weight: 800; color: #23bdbb; }
+/* ── 참여 현황 (헤더 302:14449 (20,491)) ─────────────────────────── */
+.hmob2-stats { padding: 39px 20px 0; }
+/* 1행 20/700 lh28 (부산전체=teal), 2행 16/400 lh24 — 둘 다 ls 0, #242424 */
+.hmob2-stats-head h2 { margin: 0; font-size: 20px; font-weight: 700; line-height: 29px; letter-spacing: 0; color: #242424; }
+.hmob2-region { color: #23bdbb; }
+.hmob2-stats-head p { margin: 0; font-size: 16px; font-weight: 400; line-height: 24px; letter-spacing: 0; color: #242424; }
+/* 총 참여건수 밴드 (302:14446 (20,560) 353x60 r20 #23bdbb) */
+.hmob2-total { margin-top: 16px; height: 60px; border-radius: 20px; background: #23bdbb; padding: 0 20px;
+    display: flex; align-items: center; justify-content: space-between; color: #fff; box-sizing: border-box; }
+.hmob2-total span { font-size: 16px; font-weight: 700; letter-spacing: -0.04em; }   /* 302:14447 16/700 */
+.hmob2-total strong { font-size: 24px; font-weight: 700; letter-spacing: -0.04em; } /* 302:14448 24/700 */
+/* 건수 카드 4장 (302:14450/14451/14492/14493 170x60 r20, 1px #d9d9d9, 간격 13) */
+.hmob2-count-grid { margin-top: 13px; display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+.hmob2-count { height: 60px; display: flex; align-items: center; justify-content: space-between;
+    border: 1px solid #d9d9d9; border-radius: 20px; padding: 0 19px; box-sizing: border-box; min-width: 0; background: #fff; }
+.hmob2-count span { font-size: 14px; font-weight: 700; letter-spacing: -0.04em; color: #111111; } /* 14/700 */
+.hmob2-count b { font-size: 16px; font-weight: 700; letter-spacing: -0.04em; color: #23bdbb; }    /* 16/700 */
 
-/* 지도 (Figma: 연회색 전체폭 배경 밴드 #f4f4f4) */
-.hmob2-map { background: #f4f4f4; padding: 28px 0 36px; margin-top: 14px; }
-.hmob2-map .busanmap { width: 90%; margin: 0 auto; }
+/* ── 지도 밴드 (302:14452 h484 r20 #f4f4f4 + 토포 302:14454/14455) ── */
+.hmob2-map { position: relative; margin-top: 32px; height: 484px; border-radius: 20px; overflow: hidden;
+    background-image: url('/figma-assets/mobile-home/map_topo.png'), url('/figma-assets/mobile-home/map_topo.png');
+    background-position: 0 133px, 0 0; background-size: 100% 286px, 100% 286px; background-repeat: no-repeat;
+    background-color: #f4f4f4; }
+/* 지도 Group (302:14457 (-31,856) 464x357 → 밴드 상대 (-31,58)) */
+.hmob2-map-stage { position: absolute; left: -31px; top: 58px; width: 464px; height: 357px; }
 
-/* 지역별 TOP5 */
-.hmob2-top5 { margin: 12px 16px 0; background: #fff; border: 1px solid #eee; border-radius: 18px; padding: 22px; }
-.hmob2-top5 h3 { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -0.02em; }
-.hmob2-top5-sub { font-size: 13px; color: #9aa3ab; }
-.hmob2-top5 ul { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
-.hmob2-top5 li { display: flex; align-items: center; gap: 8px; }
-.hmob2-rank { width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: 12px; font-weight: 800;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.hmob2-rank-name { font-size: 14px; font-weight: 700; color: #111; width: 56px; flex-shrink: 0; }
-.hmob2-rank-bar { flex: 1; height: 7px; background: #eef2f2; border-radius: 6px; overflow: hidden; }
-.hmob2-rank-bar > div { height: 100%; border-radius: 6px; }
-.hmob2-rank-cnt { font-size: 13px; font-weight: 800; color: #23bdbb; width: 50px; text-align: right; flex-shrink: 0; }
-.hmob2-top5-empty { list-style: none; color: #9aa3ab; font-size: 13.5px; line-height: 1.6; text-align: center; padding: 18px 8px; }
+/* ── 지역별 TOP5 (302:14502 (20,1248) 353폭 r20 — 지도에 -34 겹침) ── */
+.hmob2-top5 { position: relative; margin: -34px 20px 0; background: #fff; border-radius: 20px; padding: 20px 20px 28px; }
+.hmob2-top5 h3 { margin: 0; font-size: 20px; font-weight: 700; line-height: 26px; letter-spacing: -0.04em; color: #242424; }
+.hmob2-top5-sub { margin: 0; font-size: 16px; font-weight: 400; line-height: 22px; letter-spacing: -0.04em; color: #242424; }
+.hmob2-top5 ul { list-style: none; margin: 19px 0 0; padding: 0; }
+.hmob2-top5 li + li { margin-top: 20px; }
+.hmob2-rank-row { display: flex; align-items: center; height: 30px; }
+/* 순위 배지 (실측 30x30 r10 #23bdbb, 숫자 16/700 white) */
+.hmob2-rank { width: 30px; height: 30px; border-radius: 10px; background: #23bdbb; color: #fff;
+    font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.hmob2-rank-name { margin-left: 5px; font-size: 16px; font-weight: 700; letter-spacing: -0.04em; color: #111111; }
+.hmob2-rank-cnt { margin-left: auto; font-size: 16px; font-weight: 700; letter-spacing: -0.04em; color: #23bdbb; }
+/* 게이지 (302:14504 313x7 r20 — 트랙 #23bdbb 20%, 채움 #23bdbb) */
+.hmob2-rank-bar { margin-top: 5px; height: 7px; border-radius: 20px; background: rgba(35, 189, 187, 0.2); overflow: hidden; }
+.hmob2-rank-bar > div { height: 100%; border-radius: 20px; background: #23bdbb; }
+.hmob2-top5-empty { color: #9aa3ab; font-size: 13.5px; line-height: 1.6; text-align: center; padding: 18px 8px; }
 
-/* 빠른 액션 2x2 */
-.hmob2-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
-.hmob2-act { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; text-align: left;
-    border: none; border-radius: 18px; padding: 18px; cursor: pointer; background: #f4f4f4; min-height: 130px;
-    box-sizing: border-box; min-width: 0; /* 좁은 화면(320px)에서 grid 트랙이 콘텐츠 폭에 밀려 넘치던 것 방지 */ }
-.hmob2-act.report { background: #f3edff; }
-.hmob2-act.propose { background: #ffecf1; }
-.hmob2-act span { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; color: #111; }
-.hmob2-act.report span { color: #542aa3; }
-.hmob2-act.propose span { color: #f74e7e; }
-.hmob2-act p { margin: 6px 0 0; font-size: 12px; color: #6b7280; line-height: 1.45; word-break: keep-all; }
-.hmob2-act img { width: 58px; height: 58px; object-fit: contain; flex-shrink: 0; }
+/* ── 빠른 액션 2x2 (167x136 r20, 간격 19x20) ─────────────────────── */
+.hmob2-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 19px; padding: 34px 20px 0; }
+.hmob2-act { position: relative; height: 136px; border: none; border-radius: 20px; background: #f4f4f4;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
+    text-align: left; padding: 15px 0 0 15px; cursor: pointer; box-sizing: border-box; min-width: 0; overflow: visible; }
+.hmob2-act.report { background: #f3edff; }   /* 302:14425 */
+.hmob2-act.propose { background: #ffecf1; }  /* 302:14428 */
+.hmob2-act span { display: block; font-size: 20px; font-weight: 700; line-height: 24px; letter-spacing: -0.04em; color: #111111; }
+.hmob2-act p { margin: 5px 0 0; font-size: 14px; font-weight: 400; line-height: 17px; letter-spacing: -0.04em; color: #111111;
+    word-break: keep-all; position: relative; z-index: 1; }
+.hmob2-act.report span, .hmob2-act.report p { color: #542aa3; }   /* 302:14431/14435 */
+.hmob2-act.propose span, .hmob2-act.propose p { color: #f74e7e; } /* 302:14433/14437 */
+/* 일러스트 — 카드별 Figma 절대좌표 → 우/하단 앵커 (제보는 카드 밖 10px 블리드) */
+.hmob2-act img { position: absolute; }
+.hmob2-act.report img { width: 90px; height: 84px; right: -10px; bottom: -10px; }   /* 302:14430 (107,1625) */
+.hmob2-act.propose img { width: 68px; height: 77px; right: 1px; bottom: 1px; }      /* 302:14439 (304,1621) */
+.hmob2-act.diagnose img { width: 65px; height: 61px; right: 1px; bottom: 6px; }     /* 302:14522 (121,1788) */
+.hmob2-act.survey img { width: 72px; height: 68px; right: -1px; bottom: 0; }        /* 302:14440 (302,1787) */
 
-/* 플랫폼 소식 */
-.hmob2-news { padding: 20px; }
-.hmob2-news h2 { margin: 0 0 8px; font-size: 22px; font-weight: 800; letter-spacing: -0.04em; }
+/* ── 플랫폼 소식 (302:14427 (20,1915) 22/700) ───────────────────── */
+.hmob2-news { padding: 60px 20px 0; }
+.hmob2-news h2 { margin: 0 0 10px; font-size: 22px; font-weight: 700; line-height: 26px; letter-spacing: -0.04em; color: #111111; }
 .hmob2-news ul { list-style: none; margin: 0; padding: 0; }
+/* 행 16/400 lh19 #111, 구분선 1px #ddd (302:14441 — 항목 사이에만) */
 .hmob2-news li { display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    padding: 15px 0; border-bottom: 1px solid #f1f1f1; cursor: pointer; }
-.hmob2-news-text { flex: 1; min-width: 0; font-size: 15px; color: #111; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    padding: 14px 0 13px; border-bottom: 1px solid #dddddd; cursor: pointer; }
+.hmob2-news li:last-child { border-bottom: none; }
+.hmob2-news-text { flex: 1; min-width: 0; font-size: 16px; font-weight: 400; line-height: 19px; letter-spacing: -0.04em;
+    color: #111111; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 화살표 (302:14444 실측 8.25x13.75 #aaa) */
+.hmob2-news-arrow { width: 8px; height: 14px; flex-shrink: 0; }
+
+/* ── 비로그인 말풍선 (302:14412 (285,2053) 96x33 r20 #e6e6e6) ────── */
+.hmob2-login-tip { position: fixed; right: 12px; bottom: calc(70px + env(safe-area-inset-bottom)); z-index: 101;
+    width: 96px; height: 33px; border: none; border-radius: 20px; background: #e6e6e6; cursor: pointer;
+    font-size: 14px; font-weight: 400; letter-spacing: -0.04em; color: #242424;
+    display: flex; align-items: center; justify-content: center; padding: 0; }
+/* 꼬리 (302:14414 Polygon 19x19 — 말풍선 좌측 38에서 아래로) */
+.hmob2-login-tip::after { content: ''; position: absolute; top: 100%; left: 38px; width: 0; height: 0;
+    border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 7px solid #e6e6e6; }
+
+/* PC 진입 차단은 Home.jsx viewport 분기에서 처리 */
