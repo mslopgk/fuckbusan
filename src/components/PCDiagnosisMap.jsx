@@ -59,7 +59,9 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
     const [bigSel, setBigSel] = useState(() => new Set());
     const [facilityMid, setFacilityMid] = useState('');
     const [facilitySub, setFacilitySub] = useState('');
-    const [target, setTarget] = useState('all');
+    // Figma 302:5843(초기 상태): 진단대상 미선택 — 선택 전에는 핀/우측 목록 패널이 없다.
+    // 302:5562(전체)/302:4773·4977(시민)/302:5178·5370(전문가) 모두 선택 후 상태.
+    const [target, setTarget] = useState('');
     const [sort, setSort] = useState('latest');
     const mapRef = useRef(null);
     const geocodeReqRef = useRef(0);
@@ -164,14 +166,18 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
     if (facilityMid) filtered = filtered.filter((it) => it.mid === facilityMid);
     if (target === 'citizen') filtered = filtered.filter((it) => it.targetType === '시민');
     else if (target === 'expert') filtered = filtered.filter((it) => it.targetType === '전문가');
+    else if (!target) filtered = []; // Figma 302:5843 — 진단대상 선택 전에는 데이터 미표시
     if (sort === 'views') filtered = [...filtered].sort((a, b) => b.views - a.views);
     if (sort === 'votes') filtered = [...filtered].sort((a, b) => b.likes - a.likes);
 
-    // 디테일 모드: 선택된 핀 하나만 청록으로 표시 (나머지 지워짐)
-    // → 클러스터 평균 재계산 없이 핀 셋이 교체되므로 순간이동 없음
+    // 디테일 모드 — Figma 302:6328: 다른 핀은 유지, 선택 핀만 focus(확대) 표시.
+    // 핀 셋 개수가 동일하게 유지되므로 클러스터 재계산에 의한 순간이동 없음.
     const pins = (panel === 'detail' && selected)
-        ? [{ ...selected, color: '#23bdbb', focus: true }]
-        : filtered.map((it) => ({ ...it, color: '#808080', focus: false }));
+        ? [
+            ...filtered.filter((it) => it.id !== selected.id).map((it) => ({ ...it, focus: false })),
+            { ...selected, focus: true },
+        ]
+        : filtered.map((it) => ({ ...it, focus: false }));
 
     const goList = () => { setPanel('list'); setSelected(null); };
     const goDetail = (item) => { setPanel('detail'); setSelected(item); };
@@ -213,7 +219,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                                         <button
                                             key={t.key}
                                             type="button"
-                                            className={`pc-diag-target-btn ${target === t.key ? 'on' : ''}`}
+                                            className={`pc-diag-target-btn pc-diag-target-btn--${t.key} ${target === t.key ? 'on' : ''}`}
                                             onClick={() => setTarget(t.key)}
                                         >{t.label}</button>
                                     ))}
@@ -272,11 +278,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                         </div>
                     </div>
 
-                    {panel !== 'list' && (
-                        <button type="button" className="pc-diag-back-btn" onClick={goList}>
-                            ← 목록으로
-                        </button>
-                    )}
+                    {/* Figma 302:6328/7903/8581 — 좌측 하단 '목록으로' 부유 버튼 없음 (패널 내 chevron으로 복귀) */}
                 </div>
 
                 {/* CENTER MAP */}
@@ -343,20 +345,12 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                     )}
                 </div>
 
-                {/* RIGHT PANEL — content varies by `panel` state */}
+                {/* RIGHT PANEL — content varies by `panel` state.
+                    Figma 302:5843: 목록이 비어 있으면(진단대상 선택 전 포함) 우측 패널 자체가 없음 */}
+                {(panel !== 'list' || (!loading && filtered.length > 0)) && (
                 <aside className={`pc-diag-right pc-diag-right-${panel}`}>
                     {panel === 'list' && (
                         <>
-                            {loading && (
-                                <div style={{ padding: '32px 16px', textAlign: 'center', color: '#888', fontSize: '14px' }}>불러오는 중...</div>
-                            )}
-                            {!loading && filtered.length === 0 && (
-                                <div style={{ padding: '32px 16px', textAlign: 'center', color: '#888', fontSize: '14px' }}>
-                                    {!localStorage.getItem('access_token')
-                                        ? '로그인 후 진단 목록을 확인할 수 있습니다.'
-                                        : '해당 조건의 진단 결과가 없습니다.'}
-                                </div>
-                            )}
                             <ul className="pc-diag-list-items">
                                 {filtered.map((it) => (
                                     <li
@@ -402,6 +396,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                         <PCDiagPanelDone onClose={goList} />
                     )}
                 </aside>
+                )}
             </div>
         </UserPCLayout>
     );

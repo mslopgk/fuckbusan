@@ -88,6 +88,15 @@ export default function PCDiagPanelForm({ onCancel, onSubmit, location, mode = '
 
     return (
         <>
+            {/* Figma 302:7903/8063/8308 — 패널 좌상단 뒤로가기 chevron (상세 패널과 동일 스펙) */}
+            <button
+                type="button"
+                className="pc-diagpanel-back"
+                onClick={onCancel}
+                aria-label="목록으로"
+            >
+                <img src="/figma-assets/icons/icon_back_arrow.svg" alt="" width="8" height="14" />
+            </button>
             {/* Figma 269:13157 — 24px bold subtitle, not just "진단하기" */}
             <h2 className="pc-diagform-title">우리동네 개선 아이디어를<br/>진단해보세요.</h2>
 

@@ -281,11 +281,37 @@
     font-family: inherit;
 }
 
-.pc-diag-target-btn.on {
-    background: var(--diag-teal);
-    color: #fff;
+/* 진단대상 버튼별 상태 — Figma 실측:
+   전체  unselected 302:5867(#fff/#e6e6e6/#737373 w400) → selected 302:5751(#777 fill/white w400)
+   시민  unselected 302:5870(teal stroke/teal text w500) → selected 302:4825(teal fill/white w500)
+   전문가 unselected 302:5871(#777 stroke/#777 text w400) → selected 302:5235(#aaa fill/white w400) */
+.pc-diag-target-btn--citizen {
     border-color: var(--diag-teal);
-    font-weight: 600;
+    color: var(--diag-teal);
+    font-weight: 500;
+}
+
+.pc-diag-target-btn--expert {
+    border-color: #777777;
+    color: #777777;
+}
+
+.pc-diag-target-btn--all.on {
+    background: #777777;
+    border-color: #777777;
+    color: #fff;
+}
+
+.pc-diag-target-btn--citizen.on {
+    background: var(--diag-teal);
+    border-color: var(--diag-teal);
+    color: #fff;
+}
+
+.pc-diag-target-btn--expert.on {
+    background: #aaaaaa;
+    border-color: #aaaaaa;
+    color: #fff;
 }
 
 /* ───── 툴바: 우측 패널(395px) 왼쪽에 배치. 패널 닫히면 화면 오른쪽 끝으로 ───── */
@@ -631,21 +657,6 @@
     align-self: center;
 }
 
-/* ───── 좌측 필터: 목록 외 모드에서 노출되는 "돌아가기" ───── */
-.pc-diag-back-btn {
-    margin-top: 12px;
-    width: 100%;
-    height: 38px;
-    border: 1px solid var(--diag-border);
-    border-radius: 8px;
-    background: #fff;
-    color: var(--diag-teal);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-}
-
 /* ───── 우측 detail panel 안 + 진단하기 버튼 ───── */
 .pc-diag-panel-cta {
     width: 100%;
@@ -664,8 +675,9 @@
 
 /* ───── form 패널 안 (Figma 302:8063 진단하기_시민) ───── */
 .pc-diag-right-form .pc-diagform-title {
-    /* Figma 302:8174: 24px w700 ls -0.96px, 패널 상단에서 76 (padding 20 + 56), 아래 30 (섹션 padding 15 포함) */
-    margin: 56px 0 15px;
+    /* Figma 302:8174: 24px w700 ls -0.96px, 패널 상단에서 76
+       = padding 20 + chevron(22, .pc-diagpanel-back) + chevron 아래 12 + 22 */
+    margin: 22px 0 15px;
     font-size: 24px;
     line-height: 1.4;
 }
