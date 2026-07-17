@@ -1,30 +1,23 @@
 import { useState } from 'react';
 import './PCAICitizen.css';
+import './PersonaReport.css';
 
-/* 페르소나 풀 상세 리포트 본문 (Figma 215:5403).
+/* 페르소나 풀 상세 리포트 본문 (Figma TCuOzEqNhoLKjhF0reBDks 302:4531).
    사용자 PC 가상시민 모달 + 어드민 '가상시민 생성 관리' 아코디언 공용.
    모달 chrome(상단바/닫기)은 호출 측에서 감싼다. */
 
-// 감정(레벨/색/표정) — Figma 색상값 그대로
+// 감정(레벨/색/표정) — Figma 302:4531 색상값
 export const EMO_LEVEL = { '개쾌함': 1, '기대됨': 1, '집중함': 2, '집중됨': 2, '보통': 3, '불안함': 4, '매우불안함': 5, '매우 불안함': 5 };
-export const EMO_COLOR = { '개쾌함': '#0da000', '기대됨': '#0da000', '집중함': '#c8a300', '집중됨': '#c8a300', '보통': '#c8a300', '불안함': '#ff7300', '매우불안함': '#ff0000', '매우 불안함': '#ff0000' };
-export const EMO_FACE = { '개쾌함': '😄', '기대됨': '😄', '집중함': '😌', '집중됨': '😌', '보통': '😐', '불안함': '😟', '매우불안함': '😣', '매우 불안함': '😣' };
-// 행동 키워드 → 활동 이모지 (Figma 여정 아이콘 대응)
-export const actionEmoji = (a = '') => {
-    if (/카페/.test(a)) return '🏪';
-    if (/공부|스터디|학습|독서/.test(a)) return '📚';
-    if (/귀가|짐|준비|정리/.test(a)) return '🎒';
-    if (/버스|대중교통|지하철|하차/.test(a)) return '🚌';
-    if (/집|도착|귀택/.test(a)) return '🏠';
-    if (/도보|골목|이동|걷/.test(a)) return '🛣️';
-    if (/운동|산책/.test(a)) return '🏃';
-    if (/시장|장보|쇼핑/.test(a)) return '🛒';
-    if (/병원|진료|건강/.test(a)) return '🏥';
-    return '📍';
-};
+export const EMO_COLOR = { '개쾌함': '#32951a', '기대됨': '#32951a', '집중함': '#b9a225', '집중됨': '#b9a225', '보통': '#b9a225', '불안함': '#e9711c', '매우불안함': '#e72d15', '매우 불안함': '#e72d15' };
+export const EMO_FACE = { '개쾌함': '😄', '기대됨': '😄', '집중함': '🙄', '집중됨': '🙄', '보통': '😐', '불안함': '😖', '매우불안함': '😡', '매우 불안함': '😡' };
 const PROFILE_FIELDS_L = [['job', '직업'], ['family', '가족'], ['motto', '좌우명'], ['dream_life', '꿈꾸는 생활']];
 const PROFILE_FIELDS_R = [['interests', '관심사'], ['concerns', '고민'], ['hobbies', '취미'], ['activities', '활동']];
 const join = (v) => (Array.isArray(v) ? v.join(', ') : (v || '—'));
+
+// 감정 이모지 세로 배치 (Figma: 나쁜 감정일수록 위, 좋은 감정일수록 아래)
+const FACE_BAND_H = 56;   // 이모지 유동 밴드 높이(px)
+const FACE_SIZE = 24;
+const faceTop = (emotion) => ((5 - (EMO_LEVEL[emotion] ?? 3)) / 4) * (FACE_BAND_H - FACE_SIZE);
 
 /* 카테고리별 관심도 레이더(토글 ON). cats = [[label, key], ...] */
 function CatRadar({ cs, cats }) {
@@ -40,25 +33,22 @@ function CatRadar({ cs, cats }) {
                 return <path key={li} d={g} fill="none" stroke="#e0e0e0" strokeWidth="1" />;
             })}
             {cats.map((_, i) => { const p = pt(i, maxR); return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="#e0e0e0" strokeWidth="1" />; })}
-            <path d={dPath} fill="rgba(35,189,187,0.2)" stroke="#23bdbb" strokeWidth="2" />
+            <path d={dPath} fill="rgba(79,178,178,0.2)" stroke="#4fb2b2" strokeWidth="2" />
             {cats.map(([label], i) => { const p = pt(i, maxR + 16); return <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" fontSize="8.5" fill="#555">{label}</text>; })}
         </svg>
     );
 }
 
-// 감정선 (행동 박스 하단을 잇는 점선 + 점)
+// 감정선 — 이모지 밴드를 관통하는 점선 (이모지 뒤에 깔림)
 export function EmotionLine({ journey }) {
     const n = journey.length;
     if (n < 1) return null;
-    const W = 1000, H = 40, padTop = 6;
-    const xOf = (i) => ((i + 0.5) / n) * W;
-    const yOf = (e) => padTop + ((EMO_LEVEL[e] ?? 3) - 1) / 4 * (H - padTop - 6);
-    const pts = journey.map((s, i) => [xOf(i), yOf(s.emotion)]);
+    const W = 1000, H = FACE_BAND_H;
+    const pts = journey.map((s, i) => [((i + 0.5) / n) * W, faceTop(s.emotion) + FACE_SIZE / 2]);
     const dPath = pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
     return (
-        <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: H }}>
-            <path d={dPath} fill="none" stroke="#cfcfcf" strokeWidth="2" strokeDasharray="5 4" vectorEffect="non-scaling-stroke" />
-            {pts.map(([x, y], i) => <circle key={i} cx={x} cy={y} r={5} fill={EMO_COLOR[journey[i].emotion] || '#ccc'} vectorEffect="non-scaling-stroke" />)}
+        <svg className="aic-jr-line" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
+            <path d={dPath} fill="none" stroke="#9c9c9c" strokeWidth="1.6" strokeDasharray="3 3.5" vectorEffect="non-scaling-stroke" />
         </svg>
     );
 }
@@ -67,8 +57,8 @@ export function PersonRatioIcons() {
     return (
         <span className="aic-pr-icons" aria-hidden="true">
             {[0, 1, 2, 3, 4].map((i) => (
-                <svg key={i} width="11" height="20" viewBox="0 0 11 20" fill={i === 0 ? '#23bdbb' : '#b9d6d6'}>
-                    <circle cx="5.5" cy="4" r="3.4" /><path d="M0.5 20c0-3 2.2-5.5 5-5.5s5 2.5 5 5.5z" />
+                <svg key={i} width="13" height="24" viewBox="0 0 11 20" fill={i === 0 ? '#1d2b2b' : '#bfcfce'}>
+                    <circle cx="5.5" cy="3.6" r="3.6" /><path d="M0.4 20c0-6 2.3-11.4 5.1-11.4s5.1 5.4 5.1 11.4z" />
                 </svg>
             ))}
         </span>
@@ -113,9 +103,14 @@ export default function PersonaReport({ citizen, avatarUrl, onNext }) {
                 </div>
                 <div className="aic-rp-right">
                     <div className="aic-rp-similar">
-                        <div className="aic-rp-similar-head"><span>유사 시민 비율</span><PersonRatioIcons /></div>
-                        <p>{d.similar_desc || '유사한 생활 유형'}</p>
-                        <strong>{d.similar_ratio || '—'}</strong>
+                        <div className="aic-rp-similar-l">
+                            <span className="aic-rp-similar-ttl">유사 시민 비율</span>
+                            <p>{d.similar_desc || '유사한 생활 유형'}</p>
+                        </div>
+                        <div className="aic-rp-similar-r">
+                            <PersonRatioIcons />
+                            <strong>{d.similar_ratio || '—'}</strong>
+                        </div>
                     </div>
                     <div className="aic-rp-prof-box right">
                         {PROFILE_FIELDS_R.map(([k, l]) => <div key={k} className="aic-rp-prow"><dt>{l}</dt><dd>{join(d[k])}</dd></div>)}
@@ -127,7 +122,11 @@ export default function PersonaReport({ citizen, avatarUrl, onNext }) {
             <div className="aic-rp-3col">
                 <div className="aic-rp-card">
                     <h4>시민 체감 언어</h4>
-                    <div className="aic-rp-feel"><i className="aic-q open">❝</i><span>{d.body_language || '—'}</span><i className="aic-q close">❞</i></div>
+                    <div className="aic-rp-feel">
+                        <img className="aic-q open" src="/figma-assets/icons/quote_mark.png" alt="" />
+                        <span>{d.body_language || '—'}</span>
+                        <img className="aic-q close" src="/figma-assets/icons/quote_mark.png" alt="" />
+                    </div>
                 </div>
                 <div className="aic-rp-card">
                     <h4>시민 목소리</h4>
@@ -145,20 +144,23 @@ export default function PersonaReport({ citizen, avatarUrl, onNext }) {
                     <h4>여정지도</h4>
                     <div className="aic-jr-body">
                         <div className="aic-jr-rowlabels"><span>행동</span><span>감정</span><span>감정</span></div>
-                        <div className="aic-jr-grid" style={{ gridTemplateColumns: `repeat(${journey.length}, 1fr)` }}>
-                            {journey.map((s, i) => (
-                                <div key={i} className="aic-jr-step">
-                                    <span className="aic-jr-num" style={{ background: EMO_COLOR[s.emotion] || '#bbb' }}>{i + 1}</span>
-                                    <div className="aic-jr-emoji">{actionEmoji(s.action)}</div>
-                                    <div className="aic-jr-action">{s.action}</div>
-                                    <div className="aic-jr-time">{s.time}</div>
-                                    <div className="aic-jr-feeling">{s.feeling}</div>
-                                    <div className="aic-jr-face">{EMO_FACE[s.emotion] || '🙂'}</div>
-                                    <div className="aic-jr-emotion" style={{ color: EMO_COLOR[s.emotion] }}>{s.emotion}</div>
-                                </div>
-                            ))}
+                        <div className="aic-jr-gridwrap">
+                            <div className="aic-jr-grid" style={{ gridTemplateColumns: `repeat(${journey.length}, 1fr)` }}>
+                                {journey.map((s, i) => (
+                                    <div key={i} className="aic-jr-step">
+                                        <span className="aic-jr-num">{i + 1}</span>
+                                        <div className="aic-jr-action">{s.action}</div>
+                                        <div className="aic-jr-time">{s.time}</div>
+                                        <div className="aic-jr-feeling">{s.feeling}</div>
+                                        <div className="aic-jr-faceband">
+                                            <span className="aic-jr-face" style={{ top: `${faceTop(s.emotion)}px` }}>{EMO_FACE[s.emotion] || '🙂'}</span>
+                                        </div>
+                                        <div className="aic-jr-emotion" style={{ color: EMO_COLOR[s.emotion] }}>{s.emotion}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <EmotionLine journey={journey} />
                         </div>
-                        <EmotionLine journey={journey} />
                     </div>
                 </div>
             )}
@@ -167,7 +169,11 @@ export default function PersonaReport({ citizen, avatarUrl, onNext }) {
             <div className="aic-rp-3col bottom">
                 <div className="aic-rp-card sig">
                     <h4>정책 신호등</h4>
-                    <div className="aic-sig-legend"><span className="high">● 높음</span><span className="medium">● 보통</span><span className="low">● 낮음</span></div>
+                    <div className="aic-sig-legend">
+                        <span className="high"><i />높음</span>
+                        <span className="medium"><i />보통</span>
+                        <span className="low"><i />낮음</span>
+                    </div>
                     <div className="aic-sig-list">
                         {policyRows.map((p, i) => (
                             <div key={i} className="aic-sig-row">
@@ -180,20 +186,22 @@ export default function PersonaReport({ citizen, avatarUrl, onNext }) {
                 </div>
                 <div className="aic-rp-card">
                     <h4>공공데이터 참여 현황 <span className="aic-rp-sub8">(참여 비율)</span></h4>
-                    <div className="aic-part-chart">
+                    <div className="aic-part-plot">
                         {partItems.map(([label, value]) => (
                             <div key={label} className="aic-part-col">
                                 <span className="aic-part-val">{value}%</span>
-                                <div className="aic-part-fill" style={{ height: `${Math.max(6, (value / partMax) * 96)}px` }} />
-                                <span className="aic-part-label">{label}</span>
+                                <div className="aic-part-fill" style={{ height: `${Math.max(6, (value / partMax) * 82)}px` }} />
                             </div>
                         ))}
+                    </div>
+                    <div className="aic-part-labels">
+                        {partItems.map(([label]) => <span key={label}>{label}</span>)}
                     </div>
                     <div className="aic-part-cap">제보와 설문 참여 비율이 높아 생활 불편 체감이 높은 유형입니다.</div>
                 </div>
                 <div className="aic-rp-card">
                     <div className="aic-cat-head">
-                        <h4>카테고리별 관심도 <span className="aic-rp-sub8">(8대 영역)</span></h4>
+                        <h4>카테고리별 관심도 <span className="aic-rp-sub8 block">(8대 영역)</span></h4>
                         <button type="button" className={`aic-cat-toggle${catRadar ? ' on' : ''}`}
                             onClick={() => setCatRadar((v) => !v)}
                             role="switch" aria-checked={catRadar} aria-label="레이더 차트로 보기" />
@@ -215,7 +223,7 @@ export default function PersonaReport({ citizen, avatarUrl, onNext }) {
 
             <div className="aic-rp-foot">
                 <span>이 리포트는 {citizen.district} 시민 의견과 공공데이터를 기반으로 AI 분석을 통해 생성된 가상 인물입니다.</span>
-                {onNext && <button type="button" onClick={onNext}>다른 시민 유형 보기 ›</button>}
+                {onNext && <button type="button" onClick={onNext}>다른 시민 유형 보기 &gt;</button>}
             </div>
         </div>
     );

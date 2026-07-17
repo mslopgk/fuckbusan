@@ -1,0 +1,126 @@
+/* 페르소나 상세 리포트 (Figma TCuOzEqNhoLKjhF0reBDks 302:4531)
+   모든 셀렉터는 .aic-report-body 하위로 스코프 — PCAICitizen.css의 구 버전 규칙보다 우선. */
+
+.aic-report-body {
+    font-family: 'Pretendard', 'Pretendard Variable', 'Noto Sans KR', sans-serif;
+    letter-spacing: -0.03em;
+    color: #111;
+}
+
+/* ── 헤더 ── */
+.aic-report-body .aic-rp-hero { display: grid; grid-template-columns: 147px 1fr 1.12fr; gap: 0 14px; margin-bottom: 22px; align-items: stretch; }
+.aic-report-body .aic-rp-illust { width: 147px; height: auto; min-height: 184px; border-radius: 14px; overflow: hidden; background: linear-gradient(180deg, #eef6f2, #f4f7f4); display: flex; align-items: center; justify-content: center; }
+.aic-report-body .aic-rp-illust img { width: 100%; height: 100%; object-fit: cover; }
+.aic-report-body .aic-rp-mid { display: flex; flex-direction: column; }
+.aic-report-body .aic-rp-nameline { display: flex; align-items: baseline; gap: 10px; margin-top: 2px; }
+.aic-report-body .aic-rp-name { font-size: 20px; font-weight: 700; color: #111; letter-spacing: -0.03em; }
+.aic-report-body .aic-rp-age { font-size: 14px; font-weight: 500; color: #333; }
+.aic-report-body .aic-rp-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 12px; }
+.aic-report-body .aic-rp-tags span { font-size: 12px; font-weight: 600; color: #4fb2b2; background: #fff; border: 1px solid #4fb2b2; border-radius: 6px; padding: 4px 9px; letter-spacing: -0.02em; }
+.aic-report-body .aic-rp-right { display: flex; flex-direction: column; gap: 12px; }
+
+/* 프로필 표 (직업/가족/… · 관심사/고민/…) */
+.aic-report-body .aic-rp-prof-box { background: #f2f2f2; border-radius: 12px; padding: 4px 16px; }
+.aic-report-body .aic-rp-prof-box.left { margin-top: auto; }
+.aic-report-body .aic-rp-prof-box.right { flex: 1; }
+.aic-report-body .aic-rp-prow { display: grid; grid-template-columns: 72px 1fr; gap: 10px; padding: 8px 0; align-items: baseline; border-bottom: 1px solid #dadada; }
+.aic-report-body .aic-rp-prow:last-child { border-bottom: none; }
+.aic-report-body .aic-rp-prow dt { font-size: 12.5px; font-weight: 700; color: #111; }
+.aic-report-body .aic-rp-prow dd { margin: 0; font-size: 12.5px; font-weight: 400; color: #333; line-height: 1.45; }
+
+/* 유사 시민 비율 카드 */
+.aic-report-body .aic-rp-similar { background: #e0f6f7; border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; gap: 12px; }
+.aic-report-body .aic-rp-similar-l { display: flex; flex-direction: column; min-width: 0; }
+.aic-report-body .aic-rp-similar-ttl { font-size: 14px; font-weight: 700; color: #111; }
+.aic-report-body .aic-rp-similar p { margin: 7px 0 0; font-size: 12px; font-weight: 400; color: #333; line-height: 1.45; }
+.aic-report-body .aic-rp-similar-r { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 4px; flex: none; }
+.aic-report-body .aic-pr-icons { display: inline-flex; gap: 3px; }
+.aic-report-body .aic-rp-similar strong { font-size: 25px; font-weight: 800; color: #111; letter-spacing: -0.02em; line-height: 1; }
+
+/* ── 3열 카드 공통 ── */
+.aic-report-body .aic-rp-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 22px; align-items: stretch; }
+.aic-report-body .aic-rp-3col.bottom { margin-bottom: 0; }
+.aic-report-body .aic-rp-card { background: #f2f2f2; border-radius: 12px; padding: 16px; }
+.aic-report-body .aic-rp-card h4 { margin: 0 0 12px; font-size: 14px; font-weight: 700; color: #111; letter-spacing: -0.04em; line-height: 1.35; white-space: nowrap; }
+.aic-report-body .aic-rp-sub8 { font-size: 14px; font-weight: 700; color: #111; }
+.aic-report-body .aic-rp-sub8.block { display: block; }
+
+/* 시민 체감 언어 */
+.aic-report-body .aic-rp-feel { display: flex; flex-direction: column; align-items: center; font-size: 13px; font-weight: 500; color: #111; line-height: 1.7; text-align: center; padding: 10px 4px 4px; letter-spacing: -0.03em; }
+.aic-report-body .aic-rp-feel .aic-q { width: 22px; height: 22px; object-fit: contain; }
+.aic-report-body .aic-rp-feel .aic-q.open { transform: rotate(180deg); align-self: center; }
+.aic-report-body .aic-rp-feel .aic-q.close { align-self: center; }
+.aic-report-body .aic-rp-feel span { margin: 8px 0; }
+
+/* 시민 목소리 / 핵심 이슈 (번호 박스) */
+.aic-report-body .aic-rp-pills { display: flex; flex-direction: column; gap: 9px; }
+.aic-report-body .aic-rp-pill { display: flex; gap: 12px; align-items: center; background: #fff; border-radius: 12px; padding: 10px 14px; min-height: 44px; box-sizing: border-box; }
+.aic-report-body .aic-rp-pill b { color: #4fb2b2; font-weight: 700; font-size: 20px; flex: none; line-height: 1; letter-spacing: 0; }
+.aic-report-body .aic-rp-pill span { font-size: 12px; font-weight: 400; color: #111; line-height: 1.4; letter-spacing: -0.02em; }
+
+/* ── 여정지도 ── */
+.aic-report-body .aic-rp-journey { background: #f2f2f2; border-radius: 12px; padding: 16px 18px 18px; margin-bottom: 22px; }
+.aic-report-body .aic-rp-journey h4 { margin: 0 0 14px; font-size: 14px; font-weight: 700; color: #111; letter-spacing: -0.04em; }
+.aic-report-body .aic-jr-body { position: relative; padding-left: 34px; }
+.aic-report-body .aic-jr-rowlabels { position: absolute; left: 0; top: 14px; bottom: 16px; display: flex; flex-direction: column; justify-content: space-between; font-size: 10.5px; font-weight: 500; color: #333; }
+.aic-report-body .aic-jr-rowlabels span { line-height: 1; }
+.aic-report-body .aic-jr-gridwrap { position: relative; }
+.aic-report-body .aic-jr-grid { display: grid; gap: 0 10px; }
+.aic-report-body .aic-jr-step { background: #fff; border-radius: 12px; padding: 12px 8px; margin: 0; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.aic-report-body .aic-jr-num { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #6c6c6c; color: #fff; font-size: 11px; font-weight: 700; flex: none; }
+.aic-report-body .aic-jr-action { font-size: 10.5px; font-weight: 500; color: #111; line-height: 1.4; margin-top: 8px; letter-spacing: -0.02em; }
+.aic-report-body .aic-jr-time { font-size: 10.5px; font-weight: 400; color: #111; line-height: 1.4; margin-top: 1px; }
+.aic-report-body .aic-jr-feeling { font-size: 10.5px; font-weight: 400; color: #333; line-height: 1.4; margin: 12px 0 0; min-height: 28px; letter-spacing: -0.02em; }
+.aic-report-body .aic-jr-faceband { position: relative; width: 100%; height: 56px; margin-top: auto; }
+.aic-report-body .aic-jr-face { position: absolute; left: 50%; transform: translateX(-50%); font-size: 20px; line-height: 24px; height: 24px; z-index: 1; }
+.aic-report-body .aic-jr-line { position: absolute; left: 0; right: 0; bottom: 33px; width: 100%; height: 56px; display: block; pointer-events: none; }
+.aic-report-body .aic-jr-emotion { font-size: 11px; font-weight: 700; margin-top: 3px; letter-spacing: -0.02em; }
+
+/* ── 정책 신호등 ── */
+.aic-report-body .aic-rp-card.sig { background: #e3e0e0; }
+.aic-report-body .aic-sig-legend { display: flex; gap: 7px; margin-bottom: 6px; }
+.aic-report-body .aic-sig-legend span { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #d4d0cf; border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; letter-spacing: -0.02em; }
+.aic-report-body .aic-sig-legend span i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.aic-report-body .aic-sig-legend .high { color: #e72d15; } .aic-report-body .aic-sig-legend .high i { background: #e72d15; }
+.aic-report-body .aic-sig-legend .medium { color: #e9711c; } .aic-report-body .aic-sig-legend .medium i { background: #e9711c; }
+.aic-report-body .aic-sig-legend .low { color: #33924a; } .aic-report-body .aic-sig-legend .low i { background: #33924a; }
+.aic-report-body .aic-sig-list { display: flex; flex-direction: column; }
+.aic-report-body .aic-sig-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid #d2cecd; }
+.aic-report-body .aic-sig-row:last-child { border-bottom: none; padding-bottom: 4px; }
+.aic-report-body .aic-sig-light { display: inline-flex; gap: 3px; background: #4d4d4d; border-radius: 999px; padding: 5px 6px; flex: none; }
+.aic-report-body .aic-sig-light i { width: 8px; height: 8px; border-radius: 50%; background: #6e6e6e; }
+.aic-report-body .aic-sig-light.high i:nth-child(1) { background: #e72d15; }
+.aic-report-body .aic-sig-light.medium i:nth-child(2) { background: #e9711c; }
+.aic-report-body .aic-sig-light.low i:nth-child(3) { background: #36d97b; }
+.aic-report-body .aic-sig-text { font-size: 12px; line-height: 1.4; font-weight: 700; letter-spacing: -0.02em; }
+.aic-report-body .aic-sig-text.high { color: #e72d15; }
+.aic-report-body .aic-sig-text.medium { color: #ca7920; }
+.aic-report-body .aic-sig-text.low { color: #33924a; }
+
+/* ── 공공데이터 참여 현황 ── */
+.aic-report-body .aic-part-plot { display: flex; gap: 14px; align-items: flex-end; justify-content: center; height: 118px; padding: 0 6px; border-bottom: 1px solid #c9c9c9; background-image: repeating-linear-gradient(to top, transparent 0, transparent 28px, #e3e3e3 28px, #e3e3e3 29px); }
+.aic-report-body .aic-part-col { flex: 1; max-width: 46px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.aic-report-body .aic-part-val { font-size: 12.5px; font-weight: 500; color: #111; margin-bottom: 5px; letter-spacing: -0.02em; }
+.aic-report-body .aic-part-fill { width: 24px; border-radius: 8px 8px 0 0; background: #4fb2b2; }
+.aic-report-body .aic-part-labels { display: flex; gap: 14px; justify-content: center; padding: 0 6px; margin-top: 7px; }
+.aic-report-body .aic-part-labels span { flex: 1; max-width: 46px; text-align: center; font-size: 12px; font-weight: 400; color: #111; }
+.aic-report-body .aic-part-cap { margin-top: 14px; background: #e7e7e7; border-radius: 8px; padding: 11px 13px; font-size: 12px; font-weight: 400; color: #333; line-height: 1.5; letter-spacing: -0.02em; }
+
+/* ── 카테고리별 관심도 ── */
+.aic-report-body .aic-cat-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.aic-report-body .aic-cat-head h4 { margin: 0; }
+.aic-report-body .aic-cat-toggle { width: 44px; height: 23px; border-radius: 999px; background: #4fb2b2; box-shadow: none; position: relative; flex: none; border: none; padding: 0; cursor: pointer; transition: background 0.18s; }
+.aic-report-body .aic-cat-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 17px; height: 17px; border-radius: 50%; background: #fff; transition: left 0.18s; }
+.aic-report-body .aic-cat-toggle.on { background: #4fb2b2; box-shadow: none; }
+.aic-report-body .aic-cat-toggle.on::after { left: 24px; background: #fff; }
+.aic-report-body .aic-hbars { display: flex; flex-direction: column; gap: 9px; }
+.aic-report-body .aic-hbar-row { display: grid; grid-template-columns: 74px 1fr; align-items: center; gap: 8px; }
+.aic-report-body .aic-hbar-label { font-size: 12px; color: #111; font-weight: 400; white-space: nowrap; letter-spacing: -0.02em; }
+.aic-report-body .aic-hbar-track { height: 9px; background: #d4d4d4; border-radius: 999px; overflow: hidden; }
+.aic-report-body .aic-hbar-fill { height: 100%; background: #4fb2b2; border-radius: 999px; }
+
+/* ── 푸터 ── */
+.aic-report-body .aic-rp-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; padding-top: 0; border-top: none; }
+.aic-report-body .aic-rp-foot span { font-size: 12px; font-weight: 400; color: #444; letter-spacing: -0.02em; }
+.aic-report-body .aic-rp-foot button { background: none; border: none; color: #111; font-size: 12.5px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; letter-spacing: -0.02em; }
+.aic-report-body .aic-rp-foot button:hover { opacity: 0.75; }
