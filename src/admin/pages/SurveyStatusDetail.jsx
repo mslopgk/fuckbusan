@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
-import '../styles/member_edit.css';
+import '../styles/survey_admin.css';
 import { API_BASE } from '../api';
 
-const fmtDateTime = (v) => (v ? String(v).replace('T', ' ').slice(0, 16) : '-');
+// Figma 302:28185는 "2025.01.01  18:00" 표기
+const fmtDateTime = (v) => (v ? String(v).replace('T', ' ').slice(0, 16).replace(/-/g, '.') : '-');
 
 // 처리상태 선택지 (Figma 예시 '신규' 포함)
 const STATUS_OPTIONS = ['신규', '확인', '처리중', '완료', '보류'];
 
-// Figma 설문현황(302-28185): AI 대화형 설문 응답 1건 상세
+// Figma 설문 현황(302:28185): AI 대화형 설문 응답 1건 상세
 export default function SurveyStatusDetail({ survey, onNavigate }) {
     const sessionId = survey?.session_id || survey?.id;
     const [detail, setDetail] = useState(null);
@@ -83,76 +83,60 @@ export default function SurveyStatusDetail({ survey, onNavigate }) {
     const d = detail || {};
     const attachments = d.attachments || [];
 
+    const fields = [
+        { label: '접수일시', value: fmtDateTime(d.received_at) },
+        { label: '진입유형', value: d.entry_type || '-' },
+        { label: '제출유형', value: d.submit_type || '-' },
+        { label: '장소', value: d.location || '-' },
+        { label: '문제유형', value: d.problem_type || '-' },
+        { label: '시급도', value: d.severity || '-' },
+    ];
+
     return (
         <AdminLayout onNavigate={onNavigate} currentView="surveyStatusDetail">
-            <div className="edit-form-header">
-                <h2 className="edit-form-title">설문현황</h2>
-            </div>
+            <div className="svd-page">
+                <div className="svd-content">
+                    <h2 className="svd-title">설문현황</h2>
+                    <hr className="svd-divider" />
 
-            <div className="edit-form-box">
-                <div className="edit-form-row">
-                    <label className="edit-form-label">접수일시</label>
-                    <input type="text" className="edit-form-input" value={fmtDateTime(d.received_at)} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
-                </div>
-                <div className="edit-form-row">
-                    <label className="edit-form-label">진입유형</label>
-                    <input type="text" className="edit-form-input" value={d.entry_type || '-'} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
-                </div>
-                <div className="edit-form-row">
-                    <label className="edit-form-label">제출유형</label>
-                    <input type="text" className="edit-form-input" value={d.submit_type || '-'} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
-                </div>
-                <div className="edit-form-row">
-                    <label className="edit-form-label">장소</label>
-                    <input type="text" className="edit-form-input wide" value={d.location || '-'} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
-                </div>
-                <div className="edit-form-row">
-                    <label className="edit-form-label">문제유형</label>
-                    <input type="text" className="edit-form-input" value={d.problem_type || '-'} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
-                </div>
-                <div className="edit-form-row">
-                    <label className="edit-form-label">시급도</label>
-                    <input type="text" className="edit-form-input" value={d.severity || '-'} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
-                </div>
-                <div className="edit-form-row">
-                    <label className="edit-form-label">처리상태</label>
-                    <select
-                        className="edit-form-input"
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                </div>
-                <div className="edit-form-row" style={{ alignItems: 'flex-start' }}>
-                    <label className="edit-form-label" style={{ paddingTop: 4 }}>첨부 여부</label>
-                    <div>
-                        {attachments.length === 0 ? (
-                            <span style={{ color: '#bbb', fontSize: 14 }}>첨부파일 없음</span>
-                        ) : (
-                            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                                {attachments.map((url, i) => (
-                                    <img key={i} src={url} alt={`첨부${i + 1}`}
-                                        style={{ width: 96, height: 72, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }} />
-                                ))}
+                    <div className="svd-form">
+                        {fields.map((f) => (
+                            <div className="svd-row" key={f.label}>
+                                <label className="svd-label">{f.label}</label>
+                                <input type="text" className="svd-input" value={f.value} readOnly title={f.value} />
                             </div>
-                        )}
+                        ))}
+                        <div className="svd-row">
+                            <label className="svd-label">처리상태</label>
+                            <select
+                                className="svd-select"
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                            >
+                                {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                            </select>
+                        </div>
+                        <div className="svd-row svd-row-top">
+                            <label className="svd-label">첨부 여부</label>
+                            {attachments.length === 0 ? (
+                                <span className="svd-attach-empty">첨부파일 없음</span>
+                            ) : (
+                                <div className="svd-attach-list">
+                                    {attachments.map((url, i) => (
+                                        <img key={i} className="svd-attach-img" src={url} alt={`첨부${i + 1}`} />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="svd-footer">
+                        <button className="svd-btn-export" onClick={handleExport}>대화 내보내기</button>
+                        <button className="svd-btn-save" onClick={handleSave} disabled={saving}>
+                            {saving ? '저장 중...' : '수정하기'}
+                        </button>
                     </div>
                 </div>
-            </div>
-
-            <div className="edit-form-footer">
-                <button className="btn-delete-member" onClick={handleExport}>대화 내보내기</button>
-                <button className="btn-confirm-edit" onClick={handleSave} disabled={saving}>
-                    {saving ? '저장 중...' : '수정하기'}
-                </button>
             </div>
         </AdminLayout>
     );

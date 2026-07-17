@@ -1,0 +1,422 @@
+/* 설문관리 (어드민) — Figma 302:29426(설문_메인) / 302:28185(설문 현황) 정합 전용 스타일.
+   공유 CSS(dashboard_new/member_edit)는 다른 관리자 페이지와 병행 작업 중이므로 건드리지 않고
+   svm-*(설문목록) / svd-*(설문현황) 스코프로만 정의한다. */
+
+/* ── 공통: 흰 배경·패딩(40/50)은 공용 셸(.admin-content-new)이 Figma 기준으로 제공 ── */
+.svm-page,
+.svd-page {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+}
+
+/* ═══════════════ 설문목록 (302:29426) ═══════════════ */
+
+.svm-content {
+    width: 1300px; /* Figma 콘텐츠 폭 350~1650 */
+    max-width: 100%;
+}
+
+.svm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 21px; /* 타이틀(y176)~검색박스(y197) */
+}
+
+.svm-title {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 36px;
+    color: #333;
+    letter-spacing: 0;
+}
+
+.svm-total {
+    font-size: 18px;
+    line-height: 22px;
+    color: #111;
+    font-weight: 400;
+}
+
+.svm-total b {
+    font-weight: 700;
+}
+
+/* 검색 박스: 1300x150 r10 #f6f6f6 */
+.svm-searchbox {
+    width: 100%;
+    height: 150px;
+    background: #f6f6f6;
+    border-radius: 10px;
+    padding: 20px 30px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.svm-search-row {
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
+
+.svm-search-label {
+    width: 119px; /* 라벨 x380 → 필드 x499 */
+    flex-shrink: 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #333;
+}
+
+/* 지역 드롭다운 (문의사항 반영 기능 — 스타일만 Figma 입력폼 290x50 정합) */
+.svm-select {
+    width: 290px;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+    background-color: #fff;
+    padding: 0 44px 0 20px;
+    font-size: 16px;
+    color: #111;
+    font-family: inherit;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url('/figma-assets/admin/select_arrow.png');
+    background-size: 20px 10px;
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+}
+
+.svm-select:focus {
+    outline: none;
+}
+
+.svm-input-wrap {
+    position: relative;
+    width: 647px;
+    height: 50px;
+}
+
+.svm-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 10px;
+    background: #fff;
+    padding: 0 46px 0 20px;
+    box-sizing: border-box;
+    font-size: 16px;
+    color: #111;
+    font-family: inherit;
+}
+
+.svm-input::placeholder {
+    color: #777;
+}
+
+.svm-input:focus {
+    outline: none;
+}
+
+.svm-input-icon {
+    position: absolute;
+    right: 19px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+}
+
+.svm-search-btn {
+    width: 84px;
+    height: 50px;
+    margin-left: 15px; /* 입력(~1146)→버튼(1161) */
+    border: none;
+    border-radius: 10px;
+    background: #43c1c1;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+/* 테이블: 검색박스 하단(347)→헤더 상단선(374) 27px */
+.svm-table {
+    width: 100%;
+    margin-top: 27px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.svm-table th {
+    height: 50px;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    padding: 0 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    text-align: center;
+}
+
+.svm-table td {
+    height: 50px;
+    border-bottom: 1px solid #ddd;
+    padding: 0 10px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #111;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.svm-table td.svm-td-date {
+    letter-spacing: -0.04em; /* Figma ls -0.64px@16px */
+}
+
+.svm-table tbody tr {
+    cursor: pointer;
+}
+
+.svm-table tbody tr:hover {
+    background: #fcfcfc;
+}
+
+.svm-table tbody tr.svm-row-empty {
+    cursor: default;
+}
+
+.svm-table tbody tr.svm-row-empty:hover {
+    background: transparent;
+}
+
+.svm-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* 수정(~1559) | (1569~1574) 삭제(1585~) */
+    font-size: 14px;
+    line-height: 17px;
+    color: #111;
+}
+
+.svm-action-link {
+    cursor: pointer;
+}
+
+.svm-action-link:hover {
+    text-decoration: underline;
+}
+
+.svm-action-sep {
+    color: #111;
+}
+
+/* 페이지네이션: 마지막 행선(931)→(961) 30px */
+.svm-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.svm-page-num {
+    width: 30px; /* Figma 숫자 피치 30px */
+    text-align: center;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #777;
+    cursor: pointer;
+    user-select: none;
+}
+
+.svm-page-num.active {
+    color: #23bdbb;
+    font-weight: 700;
+}
+
+.svm-page-arrow {
+    border: none;
+    background: none;
+    padding: 4px 10px;
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.svm-page-arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.svm-page-arrow img {
+    width: 6px;
+    height: 10px;
+    display: block;
+}
+
+/* ═══════════════ 설문현황 (302:28185) ═══════════════ */
+
+.svd-content {
+    width: 1184px; /* Figma 콘텐츠 폭 350~1534 */
+    max-width: 100%;
+}
+
+.svd-title {
+    margin: 0 0 29px; /* 타이틀 하단(176)~구분선(205) */
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 36px;
+    color: #333;
+    letter-spacing: 0;
+}
+
+.svd-divider {
+    border: none;
+    border-top: 1px solid #aaa;
+    margin: 0;
+}
+
+.svd-form {
+    padding: 22px 0 40px 30px; /* 구분선(205,1px)~첫 입력(228), 라벨 x380=+30 */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* 행 피치 70 - 입력 50 */
+}
+
+.svd-row {
+    display: flex;
+    align-items: center;
+}
+
+.svd-row.svd-row-top {
+    align-items: flex-start;
+}
+
+.svd-label {
+    width: 127px; /* 라벨 x380 → 입력 x507 */
+    flex-shrink: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 19px;
+    color: #333;
+}
+
+.svd-row-top .svd-label {
+    padding-top: 2px;
+}
+
+.svd-input,
+.svd-select {
+    width: 300px;
+    height: 50px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+    padding: 0 19px;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.04em;
+    color: #777;
+    font-family: inherit;
+}
+
+.svd-input:focus,
+.svd-select:focus {
+    outline: none;
+}
+
+.svd-input[readonly] {
+    cursor: default;
+}
+
+.svd-select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url('/figma-assets/admin/select_arrow.png');
+    background-size: 20px 10px;
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    padding-right: 44px;
+}
+
+.svd-attach-list {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.svd-attach-img {
+    width: 134px;
+    height: 128px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+}
+
+.svd-attach-empty {
+    font-size: 16px;
+    line-height: 19px;
+    color: #777;
+    align-self: center;
+}
+
+.svd-footer {
+    border-top: 1px solid #aaa;
+    margin-top: 0; /* 첨부 하단(846)~구분선(886) 40px는 .svd-form padding-bottom이 담당 */
+    padding-top: 20px; /* 구분선(886)~버튼(906) */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.svd-btn-export {
+    width: 134px;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+    background: #ddd;
+    color: #111;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.svd-btn-export:hover {
+    background: #d0d0d0;
+}
+
+.svd-btn-save {
+    width: 200px;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+    background: #23bdbb;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.svd-btn-save:hover {
+    background: #1ea9a7;
+}
+
+.svd-btn-save:disabled {
+    opacity: 0.6;
+    cursor: default;
+}

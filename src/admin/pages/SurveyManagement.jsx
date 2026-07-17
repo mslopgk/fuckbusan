@@ -1,22 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
+import '../styles/survey_admin.css';
 import { API_BASE } from '../api';
 
-const SearchIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-);
+// Figma 302:29426은 초 단위까지 표기 (2026-04-07 10:00:58)
+const fmtDateTime = (v) => (v ? String(v).replace('T', ' ').slice(0, 19) : '-');
 
-const fmtDateTime = (v) => (v ? String(v).replace('T', ' ').slice(0, 16) : '-');
-
-// 부산 16개 구·군 (설문 응답 지역 필터)
+// 부산 16개 구·군 (설문 응답 지역 필터 — 문의사항 답변서 반영 기능)
 const DISTRICTS = ['부산진구', '해운대구', '사하구', '동래구', '북구', '남구', '연제구', '금정구',
     '사상구', '기장군', '수영구', '강서구', '서구', '영도구', '동구', '중구'];
 
-// Figma 설문목록(302-29426): AI 대화형 설문 "응답" 관리
+// Figma 설문_메인(302:29426): AI 대화형 설문 "응답" 관리
+// * 응답자 컬럼·지역 드롭다운 필터는 문의사항 답변서 요구 반영분 (Figma 미표기, 기능 유지)
 export default function SurveyManagement({ onNavigate }) {
     const [items, setItems] = useState([]);
     const [total, setTotal] = useState(0);
@@ -84,101 +80,111 @@ export default function SurveyManagement({ onNavigate }) {
 
     return (
         <AdminLayout onNavigate={onNavigate} currentView="surveyManagement">
-            <div className="content-header-new">
-                <h2 className="content-title-new" style={{ marginBottom: 0 }}>설문목록</h2>
-                <div className="total-count-text">총 <span>{total}건</span></div>
-            </div>
-
-            <div className="search-box-new-col" style={{ marginTop: 20 }}>
-                <div className="search-row">
-                    <div className="search-label-new search-label-fixed">지역 선택</div>
-                    <select
-                        className="search-select-new"
-                        value={region}
-                        onChange={(e) => setRegion(e.target.value)}
-                    >
-                        <option value="전체">전체</option>
-                        {DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                </div>
-                <div className="search-row">
-                    <div className="search-label-new search-label-fixed">검색</div>
-                    <div className="search-input-wrapper-new" style={{ maxWidth: 'none' }}>
-                        <input
-                            type="text"
-                            className="search-input-new"
-                            placeholder="응답자·설문유형으로 검색해주세요"
-                            value={keyword}
-                            onChange={(e) => setKeyword(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                            style={{ paddingRight: 40 }}
-                        />
-                        <SearchIcon />
+            <div className="svm-page">
+                <div className="svm-content">
+                    <div className="svm-header">
+                        <h2 className="svm-title">설문목록</h2>
+                        <div className="svm-total">총 <b>{total}건</b></div>
                     </div>
-                    <button className="btn-search-new" onClick={handleSearch}>검색</button>
-                </div>
-            </div>
 
-            <div className="table-container-new">
-                <table className="admin-table-new">
-                    <thead>
-                        <tr>
-                            <th>지역</th>
-                            <th>응답자</th>
-                            <th>수정</th>
-                            <th>설문유형</th>
-                            <th>메뉴</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading ? (
-                            <tr><td colSpan={5} style={{ padding: '40px 0', color: '#999' }}>불러오는 중…</td></tr>
-                        ) : items.length === 0 ? (
-                            <tr><td colSpan={5} style={{ padding: '40px 0', color: '#999' }}>등록된 설문 응답이 없습니다.</td></tr>
-                        ) : items.map((row) => (
-                            <tr key={row.id} style={{ cursor: 'pointer' }} onClick={() => handleEdit(row)}>
-                                <td>{row.region || '-'}</td>
-                                <td>{row.respondent || '비회원'}</td>
-                                <td>{fmtDateTime(row.updated_at)}</td>
-                                <td>{row.survey_type || '-'}</td>
-                                <td onClick={(e) => e.stopPropagation()}>
-                                    <div className="action-btns-new">
-                                        <span className="btn-action-text" onClick={() => handleEdit(row)}>수정</span>
-                                        <span style={{ color: '#ddd' }}>|</span>
-                                        <span className="btn-action-text" onClick={() => handleDelete(row)}>삭제</span>
-                                    </div>
-                                </td>
+                    <div className="svm-searchbox">
+                        <div className="svm-search-row">
+                            <label className="svm-search-label" htmlFor="svm-region">지역검색</label>
+                            <select
+                                id="svm-region"
+                                className="svm-select"
+                                value={region}
+                                onChange={(e) => setRegion(e.target.value)}
+                            >
+                                <option value="전체">전체</option>
+                                {DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
+                            </select>
+                        </div>
+                        <div className="svm-search-row">
+                            <label className="svm-search-label" htmlFor="svm-keyword">설문검색</label>
+                            <div className="svm-input-wrap">
+                                <input
+                                    id="svm-keyword"
+                                    type="text"
+                                    className="svm-input"
+                                    placeholder="응답자·설문유형으로 검색해주세요"
+                                    value={keyword}
+                                    onChange={(e) => setKeyword(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                                />
+                                <img className="svm-input-icon" src="/figma-assets/admin/search_glass.png" alt="" />
+                            </div>
+                            <button className="svm-search-btn" onClick={handleSearch}>검색</button>
+                        </div>
+                    </div>
+
+                    <table className="svm-table">
+                        <colgroup>
+                            <col style={{ width: 200 }} />
+                            <col />
+                            <col style={{ width: 290 }} />
+                            <col style={{ width: 220 }} />
+                            <col style={{ width: 160 }} />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>지역</th>
+                                <th>응답자</th>
+                                <th>수정</th>
+                                <th>설문유형</th>
+                                <th>메뉴</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {loading ? (
+                                <tr className="svm-row-empty"><td colSpan={5} style={{ height: 120, color: '#777' }}>불러오는 중…</td></tr>
+                            ) : items.length === 0 ? (
+                                <tr className="svm-row-empty"><td colSpan={5} style={{ height: 120, color: '#777' }}>등록된 설문 응답이 없습니다.</td></tr>
+                            ) : items.map((row) => (
+                                <tr key={row.id} onClick={() => handleEdit(row)}>
+                                    <td>{row.region || '-'}</td>
+                                    <td>{row.respondent || '비회원'}</td>
+                                    <td className="svm-td-date">{fmtDateTime(row.updated_at)}</td>
+                                    <td>{row.survey_type || '-'}</td>
+                                    <td onClick={(e) => e.stopPropagation()}>
+                                        <div className="svm-actions">
+                                            <span className="svm-action-link" onClick={() => handleEdit(row)}>수정</span>
+                                            <span className="svm-action-sep">|</span>
+                                            <span className="svm-action-link" onClick={() => handleDelete(row)}>삭제</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
 
-                <div className="pagination-new">
-                    <svg
-                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        style={{ transform: 'rotate(180deg)', cursor: 'pointer', opacity: page === 1 ? 0.3 : 1 }}
-                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    >
-                        <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                    {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map((n) => (
-                        <span
-                            key={n}
-                            className={`page-num-new ${page === n ? 'active' : ''}`}
-                            onClick={() => setPage(n)}
+                    <div className="svm-pagination">
+                        <button
+                            className="svm-page-arrow"
+                            disabled={page === 1}
+                            onClick={() => setPage((p) => Math.max(1, p - 1))}
+                            aria-label="이전 페이지"
                         >
-                            {n}
-                        </span>
-                    ))}
-                    <svg
-                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        style={{ cursor: 'pointer', opacity: page === totalPages ? 0.3 : 1 }}
-                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    >
-                        <polyline points="9 18 15 12 9 6" />
-                    </svg>
+                            <img src="/figma-assets/admin/page_prev.png" alt="" />
+                        </button>
+                        {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map((n) => (
+                            <span
+                                key={n}
+                                className={`svm-page-num ${page === n ? 'active' : ''}`}
+                                onClick={() => setPage(n)}
+                            >
+                                {n}
+                            </span>
+                        ))}
+                        <button
+                            className="svm-page-arrow"
+                            disabled={page === totalPages}
+                            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                            aria-label="다음 페이지"
+                        >
+                            <img src="/figma-assets/admin/page_next.png" alt="" />
+                        </button>
+                    </div>
                 </div>
             </div>
         </AdminLayout>
