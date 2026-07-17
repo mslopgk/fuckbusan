@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import UserPCLayout from './UserPCLayout';
 import BusanMap from './BusanMap';
+import { LifeRail } from './filters/MapFilterPanel';
 import { API_URL } from '../utils/api';
 import './PublicData2.css';
 
@@ -228,21 +229,15 @@ export default function PCPublicData({ onNavigate }) {
                     </div>
                 </div>
 
-                {/* 좌측 생활정보 세로 사이드바 */}
-                <aside className="pubd-side">
-                    <div className="pubd-side-head">생활정보</div>
-                    <div className="pubd-side-list">
-                        {CATS.map((c, i) => (
-                            <div key={c.key} className="pubd-side-item">
-                                <button type="button" className={`pubd-side-cat${cat === c.key ? ' active' : ''}`} onClick={() => setCat(c.key)}>
-                                    <img src={c.icon} alt="" aria-hidden="true" />
-                                    <span>{c.label}</span>
-                                </button>
-                                {i < CATS.length - 1 && <div className="pubd-side-div" />}
-                            </div>
-                        ))}
-                    </div>
-                </aside>
+                {/* 좌측 생활정보 세로 사이드바 — 제보/제안 지도와 동일한 공용 LifeRail 재사용 */}
+                <div className="pubd-side">
+                    <LifeRail
+                        categories={CATS}
+                        isOn={(c) => cat === c.key}
+                        onChange={(c) => setCat(c.key)}
+                        accent="#23bdbb"
+                    />
+                </div>
 
                 {/* 우측 패널 (KPI + 상세) */}
                 <div className={`pubd-right${isAll ? ' is-all' : ''}`}>

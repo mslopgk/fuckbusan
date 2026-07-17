@@ -265,42 +265,8 @@
     border-top: 1px solid #e6e6e6;
 }
 
-.pc-map3-tool--teal {
-    background: #23bdbb;
-    color: #fff;
-}
-
-.pc-map3-tool--teal:hover {
-    background: #1faaaa;
-}
-
-.pc-map3-tool--teal img {
-    filter: brightness(0) invert(1);
-}
-
-.pc-map3-tool--teal-off {
-    background: #fff;
-    color: #23bdbb;
-}
-.pc-map3-tool--teal-off:hover {
-    background: #f0fafa;
-}
-
-/* AI 가상시민 icon (person.svg) ships with a white fill for use on colored
-   backgrounds; darken it so it reads on this button's white background.
-   invert(45%) on a brightness(0)-forced black maps to rgb(115,115,115),
-   i.e. #737373 — the same gray the other 5 toolbar icons (my_location,
-   add, remove, satellite_alt) natively ship with, so the whole family
-   reads as one consistent color/weight instead of person looking near-black. */
-.pc-map3-tool--ai img {
-    filter: brightness(0) saturate(100%) invert(45%);
-}
-
-/* AI가상시민 페이지 변형 (Figma 302:3611): Card A가 teal 배경일 땐 person 아이콘을
-   흰색으로. --ai 규칙이 --teal img 보다 뒤에 있어 이기므로 복합 셀렉터로 재지정. */
-.pc-map3-tool--ai.pc-map3-tool--teal img {
-    filter: brightness(0) invert(1);
-}
+/* 지도/통계(active) 버튼 배경은 PCMapToolbar 의 accent prop 인라인 스타일로 처리.
+   아이콘은 Figma 노드 export PNG(글리프 색 baked) — CSS 필터 없음 */
 
 /* Floating policy info card */
 .pc-map3-policy {

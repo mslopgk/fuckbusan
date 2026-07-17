@@ -1,11 +1,7 @@
 /* 제안 지도 핑크 테마 (#f74e7e — WDC 확정 도메인 컬러).
    PCMap3.css 공통 규칙을 제안맵에서만 오버라이드. 제보/진단 맵 영향 없음 */
 
-/* 우측 툴바: teal → 핑크 */
-.pc-map3-page.propose .pc-map3-tool--teal { background: #f74e7e; color: #fff; }
-.pc-map3-page.propose .pc-map3-tool--teal:hover { background: #e0356a; }
-.pc-map3-page.propose .pc-map3-tool--teal-off { background: #fff; color: #f74e7e; }
-.pc-map3-page.propose .pc-map3-tool--teal-off:hover { background: #fef0f5; }
+/* 우측 툴바 accent는 PCMapToolbar accent prop("#f74e7e")으로 처리 (Figma 302:12592) */
 
 /* 리스트 건수 (Figma 302:12762: #f74e7e 18/500) */
 .pc-map3-page.propose .pc-map3-list-count { color: #f74e7e; }

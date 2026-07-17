@@ -21,8 +21,5 @@
 
 /* 지역 태그(region)는 Figma(302:12641) 기준 민트(#dff8f8/#242424) — PCMap3.css 스코프 규칙 사용 */
 
-/* 우측 툴바 (지도 토글·리스트) teal → 보라 */
-.pc-map3-page.report .pc-map3-tool--teal { background: #542aa3; color: #fff; }
-.pc-map3-page.report .pc-map3-tool--teal:hover { background: #3d1a7a; }
-.pc-map3-page.report .pc-map3-tool--teal-off { background: #fff; color: #542aa3; }
-.pc-map3-page.report .pc-map3-tool--teal-off:hover { background: #f3eefb; }
+/* 우측 툴바 accent는 PCMapToolbar accent prop("#f74e7e")으로 처리 —
+   Figma 최신 공용 지도 302:12592 실측: 제보/제안 모두 지도·통계 버튼 #f74e7e */
