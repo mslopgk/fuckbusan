@@ -401,20 +401,13 @@ function PersonaList({ region, citizens, avatars, sort, setSort, loaded, onSelec
     );
 }
 
-/* ── 페르소나 풀 상세 리포트 모달 (본문은 공용 PersonaReport, Figma 215:5403) ── */
-function DetailReport({ citizen, avatarUrl, onClose, onPrev, onNext, onChat }) {
+/* ── 페르소나 풀 상세 리포트 모달 (본문은 공용 PersonaReport, Figma 302:4531 1:1) ──
+   사용자 확정: Figma에 없는 상단 타이틀바/이전·다음/채팅하기 버튼 제거 — 닫기(X)만 최소 유지. */
+function DetailReport({ citizen, avatarUrl, onClose, onNext }) {
     return (
         <div className="aic-modal-backdrop" onClick={onClose}>
             <div className="aic-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="aic-modal-top">
-                    <div className="aic-modal-top-l">
-                        <strong>페르소나 상세 리포트</strong>
-                        <button type="button" onClick={onPrev} aria-label="이전">‹</button>
-                        <button type="button" onClick={onNext} aria-label="다음">›</button>
-                    </div>
-                    <button type="button" className="aic-report-chat" onClick={() => onChat(citizen)}>+가상시민과 채팅하기</button>
-                    <button type="button" className="aic-report-x" onClick={onClose} aria-label="닫기">×</button>
-                </div>
+                <button type="button" className="aic-modal-close" onClick={onClose} aria-label="닫기">×</button>
                 <div className="aic-modal-scroll">
                     <PersonaReport citizen={citizen} avatarUrl={avatarUrl} onNext={onNext} />
                 </div>
@@ -587,8 +580,7 @@ export default function PCAICitizen({ onNavigate }) {
                         citizen={reportCitizen}
                         avatarUrl={avatarSrc(avatars[reportCitizen.id])}
                         onClose={() => { setSelected(null); setDetail(null); }}
-                        onPrev={() => cycle(-1)} onNext={() => cycle(1)}
-                        onChat={startChat}
+                        onNext={() => cycle(1)}
                     />
                 )}
 
