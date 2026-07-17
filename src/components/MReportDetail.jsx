@@ -6,11 +6,12 @@ import './MProposalDetail.css';
 import './MReportDetail.css';
 import { API_URL } from '../utils/api';
 
+// Figma 302:16529 — 단계 pill 고정폭 66/76/77/77
 const STAGES = [
-    { key: 'received', label: '접수' },
-    { key: 'review',   label: '검토중' },
-    { key: 'inspect',  label: '검토완료' },
-    { key: 'notice',   label: '결과안내' },
+    { key: 'received', label: '접수',     width: 66 },
+    { key: 'review',   label: '검토중',   width: 76 },
+    { key: 'inspect',  label: '검토완료', width: 77 },
+    { key: 'notice',   label: '결과안내', width: 77 },
 ];
 
 export default function MReportDetail({ onNavigate, report }) {
@@ -159,17 +160,18 @@ export default function MReportDetail({ onNavigate, report }) {
         }
     };
 
+    // Figma 302:16593 — 결과안내 단계(또는 개선완료)에서 결과안내 pill 탭 시 결과 모달
     const handleStageClick = (key) => {
-        if (key === 'notice' && stageIdx === STAGES.length - 1) {
+        if (key === 'notice' && (stageIdx === STAGES.length - 1 || report?.improvement_status === '개선완료')) {
             setResultOpen(true);
         }
     };
 
     return (
-        <div className={`m-prop-detail-page m-report-detail-page${data.currentStage !== 'notice' && report?.improvement_status !== '개선완료' ? ' stage-bar-compact' : ''}`}>
+        <div className="m-prop-detail-page m-report-detail-page">
             <header className="m-detail-topbar">
-                <button className="m-detail-back" onClick={() => onNavigate && onNavigate('mReportList')}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                <button className="m-detail-back" onClick={() => onNavigate && onNavigate('mReportList')} aria-label="뒤로">
+                    <img src="/figma-assets/icons/icon_arrow_back.svg" alt="" width="24" height="24" />
                 </button>
                 <div className="m-rdetail-tags">
                     {data.region && <span className="m-rdetail-region-tag">{data.region}</span>}
@@ -216,7 +218,7 @@ export default function MReportDetail({ onNavigate, report }) {
                         {isOwner ? (
                             /* 본인 글은 좋아요 불가 → 클릭 불가 정적 표시 */
                             <span className="m-rdetail-like-btn" aria-label="좋아요 수" style={{ cursor: 'default' }}>
-                                <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor">
+                                <svg width="15" height="12" viewBox="0 0 15.3587 12.2297" fill="currentColor">
                                     <path d="M9.0568 1.0811C10.4983 -0.360439 12.8359 -0.360292 14.2775 1.0811C15.7191 2.52272 15.7191 4.86019 14.2775 6.30181L8.78141 11.7989C8.47833 12.102 8.07586 12.2441 7.67887 12.2286C7.2822 12.2438 6.88013 12.1017 6.57731 11.7989L1.08121 6.30181C-0.360404 4.86019 -0.360404 2.52272 1.08121 1.0811C2.52285 -0.360296 4.86037 -0.36044 6.30192 1.0811L7.67887 2.45806L9.0568 1.0811Z"/>
                                 </svg>
                                 {likeCount}
@@ -230,7 +232,7 @@ export default function MReportDetail({ onNavigate, report }) {
                                 aria-label={liked ? '좋아요 취소' : '좋아요'}
                             >
                                 {/* Figma heart icon (Union path) */}
-                                <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor">
+                                <svg width="15" height="12" viewBox="0 0 15.3587 12.2297" fill="currentColor">
                                     <path d="M9.0568 1.0811C10.4983 -0.360439 12.8359 -0.360292 14.2775 1.0811C15.7191 2.52272 15.7191 4.86019 14.2775 6.30181L8.78141 11.7989C8.47833 12.102 8.07586 12.2441 7.67887 12.2286C7.2822 12.2438 6.88013 12.1017 6.57731 11.7989L1.08121 6.30181C-0.360404 4.86019 -0.360404 2.52272 1.08121 1.0811C2.52285 -0.360296 4.86037 -0.36044 6.30192 1.0811L7.67887 2.45806L9.0568 1.0811Z"/>
                                 </svg>
                                 {likeCount}
@@ -264,7 +266,8 @@ export default function MReportDetail({ onNavigate, report }) {
                         disabled={commenting}
                     />
                     <button className="m-comment-send" onClick={submitComment} aria-label="등록" disabled={!comment.trim() || commenting} style={{ opacity: (!comment.trim() || commenting) ? 0.45 : 1 }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        {/* Figma 302:16497 export — 21x19 종이비행기 */}
+                        <img src="/figma-assets/mobile-report/comment_send.png" alt="" width="21" height="19" />
                     </button>
                 </div>
 
@@ -299,48 +302,29 @@ export default function MReportDetail({ onNavigate, report }) {
                 </ul>
             </div>
 
+            {/* Figma 302:16529 — 하단 고정 바(95px, 상단 1px #f4f4f4) 안 단계 pill 4개 (연결선/별도 버튼 없음) */}
             <footer className="m-rdetail-stage-bar">
                 <div className="m-rstage-pills-row">
-                    {/* Figma: continuous connector line behind pills */}
-                    <div className="m-rstage-connector" aria-hidden="true" />
                     {STAGES.map((s, i) => (
                         <button
                             key={s.key}
                             type="button"
                             className={`m-rstage-pill ${i === stageIdx ? 'active' : ''} ${i < stageIdx ? 'done' : ''}`}
+                            style={{ width: s.width }}
                             onClick={() => handleStageClick(s.key)}
                         >
                             {s.label}
                         </button>
                     ))}
                 </div>
-                {(data.currentStage === 'notice' || report?.improvement_status === '개선완료') && (
-                    <button
-                        type="button"
-                        className="m-rstage-result-btn"
-                        onClick={() => setResultOpen(true)}
-                    >
-                        개선 결과보기
-                    </button>
-                )}
             </footer>
 
             {resultOpen && (
                 <div className="m-result-backdrop" onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); setResultOpen(false); }}>
                     <div className="m-result-modal" onClick={(e) => e.stopPropagation()}>
+                        {/* Figma 302:16647 — 닫기 X 없음(백드롭 탭으로 닫기), 타이틀 중앙 */}
                         <div className="m-result-header">
                             <h3 className="m-result-title">개선 결과보기</h3>
-                            <button
-                                type="button"
-                                className="m-result-close"
-                                onClick={() => setResultOpen(false)}
-                                aria-label="닫기"
-                            >
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <line x1="18" y1="6" x2="6" y2="18"/>
-                                    <line x1="6" y1="6" x2="18" y2="18"/>
-                                </svg>
-                            </button>
                         </div>
                         {data.resultImageUrl ? (
                             <img

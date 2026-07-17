@@ -81,13 +81,14 @@ export default function MProposalMap({ onNavigate }) {
         return arr;
     }, [proposals, region, cat, search]);
 
+    // Figma 302:17609~ — 단건도 숫자 배지 핀으로 통일 (teardrop 금지, count:1)
     const PINS = useMemo(() => filtered.map((p) => {
-        if (p.lat && p.lng) return { id: p.id, lat: p.lat, lng: p.lng };
+        if (p.lat && p.lng) return { id: p.id, lat: p.lat, lng: p.lng, count: 1 };
         const c = DISTRICT_CENTERS[p.region] || [35.1796, 129.0756];
         const seed = typeof p.id === 'number' ? p.id : String(p.id).split('').reduce((a, ch) => a + ch.charCodeAt(0), 0);
         const dlat = ((seed * 7919) % 1000 / 1000 - 0.5) * 0.005;
         const dlng = ((seed * 6271) % 1000 / 1000 - 0.5) * 0.005;
-        return { id: p.id, lat: c[0] + dlat, lng: c[1] + dlng };
+        return { id: p.id, lat: c[0] + dlat, lng: c[1] + dlng, count: 1 };
     }).filter(Boolean), [filtered]);
 
     const ITEMS = useMemo(() => {
@@ -137,15 +138,8 @@ export default function MProposalMap({ onNavigate }) {
                 aria-label="내 위치"
                 title="내 위치"
             >
-                {/* Figma 0:12150 — 검정 크로스헤어 (흰 원 배경 없음) */}
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="11" stroke="#000" strokeWidth="2"/>
-                    <circle cx="12" cy="12" r="1.5" fill="#D9D9D9" stroke="#000"/>
-                    <path d="M12 0.5V5.5" stroke="#000" strokeWidth="2"/>
-                    <path d="M12 18V23" stroke="#000" strokeWidth="2"/>
-                    <path d="M23.2549 11.7451H18.2549" stroke="#000" strokeWidth="2"/>
-                    <path d="M5.75488 11.7451H0.754883" stroke="#000" strokeWidth="2"/>
-                </svg>
+                {/* Figma 302:17598 export — 크로스헤어 서클 24x24 */}
+                <img src="/figma-assets/mobile-propose/locate_circle.png" alt="" width="24" height="24" />
             </button>
 
             {/* 바텀시트 — 2-snap (collapsed/mid). 위로 더 펼치려면 List 페이지로 navigate */}
@@ -164,25 +158,18 @@ export default function MProposalMap({ onNavigate }) {
                     onMouseUp={(e) => onTouchEnd(e, { onSwipeUpAtTop: goToList })}
                     onMouseLeave={(e) => dragging && onTouchEnd(e, { onSwipeUpAtTop: goToList })}
                 >
-                    <div className="m-sheet-handle" />
+                    {/* Figma 302:17629 export — 18x12 2줄 핸들 */}
+                    <img className="m-sheet-handle" src="/figma-assets/mobile-propose/sheet_handle.png" alt="" width="18" height="12" draggable="false" />
                 </div>
 
                 <div className="m-sheet-scroll">
                     <div className="m-sheet-region-row">
+                        {/* Figma 302:17596 — 지역명 22/700 + 핑크 원형 화살표 24 (목록 버튼 없음) */}
                         <button type="button" className="m-sheet-region-btn" onClick={openRegion}>
                             <span>{region}</span>
                             <span className="m-region-arrow">
-                                <svg width="5" height="9" viewBox="0 0 5 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1 1L4.5 4.5L1 8" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
+                                <img src="/figma-assets/mobile-propose/region_chevron.png" alt="" width="7" height="10" />
                             </span>
-                        </button>
-                        <button type="button" className="m-sheet-list-btn" onClick={goToList} aria-label="목록 보기">
-                            <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <line x1="0" y1="1" x2="18" y2="1" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round"/>
-                                <line x1="0" y1="6" x2="18" y2="6" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round"/>
-                                <line x1="0" y1="11" x2="18" y2="11" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round"/>
-                            </svg>
                         </button>
                     </div>
 
@@ -203,9 +190,9 @@ export default function MProposalMap({ onNavigate }) {
                 </div>
             </div>
 
-            {/* 제안하기 FAB — Figma 269:23255 (pink pill, nav 위 우측) */}
+            {/* 제안하기 FAB — Figma 302:17815 (pink pill 98x36, nav 위 우측) */}
             <button type="button" className="m-prop-fab" onClick={() => onNavigate?.('mProposalForm')}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <img src="/figma-assets/mobile-propose/fab_plus.png" alt="" width="13" height="13" />
                 <span>제안하기</span>
             </button>
 

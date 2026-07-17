@@ -1,34 +1,39 @@
 // 공유 모바일 지도 UI: 서치바 + 위치/정렬 바텀시트 (MProposalMap/MReportMap/MProposalList/MReportList 공용)
 
+// Figma 302:15671 — back arrow(24x24)는 검색바 밖 (20,25) standalone, 바는 left 63
 export function MMapSearchBar({ value, onChange, onBack, placeholder = '제목·내용으로 검색', showBack = true }) {
     return (
-        <div className="m-map-search-bar">
+        <>
             {showBack && (
-                <button className="m-map-back" onClick={onBack}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                <button className="m-map-back-float" onClick={onBack} aria-label="뒤로">
+                    <img src="/figma-assets/icons/icon_arrow_back.svg" alt="" width="24" height="24" />
                 </button>
             )}
-            <input
-                type="text"
-                className="m-map-search"
-                placeholder={placeholder}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-            />
-        </div>
+            <div className="m-map-search-bar">
+                <input
+                    type="text"
+                    className="m-map-search"
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                />
+            </div>
+        </>
     );
 }
 
+// Figma 302:16313 export — 11x11 X
 const CloseIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
+    <img src="/figma-assets/mobile-report/modal_close.png" alt="" width="11" height="11" />
 );
 
-const ChevronDownIcon = ({ active, accent = '#E6235A' }) => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={active ? accent : '#b0b0b0'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="6 9 12 15 18 9"/>
-    </svg>
+// Figma 302:16303 export (15x8) — mask로 색만 상태에 따라 변경
+const ChevronDownIcon = ({ active, accent = '#f74e7e' }) => (
+    <span
+        className="m-modal-chev-ic"
+        style={{ backgroundColor: active ? accent : '#d9d9d9' }}
+        aria-hidden="true"
+    />
 );
 
 export function RegionSheet({ regions, draft, onSelect, onConfirm, onClose, accent }) {

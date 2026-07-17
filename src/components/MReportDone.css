@@ -29,8 +29,8 @@
     font-size: 24px;
     font-weight: 700;
     letter-spacing: -0.04em;
-    /* Figma 269:22490: gap from illustration is 27px, buttons 18px below title */
-    margin: 0 0 18px;
+    /* Figma 302:17045: 타이틀끝(446)→버튼(463) 17 */
+    margin: 0 0 17px;
 }
 
 .m-report-done-page .m-report-done-illus {

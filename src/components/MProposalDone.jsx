@@ -3,18 +3,18 @@ import './MProposalDone.css';
 function DoneIllustration() {
     return (
         <div className="m-prop-done-illus" aria-hidden="true">
-            {/* Scroll/document icon — Figma node 0:14117 */}
+            {/* 문서 아이콘 — Figma 302:18637 export */}
             <img
                 className="m-prop-done-scroll"
-                src="/figma-assets/proposal-done-scroll.svg"
+                src="/figma-assets/mobile-propose/done_icon_outer.png"
                 alt=""
                 width="132"
                 height="132"
             />
-            {/* Pink check circle — Figma node 0:14119, positioned at bottom-right of scroll */}
+            {/* 핑크 체크 원 — Figma 302:18639 export, (171,245)-(131,219)=(40,26) */}
             <img
                 className="m-prop-done-check"
-                src="/figma-assets/proposal-done-check.svg"
+                src="/figma-assets/mobile-propose/done_icon_inner.png"
                 alt=""
                 width="54"
                 height="54"

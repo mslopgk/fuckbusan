@@ -1,11 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
-import PCMapCanvas from './PCMapCanvas';
+import MLocationPicker from './MLocationPicker';
 import { formatDraftDate, extractDistrict } from '../utils/format';
 import { API_URL } from '../utils/api';
 import { compressImage } from '../utils/imageCompress';
 import './MProposalForm.css';
 
-const TYPES = ['주거', '환경', '교육', '안전', '산업·일자리', '교통', '문화·여가', '보건·복지'];
+// Figma 302:18088 — 표시 라벨은 Figma 문구, 저장 값은 서비스 공통 카테고리(리스트/필터와 일치)
+const TYPES = [
+    { value: '주거', label: '주거' },
+    { value: '환경', label: '환경' },
+    { value: '교육', label: '교육' },
+    { value: '안전', label: '안전' },
+    { value: '산업·일자리', label: '산업 및 고용' },
+    { value: '교통', label: '교통' },
+    { value: '문화·여가', label: '문화 및 레저' },
+    { value: '보건·복지', label: '보건 및 복지' },
+];
 const DRAFT_KEY = 'mProposalForm:draft';
 
 
@@ -15,6 +25,8 @@ export default function MProposalForm({ onNavigate }) {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const [location, setLocation] = useState('');
+    const [detailAddr, setDetailAddr] = useState('');
+    const [leaveOpen, setLeaveOpen] = useState(false);
     const [photos, setPhotos] = useState([]);
     const [uploadedUrls, setUploadedUrls] = useState([]);
     const [uploading, setUploading] = useState(false);
@@ -55,19 +67,6 @@ export default function MProposalForm({ onNavigate }) {
         }
     }, []);
 
-    // Auto reverse-geocode when picker opens with no address yet
-    useEffect(() => {
-        if (!locationPickerOpen || pickedAddress) return;
-        if (!window.kakao?.maps?.services) return;
-        const geocoder = new window.kakao.maps.services.Geocoder();
-        geocoder.coord2Address(pickedLng, pickedLat, (result, status) => {
-            if (status === window.kakao.maps.services.Status.OK) {
-                const addr = result[0]?.road_address?.address_name || result[0]?.address?.address_name || '';
-                setPickedAddress(addr);
-            }
-        });
-    }, [locationPickerOpen]); // eslint-disable-line react-hooks/exhaustive-deps
-
     const canSubmit = type && title.trim().length >= 5 && body.trim().length >= 20 && location && !submitting && !uploading;
 
     // 비활성 스타일이어도 클릭은 받아 미충족 필드를 인라인으로 안내 (Figma 오류멘트)
@@ -97,6 +96,18 @@ export default function MProposalForm({ onNavigate }) {
             setToast('저장에 실패했습니다');
             setTimeout(() => setToast(''), 1800);
         }
+    };
+
+    const saveDraftSilent = () => {
+        const draft = { type, title, body, location, pickedLat, pickedLng, savedAt: new Date().toISOString() };
+        try { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch { /* ignore */ }
+    };
+
+    // Figma 302:18520 — 내용 있을 때 뒤로가기 시 임시저장 여부 확인
+    const handleBackClick = () => {
+        const hasContent = !!(type || title.trim() || body.trim() || location || photos.length);
+        if (hasContent) setLeaveOpen(true);
+        else onNavigate?.('mProposalList');
     };
 
     const handleRestore = () => {
@@ -131,7 +142,7 @@ export default function MProposalForm({ onNavigate }) {
             title: title.trim(),
             content: body.trim(),
             region: extractDistrict(pickedAddress),
-            detailed_address: location || undefined,
+            detailed_address: (detailAddr.trim() ? `${location} ${detailAddr.trim()}` : location) || undefined,
             files: uploadedUrls,
             image_url: uploadedUrls[0] || undefined,
             lat: pickedLat,
@@ -212,22 +223,22 @@ export default function MProposalForm({ onNavigate }) {
     return (
         <div className="m-prop-form-page">
             <header className="m-form-topbar">
-                <button className="m-form-back" onClick={() => onNavigate && onNavigate('mProposalList')} aria-label="뒤로">
+                <button className="m-form-back" onClick={handleBackClick} aria-label="뒤로">
                     <img src="/figma-assets/icons/icon_arrow_back.svg" alt="" width="24" height="24" />
                 </button>
             </header>
 
             <div className="m-form-body">
-                <h1 className="m-form-title">우리동네 개선 아이디어를<br/>제안해보세요</h1>
+                <h1 className="m-form-title">우리동네 개선 아이디어를<br/>제안해보세요.</h1>
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">제안 유형은 무엇인가요?</h3>
                     <div className="m-form-type-grid">
                         {TYPES.map((t) => (
-                            <label key={t} className="m-form-type">
-                                <input type="radio" name="type" checked={type === t} onChange={() => { setType(t); clearError('type'); }} />
+                            <label key={t.value} className="m-form-type">
+                                <input type="radio" name="type" checked={type === t.value} onChange={() => { setType(t.value); clearError('type'); }} />
                                 <span className="m-form-type-dot" />
-                                <span>{t}</span>
+                                <span>{t.label}</span>
                             </label>
                         ))}
                     </div>
@@ -268,23 +279,26 @@ export default function MProposalForm({ onNavigate }) {
                             {location || '지도로 위치 설정하기'}
                         </span>
                         <span className="m-form-loc-pin">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="4" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="20"/><line x1="4" y1="12" x2="2" y2="12"/><line x1="22" y1="12" x2="20" y2="12"/><circle cx="12" cy="12" r="2"/></svg>
+                            {/* Figma 302:18406 export — 24x24 서클 */}
+                            <img src="/figma-assets/mobile-propose/field_locate.png" alt="" width="24" height="24" />
                         </span>
                     </button>
                     {errors.location && <p className="m-form-error-msg">{errors.location}</p>}
+                    {location && (
+                        /* Figma 302:18418 — 상세위치 353x55, 위치 필드와 20 */
+                        <input
+                            type="text"
+                            className="m-form-input m-form-loc-detail"
+                            placeholder="세부 위치를 입력해주세요 (예: 3층 계단 옆)"
+                            value={detailAddr}
+                            onChange={(e) => setDetailAddr(e.target.value)}
+                        />
+                    )}
                 </section>
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">첨부자료 <span className="m-form-section-sub">(선택)</span></h3>
                     <div className="m-form-attach-row">
-                        <button
-                            type="button"
-                            className="m-form-attach-add"
-                            onClick={() => fileInputRef.current?.click()}
-                            aria-label="사진 추가"
-                        >
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        </button>
                         {photos.map((p) => (
                             <div key={p.id} className="m-form-attach-thumb">
                                 <img src={p.url} alt={p.name} />
@@ -293,9 +307,21 @@ export default function MProposalForm({ onNavigate }) {
                                     className="m-form-attach-x"
                                     onClick={() => removePhoto(p.id)}
                                     aria-label="삭제"
-                                >×</button>
+                                >
+                                    {/* Figma 302:18442 export — 24x24 흰 원 X */}
+                                    <img src="/figma-assets/mobile-propose/photo_remove.png" alt="" width="24" height="24" />
+                                </button>
                             </div>
                         ))}
+                        <button
+                            type="button"
+                            className="m-form-attach-add"
+                            onClick={() => fileInputRef.current?.click()}
+                            aria-label="사진 추가"
+                        >
+                            {/* Figma 302:18426 export — 22x22 플러스 */}
+                            <img src="/figma-assets/mobile-propose/form_add_plus.png" alt="" width="22" height="22" />
+                        </button>
                         <input
                             ref={fileInputRef}
                             type="file"
@@ -324,79 +350,59 @@ export default function MProposalForm({ onNavigate }) {
 
             {restoreOpen && draftMeta && (
                 <div className="m-draft-backdrop" onClick={() => setRestoreOpen(false)}>
-                    <div className="m-draft-modal" onClick={(e) => e.stopPropagation()}>
+                    <div className="m-draft-modal m-draft-modal--restore" onClick={(e) => e.stopPropagation()}>
                         <div className="m-draft-icon" aria-hidden="true">
-                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                                <path d="M14 8 H32 L42 18 V46 a2 2 0 0 1 -2 2 H14 a2 2 0 0 1 -2 -2 V10 a2 2 0 0 1 2 -2 z" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="#fff"/>
-                                <path d="M32 8 V18 H42" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="none"/>
-                                <line x1="20" y1="28" x2="34" y2="28" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="34" x2="34" y2="34" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="40" x2="28" y2="40" stroke="#f74e7e" strokeWidth="2.5" strokeLinecap="round"/>
-                            </svg>
+                            {/* Figma 302:18255 export — 67x82 */}
+                            <img src="/figma-assets/mobile-propose/restore_icon.png" alt="" width="67" height="82" />
                         </div>
-                        <h3 className="m-draft-title">임시 저장된 내용을<br/>불러올까요?</h3>
-                        <p className="m-draft-meta">· {formatDraftDate(draftMeta.savedAt)}</p>
+                        <h3 className="m-draft-title">임시 저장된 내용을 불러올까요?</h3>
+                        <p className="m-draft-meta">∙ {formatDraftDate(draftMeta.savedAt)}</p>
                         <div className="m-draft-actions">
                             <button type="button" className="m-draft-btn m-draft-btn-primary" onClick={handleRestore}>불러오기</button>
-                            <button type="button" className="m-draft-btn m-draft-btn-ghost" onClick={handleDiscardDraft}>새로 작성하기</button>
+                            <button type="button" className="m-draft-btn m-draft-btn-tint" onClick={handleDiscardDraft}>새로 작성하기</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {leaveOpen && (
+                <div className="m-draft-backdrop" onClick={() => setLeaveOpen(false)}>
+                    <div className="m-draft-modal m-draft-modal--leave" onClick={(e) => e.stopPropagation()}>
+                        <div className="m-draft-icon" aria-hidden="true">
+                            {/* Figma 302:18596 export — 84x84 */}
+                            <img src="/figma-assets/mobile-propose/draft_modal_icon.png" alt="" width="84" height="84" />
+                        </div>
+                        <h3 className="m-draft-title">작성중인 제안글을 저장할까요?</h3>
+                        <div className="m-draft-actions">
+                            <button
+                                type="button"
+                                className="m-draft-btn m-draft-btn-primary"
+                                onClick={() => { saveDraftSilent(); onNavigate?.('mProposalList'); }}
+                            >저장하기</button>
+                            <button
+                                type="button"
+                                className="m-draft-btn m-draft-btn-ghost"
+                                onClick={() => onNavigate?.('mProposalList')}
+                            >저장안함</button>
                         </div>
                     </div>
                 </div>
             )}
 
             {locationPickerOpen && (
-                <div className="m-loc-picker">
-                    <header className="m-loc-picker-top">
-                        <button
-                            className="m-form-back"
-                            onClick={() => setLocationPickerOpen(false)}
-                            type="button"
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                            <span>뒤로</span>
-                        </button>
-                    </header>
-                    <h2 className="m-loc-picker-title">우리동네 공공디자인을<br/>제안하고 싶은 장소를 선택해주세요.</h2>
-                    <div className="m-loc-picker-search">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                        <input type="text" placeholder="" />
-                        <button type="button" aria-label="닫기">×</button>
-                    </div>
-                    <div className="m-loc-picker-map">
-                        <PCMapCanvas
-                            pins={[]}
-                            accentColor="#f74e7e"
-                            selectedPoint={{ lat: pickedLat, lng: pickedLng }}
-                            onMapClick={({ lat, lng }) => {
-                                setPickedLat(lat);
-                                setPickedLng(lng);
-                                setPickedAddress('');
-                                if (window.kakao?.maps?.services) {
-                                    const geocoder = new window.kakao.maps.services.Geocoder();
-                                    geocoder.coord2Address(lng, lat, (result, status) => {
-                                        if (status === window.kakao.maps.services.Status.OK) {
-                                            const addr = result[0]?.road_address?.address_name || result[0]?.address?.address_name || '';
-                                            setPickedAddress(addr);
-                                        }
-                                    });
-                                }
-                            }}
-                        />
-                    </div>
-                    <p className="m-loc-picker-help">
-                        {pickedAddress ? pickedAddress : '지도를 클릭하여 위치를 선택해주세요'}
-                    </p>
-                    <button
-                        className="m-loc-picker-confirm"
-                        type="button"
-                        disabled={!pickedAddress}
-                        onClick={() => {
-                            setLocation(pickedAddress);
-                            clearError('location');
-                            setLocationPickerOpen(false);
-                        }}
-                    >위치 선택완료</button>
-                </div>
+                <MLocationPicker
+                    accent="propose"
+                    initialCenter={{ lat: pickedLat, lng: pickedLng }}
+                    onClose={() => setLocationPickerOpen(false)}
+                    onConfirm={({ lat, lng, address }) => {
+                        setPickedLat(lat);
+                        setPickedLng(lng);
+                        setPickedAddress(address);
+                        setLocation(address);
+                        clearError('location');
+                        setLocationPickerOpen(false);
+                    }}
+                />
             )}
         </div>
     );

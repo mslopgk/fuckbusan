@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import PCMapCanvas from './PCMapCanvas';
+import MLocationPicker from './MLocationPicker';
 import { formatDraftDate } from '../utils/format';
 import { API_URL } from '../utils/api';
 import { compressImage } from '../utils/imageCompress';
@@ -87,19 +87,6 @@ export default function MReportForm({ onNavigate }) {
         window.addEventListener('popstate', handlePop);
         return () => window.removeEventListener('popstate', handlePop);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-    // Auto reverse-geocode when picker opens with no address yet
-    useEffect(() => {
-        if (!locationPickerOpen || pickedAddress) return;
-        if (!window.kakao?.maps?.services) return;
-        const geocoder = new window.kakao.maps.services.Geocoder();
-        geocoder.coord2Address(pickedLng, pickedLat, (result, status) => {
-            if (status === window.kakao.maps.services.Status.OK) {
-                const addr = result[0]?.road_address?.address_name || result[0]?.address?.address_name || '';
-                setPickedAddress(addr);
-            }
-        });
-    }, [locationPickerOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const canSubmit = cat && position && issue && location && body.trim().length >= 20 && !submitting && !uploading;
 
@@ -228,26 +215,31 @@ export default function MReportForm({ onNavigate }) {
     return (
         <div className="m-prop-form-page m-report-form-page">
             <header className="m-form-topbar">
-                <button className="m-form-back" onClick={handleBackClick}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                <button className="m-form-back" onClick={handleBackClick} aria-label="뒤로">
+                    <img src="/figma-assets/icons/icon_arrow_back.svg" alt="" width="24" height="24" />
                 </button>
             </header>
 
             <div className="m-form-body">
-                <h1 className="m-form-title" style={{ fontWeight: 700 }}>문제 상황이 잘 보이도록<br/>사진을 등록해 주세요</h1>
+                <h1 className="m-form-title">문제 상황이 잘 보이도록<br/>사진을 등록해 주세요</h1>
 
                 <section className="m-form-section">
                     <h3 className="m-form-section-title">사진 등록</h3>
-                    <label className="m-photo-add" style={{ cursor: 'pointer', position: 'relative' }}>
-                        {uploading ? (
-                            <span style={{ fontSize: 12, color: '#999' }}>업로드 중...</span>
-                        ) : photoUrl ? (
-                            <img src={photoUrl} alt="등록 사진" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />
-                        ) : (
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                        )}
-                        <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoChange} />
-                    </label>
+                    <div className="m-rform-photo-row">
+                        {photoUrl && <img className="m-rform-photo-thumb" src={photoUrl} alt="등록 사진" />}
+                        <label className="m-photo-add" style={{ cursor: 'pointer' }}>
+                            {uploading ? (
+                                <span style={{ fontSize: 12, color: '#999' }}>업로드 중...</span>
+                            ) : photoUrl ? (
+                                /* Figma 302:16864 export — 22x22 플러스 */
+                                <img src="/figma-assets/mobile-report/form_add_plus.png" alt="" width="22" height="22" />
+                            ) : (
+                                /* Figma 302:16477 export — 30x30 카메라 */
+                                <img src="/figma-assets/mobile-report/form_camera.png" alt="" width="30" height="30" />
+                            )}
+                            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoChange} />
+                        </label>
+                    </div>
                 </section>
 
                 <section className="m-form-section">
@@ -255,18 +247,18 @@ export default function MReportForm({ onNavigate }) {
                     <button className={`m-loc-input${errors.location ? ' error' : ''}`} type="button" onClick={() => setLocationPickerOpen(true)}>
                         <span className={location ? 'm-form-loc-text' : ''}>{location || '지도로 위치 설정하기'}</span>
                         <span className="m-loc-pin">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="2.5"/></svg>
+                            {/* Figma 302:16458 export — 24x24 서클 */}
+                            <img src="/figma-assets/mobile-report/field_locate.png" alt="" width="24" height="24" />
                         </span>
                     </button>
                     {errors.location && <p className="m-form-error-msg">{errors.location}</p>}
                     {location && (
                         <input
-                            className="m-loc-input m-loc-detail-input"
+                            className="m-loc-input m-loc-detail-input m-form-loc-detail"
                             type="text"
                             placeholder="세부 위치를 입력해주세요 (예: 3층 계단 옆)"
                             value={detailAddr}
                             onChange={(e) => setDetailAddr(e.target.value)}
-                            style={{ marginTop: 8, cursor: 'text' }}
                         />
                     )}
                 </section>
@@ -309,7 +301,7 @@ export default function MReportForm({ onNavigate }) {
                     <input
                         type="text"
                         className={`m-row-input${errors.body ? ' error' : ''}`}
-                        placeholder="상세설명을 작성해주세요"
+                        placeholder="느끼신 점을 자유롭게 작성해 주세요."
                         value={body}
                         onChange={(e) => { setBody(e.target.value); clearError('body'); }}
                     />
@@ -331,72 +323,33 @@ export default function MReportForm({ onNavigate }) {
             )}
 
             {locationPickerOpen && (
-                <div className="m-loc-picker">
-                    <header className="m-loc-picker-top">
-                        <button
-                            className="m-form-back"
-                            onClick={() => setLocationPickerOpen(false)}
-                            type="button"
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                            <span>돌아가기</span>
-                        </button>
-                    </header>
-                    <h2 className="m-loc-picker-title">제보할 위치를<br/>지도에서 선택해주세요.</h2>
-                    <div className="m-loc-picker-map">
-                        <PCMapCanvas
-                            pins={[]}
-                            accentColor="#542aa3"
-                            selectedPoint={{ lat: pickedLat, lng: pickedLng }}
-                            onMapClick={({ lat, lng }) => {
-                                setPickedLat(lat);
-                                setPickedLng(lng);
-                                setPickedAddress('');
-                                if (window.kakao?.maps?.services) {
-                                    const geocoder = new window.kakao.maps.services.Geocoder();
-                                    geocoder.coord2Address(lng, lat, (result, status) => {
-                                        if (status === window.kakao.maps.services.Status.OK) {
-                                            const addr = result[0]?.road_address?.address_name || result[0]?.address?.address_name || '';
-                                            setPickedAddress(addr);
-                                        }
-                                    });
-                                }
-                            }}
-                        />
-                    </div>
-                    <p className="m-loc-picker-help">
-                        {pickedAddress ? pickedAddress : '지도를 클릭하여 위치를 선택해주세요'}
-                    </p>
-                    <button
-                        className="m-loc-picker-confirm"
-                        type="button"
-                        disabled={!pickedAddress}
-                        onClick={() => {
-                            setLocation(pickedAddress);
-                            clearError('location');
-                            setLocationPickerOpen(false);
-                        }}
-                    >위치 선택완료</button>
-                </div>
+                <MLocationPicker
+                    accent="report"
+                    initialCenter={{ lat: pickedLat, lng: pickedLng }}
+                    onClose={() => setLocationPickerOpen(false)}
+                    onConfirm={({ lat, lng, address }) => {
+                        setPickedLat(lat);
+                        setPickedLng(lng);
+                        setPickedAddress(address);
+                        setLocation(address);
+                        clearError('location');
+                        setLocationPickerOpen(false);
+                    }}
+                />
             )}
 
             {restoreOpen && draftMeta && (
                 <div className="m-draft-backdrop" onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); setRestoreOpen(false); }}>
-                    <div className="m-draft-modal" onClick={(e) => e.stopPropagation()}>
+                    <div className="m-draft-modal m-draft-modal--restore" onClick={(e) => e.stopPropagation()}>
                         <div className="m-draft-icon" aria-hidden="true">
-                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                                <path d="M14 8 H32 L42 18 V46 a2 2 0 0 1 -2 2 H14 a2 2 0 0 1 -2 -2 V10 a2 2 0 0 1 2 -2 z" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="#fff"/>
-                                <path d="M32 8 V18 H42" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="none"/>
-                                <line x1="20" y1="28" x2="34" y2="28" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="34" x2="34" y2="34" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="40" x2="28" y2="40" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
-                            </svg>
+                            {/* Figma 302:16784 export — 67x82 */}
+                            <img src="/figma-assets/mobile-report/restore_icon.png" alt="" width="67" height="82" />
                         </div>
-                        <h3 className="m-draft-title">임시 저장된 내용을<br/>불러올까요?</h3>
-                        <p className="m-draft-meta">· {formatDraftDate(draftMeta.savedAt)}</p>
+                        <h3 className="m-draft-title">임시 저장된 내용을 불러올까요?</h3>
+                        <p className="m-draft-meta">∙ {formatDraftDate(draftMeta.savedAt)}</p>
                         <div className="m-draft-actions">
                             <button type="button" className="m-draft-btn m-draft-btn-primary" onClick={handleRestore}>불러오기</button>
-                            <button type="button" className="m-draft-btn m-draft-btn-ghost" onClick={handleDiscardDraft}>새로 작성하기</button>
+                            <button type="button" className="m-draft-btn m-draft-btn-tint" onClick={handleDiscardDraft}>새로 작성하기</button>
                         </div>
                     </div>
                 </div>
@@ -404,17 +357,12 @@ export default function MReportForm({ onNavigate }) {
 
             {leaveOpen && (
                 <div className="m-draft-backdrop" onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); setLeaveOpen(false); }}>
-                    <div className="m-draft-modal" onClick={(e) => e.stopPropagation()}>
+                    <div className="m-draft-modal m-draft-modal--leave" onClick={(e) => e.stopPropagation()}>
                         <div className="m-draft-icon" aria-hidden="true">
-                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                                <path d="M14 8 H32 L42 18 V46 a2 2 0 0 1 -2 2 H14 a2 2 0 0 1 -2 -2 V10 a2 2 0 0 1 2 -2 z" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="#fff"/>
-                                <path d="M32 8 V18 H42" stroke="#1a1a1b" strokeWidth="2.5" strokeLinejoin="round" fill="none"/>
-                                <line x1="20" y1="28" x2="34" y2="28" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="34" x2="34" y2="34" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
-                                <line x1="20" y1="40" x2="28" y2="40" stroke="#542aa3" strokeWidth="2.5" strokeLinecap="round"/>
-                            </svg>
+                            {/* Figma 302:17040 export — 84x84 */}
+                            <img src="/figma-assets/mobile-report/draft_modal_icon.png" alt="" width="84" height="84" />
                         </div>
-                        <h3 className="m-draft-title">작성중인 제보글을<br/>저장할까요?</h3>
+                        <h3 className="m-draft-title">작성중인 제보글을 저장할까요?</h3>
                         <div className="m-draft-actions">
                             <button
                                 type="button"
@@ -428,7 +376,7 @@ export default function MReportForm({ onNavigate }) {
                                 type="button"
                                 className="m-draft-btn m-draft-btn-ghost"
                                 onClick={() => onNavigate?.('mReportList')}
-                            >저장 안함</button>
+                            >저장안함</button>
                         </div>
                     </div>
                 </div>

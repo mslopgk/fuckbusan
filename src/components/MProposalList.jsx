@@ -6,8 +6,6 @@ import MobileBottomNav from './MobileBottomNav';
 import { CAT_STYLES } from './catStyles';
 import { REGIONS, SORTS, DISTRICT_CENTERS } from '../constants/mapConstants';
 import { RegionSheet, SortSheet } from './MFilterSheets';
-import CategoryRail from './filters/CategoryRail';
-import RegionDropdown from './filters/RegionDropdown';
 import { API_URL } from '../utils/api';
 import { useLazyImage } from '../hooks/useLazyImage';
 import { thumbUrl, matchDistrict, nearestDistrict } from '../utils/format';
@@ -31,8 +29,8 @@ function CommentIcon() {
         <img
             src="/figma-assets/icons/icon_comment.svg"
             alt=""
-            width="13"
-            height="11"
+            width="14"
+            height="12"
             style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}
         />
     );
@@ -156,20 +154,27 @@ export default function MProposalList({ onNavigate }) {
                 </button>
             </header>
 
-            {/* 지역 선택 행 — 구역별 드롭다운 카드 (Figma 302:5940) */}
+            {/* 지역 선택 행 — 지역명 + 핑크 원형 화살표 (Figma 302:17284) */}
             <div className="m-region-row">
-                <RegionDropdown value={region} onClick={openRegion} accent="#f74e7e" />
+                <button type="button" className="m-region-btn" onClick={openRegion}>
+                    <span>{region}</span>
+                    <span className="m-region-arrow">
+                        <img src="/figma-assets/mobile-propose/region_chevron.png" alt="" width="6" height="10" />
+                    </span>
+                </button>
             </div>
 
-            {/* 카테고리 — 생활정보 아이콘 rail (Figma 302:5940) */}
-            <CategoryRail
-                variant="pill"
-                categories={CATEGORIES}
-                value={cat}
-                onChange={setCat}
-                accent="#f74e7e"
-                tint="#fde4ec"
-            />
+            {/* 카테고리 칩 — 2행 wrap (Figma 302:17284) */}
+            <div className="m-cat-chips">
+                {CATEGORIES.map((c) => (
+                    <button
+                        key={c}
+                        type="button"
+                        className={`m-cat-chip${cat === c ? ' on' : ''}`}
+                        onClick={() => setCat(c)}
+                    >{c}</button>
+                ))}
+            </div>
 
             {/* 정렬 */}
             <div className="m-sort-row">
@@ -195,7 +200,7 @@ export default function MProposalList({ onNavigate }) {
 
             {/* FAB */}
             <button type="button" className="m-prop-fab" onClick={() => onNavigate && onNavigate('mProposalForm')}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <img src="/figma-assets/mobile-propose/fab_plus.png" alt="" width="13" height="13" />
                 <span>제안하기</span>
             </button>
 

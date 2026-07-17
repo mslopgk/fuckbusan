@@ -10,45 +10,30 @@
 }
 
 /* Topbar: reuse .m-prop-topbar from MProposalList.css */
+/* Region row: reuse .m-region-row / .m-region-btn from MProposalList.css */
 
-/* Region row — tighter padding than proposal list */
-.m-rlist-region-row {
-    padding: 10px 16px 6px;
-    background: #fff;
-    flex-shrink: 0;
-}
-
-/* Scrollable content area */
+/* Scrollable content area — Figma 302:15921: 프레임 전체 흰 배경 */
 .m-rlist-scroll {
     flex: 1;
     overflow-y: auto;
     min-height: 0;
-    background: #f7f7f8;
+    background: #fff;
     padding-bottom: 80px; /* space for FAB + nav */
 }
 
-/* Category chips area — white bg, 2-row wrap */
-.m-rlist-cats {
-    background: #fff;
-    padding: 12px 16px 16px;
-    flex-wrap: wrap;
-    display: flex;
-    gap: 8px; /* Figma 269:21501 — 칩 간격 8px (5개/행 wrap) */
-}
-
-/* Sort row — white bg */
+/* Sort row — Figma: 칩 하단(203)→최신순(227) 24px */
 .m-report-list-page .m-sort-row {
     background: #fff;
-    padding: 4px 16px 8px;
+    padding: 24px 20px 0;
     justify-content: flex-end;
     display: flex;
 }
 
-/* Stage chips — base layout */
+/* Stage chips — Figma 302:15987: 78x43 r10, gap 8, 정렬행과 3px */
 .m-stage-chips {
     display: flex;
     gap: 8px;
-    padding: 0 16px 12px;
+    padding: 3px 20px 0;
     background: #fff;
     overflow-x: auto;
     scrollbar-width: none;
@@ -61,13 +46,13 @@
 
 .m-stage-chip {
     background: #fff;
-    border: 1px solid #ddd;
+    border: 1px solid #dddddd;
     border-radius: 10px;
     height: 43px;
-    min-width: 72px;
-    padding: 0 16px;
+    width: 78px;
+    padding: 0;
     font-size: 16px;
-    color: #777;
+    color: #777777;
     cursor: pointer;
     font-weight: 500;
     font-family: inherit;
@@ -83,55 +68,23 @@
     font-weight: 700;
 }
 
-/* Stage chips — white bg for report list context */
-.m-report-list-page .m-stage-chips {
-    background: #fff;
-    padding: 0 16px 12px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-/* Stage chip active: report purple (WDC Figma #542aa3) */
-.m-report-list-page .m-stage-chip.on {
-    background: #542aa3;
-    border-color: #542aa3;
-    color: #fff;
-    font-weight: 700;
-}
-
-/* Cat chip active: report purple (WDC Figma #542aa3) */
+/* Cat chip active: report purple (WDC Figma #542aa3), 산업·일자리 700 */
 .m-report-list-page .m-cat-chip.on {
     background: #542aa3;
     color: #fff;
     border-color: #542aa3;
+    font-weight: 700;
 }
 
-/* Card list */
+/* Card list — Figma: 단계칩 하단(295)→카드(309) 14px, 흰 배경 */
 .m-rlist-cards {
-    padding: 12px 16px 92px;
-    background: #f7f7f8;
+    padding: 14px 20px 92px;
+    background: #fff;
 }
 
-/* Report tags: cat + sub tag in a row */
-.m-report-tags {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 6px;
-}
-
+/* Report tags: cat + sub tag in a row (base rules in MProposalList.css) */
 .m-report-tags .m-prop-cat-tag {
     margin-bottom: 0;
-}
-
-/* Sub tag — Figma: #FFC9C9 bg, #242424 text (시설물... tag) */
-.m-report-sub-tag {
-    background: #FFC9C9;
-    color: #242424;
-    padding: 3px 10px;
-    border-radius: 15px;
-    font-size: 14px;
-    font-weight: 600;
 }
 
 /* Author + stats on same row */
@@ -145,22 +98,11 @@
     margin: 0;
 }
 
-/* Title size in list context */
-.m-report-list-page .m-prop-title {
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-}
+/* Title size in list context — base .m-prop-title (MProposalList.css) 그대로 사용 */
 
-/* FAB positioned above bottom nav */
-.m-rlist-fab {
-    bottom: 80px;
-}
-
-/* Back button: icon-only in report list (no "홈으로" text per Figma 269:21366) */
+/* Back button: icon-only in report list */
 .m-rlist-back {
     gap: 0;
-    padding: 4px;
 }
 
 /* Region arrow circle — WDC Figma report purple #542aa3 */

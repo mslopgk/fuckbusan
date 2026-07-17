@@ -6,11 +6,11 @@
     -webkit-overflow-scrolling: touch;
 }
 
+/* Figma 302:17840: back arrow 24x24 at (20,25) */
 .m-form-topbar {
-    height: 48px;
+    padding: 25px 20px 0;
     display: flex;
     align-items: center;
-    padding: 0 20px;
 }
 
 .m-form-back {
@@ -24,46 +24,60 @@
     cursor: pointer;
     font-family: inherit;
     letter-spacing: -0.02em;
+    padding: 0;
 }
 
+/* Figma: 타이틀 y78 = topbar 끝(49) + 29 */
 .m-form-body {
-    padding: 20px 20px 24px;
+    padding: 29px 20px 24px;
 }
 
+/* Figma: 24/700 lh34 ls-0.96, x22 (본문 20 + 2) */
 .m-form-title {
     font-size: 24px;
     font-weight: 700;
     color: #242424;
-    margin: 0 0 28px;
-    line-height: 1.4;
+    margin: 0 0 30px 2px;
+    line-height: 34px;
     letter-spacing: -0.04em;
 }
 
+/* Figma 302:18088: 섹션 간 40 (제안), 제보는 30 오버라이드 */
 .m-form-section {
-    margin-bottom: 26px;
+    margin-bottom: 40px;
 }
 
+.m-form-section:last-of-type {
+    margin-bottom: 0;
+}
+
+/* Figma: 18/600 lh25, 라벨→입력 10 */
 .m-form-section-title {
     font-size: 18px;
     font-weight: 600;
+    line-height: 25px;
     color: #242424;
-    margin: 0 0 14px;
+    margin: 0 0 10px;
     letter-spacing: -0.04em;
 }
 
+/* Figma 302:17840: 2열 (x20/x208 → 188px), 행 y221/260/302/344 */
 .m-form-type-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    row-gap: 14px;
-    column-gap: 24px;
+    grid-template-columns: 188px 1fr;
+    row-gap: 20px;
+    column-gap: 0;
+    margin-top: 10px; /* 라벨 mb 10 + 10 = Figma 20 */
 }
 
 .m-form-type {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #1a1a1b;
+    gap: 6px;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.04em;
+    color: #242424;
     cursor: pointer;
     transition: color 0.15s;
     -webkit-tap-highlight-color: transparent;
@@ -71,47 +85,36 @@
 
 .m-form-type input { display: none; }
 
-/* Figma 269:23289~ — 채워진 연회색 원 (링 아님), 22px */
+/* Figma: 채워진 연회색 원 22px (#eeeeee) */
 .m-form-type-dot {
     width: 22px;
     height: 22px;
     border: none;
     border-radius: 50%;
-    background: #ececec;
+    background: #eeeeee;
     flex-shrink: 0;
     box-sizing: border-box;
     position: relative;
     transition: all 0.15s;
 }
 
+/* Figma 302:18431 export — 핑크 원 + 흰 체크 */
 .m-form-type input:checked + .m-form-type-dot {
-    background: #f74e7e;
-}
-
-.m-form-type input:checked + .m-form-type-dot::after {
-    content: '';
-    position: absolute;
-    left: 6px;
-    top: 8px;
-    width: 7px;
-    height: 4px;
-    border-left: 2px solid #fff;
-    border-bottom: 2px solid #fff;
-    transform: rotate(-45deg);
-    border-radius: 1px;
+    background: url('/figma-assets/mobile-propose/radio_on.png') center / 22px 22px no-repeat;
 }
 
 .m-form-type:has(input:checked) {
     color: #f74e7e;
-    font-weight: 700;
+    font-weight: 600;
 }
 
+/* Figma: 353x55 r15 stroke #dcdcdc, pad 17, 16px */
 .m-form-input {
     width: 100%;
     height: 55px;
     border: 1px solid #dcdcdc;
     border-radius: 15px;
-    padding: 0 16px;
+    padding: 0 17px;
     font-size: 16px;
     font-family: inherit;
     outline: none;
@@ -125,15 +128,16 @@
 .m-form-input:focus { border-color: #f74e7e; }
 .m-form-input::placeholder { color: #a6a6a6; }
 
+/* Figma: 353x147 r15 */
 .m-form-textarea {
     width: 100%;
     min-height: 147px;
     border: 1px solid #dcdcdc;
     border-radius: 15px;
-    padding: 14px 16px;
+    padding: 16px 17px;
     font-size: 16px;
     font-family: inherit;
-    line-height: 1.4;
+    line-height: 22px;
     resize: none;
     outline: none;
     background: #fff;
@@ -149,11 +153,11 @@
     white-space: pre-line;
 }
 
-/* 위치정보 */
+/* 첨부자료 "(선택)" — Figma 302:18420: 18/400 #242424 */
 .m-form-section-sub {
-    font-size: 12px;
-    color: #9aa0a6;
-    font-weight: 500;
+    font-size: 18px;
+    color: #242424;
+    font-weight: 400;
 }
 
 .m-form-loc-btn {
@@ -161,7 +165,7 @@
     height: 55px;
     border: 1px solid #dcdcdc;
     border-radius: 15px;
-    padding: 0 18px;
+    padding: 0 17px;
     background: #fff;
     display: flex;
     align-items: center;
@@ -171,31 +175,32 @@
     box-sizing: border-box;
 }
 
+/* Figma 302:18404: 선택된 주소도 #a6a6a6 */
 .m-form-loc-placeholder { font-size: 16px; color: #a6a6a6; letter-spacing: -0.04em; }
-.m-form-loc-text       { font-size: 16px; color: #242424; letter-spacing: -0.04em; }
+.m-form-loc-text       { font-size: 16px; color: #a6a6a6; letter-spacing: -0.04em; }
 .m-form-loc-pin {
     display: inline-flex;
     align-items: center;
-    color: #b0b0b0;
 }
 
+/* Figma 302:18418: 위치 필드→상세위치 20 */
 .m-form-loc-detail {
-    margin-top: 8px;
+    margin-top: 20px;
 }
 
-/* 첨부자료 */
+/* 첨부자료 — Figma: 박스 80x80 r15, 썸네일 r10, gap 11 */
 .m-form-attach-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 11px;
     align-items: center;
 }
 
 .m-form-attach-add {
     width: 80px;
     height: 80px;
-    border: 1px solid #d8d8d8;
-    border-radius: 10px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
     background: #fff;
     display: flex;
     align-items: center;
@@ -209,7 +214,6 @@
     width: 80px;
     height: 80px;
     border-radius: 10px;
-    overflow: hidden;
     background: #f1f3f5;
     flex-shrink: 0;
 }
@@ -219,125 +223,207 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    border-radius: 10px;
 }
 
+/* Figma 302:18442 — 흰 원 24x24 (top 5, right 5) + X */
 .m-form-attach-x {
     position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 18px;
-    height: 18px;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
     border: none;
     border-radius: 50%;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
+    background: none;
     cursor: pointer;
-    font-size: 12px;
-    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
 }
 
+/* Figma 302:18429: 16px #a6a6a6, 박스와 10 */
 .m-form-attach-help {
-    font-size: 11px;
-    color: #9aa0a6;
-    margin: 8px 0 0;
+    font-size: 16px;
+    letter-spacing: -0.04em;
+    color: #a6a6a6;
+    margin: 10px 0 0;
 }
 
-/* 위치 선택 picker (full overlay) */
+/* ─── 위치 선택 picker (full page) — Figma 302:17186/302:18642 ─── */
 .m-loc-picker {
     position: fixed;
     inset: 0;
     background: #fff;
     z-index: 200;
-    display: flex;
-    flex-direction: column;
-    padding: 0 16px 16px;
+    overflow: hidden;
 }
 
-.m-loc-picker-top {
-    height: 48px;
-    display: flex;
+/* 닫기/뒤로 (21,27) */
+.m-loc-picker-close {
+    position: absolute;
+    left: 20px;
+    top: 25px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    z-index: 5;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
 }
 
+/* 타이틀 (22,78) 24/700 lh34 */
 .m-loc-picker-title {
-    font-size: 18px;
-    font-weight: 800;
-    line-height: 1.4;
-    color: #1a1a1b;
-    margin: 0 0 14px;
-    letter-spacing: -0.02em;
+    position: absolute;
+    left: 22px;
+    right: 28px;
+    top: 78px;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 34px;
+    color: #242424;
+    margin: 0;
+    letter-spacing: -0.04em;
+    z-index: 5;
 }
 
+/* 검색 필드 (21,166) 353x55 r15 */
 .m-loc-picker-search {
+    position: absolute;
+    left: 21px;
+    right: 19px;
+    top: 166px;
+    height: 55px;
     display: flex;
     align-items: center;
     gap: 8px;
-    height: 42px;
-    border: 1px solid #d8d8d8;
-    border-radius: 8px;
-    padding: 0 12px;
-    margin-bottom: 12px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    padding: 0 14px 0 20px;
+    background: #fff;
+    z-index: 5;
+    box-sizing: border-box;
 }
 
 .m-loc-picker-search input {
     flex: 1;
     border: none;
     outline: none;
-    font-size: 13px;
+    font-size: 16px;
     font-family: inherit;
+    letter-spacing: -0.04em;
+    background: transparent;
+    min-width: 0;
 }
 
 .m-loc-picker-search button {
     background: none;
     border: none;
-    color: #9aa0a6;
-    font-size: 18px;
     cursor: pointer;
-    padding: 0 4px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
 }
 
+/* 지도: y242 → 하단 풀블리드 */
 .m-loc-picker-map {
-    flex: 1;
-    border-radius: 12px;
-    overflow: hidden;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 242px;
+    bottom: 0;
     background: #f1f3f5;
-    margin-bottom: 8px;
+    overflow: hidden;
 }
 
-.m-loc-picker-help {
-    text-align: center;
-    font-size: 12px;
-    color: #9aa0a6;
-    margin: 0 0 12px;
+/* 중앙 고정 핀 50x50 (Figma 302:17214) */
+.m-loc-picker-pin {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 50px;
+    height: 50px;
+    transform: translate(-50%, -100%);
+    pointer-events: none;
+    z-index: 4;
 }
 
-.m-loc-picker-confirm {
+/* 힌트 필 (92,720) 209x31 r15 white@0.8 */
+.m-loc-picker-hint {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 101px; /* 852-720-31 */
+    height: 31px;
+    padding: 0 15px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #242424;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    z-index: 5;
+}
+
+/* 내위치 흰 원 50x50 (321,700) */
+.m-loc-picker-locate {
+    position: absolute;
+    right: 22px;
+    bottom: 102px; /* 852-700-50 */
+    width: 50px;
     height: 50px;
     border: none;
-    border-radius: 25px;
-    background: #f74e7e;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 800;
+    border-radius: 100px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(247, 78, 126, 0.25);
-    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
 }
 
+/* 확인 버튼 (20,768) 353x59 r15 */
+.m-loc-picker-confirm {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 25px; /* 852-768-59 */
+    height: 59px;
+    border: none;
+    border-radius: 15px;
+    background: #f74e7e;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    cursor: pointer;
+    font-family: inherit;
+    z-index: 5;
+}
+
+.m-loc-picker-confirm:disabled {
+    background: #ffdde7;
+}
+
+/* ─── 하단 고정 바 — Figma 302:17882: 393x95 white, 버튼 y+18, 임시저장 103/작성완료 flex ─── */
 .m-form-footer {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     background: #fff;
-    border-top: 1px solid #ececec;
     display: flex;
     gap: 10px;
-    padding: 12px 20px;
+    padding: 18px 20px;
     z-index: 50;
 }
 
@@ -359,7 +445,7 @@
     height: 59px;
     border-radius: 15px;
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
     font-family: inherit;
     letter-spacing: -0.04em;
@@ -410,6 +496,7 @@
     to   { transform: scale(1) translateY(0); opacity: 1; }
 }
 
+/* ─── 임시저장/불러오기 모달 — Figma 302:18588(저장)/302:18253(불러오기): 카드 303x398 r30 ─── */
 .m-draft-backdrop {
     position: fixed;
     inset: 0;
@@ -418,66 +505,91 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 24px;
     animation: m-modal-fade-in 0.2s ease-out;
 }
 
 .m-draft-modal {
-    width: 100%;
-    max-width: 300px;
+    width: 303px;
+    height: 398px;
+    box-sizing: border-box;
     background: #fff;
-    border-radius: 22px;
-    padding: 28px 22px 24px;
+    border-radius: 30px;
+    padding: 0 36px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
     animation: m-result-modal-appear 0.22s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
+/* 저장할까요 모달: 아이콘 84x84 top72, 타이틀 y175, 버튼 y221/295 */
+.m-draft-modal--leave .m-draft-icon { margin: 72px 0 19px; height: 84px; }
+.m-draft-modal--leave .m-draft-title { margin: 0 0 22px; }
+
+/* 불러올까요 모달: 아이콘 67x82 top43, 타이틀 y147, 메타 y181, 버튼 y229/303 */
+.m-draft-modal--restore .m-draft-icon { margin: 43px 0 22px; height: 82px; }
+.m-draft-modal--restore .m-draft-title { margin: 0 0 10px; }
+
 .m-draft-icon {
     display: flex;
     justify-content: center;
-    margin-bottom: 14px;
+    align-items: flex-start;
 }
 
+/* Figma: 20/700 lh24 ls-0.80 #242424, 1줄 */
 .m-draft-title {
-    font-size: 17px;
-    font-weight: 800;
-    color: #1a1a1b;
-    margin: 0 0 8px;
-    line-height: 1.4;
-    letter-spacing: -0.02em;
+    font-size: 20px;
+    font-weight: 700;
+    color: #242424;
+    line-height: 24px;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
 }
 
+/* Figma 302:18261: 16/400 lh19 #242424, 타이틀과 10, 버튼과 29 */
 .m-draft-meta {
-    font-size: 12px;
-    color: #555;
-    margin: 0 0 20px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #242424;
+    line-height: 19px;
+    letter-spacing: -0.04em;
+    margin: 0 0 29px;
 }
 
 .m-draft-actions {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+    width: 230px;
 }
 
+/* Figma: 230x59 r15, 18/700 */
 .m-draft-btn {
-    width: 100%;
-    height: 46px;
+    width: 230px;
+    height: 59px;
     border: none;
-    border-radius: 23px;
-    font-size: 14px;
-    font-weight: 800;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
     cursor: pointer;
     font-family: inherit;
 }
 
+/* 저장안함 (leave ghost): #e6e6e6 / #777 */
 .m-draft-btn-ghost {
-    background: #fce4ed;
+    background: #e6e6e6;
+    color: #777777;
+}
+
+/* 새로 작성하기 (restore ghost): 연핑크 / 핑크 */
+.m-draft-btn-tint {
+    background: #ffdde7;
     color: #f74e7e;
 }
 
 .m-draft-btn-primary {
     background: #f74e7e;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(247, 78, 126, 0.25);
 }

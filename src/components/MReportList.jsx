@@ -6,8 +6,6 @@ import MobileBottomNav from './MobileBottomNav';
 import { CAT_STYLES } from './catStyles';
 import { REGIONS, SORTS, REPORT_STAGES as STAGES, DISTRICT_CENTERS } from '../constants/mapConstants';
 import { RegionSheet, SortSheet } from './MFilterSheets';
-import CategoryRail from './filters/CategoryRail';
-import RegionDropdown from './filters/RegionDropdown';
 import { API_URL } from '../utils/api';
 import { useLazyImage } from '../hooks/useLazyImage';
 import { thumbUrl, matchDistrict, nearestDistrict } from '../utils/format';
@@ -36,7 +34,7 @@ function ReportListCard({ it, likedIds, onNavigate, onToggleLike }) {
                             style={{ cursor: 'pointer', color: likedIds.has(it.id) ? '#542aa3' : '#bfbfbf' }}
                         >
                             {/* Figma heart icon (Union path) */}
-                            <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
+                            <svg width="15" height="12" viewBox="0 0 15.3587 12.2297" fill="currentColor" style={{display:'inline-block',verticalAlign:'middle',marginRight:2}}>
                                 <path d="M9.0568 1.0811C10.4983 -0.360439 12.8359 -0.360292 14.2775 1.0811C15.7191 2.52272 15.7191 4.86019 14.2775 6.30181L8.78141 11.7989C8.47833 12.102 8.07586 12.2441 7.67887 12.2286C7.2822 12.2438 6.88013 12.1017 6.57731 11.7989L1.08121 6.30181C-0.360404 4.86019 -0.360404 2.52272 1.08121 1.0811C2.52285 -0.360296 4.86037 -0.36044 6.30192 1.0811L7.67887 2.45806L9.0568 1.0811Z"/>
                             </svg>
                             {it.likes ?? 0}
@@ -148,37 +146,42 @@ export default function MReportList({ onNavigate }) {
     return (
         <div className="m-report-list-page">
             <header className="m-prop-topbar">
-                <button className="m-prop-back m-rlist-back" onClick={() => onNavigate && onNavigate('home')}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                <button className="m-prop-back m-rlist-back" onClick={() => onNavigate && onNavigate('home')} aria-label="뒤로">
+                    <img src="/figma-assets/icons/icon_arrow_back.svg" alt="" width="24" height="24" />
                 </button>
                 <button className="m-map-btn" onClick={() => onNavigate && onNavigate('mReportMap')}>
-                    {/* Figma: location pin icon */}
-                    <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 0C4.13 0 1 3.13 1 7c0 5.25 7 11 7 11s7-5.75 7-11c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S6.62 4.5 8 4.5s2.5 1.12 2.5 2.5S9.38 9.5 8 9.5z" fill="currentColor"/>
-                    </svg>
+                    <img src="/figma-assets/icons/icon_location_pin.svg" alt="" width="17" height="23" />
                     <span>지도보기</span>
                 </button>
             </header>
 
-            <div className="m-rlist-region-row">
-                <RegionDropdown value={region} onClick={openRegion} accent="#542aa3" />
+            {/* 지역 선택 행 — 지역명 + 보라 원형 화살표 (Figma 302:15921) */}
+            <div className="m-region-row">
+                <button type="button" className="m-region-btn" onClick={openRegion}>
+                    <span>{region}</span>
+                    <span className="m-region-arrow">
+                        <img src="/figma-assets/mobile-report/region_chevron.png" alt="" width="7" height="10" />
+                    </span>
+                </button>
             </div>
 
             <div className="m-rlist-scroll" onScroll={handleScroll}>
-                <CategoryRail
-                    className="m-rlist-cats"
-                    variant="pill"
-                    categories={CATEGORIES}
-                    value={cat}
-                    onChange={setCat}
-                    accent="#542aa3"
-                    tint="#efe9f7"
-                />
+                {/* 카테고리 칩 — 2행 wrap (Figma 302:15921) */}
+                <div className="m-cat-chips">
+                    {CATEGORIES.map((c) => (
+                        <button
+                            key={c}
+                            type="button"
+                            className={`m-cat-chip${cat === c ? ' on' : ''}`}
+                            onClick={() => setCat(c)}
+                        >{c}</button>
+                    ))}
+                </div>
 
                 <div className="m-sort-row">
                     <button className="m-sort-btn" onClick={openSort}>
                         <span>{sort}</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        <img src="/figma-assets/icons/icon_sort_chevron.svg" alt="" width="9" height="5" />
                     </button>
                 </div>
 
@@ -223,7 +226,7 @@ export default function MReportList({ onNavigate }) {
             </div>
 
             <button className="m-prop-fab m-rlist-fab" onClick={() => onNavigate && onNavigate('mReportForm')}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <img src="/figma-assets/mobile-report/fab_plus.png" alt="" width="13" height="13" />
                 <span>제보하기</span>
             </button>
 

@@ -7,14 +7,15 @@
     flex-direction: column;
 }
 
-/* ─── 상단 topbar ─── */
+/* ─── 상단 topbar ─── Figma 302:17284/302:15921: pill y=20 h36, back icon y=25 */
 .m-prop-topbar {
     height: 56px;
+    box-sizing: border-box;
     background: #fff;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 20px 20px 0;
     flex-shrink: 0;
 }
 
@@ -28,7 +29,8 @@
     color: #555;
     cursor: pointer;
     font-family: inherit;
-    padding: 4px 0;
+    padding: 0;
+    margin-top: 5px;
     letter-spacing: -0.02em;
 }
 
@@ -37,7 +39,7 @@
     background: #f74e7e;
     border: none;
     border-radius: 20px;
-    padding: 0 14px;
+    padding: 0 15px 0 14px;
     height: 36px;
     color: #fff;
     font-size: 14px;
@@ -45,14 +47,14 @@
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     font-family: inherit;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
 }
 
-/* ─── 지역 선택 행 ─── */
+/* ─── 지역 선택 행 ─── Figma: 제목 y=79 (topbar 56 + 23), 22px/30.8 700 #242424 */
 .m-region-row {
-    padding: 14px 20px 4px;
+    padding: 23px 20px 0;
     background: #fff;
     flex-shrink: 0;
 }
@@ -60,15 +62,16 @@
 .m-region-btn {
     background: none;
     border: none;
-    padding: 4px 0;
+    padding: 0;
     font-size: 22px;
     font-weight: 700;
+    line-height: 1.4;
     color: #242424;
     cursor: pointer;
     font-family: inherit;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     letter-spacing: -0.04em;
 }
 
@@ -84,7 +87,7 @@
     flex-shrink: 0;
 }
 
-/* ─── 카테고리 칩 ─── */
+/* ─── 카테고리 칩 ─── Figma 302:17284: 2행 wrap, h33 r20 bg#e6e6e6, 가로gap 8 세로 11, 좌우 17 */
 .m-cat-chips {
     background: #fff;
     padding: 12px 20px 12px;
@@ -92,6 +95,13 @@
     flex-wrap: wrap;
     gap: 6px;
     flex-shrink: 0;
+}
+
+.m-prop-list-page .m-cat-chips,
+.m-report-list-page .m-cat-chips {
+    padding: 16px 17px 0;
+    column-gap: 8px;
+    row-gap: 11px;
 }
 
 .m-cat-chip {
@@ -118,11 +128,11 @@
     font-weight: 600;
 }
 
-/* ─── 정렬 행 ─── */
+/* ─── 정렬 행 ─── Figma: 최신순 16/22.4 500 #242424, 칩스와 20px 간격 */
 .m-sort-row {
     display: flex;
     justify-content: flex-end;
-    padding: 4px 20px 4px;
+    padding: 20px 20px 0;
     flex-shrink: 0;
 }
 
@@ -131,13 +141,15 @@
     border: none;
     font-size: 16px;
     font-weight: 500;
+    line-height: 1.4;
     color: #242424;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 7px;
     cursor: pointer;
     font-family: inherit;
     letter-spacing: -0.04em;
+    padding: 0;
 }
 
 /* ─── 스크롤 가능한 카드 목록 영역 ─── */
@@ -151,10 +163,10 @@
 /* ─── 태그·작성자 공용 ─── */
 .m-report-tags {
     display: flex;
-    gap: 6px;
+    gap: 5px;
     align-items: center;
     flex-wrap: wrap;
-    margin-bottom: 6px;
+    margin-bottom: 13px;
 }
 
 .m-report-author-stat-row {
@@ -167,32 +179,37 @@
     margin: 0;
 }
 
+/* Figma 302:16027: #ffc9c9 bg, #242424 600 14px, h24 r15, pad 7 */
 .m-report-sub-tag {
-    background: #fce4ed;
-    color: #f74e7e;
-    padding: 3px 10px;
-    border-radius: 11px;
-    font-size: 11px;
+    background: #ffc9c9;
+    color: #242424;
+    padding: 2px 7px;
+    border-radius: 15px;
+    font-size: 14px;
     font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
 }
 
-/* ─── 카드 목록 ─── */
+/* ─── 카드 목록 ─── Figma: 카드 353x117 r15, 간격 13, 리스트 상단 20 */
 .m-prop-cards {
     list-style: none;
     margin: 0;
-    padding: 4px 20px 92px;
+    padding: 20px 20px 92px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 13px;
 }
 
 .m-prop-card {
     background: #fff;
     border-radius: 15px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 14px 16px;
+    padding: 16px 14px 15px;
+    min-height: 117px;
+    box-sizing: border-box;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
     cursor: pointer;
     transition: transform 0.12s, box-shadow 0.12s;
@@ -207,30 +224,34 @@
 .m-prop-card-text { flex: 1; min-width: 0; }
 
 /* 카테고리 태그 */
+/* Figma: 46x24 r15, 14/19.6 700, pad 10 */
 .m-prop-cat-tag {
     display: inline-block;
     padding: 2px 10px;
     border-radius: 15px;
     font-size: 14px;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
 }
 
 .m-prop-title {
     font-size: 16px;
     font-weight: 500;
+    line-height: 1.4;
     color: #111;
-    margin: 4px 0;
+    margin: 0 0 8px;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
 }
 
 .m-prop-author {
     font-size: 14px;
-    color: #1e1e1e;
+    color: #737373;
     margin: 0;
     letter-spacing: 0;
     line-height: 1.35;
@@ -251,7 +272,7 @@
     gap: 3px;
 }
 
-/* 썸네일 이미지 */
+/* 썸네일 이미지 — Figma: 55x55 r15, 카드 상단에서 19 (pad 16 + 3) */
 .m-prop-card-img {
     width: 55px;
     height: 55px;
@@ -259,6 +280,8 @@
     background: #f0f0f0;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 3px;
     background-size: cover;
     background-position: center;
 }
@@ -280,27 +303,27 @@
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23c8c8c8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpolyline points='21 15 16 10 5 21'/%3E%3C/svg%3E") center / 22px 22px no-repeat;
 }
 
-/* ─── FAB ─── */
+/* ─── FAB ─── Figma 302:17377: 98x36 r20, 우 18, 하단 105 (네비 76 + 29), 14/700 */
 .m-prop-fab {
     position: fixed;
-    right: 20px;
-    bottom: 92px;
+    right: 18px;
+    bottom: 105px;
     background: #f74e7e;
     color: #fff;
     border: none;
-    border-radius: 26px;
-    height: 48px;
-    padding: 0 18px;
+    border-radius: 20px;
+    height: 36px;
+    padding: 0 12px 0 13px;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
     box-shadow: 0 6px 18px rgba(247, 78, 126, 0.35);
     font-family: inherit;
     z-index: 60;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
     transition: transform 0.12s, box-shadow 0.12s;
     -webkit-tap-highlight-color: transparent;
 }
@@ -326,12 +349,13 @@
     to   { background: rgba(0, 0, 0, 0.4); }
 }
 
+/* Figma 302:16191: 상단 r24, 제목 상단 26, 좌우 20 */
 .m-modal-sheet {
     width: 100%;
     background: #fff;
-    border-radius: 18px 18px 0 0;
-    padding: 22px 20px 24px;
-    max-height: 76vh;
+    border-radius: 24px 24px 0 0;
+    padding: 26px 20px 27px;
+    max-height: 86vh;
     display: flex;
     flex-direction: column;
     animation: m-modal-slide-up 0.25s cubic-bezier(0.32, 0.72, 0, 1);
@@ -342,19 +366,21 @@
     to   { transform: translateY(0); }
 }
 
+/* Figma: 제목 24/29 700, 제목→리스트 20 */
 .m-modal-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 14px;
+    margin-bottom: 20px;
 }
 
 .m-modal-title {
-    font-size: 18px;
-    font-weight: 800;
-    color: #1a1a1b;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 29px;
+    color: #242424;
     margin: 0;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
 }
 
 .m-modal-close {
@@ -362,7 +388,8 @@
     border: none;
     color: #1a1a1b;
     cursor: pointer;
-    padding: 4px;
+    padding: 0;
+    margin-right: 3px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -371,25 +398,38 @@
 .m-region-list,
 .m-sort-list {
     list-style: none;
-    margin: 0 0 14px;
+    margin: 0;
     padding: 0;
     overflow-y: auto;
     flex: 1;
     min-height: 0;
+    max-height: 350px; /* Figma: 아이템 7개(50px×7) 노출 */
 }
 
+/* Figma: 아이템 행 50px, 20/700 #242424, 좌 5(쉐브론 x25), 쉐브론→라벨 17 */
 .m-region-item,
 .m-sort-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 4px;
-    font-size: 16px;
+    gap: 17px;
+    height: 50px;
+    flex-shrink: 0;
+    padding: 0 0 0 5px;
+    font-size: 20px;
     font-weight: 700;
-    color: #1a1a1b;
+    color: #242424;
     cursor: pointer;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.04em;
     transition: color 0.12s;
+}
+
+/* Figma 302:16303 chevron 15x8 — mask 컬러링 */
+.m-modal-chev-ic {
+    display: inline-block;
+    width: 15px;
+    height: 8px;
+    -webkit-mask: url('/figma-assets/mobile-report/modal_item_chevron.png') center / contain no-repeat;
+    mask: url('/figma-assets/mobile-report/modal_item_chevron.png') center / contain no-repeat;
 }
 
 .m-region-item .m-modal-chevron,
@@ -409,18 +449,21 @@
     color: #f74e7e;
 }
 
+/* Figma 302:16310: 347x59 r15, 18/700, 리스트와 27 (x=25 → ml 5 / mr 1) */
 .m-modal-confirm {
-    height: 50px;
+    height: 59px;
+    flex-shrink: 0;
     border: none;
-    border-radius: 25px;
+    border-radius: 15px;
     background: #f74e7e;
     color: #fff;
-    font-size: 15px;
-    font-weight: 800;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(247, 78, 126, 0.25);
     font-family: inherit;
-    margin-top: 8px;
+    margin: 27px 1px 0 5px;
 }
 
 /* 투표 완료 표시 (모바일 QA: 이미 투표한 항목 상시 표기) */

@@ -249,15 +249,8 @@ export default function MReportMap({ onNavigate }) {
                 aria-label="내 위치"
                 title="내 위치"
             >
-                {/* Figma 0:12150 — 검정 크로스헤어 (흰 원 배경 없음) */}
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="11" stroke="#000" strokeWidth="2"/>
-                    <circle cx="12" cy="12" r="1.5" fill="#D9D9D9" stroke="#000"/>
-                    <path d="M12 0.5V5.5" stroke="#000" strokeWidth="2"/>
-                    <path d="M12 18V23" stroke="#000" strokeWidth="2"/>
-                    <path d="M23.2549 11.7451H18.2549" stroke="#000" strokeWidth="2"/>
-                    <path d="M5.75488 11.7451H0.754883" stroke="#000" strokeWidth="2"/>
-                </svg>
+                {/* Figma 302:15676 export — 크로스헤어 서클 24x24 */}
+                <img src="/figma-assets/mobile-report/locate_circle.png" alt="" width="24" height="24" />
             </button>
 
             {/* 바텀시트 — 2-state (peek/half). 목록 전체는 별도 list 페이지 */}
@@ -275,66 +268,56 @@ export default function MReportMap({ onNavigate }) {
                     onMouseUp={onTouchEnd}
                     onMouseLeave={(e) => dragging && onTouchEnd(e)}
                 >
-                    <div className="m-sheet-handle" />
+                    {/* Figma 302:15712 export — 18x12 2줄 핸들 */}
+                    <img className="m-sheet-handle" src="/figma-assets/mobile-report/sheet_handle.png" alt="" width="18" height="12" draggable="false" />
                 </div>
 
-                <div className="m-sheet-region-row">
-                    <button className="m-sheet-region-btn" onClick={openRegion} type="button">
-                        <span>{region}</span>
-                        <span className="m-region-arrow">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="9 18 15 12 9 6"/>
-                            </svg>
-                        </span>
-                    </button>
-                    <button className="m-sheet-list-btn" onClick={goToList} aria-label="목록 보기">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="8" y1="6" x2="21" y2="6"/>
-                            <line x1="8" y1="12" x2="21" y2="12"/>
-                            <line x1="8" y1="18" x2="21" y2="18"/>
-                            <line x1="3" y1="6" x2="3.01" y2="6"/>
-                            <line x1="3" y1="12" x2="3.01" y2="12"/>
-                            <line x1="3" y1="18" x2="3.01" y2="18"/>
-                        </svg>
-                    </button>
-                </div>
+                <div className="m-sheet-scroll">
+                    <div className="m-sheet-region-row">
+                        {/* Figma 302:15671 — 지역명 22/700 + 보라 원형 화살표 24 (목록 버튼 없음) */}
+                        <button className="m-sheet-region-btn" onClick={openRegion} type="button">
+                            <span>{region}</span>
+                            <span className="m-region-arrow">
+                                <img src="/figma-assets/mobile-report/region_chevron.png" alt="" width="7" height="10" />
+                            </span>
+                        </button>
+                    </div>
 
-                <div className="m-cat-chips m-sheet-chips">
-                    {CATEGORIES.map((c) => (
-                        <button
-                            key={c}
-                            className={`m-cat-chip ${cat === c ? 'on' : ''}`}
-                            onClick={() => { setCat(c); setSelectedPinId(null); }}
-                        >{c}</button>
-                    ))}
-                </div>
+                    <div className="m-cat-chips m-sheet-chips">
+                        {CATEGORIES.map((c) => (
+                            <button
+                                key={c}
+                                className={`m-cat-chip ${cat === c ? 'on' : ''}`}
+                                onClick={() => { setCat(c); setSelectedPinId(null); }}
+                            >{c}</button>
+                        ))}
+                    </div>
 
-                <ul className="m-sheet-cards">
-                    {(() => {
-                        const matched = selectedPinId ? ITEMS.filter((it) => String(it.id) === selectedPinId) : ITEMS;
-                        const displayed = (selectedPinId && matched.length === 0 && pinItem) ? [pinItem] : matched;
-                        if (displayed.length === 0) {
-                            return (
-                                <li style={{ padding: '32px 0', textAlign: 'center', color: '#aaa', fontSize: 14 }}>
-                                    {search.trim() ? '검색 결과가 없습니다.' : '조건에 맞는 제보가 없습니다.'}
-                                </li>
-                            );
-                        }
-                        return displayed.map((it) => (
-                            <ReportCard key={it.id} it={it} onNavigate={onNavigate} />
-                        ));
-                    })()}
-                </ul>
+                    <ul className="m-sheet-cards">
+                        {(() => {
+                            const matched = selectedPinId ? ITEMS.filter((it) => String(it.id) === selectedPinId) : ITEMS;
+                            const displayed = (selectedPinId && matched.length === 0 && pinItem) ? [pinItem] : matched;
+                            if (displayed.length === 0) {
+                                return (
+                                    <li style={{ padding: '32px 0', textAlign: 'center', color: '#aaa', fontSize: 14 }}>
+                                        {search.trim() ? '검색 결과가 없습니다.' : '조건에 맞는 제보가 없습니다.'}
+                                    </li>
+                                );
+                            }
+                            return displayed.map((it) => (
+                                <ReportCard key={it.id} it={it} onNavigate={onNavigate} />
+                            ));
+                        })()}
+                    </ul>
+                </div>
             </div>
 
+            {/* 제보하기 FAB — Figma 302:15779 (보라 pill 98x36, nav 위 29) */}
             <button
                 className="m-prop-fab m-rmap-fab"
                 onClick={() => onNavigate && onNavigate('mReportForm')}
             >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/>
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
+                <img src="/figma-assets/mobile-report/fab_plus.png" alt="" width="13" height="13" />
                 <span>제보하기</span>
             </button>
 

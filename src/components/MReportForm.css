@@ -1,8 +1,25 @@
-/* Form body: Figma 269:21886 — title starts at top:78px (topbar 48px + padding 30px) */
-.m-report-form-page .m-form-body {
-    padding-top: 30px;
+/* MReportForm — 제보 작성 (Figma 302:16441 / 302:16855 WDC) */
+/* 베이스는 MProposalForm.css 공유, 여기는 제보(보라) 오버라이드 + 제보 전용 요소 */
+
+/* Figma 302:16441: 제보 섹션 간격 30 (제안 40과 다름) */
+.m-report-form-page .m-form-section {
+    margin-bottom: 30px;
 }
 
+.m-report-form-page .m-form-section:last-of-type {
+    margin-bottom: 0;
+}
+
+/* 사진 등록: 라벨(끝 201)→박스(206) 5px */
+.m-rform-photo-row {
+    display: flex;
+    gap: 10px; /* Figma: 박스 x18 → x108 (80 + 10) */
+    align-items: center;
+    margin-top: -5px; /* 라벨 mb 10 - Figma 5 */
+    margin-left: -2px; /* Figma 박스 x18 (본문 20 - 2) */
+}
+
+/* Figma 302:16442: 80x80 r15 stroke #dcdcdc */
 .m-photo-add {
     width: 80px;
     height: 80px;
@@ -13,19 +30,33 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
+/* 등록된 사진 — Figma 302:16857: 80x80 r10 */
+.m-rform-photo-thumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+    display: block;
+    flex-shrink: 0;
+}
+
+/* 위치정보 필드 — Figma 302:16456: 353x55 r15, pad 17, 아이콘 24 */
 .m-loc-input {
     width: 100%;
     height: 55px;
     border: 1px solid #dcdcdc;
     border-radius: 15px;
-    padding: 0 18px;
+    padding: 0 17px;
     background: #fff;
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 16px;
+    letter-spacing: -0.04em;
     color: #a6a6a6;
     cursor: pointer;
     font-family: inherit;
@@ -34,130 +65,118 @@
     transition: border-color 0.15s;
 }
 
-.m-loc-input:focus {
-    border-color: #542aa3;
-}
-
 .m-loc-pin {
     display: inline-flex;
     align-items: center;
-    color: #b0b0b0;
 }
 
-/* Filled location text color */
+/* Figma 302:16814: 선택된 주소도 #a6a6a6 유지 */
 .m-form-loc-text {
-    color: #1a1a1b;
+    color: #a6a6a6;
     font-size: 16px;
 }
 
-/* Footer buttons: Figma 848:18955 — height 59px, border-radius 15px */
-.m-report-form-page .m-form-footer {
-    padding: 16px 20px;
+/* 상세위치 입력 — Figma 302:16868: 위치 필드와 20, stroke #542aa3, 16/500 #242424 */
+.m-loc-detail-input {
+    border-color: #542aa3;
+    color: #242424;
+    font-weight: 500;
+    cursor: text;
 }
 
-.m-report-form-page .m-form-save,
-.m-report-form-page .m-form-submit {
-    height: 59px;
-    border-radius: 15px;
-    font-size: 18px;
+.m-loc-detail-input::placeholder {
+    color: #a6a6a6;
+    font-weight: 400;
 }
 
-.m-report-form-page .m-form-save {
-    flex: 0 0 103px;
-    background: #e6e6e6;
-    color: #777;
-}
-
-.m-report-form-page .m-form-submit {
-    background: #542aa3;
-}
-
-/* Disabled-look state (class, not HTML disabled — click still fires to show inline errors) */
-.m-report-form-page .m-form-submit.disabled {
-    background: rgba(84, 42, 163, 0.2);
-    color: #fff;
-    opacity: 1;
-}
-
-/* Section title override: Figma 848:18955 specifies 18px semi-bold */
-.m-report-form-page .m-form-section-title {
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-}
-
+/* 카테고리 칩 — Figma 302:16896: x18, 가로 8/세로 11, 칩은 전역 .m-cat-chip (h33 r20 #e6e6e6 16px) */
 .m-rcat-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin: 0 0 16px;
-}
-
-.m-rcat-chips .m-cat-chip {
-    /* Figma 0:12713 — 회색 채움(#eee), 무테, border-radius 20px */
-    background: #eee;
-    border: none;
-    padding: 7px 14px;
-    font-size: 14px;
+    column-gap: 8px;
+    row-gap: 11px;
+    margin: 0 0 20px -2px; /* Figma: 칩끝(623)→드롭다운(643) 20 */
 }
 
 .m-rcat-chips .m-cat-chip.on {
     background: #542aa3;
     color: #fff;
-    font-weight: 600;
+    font-weight: 700;
 }
 
+/* 드롭다운 행 — Figma 302:16882: 박스 176x55 r15, 접미사 gap 8, 행간 10 */
 .m-row-with-suffix {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 8px;
+    margin-bottom: 10px;
 }
 
 .m-select {
-    flex: 0 0 60%;
+    flex: 0 0 176px;
+    width: 176px;
     height: 55px;
     border: 1px solid #dcdcdc;
     border-radius: 15px;
-    padding: 0 14px;
+    padding: 0 40px 0 17px;
     font-size: 16px;
+    letter-spacing: -0.04em;
     font-family: inherit;
     background: #fff;
     appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='8' viewBox='0 0 24 12' fill='none' stroke='%231a1a1b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='0 0 12 12 24 0'/></svg>");
+    /* Figma 302:16885 export — 17.5x10 회색 셰브론, 우측 14 */
+    background-image: url('/figma-assets/mobile-report/select_chevron.png');
     background-repeat: no-repeat;
     background-position: right 14px center;
-    color: #1a1a1b;
+    background-size: 17.5px 10.25px;
+    color: #111111;
+    box-sizing: border-box;
 }
 
-.m-select:invalid { color: #b0b0b0; }
-.m-select option[value=""] { color: #b0b0b0; }
-.m-select option { color: #1a1a1b; }
+.m-select:invalid { color: #a6a6a6; }
+.m-select option[value=""] { color: #a6a6a6; }
+.m-select option { color: #111111; }
 
+/* Figma 302:16884: 16/400 #111 */
 .m-row-suffix {
     font-size: 16px;
     font-weight: 400;
-    color: #1a1a1b;
+    letter-spacing: -0.04em;
+    color: #111111;
     flex-shrink: 0;
 }
 
+/* 상세설명 — Figma 302:16894: 345x55 r15, 위 10 */
 .m-row-input {
-    width: 100%;
+    width: calc(100% - 8px);
     height: 55px;
     border: 1px solid #dcdcdc;
     border-radius: 15px;
-    padding: 0 14px;
+    padding: 0 17px;
     font-size: 16px;
+    letter-spacing: -0.04em;
     font-family: inherit;
     outline: none;
     background: #fff;
     box-sizing: border-box;
 }
 
+.m-row-input::placeholder { color: #a6a6a6; }
 .m-row-input:focus { border-color: #542aa3; }
 
-/* Figma 오류멘트: 미충족 필드 인라인 에러 — 보라 계열 */
-.m-form-error-msg {
+/* 하단 버튼 — Figma 302:16478: 작성완료 #542aa3, disabled 20% */
+.m-report-form-page .m-form-submit {
+    background: #542aa3;
+}
+
+.m-report-form-page .m-form-submit.disabled {
+    background: rgba(84, 42, 163, 0.2);
+    color: #fff;
+    opacity: 1;
+}
+
+/* Figma 오류멘트: 미충족 필드 인라인 에러 — 보라 계열 (제보 페이지 스코프) */
+.m-report-form-page .m-form-error-msg {
     margin: 6px 2px 0;
     font-size: 13px;
     color: #542aa3;
@@ -170,35 +189,23 @@
     border-color: #542aa3;
 }
 
-/* Draft / leave modal: override proposal pink to report purple (Figma 215:11799) */
+/* 모달 — 제보 보라 오버라이드 */
 .m-report-form-page .m-draft-btn-primary {
     background: #542aa3;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(84, 42, 163, 0.25);
 }
 
-.m-report-form-page .m-draft-btn-ghost {
+.m-report-form-page .m-draft-btn-tint {
     background: rgba(84, 42, 163, 0.2);
     color: #542aa3;
 }
 
-/* Location picker confirm button — report purple */
-.m-loc-picker-confirm {
-    width: calc(100% - 40px);
-    margin: 0 20px 32px;
-    height: 59px;
+/* 위치 피커 — 제보: 확인 버튼 보라 (Figma 302:17190) */
+.m-report-form-page .m-loc-picker-confirm {
     background: #542aa3;
-    color: #fff;
-    border: none;
-    border-radius: 15px;
-    font-size: 18px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    letter-spacing: -0.02em;
 }
 
-.m-loc-picker-confirm:disabled {
+.m-report-form-page .m-loc-picker-confirm:disabled {
     background: rgba(84, 42, 163, 0.2);
     color: #fff;
 }

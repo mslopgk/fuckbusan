@@ -13,12 +13,12 @@
     text-align: center;
 }
 
-/* Illustration container — scroll + check circle layered */
+/* Illustration container — scroll + check circle layered. Figma 302:18629: 일러(끝 351)→타이틀(378) 27 */
 .m-prop-done-illus {
     position: relative;
     width: 132px;
     height: 132px;
-    margin-bottom: 28px;
+    margin-bottom: 27px;
     flex-shrink: 0;
 }
 
@@ -38,29 +38,32 @@
     top: 26px;
 }
 
+/* Figma 302:18632: 24/700 lh34, 타이틀끝(446)→버튼(463) 17 */
 .m-prop-done-title {
     font-size: 24px;
     font-weight: 700;
     color: #242424;
-    margin: 0 0 36px;
-    line-height: 1.4;
+    margin: 0 0 17px;
+    line-height: 34px;
     letter-spacing: -0.04em;
     text-align: center;
 }
 
+/* Figma: 버튼 291x59, 간격 8 (522→530) */
 .m-prop-done-actions {
     width: 291px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
+/* Figma 302:18633: #f74e7e, 18/700 */
 .m-prop-done-primary {
     height: 59px;
     border-radius: 15px;
     border: none;
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
     font-family: inherit;
     letter-spacing: -0.04em;
@@ -68,6 +71,7 @@
     color: #fff;
 }
 
+/* Figma 302:18634: #ffdde7 / #f74e7e 16/600 */
 .m-prop-done-secondary {
     height: 59px;
     border-radius: 15px;
@@ -77,6 +81,6 @@
     cursor: pointer;
     font-family: inherit;
     letter-spacing: -0.04em;
-    background: #fce4ed;
+    background: #ffdde7;
     color: #f74e7e;
 }

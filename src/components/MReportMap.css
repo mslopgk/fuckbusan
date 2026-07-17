@@ -1,46 +1,24 @@
-/* MReportMap — 제보 지도 뷰 (Figma 215:10932 WDC) */
-/* Brand: #542aa3 (purple), matches WDC Figma spec */
+/* MReportMap — 제보 지도 뷰 (Figma 302:15671 WDC) */
+/* Brand: #542aa3 (purple). 베이스 시트 스타일은 MProposalMap.css 공유 */
 
 /* Page container override for report brand */
 .m-rmap-page {
     background: #f7f7f8;
 }
 
-/* Region button inside the sheet (button variant of m-sheet-region) */
-.m-sheet-region-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 18px;
-    font-weight: 800;
-    color: #1a1a1b;
-    letter-spacing: -0.02em;
-    padding: 4px 0;
-}
-
-.m-sheet-region-btn .m-region-arrow {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #542aa3;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* FAB: always visible (not scoped inside expanded sheet) */
+/* FAB — Figma 302:15779: 98x36 r20 (276,711) → right 19, bottom 105 (nav76+29) */
 .m-rmap-fab {
     position: fixed;
-    right: 16px;
-    bottom: 88px; /* above MobileBottomNav (≈76px) + gap */
+    right: 19px;
+    bottom: 105px;
     z-index: 60;
     background: #542aa3;
-    box-shadow: 0 4px 16px rgba(84, 42, 163, 0.25);
+    box-shadow: 0 6px 18px rgba(84, 42, 163, 0.25);
     /* m-prop-fab base styles handle the rest */
+}
+
+.m-rmap-fab:active {
+    box-shadow: 0 3px 10px rgba(84, 42, 163, 0.25);
 }
 
 /* Override chip active color to report purple */
@@ -51,7 +29,7 @@
 }
 
 /* Region pill arrow circle: report purple */
-.m-rmap-page .m-sheet-region-btn .m-region-arrow {
+.m-rmap-page .m-region-arrow {
     background: #542aa3;
 }
 
@@ -63,8 +41,9 @@
 }
 
 /* 2-state sheet heights (peek/half). full은 별도 list 페이지로 navigate */
+/* Figma 302:15671: 시트 top 433 → 852-433-nav76 = 343 */
 .m-rmap-page.sheet-peek .m-map-sheet { height: 80px; overflow: hidden; }
-.m-rmap-page.sheet-half .m-map-sheet { height: 48vh; overflow: hidden; }
+.m-rmap-page.sheet-half .m-map-sheet { height: 343px; overflow: hidden; }
 
 /* iOS-like spring + GPU 가속 (m-map-sheet 기본 transition은 MProposalMap.css에서 정의) */
 .m-rmap-page .m-map-sheet {
@@ -75,11 +54,6 @@
 
 .m-rmap-page .m-map-sheet.dragging {
     transition: none;
-}
-
-/* Figma 269:21250 — 카테고리 칩 간격 8px */
-.m-rmap-page .m-sheet-chips {
-    gap: 8px;
 }
 
 /* peek: 칩 1행 가로 스크롤 */
@@ -95,25 +69,17 @@
     overflow-x: visible;
 }
 
+/* 내 위치 버튼 — Figma 302:15676: 아이콘 24x24 right 18, 시트 위 (터치 타깃 44px) */
+.m-rmap-page.sheet-peek .m-locate-fab { bottom: 164px; } /* 76 + 80 + 8 */
+.m-rmap-page.sheet-half .m-locate-fab { bottom: 427px; } /* 76 + 343 + 8 */
 
-/* 내 위치 FAB — 시트 바로 위 지도 영역 우하단 */
-/* Figma 0:12150 — 배경 없는 크로스헤어 아이콘 (터치 타깃 44px 유지) */
-.m-locate-fab {
-    position: fixed;
-    right: 8px;
-    z-index: 40;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: bottom 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
-    filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.9));
+/* 위치설정 모달 — 제보 보라 테마 (Figma 302:16191) */
+.m-rmap-page .m-modal-confirm {
+    background: #542aa3;
+    box-shadow: 0 4px 12px rgba(84, 42, 163, 0.25);
 }
 
-.m-rmap-page.sheet-peek .m-locate-fab { bottom: 172px; }
-.m-rmap-page.sheet-half .m-locate-fab { bottom: calc(48vh + 92px); }
+.m-rmap-page .m-region-item.on,
+.m-rmap-page .m-sort-item.on {
+    color: #542aa3;
+}

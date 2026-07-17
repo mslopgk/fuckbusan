@@ -5,13 +5,13 @@
     background: #f7f7f8;
 }
 
-/* 맵 페이지 뒤로가기 버튼 — Figma: standalone at left:20, top:25 */
-.m-prop-map-back {
+/* 맵 페이지 뒤로가기 버튼 — Figma 302:15671: standalone 24x24 at (20,25) */
+.m-map-back-float {
     position: absolute;
     left: 20px;
-    top: 17px;
-    width: 34px;
-    height: 34px;
+    top: 25px;
+    width: 24px;
+    height: 24px;
     background: none;
     border: none;
     cursor: pointer;
@@ -34,16 +34,9 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
     display: flex;
     align-items: center;
-    padding: 0 16px;
+    padding: 0 14px; /* Figma: 텍스트 x77 = bar left 63 + 14 */
     gap: 8px;
     z-index: 50;
-}
-
-.m-map-back {
-    background: none;
-    border: none;
-    padding: 4px;
-    cursor: pointer;
 }
 
 .m-map-search {
@@ -103,15 +96,16 @@
     overflow: hidden;
 }
 
+/* Figma 302:15671: 시트 top 433 → 852-433-nav76 = 343 */
 .m-map-sheet[data-snap="mid"] {
-    height: 48vh;
+    height: 343px;
     overflow: hidden;
 }
 
-/* ─── 드래그 핸들 영역 ─── */
+/* ─── 드래그 핸들 영역 ─── Figma: 핸들 18x12 at 시트 top+16 */
 .m-sheet-grab {
     flex-shrink: 0;
-    padding: 10px 0 4px;
+    padding: 16px 0 0;
     display: flex;
     justify-content: center;
     cursor: grab;
@@ -122,10 +116,9 @@
 .m-sheet-grab:active { cursor: grabbing; }
 
 .m-sheet-handle {
-    width: 40px;
-    height: 4px;
-    background: #d8d8d8;
-    border-radius: 100px;
+    width: 18px;
+    height: 12px;
+    display: block;
 }
 
 /* ─── 스크롤 콘텐츠 영역 ─── */
@@ -136,21 +129,22 @@
     -webkit-overflow-scrolling: touch;
 }
 
-/* 지역 행 */
+/* 지역 행 — Figma 302:15671: 타이틀 y471 (핸들끝 461 + 10), 22/700 lh31 */
 .m-sheet-region-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px 20px 8px;
+    padding: 10px 20px 0;
 }
 
-/* Figma: font-size 22px bold */
+/* Figma: 22px/700 #242424, 화살표 원 24x24 gap 8 */
 .m-sheet-region-btn {
     background: none;
     border: none;
-    padding: 4px 0;
+    padding: 0;
     font-size: 22px;
     font-weight: 700;
+    line-height: 1.4;
     color: #242424;
     cursor: pointer;
     font-family: inherit;
@@ -160,26 +154,13 @@
     letter-spacing: -0.04em;
 }
 
-/* 목록 펼치기 아이콘 버튼 */
-.m-sheet-list-btn {
-    background: #fff;
-    border: 1px solid #ececec;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-/* ─── 카테고리 칩 ─── */
+/* ─── 카테고리 칩 ─── Figma: 칩 top 522 (타이틀끝 502 + 20), 가로 8 세로 11 */
 .m-sheet-chips {
-    padding: 4px 20px 12px;
+    padding: 20px 20px 0;
     background: #fff;
     display: flex;
-    gap: 6px;
+    column-gap: 8px;
+    row-gap: 11px;
 }
 
 /* collapsed: 가로 스크롤 1행 */
@@ -220,15 +201,16 @@
     filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.9));
 }
 
-.m-locate-fab[data-snap="collapsed"] { bottom: 172px; }
-.m-locate-fab[data-snap="mid"]       { bottom: calc(48vh + 92px); }
+/* Figma 302:17596: 아이콘 24x24 right 18, 시트 top 18px 위 */
+.m-locate-fab[data-snap="collapsed"] { bottom: 164px; } /* 76 + 80 + 8 */
+.m-locate-fab[data-snap="mid"]       { bottom: 427px; } /* 76 + 343 + 8 */
 
-/* 카드 목록 */
+/* 카드 목록 — Figma: 카드 x18 353x117, 칩끝 599 → 카드 617 (18), 카드간 13 */
 .m-sheet-cards {
     list-style: none;
     margin: 0;
-    padding: 0 20px 80px;
+    padding: 18px 18px 80px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 13px;
 }
