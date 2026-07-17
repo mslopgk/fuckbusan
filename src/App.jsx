@@ -112,6 +112,7 @@ const PCAICitizen = lazy(() => import('./components/PCAICitizen'));
 const PCPublicData = lazy(() => import('./components/PCPublicData'));
 const MAICitizen = lazy(() => import('./components/MAICitizen'));
 const MAICitizenDetail = lazy(() => import('./components/MAICitizenDetail'));
+const MPublicData = lazy(() => import('./components/MPublicData'));
 
 // USER 04/01 업데이트 — 마이페이지 제보 (Figma node 830:4381)
 const MMyReportDetail = lazy(() => import('./components/MMyReportDetail'));
@@ -735,6 +736,8 @@ function App() {
             setView('pcAICitizen');
         } else if (target === 'pcPublicData') {
             setView('pcPublicData');
+        } else if (target === 'mPublicData') {
+            setView('mPublicData');
         } else if (target === 'mAICitizen') {
             setView('mAICitizen');
         } else if (target === 'mAICitizenDetail') {
@@ -1552,6 +1555,7 @@ function App() {
                         resultId={selectedReport?.id || null}
                         big={selectedReport?.big || null}
                         mid={selectedReport?.mid || null}
+                        target={selectedReport?.target || null}
                     />
                 )}
                 {view === 'mDiagnosisDone' && (
@@ -1565,6 +1569,9 @@ function App() {
                 )}
                 {view === 'mAICitizen' && (
                     <MAICitizen onNavigate={(target, data) => onNavigate(target, data)} />
+                )}
+                {view === 'mPublicData' && (
+                    <MPublicData onNavigate={(target, data) => onNavigate(target, data)} />
                 )}
                 {view === 'mAICitizenDetail' && (
                     <MAICitizenDetail citizen={selectedReport} onNavigate={(target, data) => onNavigate(target, data)} />

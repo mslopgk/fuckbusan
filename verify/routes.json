@@ -20,7 +20,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pch2-hero",
-      "viewport": { "width": 1280, "height": 900 },
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
       "assertions": []
     },
     {
@@ -43,7 +46,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pcauth",
-      "viewport": { "width": 1280, "height": 900 }
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
     },
     {
       "id": "pcSignup",
@@ -51,7 +57,10 @@
       "path": "/",
       "auth": false,
       "waitFor": ".pcauth",
-      "viewport": { "width": 1280, "height": 900 }
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
     },
     {
       "id": "report",
@@ -777,22 +786,29 @@
       "waitFor": ".m-ai-citizen"
     },
     {
+      "id": "mPublicData",
+      "view": "mPublicData",
+      "path": "/",
+      "auth": false,
+      "waitFor": ".mpubd"
+    },
+    {
       "id": "mAICitizenDetail",
       "view": "mAICitizenDetail",
       "path": "/",
       "auth": false,
-      "waitFor": ".m-ai-detail",
+      "waitFor": ".mdet",
       "sessionSeed": {
         "selectedReport": {
-          "id": 1,
-          "name": "이서연",
-          "age": 22,
-          "district": "해운대구",
-          "gender": "여성",
+          "id": 44,
+          "name": "박철수",
+          "age": 45,
+          "district": "강서구",
+          "gender": "남성",
           "tags": [
-            "#대학생",
-            "#카페탐방러",
-            "#야간도보족"
+            "#골목안전",
+            "#보행환경",
+            "#소기업경영"
           ]
         }
       }

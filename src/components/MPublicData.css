@@ -1,0 +1,423 @@
+/* 모바일 공공데이터 — Figma TCuOzEqNhoLKjhF0reBDks 302:21475 실측.
+   폭 393 기준 실측값: 시트 top 438 / 상단 r30 / 칩 h33 r20 / 카드 105x97 r20 stroke #ddd
+   타이틀 22 Bold #242424 ls-0.88 / 칩 16 #242424 ls-0.64 / 카드라벨 14 #333 / 값 16 Bold #23bdbb */
+
+.mpubd {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    overflow: hidden;
+    font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+}
+
+/* ── 지도 (상단, 시트 뒤) ── */
+.mpubd-map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 482px; /* Figma 지도 Group 세로중심 241.5 정합 */
+    overflow: hidden;
+}
+.mpubd-map-tr {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.35s ease;
+    transform-origin: center center;
+    will-change: transform;
+}
+
+/* 구별 값 버블 — Figma Ellipse 100/64/46 #d9d9d9, 값 20/16 Regular #000 */
+.mpubd-bubble {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    border: none;
+    border-radius: 50%;
+    background: #d9d9d9;
+    color: #000;
+    font-family: inherit;
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    z-index: 3;
+    transition: left 0.35s ease, top 0.35s ease;
+}
+.mpubd-bubble.selected {
+    background: #fff;
+    color: #23bdbb;
+    font-weight: 700;
+}
+
+/* 뒤로가기 — Figma (20,24) 24px */
+.mpubd-back {
+    position: absolute;
+    left: 20px;
+    top: 24px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    z-index: 5;
+}
+.mpubd-back img { width: 24px; height: 24px; display: block; }
+
+/* ── 바텀시트 ── */
+.mpubd-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 438px; /* Figma Rectangle 11 y=438 */
+    bottom: 0;
+    background: #fff;
+    border-radius: 30px 30px 0 0; /* f01b 렌더 실측 r≈30 */
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    z-index: 4;
+    transition: top 0.3s ease, border-radius 0.3s ease;
+}
+.mpubd-sheet.full {
+    top: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* 헤더 (하프: 그래버12 + 타이틀33 + 위치52 / 풀: back24 + 타이틀76) */
+.mpubd-head {
+    position: relative;
+    flex: none;
+    padding: 8px 20px 0; /* 그래버 이미지 y=12 (8+pad4) */
+    touch-action: none;
+}
+.mpubd-grabber {
+    display: block;
+    margin: 0 auto;
+    padding: 4px 12px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+.mpubd-grabber img { width: 18px; height: 12px; display: block; }
+.mpubd-head .mpubd-title-row { margin-top: 5px; } /* 타이틀 y=33 (12+16+5) */
+
+.mpubd-head.is-full { padding: 24px 20px 0; touch-action: auto; }
+.mpubd-back.in-sheet { position: static; display: block; }
+.mpubd-head.is-full .mpubd-title-row { margin-top: 28px; } /* 타이틀 y=76 (24+24+28) */
+
+.mpubd-title-row {
+    display: flex;
+    align-items: center;
+}
+.mpubd-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 30.8px;
+    letter-spacing: -0.88px;
+    color: #242424;
+}
+.mpubd-title-btn {
+    margin-left: 11px; /* Figma: 타이틀 끝 +11~12 */
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+.mpubd-title-btn img { width: 24px; height: 24px; display: block; }
+
+.mpubd-locate {
+    position: absolute;
+    right: 18px; /* Figma x=351 (393-351-24) */
+    top: 52px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+.mpubd-locate img { width: 24px; height: 24px; display: block; }
+
+/* ── 생활정보 칩 — Figma 2행: y=84/128, h33, gap8, r20, bg #e6e6e6 ── */
+.mpubd-chips {
+    flex: none;
+    padding: 20px 20px 0; /* 타이틀 하단(63.8) +20 → 칩 y=84 (Figma 21485) */
+    display: flex;
+    flex-direction: column;
+    gap: 11px; /* 84+33=117 → 128 */
+}
+.mpubd-chip-row {
+    display: flex;
+    gap: 8px;
+}
+/* 칩 폭 — Figma 실측 고정 (전체~안전·교육 57 / 산업·일자리 104 / 문화·여가·보건·복지 89)
+   row2 총폭 363: Figma도 우측 여백 10px까지 침범 — shrink 금지로 실측 유지 */
+.mpubd-chip-row .mpubd-chip { flex: none; width: 57px; padding: 0; text-align: center; }
+.mpubd-chip-row:nth-child(2) .mpubd-chip:nth-child(2) { width: 104px; }
+.mpubd-chip-row:nth-child(2) .mpubd-chip:nth-child(3),
+.mpubd-chip-row:nth-child(2) .mpubd-chip:nth-child(4) { width: 89px; }
+.mpubd-chip {
+    height: 33px;
+    border: none;
+    border-radius: 20px;
+    background: #e6e6e6;
+    color: #242424;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 22.4px;
+    letter-spacing: -0.64px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.mpubd-chip.active {
+    background: #23bdbb;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ── 본문 스크롤 ── */
+.mpubd-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px 22px 100px; /* 칩 하단 161 → 섹션타이틀 191 (gap 30) */
+    -webkit-overflow-scrolling: touch;
+}
+
+.mpubd-section-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+.mpubd-section-head h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 28px;
+    letter-spacing: -0.8px;
+    color: #111;
+}
+.mpubd-sort {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    margin-top: 3px; /* Figma 가나다순 y+3 */
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 19.6px;
+    letter-spacing: -0.56px;
+    color: #111;
+    cursor: pointer;
+}
+.mpubd-sort img { width: 14px; height: 8px; display: block; }
+
+/* ── KPI 카드 그리드 — 105x97 r20 stroke #ddd, 3열 gap17, 섹션타이틀 +41 ── */
+.mpubd-grid {
+    margin-top: 13px; /* 타이틀 lh28 + 13 = 카드 y41 */
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 17px;
+}
+.mpubd-card {
+    position: relative;
+    min-width: 0;
+    height: 97px;
+    padding: 9px 2px 5px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: inherit;
+    cursor: pointer;
+}
+.mpubd-card.selected {
+    border: 1.5px solid #23bdbb;
+}
+/* 학생의 학교생활 만족도(%) — Figma 유일 와이드 카드(175px, 2칸 걸침) */
+.mpubd-card.wide {
+    grid-column: span 2;
+    width: 175px;
+    justify-self: start;
+}
+.mpubd-card-label {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 19.6px;
+    letter-spacing: -0.56px;
+    color: #333;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mpubd-card-icon {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+}
+.mpubd-card-icon img { display: block; }
+.mpubd-card-val {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22.4px;
+    letter-spacing: -0.64px;
+    color: #23bdbb;
+}
+.mpubd-card-val.na {
+    font-size: 12px;
+    font-weight: 400;
+    color: #aaa;
+    letter-spacing: -0.4px;
+}
+
+/* ── 구분 밴드 — Figma Rectangle 346: h10 #f4f4f4 full-bleed ── */
+.mpubd-divider {
+    height: 10px;
+    background: #f4f4f4;
+    margin: 22px -22px 0;
+}
+
+/* ── 지표 상세 — Figma _02/_03 ── */
+.mpubd-detail { padding-top: 20px; }
+.mpubd-detail-head {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.mpubd-detail-head h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 28px;
+    letter-spacing: -0.8px;
+    color: #111;
+}
+.mpubd-detail-unit {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #777;
+}
+
+.mpubd-detail-block { margin-top: 24px; } /* 타이틀 h28 + 24 = 연도행 +52 */
+.mpubd-detail-year {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 19px;
+    color: #333;
+}
+.mpubd-detail-year em {
+    font-style: normal;
+    color: #23bdbb;
+}
+.mpubd-detail-bar {
+    margin-top: 13px;
+    height: 10px;
+    border-radius: 20px;
+    background: #eee;
+    overflow: hidden;
+}
+.mpubd-detail-bar i {
+    display: block;
+    height: 100%;
+    border-radius: 20px;
+    background: #23bdbb;
+}
+.mpubd-detail-range {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #777;
+}
+.mpubd-detail-note {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: #999;
+}
+
+.mpubd-detail-block.is-empty { margin-top: 24px; }
+.mpubd-detail-na {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #999;
+}
+.mpubd-detail-sub {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #bbb;
+}
+
+.mpubd-detail-foot {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 13px;
+}
+.mpubd-detail-updated {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #777;
+}
+.mpubd-detail-dl {
+    width: 80px;
+    height: 39px;
+    border: none;
+    border-radius: 20px;
+    background: #23bdbb;
+    color: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.64px;
+    cursor: pointer;
+}
+.mpubd-detail-dl:disabled {
+    background: #d9d9d9;
+    cursor: default;
+}
+
+/* ── BusanMap 페이지 스코프 오버라이드 (공유 컴포넌트 파일은 미수정) ──
+   Figma 모바일 기본 지도 라벨 7.46px (줌 3.28x 시 선택 라벨 30px SemiBold) */
+.mpubd .busanmap-label {
+    font-size: 7.5px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+}
+.mpubd .busanmap-district.selected .busanmap-label {
+    font-size: 9px;
+    font-weight: 600;
+}
+/* 스트로크는 CSS transform 줌에 같이 굵어지므로 줌 역보정 (JSX --mpubd-stroke) */
+.mpubd .busanmap-shape svg path {
+    stroke-width: var(--mpubd-stroke, 1.3px);
+}
+/* 버블 상태 구명 라벨 — Figma f01d: 20px Bold #242424 (줌 3.0 × 7.5px 기준 보정) */
+.mpubd.has-bubbles .busanmap-label {
+    font-weight: 700;
+    color: #242424;
+}
+
+/* PC 진입 차단 없음 — 모바일 전용 뷰지만 데스크탑 검증 시에도 그대로 렌더 */
