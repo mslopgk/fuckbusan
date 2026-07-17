@@ -101,6 +101,7 @@ export default function PCReportMap({ onNavigate }) {
                         onToggleSidebar={() => setSidebarOpen((v) => !v)}
                         sidebarOpen={sidebarOpen}
                         accent="#f74e7e"
+                        showPerson={false}
                     />
 
                     {policyItem && (

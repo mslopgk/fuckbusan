@@ -130,6 +130,7 @@ export default function PCProposeMap({ onNavigate }) {
                         onToggleSidebar={() => setSidebarOpen((v) => !v)}
                         sidebarOpen={sidebarOpen}
                         accent="#f74e7e"
+                        showPerson={false}
                     />
 
                     {/* Floating policy info card */}
