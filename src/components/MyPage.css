@@ -54,7 +54,7 @@
     letter-spacing: -0.02em;
     color: #242424;
     margin: 0;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
 }
 
 /* 카드 래퍼 — PC에서 테두리+둥근 카드 */
@@ -191,7 +191,7 @@
     font-weight: 700;
     letter-spacing: -0.72px;
     cursor: pointer;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     transition: background 0.18s;
 }
 

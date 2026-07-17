@@ -5,7 +5,7 @@
     background: #fff;
     padding-bottom: 92px;
     color: #242424;
-    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
 }
 
 /* ───── 상단 네비 바 ───── */
@@ -247,14 +247,14 @@
 .m-diagres-tick-label {
     fill: #555;
     font-size: 10px;
-    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
 }
 
 .m-diagres-tick-value {
     fill: #242424;
     font-size: 11px;
     font-weight: 700;
-    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
 }
 
 /* ───── 좋아요·댓글 섹션 — Figma 22:6387 ───── */

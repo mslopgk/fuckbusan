@@ -4,7 +4,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     position: relative;
     background-color: #fff;
     max-width: 1280px;
@@ -121,7 +121,7 @@
     padding: 16px;
     font-size: 1.15rem;
     font-weight: bold;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     cursor: pointer;
 }
 
@@ -134,7 +134,7 @@
     padding: 16px;
     font-size: 1.15rem;
     font-weight: bold;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(22, 181, 176, 0.2);
 }

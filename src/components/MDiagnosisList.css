@@ -6,7 +6,7 @@
     height: 100dvh;
     overflow: hidden;
     background: #fff;
-    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
     color: #242424;
 }
 
@@ -533,7 +533,7 @@
     padding-bottom: 100px;
     display: flex;
     flex-direction: column;
-    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
 }
 
 .m-diag-list-topbar {

@@ -40,7 +40,7 @@
     color: #E6235A;
     margin: 0;
     line-height: 1;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
 }
 
 .progress-bar-container {
@@ -62,7 +62,7 @@
     font-weight: 800;
     color: #242424;
     margin-bottom: 12px;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
 }
 
 /* Legacy styles kept below if needed, but overridden by above structure */

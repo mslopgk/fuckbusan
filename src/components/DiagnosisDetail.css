@@ -24,7 +24,7 @@
 }
 
 .header-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 800;
     font-size: 1.25rem;
     color: #333;
@@ -38,7 +38,7 @@
 }
 
 .detail-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 900;
     font-size: 1.75rem;
     margin-bottom: 0.75rem;
@@ -58,7 +58,7 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 900;
     font-size: 1.375rem;
     color: #242424;
@@ -103,7 +103,7 @@
 .detail-title-header {
     display: flex;
     align-items: center;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 900;
     font-size: 1.75rem;
     cursor: pointer;
@@ -159,7 +159,7 @@
     /* changed from inline-block to block to stack */
     width: fit-content;
     cursor: pointer;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 800;
     font-size: 1.375rem;
     margin-bottom: 1.875rem;
@@ -209,7 +209,7 @@
 }
 
 .detail-main-category {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 900;
     font-size: 1.25rem;
     text-decoration: underline;
@@ -247,7 +247,7 @@
 }
 
 .detail-card-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.25rem;
     font-weight: 700;
     margin-bottom: 1.25rem;
@@ -260,7 +260,7 @@
 }
 
 .middle-cat-header {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.25rem;
     font-weight: 900;
     margin-bottom: 1.25rem;

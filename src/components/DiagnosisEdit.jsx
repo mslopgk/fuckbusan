@@ -301,7 +301,7 @@ const DiagnosisEdit = ({ data, onBack, onComplete }) => {
                 {currentQuestions.map((qText, idx) => (
                     <div className="question-item" key={idx} style={{ marginBottom: '48px' }}>
                         <h3 className="question-text" style={{
-                            fontFamily: 'GmarketSans, sans-serif',
+                            fontFamily: 'Pretendard Variable, sans-serif',
                             fontWeight: 300,
                             display: 'flex',
                             alignItems: 'flex-start',

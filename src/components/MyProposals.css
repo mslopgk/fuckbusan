@@ -8,7 +8,7 @@
     flex-direction: column;
     min-height: 100vh;
     background: #fff;
-    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     overflow-x: hidden;
 }
 
@@ -226,7 +226,7 @@
     /* PC 제목 */
     .mp-pc-title {
         display: block;
-        font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+        font-family: 'Pretendard Variable', sans-serif;
         font-size: 30px;
         font-weight: 700;
         color: #000;

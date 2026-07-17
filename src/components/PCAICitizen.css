@@ -1168,7 +1168,7 @@
     background: rgba(0,0,0,0.45);
     display: flex; align-items: center; justify-content: center;
     animation: aic-fade 0.18s ease-out;
-    font-family: 'Pretendard', 'Pretendard Variable', 'Noto Sans KR', sans-serif; letter-spacing: -0.4px;
+    font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; letter-spacing: -0.4px;
     color: #111111;
 }
 @keyframes aic-fade { from { opacity: 0; } to { opacity: 1; } }

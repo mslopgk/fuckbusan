@@ -37,7 +37,7 @@
     /* Pink color */
     margin: 0;
     line-height: 1;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     /* Explicitly use GmarketSans as per request context if needed, or inherit */
 }
 
@@ -70,7 +70,7 @@
     /* Match BigCategory .title */
     color: #242424;
     margin-bottom: 0.75rem;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     /* Applied GmarketSans */
 }
 

@@ -106,7 +106,7 @@ const ExpertDiagnosisDetail = ({ type, data, onBack, onHome, onDetailFacility, o
                         <polyline points="12 19 5 12 12 5"></polyline>
                     </svg>
                 </button>
-                <div style={{ fontSize: '16px', fontWeight: 'bold', fontFamily: 'GmarketSans, sans-serif' }}>전문가 진단 결과</div>
+                <div style={{ fontSize: '16px', fontWeight: 'bold', fontFamily: 'Pretendard Variable, sans-serif' }}>전문가 진단 결과</div>
                 <button className="icon-btn" onClick={onHome}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>

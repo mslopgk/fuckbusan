@@ -136,7 +136,7 @@ const InteractiveMap = ({ defaultDistrict = null, selectedDistrict: controlledDi
                         border: none !important;
                         box-shadow: none !important;
                         color: #1a1a1a !important;
-                        font-family: 'GmarketSans', sans-serif !important;
+                        font-family: 'Pretendard Variable', sans-serif !important;
                         font-weight: 500 !important;
                         font-size: ${isMobile ? '4px' : '13px'} !important;
                         text-shadow: 0px 0px 4px #fff, 0px 0px 4px #fff !important;

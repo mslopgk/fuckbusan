@@ -37,7 +37,7 @@
 }
 
 .expert-page-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 500;
     font-size: 1.75rem;
     color: #542AA3;
@@ -50,7 +50,7 @@
 }
 
 .expert-address {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
     font-size: 1.375rem;
     color: #333;
@@ -72,7 +72,7 @@
 }
 
 .card-main-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 500;
     font-size: 1.25rem;
     color: #333;
@@ -127,7 +127,7 @@
 }
 
 .stat-value {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.25rem;
     font-weight: 500;
     color: #242424;
@@ -135,7 +135,7 @@
 
 /* Detail Section */
 .detail-section-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 500;
     font-size: 1.375rem;
     color: #242424;
@@ -161,7 +161,7 @@
 }
 
 .detail-card-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 500;
     font-size: 1.25rem;
     color: #333;
@@ -180,7 +180,7 @@
     border-radius: 1.5rem;
     font-size: 0.875rem;
     font-weight: 500;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     cursor: pointer;
     display: flex;
     align-items: center;

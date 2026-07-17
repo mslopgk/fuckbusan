@@ -15,7 +15,7 @@
 }
 
 .page-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.75rem;
     font-weight: 900;
     color: #E6235A;
@@ -60,7 +60,7 @@
     font-size: 14px;
     font-weight: 500;
     color: #242424;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     letter-spacing: -0.56px;
 }
 
@@ -77,14 +77,14 @@
     font-weight: 700;
     color: #242424;
     font-size: 20px;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     letter-spacing: -0.8px;
 }
 
 .name-suffix {
     font-size: 20px;
     color: #242424;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
 }
 
@@ -203,7 +203,7 @@
     font-size: 0.875rem;
     font-weight: 300;
     border: 0.0625rem solid;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -271,7 +271,7 @@
     font-weight: 700;
     color: #242424;
     margin-bottom: 0;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     letter-spacing: -0.64px;
     line-height: 1.4;
 }
@@ -281,7 +281,7 @@
     font-weight: 700;
     color: #242424;
     margin-bottom: 0;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     letter-spacing: -0.96px;
     line-height: 1.4;
 }
@@ -290,7 +290,7 @@
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 0;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     letter-spacing: -0.96px;
     line-height: 1.4;
 }

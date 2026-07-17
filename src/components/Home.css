@@ -21,7 +21,7 @@
 }
 
 .logo-text {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: bold;
     font-size: 1.25rem;
     display: flex;
@@ -55,7 +55,7 @@
     border: none;
     padding: 8px 16px;
     cursor: pointer;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1rem;
     color: #333;
 }
@@ -181,7 +181,7 @@
 }
 
 .home-container .card-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.5rem;
     text-align: left;
 }
@@ -296,7 +296,7 @@
 }
 
 .admin-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.25rem;
     font-weight: 800;
     color: #333;
@@ -355,7 +355,7 @@
     font-weight: bold;
     font-size: 1.2rem;
     margin-bottom: 6px;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     display: flex;
     align-items: center;
 }
@@ -371,7 +371,7 @@
 
 /* Stats Section */
 .section-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.8rem;
     font-weight: 700;
     margin-bottom: 12px;
@@ -398,7 +398,7 @@
 }
 
 .stats-header {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.1rem;
     font-weight: 500;
     text-align: center;
@@ -518,7 +518,7 @@
     border-radius: 30px;
     background-color: transparent;
     color: #16B5B0;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 500;
     font-size: 1rem;
     margin-top: 20px;
@@ -573,7 +573,7 @@
 }
 
 .hero-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: clamp(1.6rem, 4vw, 1.6rem);
     /* Tighter limit as requested */
     font-weight: 800;
@@ -751,7 +751,7 @@
 }
 
 .quick-link-text {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.2rem;
     font-weight: 800;
     margin-bottom: 6px;
@@ -811,7 +811,7 @@
 }
 
 .archive-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 800;
     font-size: 1.1rem;
     margin-bottom: 6px;
@@ -838,7 +838,7 @@
     background-color: transparent;
     color: #16B5B0;
     text-align: center;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 500;
     /* Medium */
     cursor: pointer;
@@ -866,7 +866,7 @@
 }
 
 .section-title-sm {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.4rem;
     font-weight: 800;
     color: #333;
@@ -918,7 +918,7 @@
 }
 
 .guide-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.4rem;
     font-weight: 800;
     color: #16B5B0;
@@ -950,7 +950,7 @@
     padding: 10px 20px;
     border-radius: 20px;
     font-size: 0.9rem;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 500;
     /* Medium */
     cursor: pointer;
@@ -1077,7 +1077,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1rem;
 }
 
@@ -1286,7 +1286,7 @@
 }
 
 .citizen-name {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: bold;
     font-size: 1.25rem;
     /* Larger */
@@ -1334,7 +1334,7 @@
     border-radius: 4px;
     font-size: 0.8rem;
     color: #666;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     /* Changed font */
     font-weight: 300;
     /* Light weight */
@@ -1441,7 +1441,7 @@
     .nav-link {
         text-decoration: none;
         color: #333;
-        font-family: 'GmarketSans', sans-serif;
+        font-family: 'Pretendard Variable', sans-serif;
         font-weight: 500;
         font-size: 0.9rem;
         transition: color 0.2s;
@@ -2675,7 +2675,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
 }
 
 .btn-header.login {
@@ -2975,7 +2975,7 @@
         border-radius: 20px;
         background-color: white;
         color: #888;
-        font-family: 'GmarketSans', sans-serif;
+        font-family: 'Pretendard Variable', sans-serif;
         font-size: 0.8rem;
         display: flex;
         /* Removed !important to allow utility classes to work */
@@ -3081,7 +3081,7 @@
         border-radius: 30px !important;
         background-color: transparent !important;
         color: #555 !important;
-        font-family: 'GmarketSans', sans-serif !important;
+        font-family: 'Pretendard Variable', sans-serif !important;
         font-size: 0.9rem !important;
         font-weight: 500 !important;
         cursor: pointer !important;

@@ -22,7 +22,7 @@
 }
 
 .page-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 28px;
     font-weight: 900;
     color: #23BDBB;
@@ -193,7 +193,7 @@
     font-size: 13px;
     font-weight: 300;
     border: 1px solid;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -258,7 +258,7 @@
     font-weight: 800;
     color: #111;
     margin-bottom: 4px;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
 }
 
 .diagnosis-card .card-score-large {
@@ -266,14 +266,14 @@
     font-weight: 900;
     color: #111;
     margin-bottom: 8px;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
 }
 
 .diagnosis-card .card-result {
     font-size: 24px;
     font-weight: 900;
     margin-bottom: 8px;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
 }
 
 .diagnosis-card .card-result.suitable {

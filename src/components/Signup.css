@@ -24,7 +24,7 @@
 }
 
 .signup-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.75rem;
     font-weight: bold;
     color: #16B5B0;
@@ -32,7 +32,7 @@
 }
 
 .signup-subtitle-main {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.375rem;
     font-weight: bold;
     color: #242424;
@@ -105,7 +105,7 @@
     border: none;
     border-radius: 0.5rem;
     cursor: pointer;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     transition: background-color 0.2s;
 }
 
@@ -190,7 +190,7 @@ span.msignup-check {
 
 /* 정보 입력 폼 */
 .msignup-intro { margin: 8px 0 28px; }
-.msignup-intro h1 { font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.8px; color: #242424; line-height: 1.4; word-break: keep-all; }
+.msignup-intro h1 { font-family: 'Pretendard Variable', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.8px; color: #242424; line-height: 1.4; word-break: keep-all; }
 .msignup-intro p { margin-top: 8px; font-size: 14px; color: #777; }
 .msignup-form { display: flex; flex-direction: column; gap: 20px; }
 .msignup .input-group { gap: 8px; }

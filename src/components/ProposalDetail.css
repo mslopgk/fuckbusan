@@ -4,7 +4,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    font-family: 'Pretendard Variable', 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     position: relative;
     background-color: #f8f9fa; /* Slightly grey background to distinguish sections */
     max-width: 1280px;

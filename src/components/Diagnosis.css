@@ -39,7 +39,7 @@
 }
 
 .diagnosis-title {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.25rem;
     font-weight: bold;
     color: #E6235A;
@@ -70,7 +70,7 @@
     border-radius: 6px;
     cursor: pointer;
     white-space: nowrap;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 300;
     /* Light */
 }
@@ -210,7 +210,7 @@
 .panel-address-text {
     font-size: 1.1rem;
     color: #242424;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 500;
     /* Medium */
 }
@@ -243,7 +243,7 @@
     color: #242424;
     margin-top: 17px;
     margin-bottom: 0;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 500;
     /* Medium */
 }
@@ -259,7 +259,7 @@
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(230, 35, 90, 0.3);
     transition: background-color 0.2s;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
     /* Bold */
 }

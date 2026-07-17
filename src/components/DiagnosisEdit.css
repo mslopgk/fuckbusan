@@ -15,7 +15,7 @@
 
 .page-title-purple {
     /* Keeps legacy compatibility if used elsewhere, but mainly replaced */
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.75rem;
     font-weight: 900;
     color: #542AA3;
@@ -23,7 +23,7 @@
 }
 
 .page-title-expert {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.75rem;
     font-weight: 900;
     color: #542AA3;
@@ -32,7 +32,7 @@
 }
 
 .page-title-general {
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-size: 1.75rem;
     font-weight: 900;
     color: #E6235A;

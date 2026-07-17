@@ -2,7 +2,7 @@
    모든 셀렉터는 .aic-report-body 하위로 스코프 — PCAICitizen.css의 구 버전 규칙보다 우선. */
 
 .aic-report-body {
-    font-family: 'Pretendard', 'Pretendard Variable', 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
     letter-spacing: -0.03em;
     color: #111;
 }

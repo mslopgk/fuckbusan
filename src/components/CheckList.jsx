@@ -83,7 +83,7 @@ const CheckList = ({ onPrev, onNext, questions, color = '#E6235A', progressBarCo
                     {questions.map((question, index) => (
                         <div key={index} className="question-item">
                             <h3 className="question-text" style={{
-                                fontFamily: 'GmarketSans, sans-serif',
+                                fontFamily: 'Pretendard Variable, sans-serif',
                                 fontWeight: 300,
                                 display: 'flex',
                                 alignItems: 'flex-start'

@@ -72,7 +72,7 @@
 /* Page Title with Dropdown Arrow */
 .expert-page-title {
     font-size: 1.75rem;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
     margin-bottom: 1.5rem;
     display: flex;
@@ -87,7 +87,7 @@
 
 .main-address {
     font-size: 1.375rem;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -97,7 +97,7 @@
 
 .big-dropdown-trigger {
     font-size: 1.375rem;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -132,7 +132,7 @@
     font-size: 0.875rem;
     color: #888;
     font-weight: 700;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
 }
 
 /* Stats Card */
@@ -147,7 +147,7 @@
 
 .expert-card-title {
     font-size: 1.25rem;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
     color: #333;
     margin-bottom: 1.25rem;
@@ -203,7 +203,7 @@
 /* Middle Category Section */
 .middle-section-title {
     font-size: 1.25rem;
-    font-family: 'GmarketSans', sans-serif;
+    font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
     margin-bottom: 1.25rem;
     color: #333;
