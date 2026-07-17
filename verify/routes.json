@@ -344,7 +344,7 @@
       "waitFor": ".m-prop-detail-page",
       "sessionSeed": {
         "selectedProposal": {
-          "id": 1,
+          "id": 63,
           "category": "주거",
           "title": "전기자전거 재고 불균형 해결 제안",
           "content": "지역 시간별 수요 편차로 대여소마다 전기자전거 부족/과잉이 반복되고 있습니다.",
@@ -554,7 +554,7 @@
       "waitFor": ".pcd-page",
       "sessionSeed": {
         "selectedProposal": {
-          "id": 1,
+          "id": 63,
           "title": "보행로 폭 개선 제안",
           "content": "보행 환경 개선이 필요합니다.",
           "category": "주거",
@@ -931,8 +931,11 @@
         200
       ],
       "expectBody": {
-        "isArray": true,
-        "minItems": 1
+        "hasKeys": [
+          "items",
+          "total",
+          "has_more"
+        ]
       }
     },
     {
