@@ -13,14 +13,13 @@
 .pc-map3-page.report .pc-map3-kind-card.active strong { color: #fff; }
 
 .pc-map3-page.report .pc-map3-list-count { color: #542aa3; }
-.pc-map3-page.report .pc-map3-sort button.active { color: #542aa3; }
+/* 정렬 active는 Figma(302:12757) 기준 #242424 — PCMap3.css 스코프 규칙 사용 */
 
 .pc-map3-page.report .pc-map3-cta:hover { background: #542aa3; border-color: #542aa3; color: #fff; }
 .pc-map3-page.report .pc-map3-policy-cta { background: #542aa3; }
 .pc-map3-page.report .pc-map3-policy-cta:hover { background: #3d1a7a; }
 
-/* 지역 태그(region) 보라 톤 */
-.pc-map3-page.report .pc-map3-pill.pink { background: #f3eefb; color: #542aa3; }
+/* 지역 태그(region)는 Figma(302:12641) 기준 민트(#dff8f8/#242424) — PCMap3.css 스코프 규칙 사용 */
 
 /* 우측 툴바 (지도 토글·리스트) teal → 보라 */
 .pc-map3-page.report .pc-map3-tool--teal { background: #542aa3; color: #fff; }

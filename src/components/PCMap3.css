@@ -594,3 +594,164 @@
     background-size: cover;
     background-position: center;
 }
+
+/* ============================================================
+   제보/제안 지도 Figma 정합 (WDC 302:12589 'USER: 지도(대시보드)' 최신본)
+   — .report/.propose 페이지 스코프. 진단/AI가상시민 지도는 영향 없음.
+   ============================================================ */
+
+/* 레이아웃 오프셋 (Figma: 필터 x37 y40, 툴바 x1434 y41, 리스트 x1505 y19) */
+.pc-map3-page.report .pc-map3-filter-stack,
+.pc-map3-page.propose .pc-map3-filter-stack { top: 40px; left: 37px; gap: 20px; }
+.pc-map3-page.report .pc-map3-toolbar,
+.pc-map3-page.propose .pc-map3-toolbar { top: 41px; right: 438px; }
+.pc-map3-page.report.pc-map3-sidebar-closed .pc-map3-toolbar,
+.pc-map3-page.propose.pc-map3-sidebar-closed .pc-map3-toolbar { right: 20px; }
+.pc-map3-page.report .pc-map3-list,
+.pc-map3-page.propose .pc-map3-list { top: 20px; right: 20px; max-height: calc(100% - 40px); }
+
+/* 리스트 헤더 — 건수 18/500, 정렬 16(active Bold #242424, inactive #777), 구분선 없음 */
+.pc-map3-page.report .pc-map3-list-head,
+.pc-map3-page.propose .pc-map3-list-head {
+    padding: 24px 18px 6px 24px;
+    border-bottom: none;
+}
+.pc-map3-page.report .pc-map3-list-count,
+.pc-map3-page.propose .pc-map3-list-count {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    gap: 4px;
+}
+.pc-map3-page.report .pc-map3-sort,
+.pc-map3-page.propose .pc-map3-sort { gap: 16px; }
+.pc-map3-page.report .pc-map3-sort button,
+.pc-map3-page.propose .pc-map3-sort button {
+    font-size: 16px;
+    font-weight: 400;
+    color: #777777;
+    letter-spacing: -0.04em;
+    padding: 0;
+}
+.pc-map3-page.report .pc-map3-sort button.active,
+.pc-map3-page.propose .pc-map3-sort button.active {
+    color: #242424;
+    font-weight: 700;
+}
+
+/* 리스트 카드 — 354x103, r15, 패딩 17/20, 카드 간 20 */
+.pc-map3-page.report .pc-map3-list-items,
+.pc-map3-page.propose .pc-map3-list-items { padding: 8px 20px 20px; gap: 20px; }
+.pc-map3-page.report .pc-map3-list-items li,
+.pc-map3-page.propose .pc-map3-list-items li { padding: 17px 20px; }
+
+/* 태그 pill — 14/700, h24, r15, 민트(#dff8f8)/그린(#c0e6c0) + #242424 텍스트 */
+.pc-map3-page.report .pc-map3-list-tags,
+.pc-map3-page.propose .pc-map3-list-tags { gap: 6px; margin-bottom: 5px; }
+.pc-map3-page.report .pc-map3-pill,
+.pc-map3-page.propose .pc-map3-pill {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+}
+.pc-map3-page.report .pc-map3-pill.pink,
+.pc-map3-page.propose .pc-map3-pill.pink { background: #dff8f8; color: #242424; }
+.pc-map3-page.report .pc-map3-pill.green,
+.pc-map3-page.propose .pc-map3-pill.green { background: #c0e6c0; color: #242424; }
+
+/* 제목 18/500 #111, 작성자 14/400 #737373 */
+.pc-map3-page.report .pc-map3-list-title,
+.pc-map3-page.propose .pc-map3-list-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #111111;
+    margin-bottom: 2px;
+}
+.pc-map3-page.report .pc-map3-list-sub,
+.pc-map3-page.propose .pc-map3-list-sub { font-size: 14px; }
+
+/* 썸네일 46x46 r10, 스탯 14/500 #bfbfbf */
+.pc-map3-page.report .pc-map3-list-thumb,
+.pc-map3-page.propose .pc-map3-list-thumb { border-radius: 10px; }
+.pc-map3-page.report .pc-map3-list-stats,
+.pc-map3-page.propose .pc-map3-list-stats {
+    font-size: 14px;
+    font-weight: 500;
+    gap: 10px;
+}
+
+/* 하단 CTA — 239x67 r100 흰 배경 #ddd 보더, 20/700 #242424, 바닥 32 */
+.pc-map3-page.report .pc-map3-cta,
+.pc-map3-page.propose .pc-map3-cta {
+    width: 239px;
+    height: 67px;
+    padding: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #242424;
+    border: 1px solid #dddddd;
+    border-radius: 100px;
+    bottom: 32px;
+}
+
+/* 정책 정보 팝업 — 372x316 r20, 헤더 16/700(도메인 컬러), 라벨셀 #e6e6e6,
+   값 12/400 #737373, 스크롤 테이블(6px 썸), CTA 178x40 r20 */
+.pc-map3-page.report .pc-map3-policy,
+.pc-map3-page.propose .pc-map3-policy {
+    width: 372px;
+    border-radius: 20px;
+}
+.pc-map3-page.report .pc-map3-policy-head,
+.pc-map3-page.propose .pc-map3-policy-head {
+    border-bottom: none;
+    padding: 11px 14px 6px 17px;
+}
+.pc-map3-page.report .pc-map3-policy-head strong,
+.pc-map3-page.propose .pc-map3-policy-head strong { font-size: 16px; }
+.pc-map3-page.report .pc-map3-policy-head strong { color: #542aa3; }
+.pc-map3-page.propose .pc-map3-policy-head strong { color: #f74e7e; }
+.pc-map3-page.report .pc-map3-policy-close { color: #542aa3; }
+.pc-map3-page.propose .pc-map3-policy-close { color: #f74e7e; }
+
+.pc-map3-policy-scroll {
+    max-height: 205px;
+    overflow-y: auto;
+    margin: 0 11px 0 10px;
+    border-radius: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #737373 #f2f2f2;
+}
+.pc-map3-policy-scroll::-webkit-scrollbar { width: 6px; }
+.pc-map3-policy-scroll::-webkit-scrollbar-track { background: #f2f2f2; border-radius: 9999px; }
+.pc-map3-policy-scroll::-webkit-scrollbar-thumb { background: #737373; border-radius: 9999px; }
+
+.pc-map3-page.report .pc-map3-policy-table th,
+.pc-map3-page.propose .pc-map3-policy-table th {
+    width: 100px;
+    background: #e6e6e6;
+    color: #242424;
+    font-weight: 600;
+    text-align: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #fff;
+}
+.pc-map3-page.report .pc-map3-policy-table td,
+.pc-map3-page.propose .pc-map3-policy-table td {
+    color: #737373;
+    padding: 8px 16px;
+    border-bottom: 1px solid #f2f2f2;
+}
+.pc-map3-page.report .pc-map3-policy-actions,
+.pc-map3-page.propose .pc-map3-policy-actions {
+    border-top: none;
+    padding: 18px 0 19px;
+}
+.pc-map3-page.report .pc-map3-policy-cta,
+.pc-map3-page.propose .pc-map3-policy-cta {
+    width: 178px;
+    height: 40px;
+    padding: 0;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 700;
+}

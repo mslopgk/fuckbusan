@@ -44,6 +44,25 @@
     color: #fff;
 }
 
+/* 제보 폼 input focus: 도메인 보라 (propose는 PCPropose.css에서 재정의) */
+.pc-form-page .pc-form-input:focus,
+.pc-form-page .pc-form-textarea:focus { border-color: #542aa3; }
+
+/* 임시저장 버튼 — Figma 302:12140: 121x59 r15 #e6e6e6, 18/400 #777 */
+.pc-form-page .pc-btn-light {
+    width: 121px;
+    height: 59px;
+    padding: 0;
+    border-radius: 15px;
+    background: #e6e6e6;
+    color: #777777;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: -0.72px;
+    font-family: inherit;
+}
+.pc-form-page .pc-btn-light:hover { background: #d0d0d0; color: #444; }
+
 /* "작성완료" primary action button: purple */
 .pcrf-btn-purple {
     background: #542aa3;
@@ -51,7 +70,8 @@
     border: none;
     font-size: 18px;
     font-weight: 700;
-    padding: 0 40px;
+    padding: 0;
+    width: 301px; /* Figma 302:12140: 작성완료 301x59 */
     height: 59px;
     border-radius: 15px;
     cursor: pointer;

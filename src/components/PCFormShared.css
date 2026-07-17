@@ -34,8 +34,8 @@
 
 .pc-form-hero h3 {
     font-size: 24px;
-    font-weight: 800;
-    color: #1a1a1b;
+    font-weight: 700; /* Figma 302:12140: 24/700 #242424 */
+    color: #242424;
     margin: 0;
     line-height: 1.5;
 }
@@ -82,7 +82,7 @@
 
 .pc-form-input {
     width: 100%;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #dcdcdc; /* Figma: stroke #dcdcdc */
     border-radius: 15px;
     padding: 12px 18px;
     font-size: 13px;
@@ -94,7 +94,7 @@
 }
 
 .pc-form-input::placeholder {
-    color: #aaa;
+    color: #a6a6a6; /* Figma: placeholder 16/400 #a6a6a6 */
 }
 
 .pc-form-input:focus { border-color: #E6235A; }
@@ -114,8 +114,8 @@
 
 .pc-form-textarea {
     width: 100%;
-    border: 1px solid #e0e0e0;
-    border-radius: 14px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px; /* Figma: r15 */
     padding: 14px 18px;
     font-size: 13px;
     line-height: 1.6;
@@ -518,27 +518,32 @@
 /* Report form chips, dropdowns */
 .pc-chip-row {
     display: flex;
-    gap: 6px;
+    gap: 8px; /* Figma: 칩 간 8px */
     flex-wrap: wrap;
 }
 
+/* Figma 302:12140: 칩 h33 r20, 16/400 #242424, bg #e6e6e6, 간격 8 */
 .pc-form-chip {
     border: none;
-    background: #E6E6E6;
-    color: #555;
+    background: #e6e6e6;
+    color: #242424;
     font-size: 16px;
-    font-weight: 600;
-    padding: 6px 14px;
+    font-weight: 400;
+    height: 33px;
+    padding: 0 15px;
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.15s;
+    letter-spacing: -0.64px;
 }
 
 .pc-form-chip:hover { background: #d0d0d0; color: #333; }
 
+/* 선택 칩: 16/600 흰 텍스트 (Figma 302:12207) */
 .pc-form-chip.active {
     background: #E6235A;
     color: #fff;
+    font-weight: 600;
 }
 
 .pc-form-row-flex {
@@ -553,8 +558,9 @@
 }
 
 .pc-form-conjunction {
-    font-size: 13px;
-    color: #555;
+    font-size: 16px; /* Figma: '에'/'불편해요' 16/400 #111 */
+    font-weight: 400;
+    color: #111111;
     flex-shrink: 0;
 }
 

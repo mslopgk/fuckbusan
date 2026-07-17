@@ -460,13 +460,14 @@
     margin-bottom: 12px;
 }
 
+/* Figma 302:11545: 지역 pill = teal(#23bdbb) 채움 + 흰 텍스트 16/600 */
 .pcd-region-pill {
-    background: #f74e7e;
+    background: #23bdbb;
     color: #fff;
     font-size: 16px;
     font-weight: 600;
     height: 31px;
-    padding: 0 16px;
+    padding: 0 14px;
     border-radius: 15px;
     display: inline-flex;
     align-items: center;
@@ -474,8 +475,9 @@
     white-space: nowrap;
 }
 
+/* Figma 302:11545: 카테고리 pill = 민트(#dff8f8) 14/700 #242424 */
 .pcd-cat-pill {
-    background: #ffdde7;
+    background: #dff8f8;
     color: #242424;
     font-size: 14px;
     font-weight: 700;
@@ -576,7 +578,7 @@
     width: 97px;
     height: 97px;
     border-radius: 50%;
-    background: rgba(247, 78, 126, 0.1);
+    background: #ffffff; /* Figma 302:11545 Ellipse 12: 흰 배경 + 핑크 스트로크 */
     border: 1.5px solid #f74e7e;
     color: #f74e7e;
     cursor: pointer;
@@ -615,8 +617,8 @@
 }
 
 .pcd-vote-label {
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 16px; /* Figma: '투표하기'/'좋아요' 16/600 */
+    font-weight: 600;
     white-space: nowrap;
     letter-spacing: -0.5px;
     line-height: 1;
@@ -630,7 +632,7 @@
 
 .pcd-comment-input-row {
     background: #f4f4f4;
-    border: 1px solid #ddd;
+    border: 1px solid #dadada;
     border-radius: 15px;
     height: 50px;
     display: flex;

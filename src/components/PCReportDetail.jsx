@@ -354,6 +354,7 @@ export default function PCReportDetail({ onNavigate, report }) {
                                 <li key={c.id || i} className="pcd-comment-item">
                                     <div className="pcd-comment-author">{c.author || c.nickname || '익명'}</div>
                                     <p className="pcd-comment-text">{c.content}</p>
+                                    <button className="pcd-comment-reply-btn">답글쓰기</button>
                                 </li>
                             ))}
                         </ul>

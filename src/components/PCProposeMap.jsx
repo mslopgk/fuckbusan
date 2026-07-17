@@ -148,17 +148,22 @@ export default function PCProposeMap({ onNavigate }) {
                                     ×
                                 </button>
                             </div>
-                            <table className="pc-map3-policy-table">
-                                <tbody>
-                                    <tr><th>시도</th><td>부산광역시</td></tr>
-                                    <tr><th>시군구</th><td>{policyItem.region || '준비중'}</td></tr>
-                                    <tr><th>사업명</th><td>{policyItem.title}</td></tr>
-                                    <tr><th>위치</th><td>{policyItem.address || '주소 준비중'}</td></tr>
-                                    <tr><th>카테고리</th><td>{policyItem.category || '준비중'}</td></tr>
-                                    <tr><th>등록일</th><td>{policyItem.date || '준비중'}</td></tr>
-                                    <tr><th>진행상태</th><td>{policyItem.status || '준비중'}</td></tr>
-                                </tbody>
-                            </table>
+                            <div className="pc-map3-policy-scroll">
+                                <table className="pc-map3-policy-table">
+                                    <tbody>
+                                        <tr><th>시도</th><td>부산광역시</td></tr>
+                                        <tr><th>시군구</th><td>{policyItem.region || '준비중'}</td></tr>
+                                        <tr><th>사업명</th><td>{policyItem.title}</td></tr>
+                                        <tr><th>위치</th><td>{policyItem.address || '주소 준비중'}</td></tr>
+                                        <tr><th>면적(㎡)</th><td>준비중</td></tr>
+                                        <tr><th>선정년도</th><td>{policyItem.date ? String(policyItem.date).slice(0, 4) : '준비중'}</td></tr>
+                                        <tr><th>사업기간</th><td>준비중</td></tr>
+                                        <tr><th>사업구분</th><td>{policyItem.kind || '제안'}</td></tr>
+                                        <tr><th>사업유형</th><td>{policyItem.category || '준비중'}</td></tr>
+                                        <tr><th>계획 변경여부</th><td>{policyItem.status || '준비중'}</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                             <div className="pc-map3-policy-actions">
                                 <button
                                     className="pc-map3-policy-cta"
@@ -188,9 +193,7 @@ export default function PCProposeMap({ onNavigate }) {
                         </div>
                         <div className="pc-map3-sort">
                             <button className={sort === 'views' ? 'active' : ''} onClick={() => setSort('views')}>조회수</button>
-                            <span>|</span>
                             <button className={sort === 'votes' ? 'active' : ''} onClick={() => setSort('votes')}>투표순</button>
-                            <span>|</span>
                             <button className={sort === 'latest' ? 'active' : ''} onClick={() => setSort('latest')}>최신순</button>
                         </div>
                     </div>
@@ -203,8 +206,8 @@ export default function PCProposeMap({ onNavigate }) {
                             >
                                 <div className="pc-map3-list-info">
                                     <div className="pc-map3-list-tags">
-                                        <span className="pc-map3-pill pink">{it.region}</span>
-                                        <span className="pc-map3-pill green">{it.category}</span>
+                                        {it.region && <span className="pc-map3-pill pink">{it.region}</span>}
+                                        {it.category && <span className="pc-map3-pill green">{it.category}</span>}
                                     </div>
                                     <div className="pc-map3-list-title">{it.title}</div>
                                     <div className="pc-map3-list-sub">{it.subtitle}</div>
@@ -216,12 +219,12 @@ export default function PCProposeMap({ onNavigate }) {
                                     />
                                     <div className="pc-map3-list-stats">
                                         <span>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>
-                                            {it.views}
+                                            <img src="/figma-assets/icons/icon_vote_check.png" alt="" width="12" height="12" style={{ opacity: 0.3 }} />
+                                            {it.votes}
                                         </span>
                                         <span>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                                            {it.votes}
+                                            <img src="/figma-assets/icons/icon_comment.svg" alt="" width="14" height="12" />
+                                            {it.views}
                                         </span>
                                     </div>
                                 </div>

@@ -25,6 +25,7 @@
 
 .pcrd-tag-subcat {
     background: #ffc9c9;
+    font-weight: 600; /* Figma 302:12293: 서브카테고리만 600 */
 }
 
 /* Status badge — Figma 302:13665 (radius 10px, taller than tags) */
@@ -48,14 +49,14 @@
 
 /* 개선완료: 상태 배지 대신 우상단 "개선결과보기" 회색 버튼 (Figma 302:12330 — #aaa/white) */
 .pcrd-status-result {
-    height: 40px;
-    padding: 0 16px;
+    height: 43px; /* Figma 302:12330: 112x43 r10, 16/700 */
+    padding: 0 12px;
     border-radius: 10px;
     background: #aaa;
     color: #fff;
     border: none;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 700;
     letter-spacing: -0.56px;
     white-space: nowrap;
@@ -73,7 +74,7 @@
     width: 97px;
     height: 97px;
     border-radius: 50%;
-    background: rgba(84, 42, 163, 0.1);
+    background: #ffffff; /* Figma 302:12293 Ellipse 12: 흰 배경 + 보라 스트로크 */
     border: 1.5px solid #542aa3;
     color: #542aa3;
     cursor: pointer;
@@ -100,8 +101,22 @@
 
 /* ── Result modal overrides ─────────────────────────────────── */
 /* Modal: no close X in header per Figma (header only has title) */
+.pcrd-result-modal-override {
+    width: 434px; /* Figma 302:12293 Group 397: 434x526 r30 */
+    border-radius: 30px;
+    padding: 19px 27px 24px;
+}
 .pcrd-result-modal-override .pcd-result-modal-head {
     justify-content: center;
+}
+.pcrd-result-modal-override .pcd-result-modal-head h3 {
+    font-size: 20px; /* Figma: '개선 결과보기' 20/700 #242424 */
+    font-weight: 700;
+    color: #242424;
+}
+.pcrd-result-modal-override .pcd-result-modal-img {
+    height: 152px; /* Figma: 381x152 r15 */
+    border-radius: 15px;
 }
 
 /* "담당자 코멘트" block inside result modal */
@@ -221,7 +236,7 @@
 
 .pcrd-manager-date {
     font-size: 16px;
-    color: #1e1e1e;
+    color: #737373; /* Figma 302:12293: 날짜 16/400 #737373 */
     line-height: 1.35;
     margin: 0 0 8px;
 }
