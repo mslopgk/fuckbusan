@@ -296,7 +296,7 @@ export default function SurveyChat({ onNavigate, isPC = false }) {
                 <h1 className="surveychat-title-inline">무엇을 도와드릴까요?</h1>
             </div>
             <div className="surveychat-card">{cardInner}</div>
-            <MobileBottomNav onNavigate={onNavigate} />
+            <MobileBottomNav currentView="mSurveyList" onNavigate={onNavigate} />
         </div>
     );
 }

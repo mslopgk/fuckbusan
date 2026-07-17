@@ -65,6 +65,7 @@ export default function MReportMap({ onNavigate }) {
     const [items, setItems] = useState([]);
     const [mapPins, setMapPins] = useState([]);
     const [selectedPinId, setSelectedPinId] = useState(null);
+    const [pinItem, setPinItem] = useState(null); // 선택 핀이 현재 stage 목록에 없을 때 단건 조회 결과
     const [sheetMode, setSheetMode] = useState('half');
     const mapRef = useRef(null);
     const touchStartY = useRef(0);
@@ -181,6 +182,39 @@ export default function MReportMap({ onNavigate }) {
         return mapPins.filter((p) => !catFilter || p.title === catFilter);
     }, [mapPins, cat]);
 
+    // 핀은 전체 제보를 그리는데 시트 목록은 현재 진행상태(stage) 필터본이라,
+    // 다른 상태의 핀을 탭하면 "조건에 맞는 제보가 없습니다"가 뜨던 버그 —
+    // 선택 핀이 목록에 없으면 단건 조회로 보완해 시트에 표시
+    useEffect(() => {
+        setPinItem(null);
+        if (!selectedPinId) return;
+        if (items.some((it) => String(it.id) === selectedPinId)) return;
+        fetch(`${API_URL}/api/reports/${selectedPinId}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((it) => {
+                if (!it || String(it.id) !== selectedPinId) return;
+                setPinItem({
+                    id: it.id,
+                    cat: it.category,
+                    sub: it.sub_category,
+                    title: it.title,
+                    author: it.author || it.nickname || '익명',
+                    likes: it.likes_count ?? it.likes ?? 0,
+                    comments: it.comments_count ?? it.comments ?? 0,
+                    image: (Array.isArray(it.files) && it.files.length > 0) ? it.files[0] : (it.image || it.image_url || null),
+                    lat: it.lat,
+                    lng: it.lng,
+                    content: it.content,
+                    region: it.region,
+                    date: it.created_at || it.date,
+                    views: it.views_count ?? it.views,
+                    progress_step: it.progress_step,
+                    status: it.status,
+                });
+            })
+            .catch(() => {});
+    }, [selectedPinId, items]);
+
     const openRegion = () => { setRegionDraft(region); setRegionOpen(true); };
     const confirmRegion = () => { setRegion(regionDraft); setRegionOpen(false); };
 
@@ -277,9 +311,8 @@ export default function MReportMap({ onNavigate }) {
 
                 <ul className="m-sheet-cards">
                     {(() => {
-                        const displayed = selectedPinId
-                            ? ITEMS.filter((it) => String(it.id) === selectedPinId)
-                            : ITEMS;
+                        const matched = selectedPinId ? ITEMS.filter((it) => String(it.id) === selectedPinId) : ITEMS;
+                        const displayed = (selectedPinId && matched.length === 0 && pinItem) ? [pinItem] : matched;
                         if (displayed.length === 0) {
                             return (
                                 <li style={{ padding: '32px 0', textAlign: 'center', color: '#aaa', fontSize: 14 }}>
