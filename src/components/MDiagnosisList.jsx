@@ -8,43 +8,41 @@ import {
 import { API_URL } from '../utils/api';
 import { matchDistrict } from '../utils/format';
 import MDiagnosisFilterModal from './MDiagnosisFilterModal';
-import CategoryRail from './filters/CategoryRail';
-import RegionDropdown from './filters/RegionDropdown';
 import './MDiagnosisList.css';
 
 const DIAG_PAGE_SIZE = 50;
 
-// Figma 22:8219 — 카테고리별 태그 배경색
-const CAT_TAG_BG = {
-    '주거':    '#dff8f8',
-    '환경':    '#c0e6c0',
-    '교통':    '#c9e0ff',
-    '안전':    '#ffefc0',
-    '교육':    '#ffc9c9',
-    '산업·일자리': '#ffd9c9',
-    '문화·여가':  '#e5c9ff',
-    '보건·복지':  '#c9f0d9',
-};
-function getCatTagBg(cat) { return CAT_TAG_BG[cat] || '#dff8f8'; }
-
+// Figma 302:21392 (진단 목록4 카드) — 시민=점수, 전문가=적합/부적합
 const DiagCard = memo(function DiagCard({ it, onNavigate }) {
     const { ref: thumbRef, bgStyle } = useLazyImage(it.thumb);
+    const isExpert = it.target === '전문가' || it.target === 'expert';
     return (
         <li className="m-diag-card" onClick={() => onNavigate?.('mDiagnosisResult', it)}>
             <div className="m-diag-card-body">
                 <div className="m-diag-card-tags">
-                    {/* Figma 진단 목록4: 태그는 중립 회색 배경 */}
                     <span className="m-diag-tag">{it.big}</span>
                     {it.mid && <span className="m-diag-tag">{it.mid}</span>}
                 </div>
                 <div className="m-diag-card-name-row">
                     <span className="m-diag-card-name">{it.name}</span>
-                    {it.score != null && <span className="m-diag-card-score">{it.score}</span>}
+                    {isExpert ? (
+                        it.score != null && (
+                            <span className={`m-diag-card-status ${Number(it.score) >= 4 ? 'pass' : 'fail'}`}>
+                                {Number(it.score) >= 4 ? '적합' : '부적합'}
+                            </span>
+                        )
+                    ) : (
+                        it.score != null && <span className="m-diag-card-score">{it.score}</span>
+                    )}
                 </div>
                 <p className="m-diag-card-author">{it.reviewText || it.author || ''}</p>
             </div>
             <div className="m-diag-card-right">
-                {it.thumb && <div ref={thumbRef} className="m-diag-card-thumb" style={bgStyle} />}
+                {it.thumb ? (
+                    <div ref={thumbRef} className="m-diag-card-thumb" style={bgStyle} />
+                ) : (
+                    <div className="m-diag-card-thumb" />
+                )}
             </div>
         </li>
     );
@@ -131,15 +129,14 @@ export default function MDiagnosisList({ onNavigate }) {
                 score: r.점수 != null ? Number(r.점수).toFixed(1) : null,
                 reviewText: r.리뷰 || '',
                 author: r.작성자 || r.author || '',
-                likes: r.likes ?? r.좋아요 ?? 0,
-                comments: r.comments ?? r.댓글 ?? 0,
+                target: r.진단대상 ?? r.target ?? null,
                 thumb: r.이미지경로 || null,
             }));
     }, [allRows, district, category, filter]);
 
     return (
         <div className="m-diag-list-only-page">
-            {/* 헤더: Figma 269:26746 — back + 타이틀 "진단 상세를 선택해주세요" */}
+            {/* 헤더 — Figma 302:21448~21453: back + 타이틀 + expand_circle_down */}
             <header className="m-diag-list-topbar">
                 <button
                     type="button"
@@ -147,38 +144,47 @@ export default function MDiagnosisList({ onNavigate }) {
                     aria-label="뒤로"
                     onClick={() => onNavigate?.('mDiagnosisMap')}
                 >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <img src="/figma-assets/mobile-diagnosis/arrow_back.png" width="24" height="24" alt="" />
                 </button>
                 <span className="m-diag-list-topbar-title">진단 상세를 선택해주세요</span>
-                {/* 필터 버튼 (원형 ∧) — 진단대상/대분류 필터 모달 열기 */}
                 <button
                     type="button"
-                    className="m-diag-filter-btn"
-                    aria-label="필터"
+                    className="m-diag-expand-btn"
+                    aria-label="진단 상세 필터"
                     onClick={() => setFilterOpen(true)}
                 >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M6 15l6-6 6 6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                    <img src="/figma-assets/mobile-diagnosis/expand_circle_down.png" width="20" height="20" alt="" />
                 </button>
             </header>
 
-            {/* 지역 선택 — 구역별 드롭다운 카드 (Figma 302:5940) */}
-            <div className="m-diag-list-district-row">
-                <RegionDropdown value={district || '전체'} onClick={() => setDistrictOpen(true)} accent="#23bdbb" />
+            {/* 지역 타이틀 — Figma "수영구 ▸" (302:21389/21390) */}
+            <div className="m-diag-list-title-row">
+                <span className="m-diag-list-title">{district || '부산전체'}</span>
+                <button
+                    type="button"
+                    className="m-diag-list-title-btn"
+                    aria-label="지역 선택"
+                    onClick={() => setDistrictOpen(true)}
+                >
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden="true">
+                        <path d="M1.5 1L6.5 6L1.5 11" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
             </div>
 
-            {/* 카테고리 — 생활정보 아이콘 rail (Figma 302:5940) */}
-            <CategoryRail
-                variant="pill"
-                categories={CATEGORIES}
-                value={category}
-                onChange={setCategory}
-                accent="#23bdbb"
-                tint="#e2f6f6"
-            />
+            {/* 카테고리 칩 2행 wrap — Figma rows y=131/175 */}
+            <div className="m-diag-list-cats">
+                {CATEGORIES.map((c) => (
+                    <button
+                        key={c}
+                        type="button"
+                        className={`m-diag-cat-chip${category === c ? ' active' : ''}`}
+                        onClick={() => setCategory(c)}
+                    >
+                        {c}
+                    </button>
+                ))}
+            </div>
 
             {/* 카드 목록 */}
             <ul className="m-diag-list-cards" onScroll={handleScroll}>
@@ -198,13 +204,13 @@ export default function MDiagnosisList({ onNavigate }) {
                 )}
             </ul>
 
-            {/* 진단하기 FAB */}
+            {/* 진단하기 FAB — Figma 98x36 r20 */}
             <button
                 type="button"
                 className="m-diag-list-fab"
                 onClick={() => onNavigate?.('mDiagnosisMap')}
             >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <line x1="12" y1="5" x2="12" y2="19" />
                     <line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
@@ -213,20 +219,20 @@ export default function MDiagnosisList({ onNavigate }) {
 
             {/* 지역 선택 모달 */}
             {districtOpen && (
-                <div className="m-modal-backdrop" onClick={() => setDistrictOpen(false)}>
-                    <div className="m-modal-sheet" onClick={(e) => e.stopPropagation()}>
-                        <div className="m-modal-head">
-                            <h3 className="m-modal-title">위치 설정</h3>
-                            <button className="m-modal-close" type="button" aria-label="닫기" onClick={() => setDistrictOpen(false)}>
+                <div className="m-diag-region-backdrop" onClick={() => setDistrictOpen(false)}>
+                    <div className="m-diag-region-sheet" onClick={(e) => e.stopPropagation()}>
+                        <div className="m-diag-region-head">
+                            <h3 className="m-diag-region-title">위치 설정</h3>
+                            <button className="m-diag-region-close" type="button" aria-label="닫기" onClick={() => setDistrictOpen(false)}>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                             </button>
                         </div>
-                        <ul className="m-region-list">
-                            <li className={`m-region-item ${!district ? 'on' : ''}`} onClick={() => { setDistrict(''); setDistrictOpen(false); }}>
-                                <span>전체</span>
+                        <ul className="m-diag-region-list">
+                            <li className={`m-diag-region-item ${!district ? 'on' : ''}`} onClick={() => { setDistrict(''); setDistrictOpen(false); }}>
+                                <span>부산전체</span>
                             </li>
                             {Object.keys(DISTRICT_CENTERS).map((d) => (
-                                <li key={d} className={`m-region-item ${district === d ? 'on' : ''}`} onClick={() => { setDistrict(d); setDistrictOpen(false); }}>
+                                <li key={d} className={`m-diag-region-item ${district === d ? 'on' : ''}`} onClick={() => { setDistrict(d); setDistrictOpen(false); }}>
                                     <span>{d}</span>
                                 </li>
                             ))}

@@ -1,11 +1,12 @@
 /* MDiagnosisMap 전용 보강 — 베이스는 MDiagnosisList.css 사용 */
+/* Figma 302:21087 (진단 목록5) 기준 */
 
-/* 헤더 — Figma 22:7914: "← 일반 진단 ⊙" */
+/* 헤더 — back + "진단 상세를 선택해주세요" + expand_circle_down */
 .m-diag-map-header {
     position: relative;
     z-index: 30;
-    height: 56px;
-    padding: 0 16px;
+    height: 66px;
+    padding: 0 16px 0 16px;
     background: #fff;
     display: flex;
     align-items: center;
@@ -24,89 +25,104 @@
     flex-shrink: 0;
 }
 
-.m-diag-map-header-title {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.m-diag-map-header-label {
+/* Figma 302:21259 — 18px/700 #333, ls -0.04em */
+.m-diag-map-header-title-text {
+    flex: 1;
     font-size: 18px;
     font-weight: 700;
-    color: #23BDBB;
+    color: #333333;
+    letter-spacing: -0.04em;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 헤더 우측 expand_circle 아이콘 버튼 (map/list 공용) */
+.m-diag-expand-btn {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    background: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* 현위치 빨간 점 — Figma Ellipse 18(28, 40%) + 17(16, 100%) */
+.m-diag-geo-dot {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ff0000;
+    box-shadow: 0 0 0 6px rgba(255, 0, 0, 0.4);
+}
+
+/* 이미지 teardrop 핀 (54x64) */
+.m-diag-pin-img {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.m-diag-pin-img img {
+    display: block;
+}
+
+/* 시트 상단 햄버거(목록 보기) — Figma Group 373 (18x12) */
+.m-diag-sheet-list-btn {
+    display: flex;
+    margin: 0 auto 9px;
+    padding: 4px 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 시트 지역 타이틀 행 — "부산전체 ▸" (Figma 302:21195/21193) */
+.m-diag-sheet-title-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0 2px 20px;
+}
+
+.m-diag-sheet-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #242424;
     letter-spacing: -0.04em;
     line-height: 1.4;
 }
 
-/* 필터 버튼을 헤더 우측 끝으로 */
-.m-diag-map-filter-btn {
-    margin-left: auto;
-}
-
-/* 지역 드롭다운 행 */
-.m-diag-district-row-map {
-    position: relative;
-    z-index: 30;
-    padding: 0 16px 10px;
-    background: #fff;
-    flex-shrink: 0;
-}
-
-.m-diag-district-select-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-}
-
-.m-diag-district-select {
-    height: 46px;
-    min-width: 170px;
-    border: 1px solid #242424;
-    border-radius: 8px;
-    padding: 0 36px 0 12px;
-    font-size: 16px;
-    font-family: inherit;
-    color: #242424;
-    background: #fff;
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-    outline: none;
-}
-
-.m-diag-district-chevron-icon {
-    position: absolute;
-    right: 8px;
-    pointer-events: none;
-}
-
-/* 카테고리 칩 바 위치 — 지역 드롭다운이 헤더에 붙어있으므로 상단에서 시작 */
-.m-diag-list-page .m-diag-cats-bar {
-    top: 8px;
-}
-
-
-.m-diag-mode-tabs-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 14px;
-}
-
-.m-diag-mode-tabs-row .m-diag-mode-tabs {
-    margin-bottom: 0;
-}
-
-.m-diag-list-btn {
-    background: #fff;
-    border: 1px solid #ececec;
+.m-diag-sheet-title-btn {
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    cursor: pointer;
+    border: none;
+    background: #23BDBB;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    padding: 0;
     flex-shrink: 0;
+}
+
+/* 시트 내부 카테고리 칩 2행 wrap — Figma rows y=522/566 */
+.m-diag-sheet-cats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 11px 8px;
+    margin-bottom: 18px;
 }

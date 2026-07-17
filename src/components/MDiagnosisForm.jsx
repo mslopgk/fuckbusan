@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import {
     DIAGNOSIS_QUESTIONS as DEFAULT_QUESTIONS,
     QUESTIONS_BY_SUB,
-    SATISFACTION_SCALE as SCALE,
 } from '../constants/diagnosis';
 import './MDiagnosisForm.css';
 import { API_URL, authHeaders } from '../utils/api';
@@ -19,7 +18,22 @@ const FACILITY_CHIP_MAP = {
 };
 const FACILITY_CHIPS = Object.keys(FACILITY_CHIP_MAP);
 
+// Figma 302:19676 — 시민: 5점 스케일 + 얼굴(1/3/5 위치)
+const SCALE_VALUES = [1, 2, 3, 4, 5];
+const FACES = {
+    1: '/figma-assets/mobile-diagnosis/face_1.png',
+    3: '/figma-assets/mobile-diagnosis/face_3.png',
+    5: '/figma-assets/mobile-diagnosis/face_5.png',
+};
+// Figma 302:19840 — 전문가: 해당없음/부적합/적합 (1/3/5 값 매핑)
+const EXPERT_CHOICES = [
+    { value: 1, label: '해당없음' },
+    { value: 3, label: '부적합' },
+    { value: 5, label: '적합' },
+];
+
 export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' }) {
+    const isExpert = mode === 'expert' || location?.mode === 'expert';
     const [photo, setPhoto] = useState(null);
     const [photoPreview, setPhotoPreview] = useState('');
     const [facilityName, setFacilityName] = useState('');
@@ -80,7 +94,7 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
                 위도: location?.lat ?? null,
                 경도: location?.lng ?? null,
                 district_code: location?.district ?? null,
-                진단대상: mode === 'expert' ? '전문가' : '시민',
+                진단대상: isExpert ? '전문가' : '시민',
             };
             const submitRes = await fetch(`${API_URL}/checklist/submit`, {
                 method: 'POST',
@@ -100,7 +114,7 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
         }
 
         setSubmitting(false);
-        onNavigate?.('mDiagnosisDone', { category: catValue, sub: subKey || sub, ratings, review });
+        onNavigate?.('mDiagnosisDone', { category: catValue, sub: subKey || sub, ratings, review, mode: isExpert ? 'expert' : 'citizen' });
     };
 
     const handleDraft = () => {
@@ -116,13 +130,8 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
                     aria-label="뒤로"
                     onClick={() => onNavigate?.('mDiagnosisMap')}
                 >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <img src="/figma-assets/mobile-diagnosis/arrow_back.png" width="24" height="24" alt="" />
                 </button>
-                {mode === 'expert' && (
-                    <span className="m-diagform-mode-badge">전문가 진단</span>
-                )}
             </header>
 
             <main className="m-diagform-body">
@@ -140,7 +149,7 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
                         {photoPreview ? (
                             <img src={photoPreview} alt="첨부 사진 미리보기" />
                         ) : (
-                            <img className="m-diagform-photo-add" src="/figma-assets/diagnosis/photo_add.svg" width="28" height="28" alt="사진 추가" />
+                            <img className="m-diagform-photo-add" src="/figma-assets/diagnosis/photo_add.svg" width="22" height="22" alt="사진 추가" />
                         )}
                     </button>
                     <input
@@ -154,7 +163,7 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
                 </section>
 
                 {/* 분류 */}
-                <section className="m-diagform-section">
+                <section className="m-diagform-section m-diagform-section--cat">
                     <h2 className="m-diagform-label">분류</h2>
                     <input
                         type="text"
@@ -180,48 +189,78 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
 
                 {/* 만족도 평가 — 시설물 선택 후 표시 */}
                 {sub && (
-                    <section className="m-diagform-section">
-                        <h2 className="m-diagform-label">만족도 평가</h2>
+                    <section className="m-diagform-section m-diagform-section--rating">
+                        <h2 className="m-diagform-label m-diagform-label--bold">만족도 평가</h2>
                         <p className="m-diagform-sublabel">해당 시설물의 만족도를 평가해 주세요.</p>
-                        <ol className="m-diagform-questions">
+                        <ol className={`m-diagform-questions${isExpert ? ' expert' : ''}`}>
                             {QUESTIONS.map((q, idx) => (
                                 <li key={idx} className="m-diagform-question">
                                     <div className="m-diagform-q-head">
                                         <span className="m-diagform-q-num">{idx + 1}</span>
                                         <p className="m-diagform-q-text">{q}</p>
                                     </div>
-                                    <div className="m-diagform-scale" role="radiogroup" aria-label={`Q${idx + 1} 만족도`}>
-                                        <span className="m-diagform-scale-track" />
-                                        {SCALE.map((s) => {
-                                            const active = ratings[idx] === s.value;
-                                            return (
-                                                <button
-                                                    key={s.value}
-                                                    type="button"
-                                                    role="radio"
-                                                    aria-checked={active}
-                                                    aria-label={s.label}
-                                                    className={`m-diagform-scale-dot ${active ? 'on' : ''}`}
-                                                    onClick={() => setRatings((prev) => ({ ...prev, [idx]: s.value }))}
-                                                />
-                                            );
-                                        })}
-                                    </div>
-                                    <div className="m-diagform-scale-faces">
-                                        {SCALE.map((s) => (
-                                            <div key={s.value} className="m-diagform-face-slot">
-                                                {s.face && (
-                                                    <img
-                                                        src={s.face}
-                                                        width="24"
-                                                        height="24"
-                                                        alt={s.label}
-                                                        className={`m-diagform-face-img ${ratings[idx] === s.value ? 'on' : ''}`}
-                                                    />
-                                                )}
+                                    {isExpert ? (
+                                        <>
+                                            {/* 전문가 — Figma 302:19840: 트랙 + 체크 라디오(해당없음/부적합/적합) */}
+                                            <div className="m-diagform-scale" aria-hidden="true">
+                                                <span className="m-diagform-scale-track" />
+                                                {SCALE_VALUES.map((v) => (
+                                                    <span key={v} className={`m-diagform-scale-dot ${ratings[idx] === v ? 'on' : ''}`} />
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
+                                            <div className="m-diagform-expert-row" role="radiogroup" aria-label={`Q${idx + 1} 평가`}>
+                                                {EXPERT_CHOICES.map((c) => {
+                                                    const active = ratings[idx] === c.value;
+                                                    return (
+                                                        <button
+                                                            key={c.value}
+                                                            type="button"
+                                                            role="radio"
+                                                            aria-checked={active}
+                                                            className="m-diagform-expert-choice"
+                                                            onClick={() => setRatings((prev) => ({ ...prev, [idx]: c.value }))}
+                                                        >
+                                                            <img
+                                                                src={`/figma-assets/mobile-diagnosis/radio_check_${active ? 'on' : 'off'}.png`}
+                                                                width="23"
+                                                                height="23"
+                                                                alt=""
+                                                            />
+                                                            <span>{c.label}</span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* 시민 — Figma 302:19676: 5점 스케일 + 얼굴(1/3/5) */}
+                                            <div className="m-diagform-scale" role="radiogroup" aria-label={`Q${idx + 1} 만족도`}>
+                                                <span className="m-diagform-scale-track" />
+                                                {SCALE_VALUES.map((v) => {
+                                                    const active = ratings[idx] === v;
+                                                    return (
+                                                        <button
+                                                            key={v}
+                                                            type="button"
+                                                            role="radio"
+                                                            aria-checked={active}
+                                                            aria-label={`${v}점`}
+                                                            className={`m-diagform-scale-dot m-diagform-scale-dot--btn ${active ? 'on' : ''}`}
+                                                            onClick={() => setRatings((prev) => ({ ...prev, [idx]: v }))}
+                                                        />
+                                                    );
+                                                })}
+                                            </div>
+                                            <div className="m-diagform-scale-faces" aria-hidden="true">
+                                                {[1, 3, 5].map((v) => (
+                                                    <div key={v} className="m-diagform-face-slot">
+                                                        <img src={FACES[v]} width="22" height="22" alt="" className="m-diagform-face-img" />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </>
+                                    )}
                                 </li>
                             ))}
                         </ol>
@@ -229,7 +268,7 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
                 )}
 
                 {/* 리뷰 */}
-                <section className="m-diagform-section">
+                <section className="m-diagform-section m-diagform-section--review">
                     <h2 className="m-diagform-label">리뷰</h2>
                     <textarea
                         className="m-diagform-review"
@@ -239,17 +278,18 @@ export default function MDiagnosisForm({ onNavigate, location, mode = 'citizen' 
                         onChange={(e) => setReview(e.target.value)}
                     />
                 </section>
-            </main>
 
-            <footer className="m-diagform-footer">
-                <button type="button" className="m-diagform-cta-secondary" onClick={handleDraft}>임시저장</button>
-                <button
-                    type="button"
-                    className="m-diagform-cta-primary"
-                    disabled={!canSubmit || submitting}
-                    onClick={handleSubmit}
-                >{submitting ? '제출 중...' : '작성완료'}</button>
-            </footer>
+                {/* 하단 CTA — Figma: 본문 흐름 내 배치 (임시저장 103 + 작성완료) */}
+                <div className="m-diagform-footer">
+                    <button type="button" className="m-diagform-cta-secondary" onClick={handleDraft}>임시저장</button>
+                    <button
+                        type="button"
+                        className="m-diagform-cta-primary"
+                        disabled={!canSubmit || submitting}
+                        onClick={handleSubmit}
+                    >{submitting ? '제출 중...' : '작성완료'}</button>
+                </div>
+            </main>
         </div>
     );
 }

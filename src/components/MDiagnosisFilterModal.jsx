@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { CATEGORIES, SUB_BY_CATEGORY } from '../constants/diagnosis';
 import './MDiagnosisFilterModal.css';
 
-// Figma 269:26256 — "진단 상세를 선택해주세요" 필터 모달
+// Figma 302:20880 (진단 목록6) — "진단 상세를 선택해주세요" 전체화면 필터
 // 진단대상(전체/시민/전문가) + 대분류(체크박스) + 중분류/소분류(드롭다운)
 
 const TARGETS = [
@@ -59,27 +59,23 @@ export default function MDiagnosisFilterModal({
     };
 
     return (
-        <div className="mdf-overlay" onClick={onClose}>
+        <div className="mdf-overlay">
             <div className="mdf-panel" onClick={(e) => e.stopPropagation()}>
-                {/* 헤더 */}
+                {/* 헤더 — Figma 302:21048~21053 */}
                 <header className="mdf-head">
                     <button type="button" className="mdf-back" aria-label="뒤로" onClick={onClose}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M15 18L9 12L15 6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        <img src="/figma-assets/mobile-diagnosis/arrow_back.png" width="24" height="24" alt="" />
                     </button>
                     <span className="mdf-title">진단 상세를 선택해주세요</span>
                     <button type="button" className="mdf-collapse" aria-label="접기" onClick={onClose}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                            <path d="M6 15l6-6 6 6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        <img src="/figma-assets/mobile-diagnosis/expand_circle_down.png" width="20" height="20" alt="" className="mdf-collapse-icon" />
                     </button>
                 </header>
 
                 <div className="mdf-body">
-                    {/* 진단대상 */}
-                    <div className="mdf-section">
-                        <div className="mdf-label">진단대상</div>
+                    {/* 진단대상 — Figma Frame 30 */}
+                    <div className="mdf-target-section">
+                        <div className="mdf-target-label">진단대상</div>
                         <div className="mdf-segment">
                             {TARGETS.map((t) => (
                                 <button
@@ -94,77 +90,68 @@ export default function MDiagnosisFilterModal({
                         </div>
                     </div>
 
+                    {/* 회색 밴드 — Figma #f2f2f2 5px */}
                     <div className="mdf-band" />
 
                     {/* 공공/시설물 — 대분류 체크박스 */}
-                    <div className="mdf-section">
-                        <div className="mdf-group-label">공공/시설물</div>
-                        <div className="mdf-label mdf-label-sub">대분류</div>
-                        <ul className="mdf-check-list">
-                            {CATEGORIES.map((c) => {
-                                const checked = bigCats.has(c);
-                                return (
-                                    <li
-                                        key={c}
-                                        className="mdf-check-item"
-                                        onClick={() => toggleCat(c)}
-                                    >
-                                        <span className={`mdf-check-box${checked ? ' on' : ''}`}>
-                                            {checked && (
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                                    <path d="M5 12l4.5 4.5L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                                </svg>
-                                            )}
-                                        </span>
-                                        <span className="mdf-check-text">{c}</span>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
+                    <div className="mdf-group-label">공공/시설물</div>
+                    <div className="mdf-label">대분류</div>
+                    <ul className="mdf-check-list">
+                        {CATEGORIES.map((c) => {
+                            const checked = bigCats.has(c);
+                            return (
+                                <li
+                                    key={c}
+                                    className="mdf-check-item"
+                                    onClick={() => toggleCat(c)}
+                                >
+                                    <img
+                                        src={`/figma-assets/mobile-diagnosis/check_box_${checked ? 'on' : 'off'}.png`}
+                                        width="20"
+                                        height="20"
+                                        alt=""
+                                        aria-hidden="true"
+                                    />
+                                    <span className={`mdf-check-text${checked ? ' on' : ''}`}>{c}</span>
+                                </li>
+                            );
+                        })}
+                    </ul>
 
                     <div className="mdf-dotted" />
 
                     {/* 중분류 */}
-                    <div className="mdf-section">
-                        <div className="mdf-label mdf-label-sub">중분류</div>
-                        <div className="mdf-select-wrap">
-                            <select
-                                className="mdf-select"
-                                value={mid}
-                                onChange={(e) => { setMid(e.target.value); setSub(''); }}
-                            >
-                                <option value="">선택해주세요</option>
-                                {midOptions.map((m) => (
-                                    <option key={m} value={m}>{m}</option>
-                                ))}
-                            </select>
-                            <svg className="mdf-select-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M6 9l6 6 6-6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </div>
+                    <div className="mdf-label">중분류</div>
+                    <div className="mdf-select-wrap">
+                        <select
+                            className="mdf-select"
+                            value={mid}
+                            onChange={(e) => { setMid(e.target.value); setSub(''); }}
+                        >
+                            <option value="">선택해주세요</option>
+                            {midOptions.map((m) => (
+                                <option key={m} value={m}>{m}</option>
+                            ))}
+                        </select>
+                        <img className="mdf-select-chevron" src="/figma-assets/mobile-diagnosis/select_arrow_down.png" width="24" height="24" alt="" aria-hidden="true" />
                     </div>
 
                     <div className="mdf-dotted" />
 
                     {/* 소분류 (데이터 매핑 미정 — UI만) */}
-                    <div className="mdf-section">
-                        <div className="mdf-label mdf-label-sub">소분류</div>
-                        <div className="mdf-select-wrap">
-                            <select
-                                className="mdf-select"
-                                value={sub}
-                                onChange={(e) => setSub(e.target.value)}
-                            >
-                                <option value="">선택해주세요</option>
-                            </select>
-                            <svg className="mdf-select-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M6 9l6 6 6-6" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </div>
+                    <div className="mdf-label">소분류</div>
+                    <div className="mdf-select-wrap">
+                        <select
+                            className="mdf-select"
+                            value={sub}
+                            onChange={(e) => setSub(e.target.value)}
+                        >
+                            <option value="">선택해주세요</option>
+                        </select>
+                        <img className="mdf-select-chevron" src="/figma-assets/mobile-diagnosis/select_arrow_down.png" width="24" height="24" alt="" aria-hidden="true" />
                     </div>
 
-                    {/* 하단 액션 */}
+                    {/* 하단 액션 — Figma 170x35 r8 */}
                     <div className="mdf-actions">
                         <button type="button" className="mdf-btn mdf-btn-cancel" onClick={onClose}>취소</button>
                         <button type="button" className="mdf-btn mdf-btn-confirm" onClick={handleApply}>확인</button>

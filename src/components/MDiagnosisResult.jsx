@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
+import MobileBottomNav from './MobileBottomNav';
 import './MDiagnosisResult.css';
 import { API_URL, authHeaders } from '../utils/api';
 
@@ -48,27 +49,35 @@ function CustomTick({ payload, x, y, textAnchor, radarData }) {
             <text x={x} y={y - 4} textAnchor={textAnchor} className="m-diagres-tick-label">
                 {payload.value}
             </text>
-            <text x={x} y={y + 12} textAnchor={textAnchor} className="m-diagres-tick-value">
+            <text x={x} y={y + 9} textAnchor={textAnchor} className="m-diagres-tick-value">
                 {point?.A?.toFixed(1)}
             </text>
         </g>
     );
 }
 
-// 섹션별 레이더 컬러 — Figma 22:6387: 전체평균 핑크 / 시설물별 보라 / 구역별 파랑 / 인원별 teal
+// Figma 302:19985 진단결과1_시민 — 전체 핑크 / 시설물 보라 / 구역 파랑 / 인원 청록
 const RADAR_COLORS = {
     total:    '#E6235A',
-    facility: '#5B2EAB',
-    zone:     '#3D7DEB',
-    person:   '#23BDBB',
+    facility: '#542AA3',
+    zone:     '#005BE4',
+    person:   '#0B9583',
 };
 
-function BreakdownSection({ label, title, data, empty, color = '#23BDBB' }) {
+// Figma 302:20225 진단결과2_전문가 — 섹션별 타일 틴트
+const TILE_TINTS = {
+    total:    '#f5f1fd',
+    facility: '#fff6f9',
+    zone:     '#eef5ff',
+    person:   '#e7f8f5',
+};
+
+function RadarCard({ label, title, data, color }) {
     return (
         <div className="m-diagres-section-row">
-            <div className="m-diagres-section-label">{label}</div>
+            <div className="m-diagres-table-label">{label}</div>
             <div className="m-diagres-section-content">
-                <div className={`m-diagres-radar-card ${empty ? 'm-diagres-radar-card--disabled' : ''}`}>
+                <div className="m-diagres-radar-card">
                     <p className="m-diagres-radar-card-title">{title}</p>
                     <div className="m-diagres-chart">
                         <ResponsiveContainer width="100%" height="100%">
@@ -77,40 +86,6 @@ function BreakdownSection({ label, title, data, empty, color = '#23BDBB' }) {
                                 <PolarAngleAxis
                                     dataKey="subject"
                                     tick={(props) => <CustomTick {...props} radarData={data} />}
-                                />
-                                <Radar
-                                    name="Score"
-                                    dataKey="A"
-                                    stroke={color}
-                                    strokeWidth={2}
-                                    fill={color}
-                                    fillOpacity={empty ? 0.15 : 0.25}
-                                />
-                            </RadarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function RadarSection({ title, radarData, avg, count, color = '#E6235A' }) {
-    return (
-        <div className="m-diagres-section-row">
-            <div className="m-diagres-section-label">{title}</div>
-            <div className="m-diagres-section-content">
-                <div className="m-diagres-radar-card">
-                    <p className="m-diagres-card-head">
-                        <span className="m-diagres-avg">{avg}</span> 전체 평균 ({count})
-                    </p>
-                    <div className="m-diagres-chart">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart cx="50%" cy="50%" outerRadius="65%" data={radarData}>
-                                <PolarGrid stroke="#dadde2" />
-                                <PolarAngleAxis
-                                    dataKey="subject"
-                                    tick={(props) => <CustomTick {...props} radarData={radarData} />}
                                 />
                                 <Radar
                                     name="Score"
@@ -129,15 +104,48 @@ function RadarSection({ title, radarData, avg, count, color = '#E6235A' }) {
     );
 }
 
-export default function MDiagnosisResult({ onNavigate, address = '부산 부산진구 초연로 6', date = null, activeCategory = 'traffic', photo = null, district = null, resultId = null, big = null, mid = null }) {
+// 전문가 결과 — 적합/부적합/만족도 타일 카드 (Figma Frame 47 243x146)
+function ExpertCard({ label, title, tint, stats }) {
+    return (
+        <div className="m-diagres-section-row m-diagres-section-row--expert">
+            <div className="m-diagres-table-label">{label}</div>
+            <div className="m-diagres-section-content">
+                <div className="m-diagres-expert-card">
+                    <p className="m-diagres-expert-card-title">{title}</p>
+                    <div className="m-diagres-expert-tiles">
+                        <div className="m-diagres-expert-tile" style={{ background: tint }}>
+                            <span className="m-diagres-expert-tile-label">적합</span>
+                            <span className="m-diagres-expert-tile-value">{stats.pass}/{stats.total}</span>
+                        </div>
+                        <div className="m-diagres-expert-tile" style={{ background: tint }}>
+                            <span className="m-diagres-expert-tile-label">부적합</span>
+                            <span className="m-diagres-expert-tile-value">{stats.fail}/{stats.total}</span>
+                        </div>
+                        <div className="m-diagres-expert-tile" style={{ background: tint }}>
+                            <span className="m-diagres-expert-tile-label">만족도 평가</span>
+                            <span className="m-diagres-expert-tile-value">{stats.avg}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default function MDiagnosisResult({ onNavigate, address = '부산 부산진구 초연로 6', date = null, photo = null, resultId = null, big = null, mid = null, target = null }) {
     const [stats, setStats] = useState({ avg: FALLBACK_TOTAL_AVG, count: FALLBACK_RESPONSES });
     const [resultDetail, setResultDetail] = useState(null);
     const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
     const [breakdown, setBreakdown] = useState(null);
     const [comments, setComments] = useState([
-        { id: 1, user: 'citizen1024', date: '2025-01-15', text: '횡단보도 주변에 불법 주정차 차량이 많아 보행 시 시야 확보가 어렵습니다. 특히 출퇴근 시간대에 위험하다고 느낍니다.' },
-        { id: 2, user: 'busan_walk', date: '2025-01-15', text: '야간에 가로등 밝기가 부족해 보행 안전이 우려됩니다. 조명 추가 설치나 점검이 필요해 보입니다.' },
+        { id: 1, user: 'citizen1024', date: '2025.01.15', text: '횡단보도 주변에 불법 주정차 차량이 많아 보행 시 시야 확보가 어렵습니다. 특히 출퇴근 시간대에 위험하다고 느꼈습니다.' },
+        { id: 2, user: 'busan_walk', date: '2025.01.15', text: '야간에 가로등 밝기가 부족해 보행 안전이 우려됩니다. 조명 추가 설치나 점검이 필요해 보입니다.' },
     ]);
+
+    const isExpert = useMemo(() => {
+        const t = resultDetail?.진단대상 ?? resultDetail?.target ?? target;
+        return t === '전문가' || t === 'expert';
+    }, [resultDetail, target]);
 
     // Fetch 3-axis breakdown (facility/zone/person) — depends on resultId for scope
     useEffect(() => {
@@ -161,18 +169,34 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
             .catch(() => {});
     }, [resultId]);
 
-    // Derive radar data from result detail answers
-    const radarData = useMemo(() => {
-        if (!resultDetail?.answers) return FALLBACK_RADAR_DATA;
+    // Parse answers once (radar + expert tiles)
+    const parsedAnswers = useMemo(() => {
+        if (!resultDetail?.answers) return null;
         try {
-            const parsed = typeof resultDetail.answers === 'string'
+            return typeof resultDetail.answers === 'string'
                 ? JSON.parse(resultDetail.answers)
                 : resultDetail.answers;
-            return buildRadarFromAnswers(parsed) || FALLBACK_RADAR_DATA;
         } catch {
-            return FALLBACK_RADAR_DATA;
+            return null;
         }
     }, [resultDetail]);
+
+    const radarData = useMemo(
+        () => (parsedAnswers && buildRadarFromAnswers(parsedAnswers)) || FALLBACK_RADAR_DATA,
+        [parsedAnswers],
+    );
+
+    // 전문가 타일 값 — 적합=5, 부적합=3(또는 2 미만 제외), 분모=전체 응답 수
+    const expertStats = useMemo(() => {
+        const values = parsedAnswers
+            ? Object.values(parsedAnswers).map(Number).filter(Number.isFinite)
+            : [];
+        if (!values.length) return { pass: 14, fail: 14, total: 40, avg: '2.1' };
+        const pass = values.filter((v) => v >= 4).length;
+        const fail = values.filter((v) => v >= 2 && v < 4).length;
+        const avg = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
+        return { pass, fail, total: values.length, avg };
+    }, [parsedAnswers]);
 
     // Displayed date: prop → result created_at → today
     const displayDate = useMemo(() => {
@@ -232,35 +256,29 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
         };
     }, [photoZoomOpen]);
 
+    // Figma 302:19985: 전체 상태 라벨 표기는 "전체(All)" (백엔드는 "전체"로 반환)
+    const asAllLabel = (l) => (!l || l === '전체' ? '전체(All)' : l);
+    const facilityLabel = asAllLabel(breakdown?.facility?.label);
+    const zoneLabel = asAllLabel(breakdown?.zone?.label);
+    const personLabel = asAllLabel(breakdown?.person?.label);
+
     return (
         <div className="m-diagres-page">
+            {/* 헤더 — Figma: back + teal 타이틀 (20px/700) */}
             <header className="m-diagres-topbar">
                 <button
                     type="button"
-                    className="m-diagres-iconbtn"
+                    className="m-diagres-back"
                     aria-label="뒤로"
                     onClick={() => onNavigate?.('mDiagnosisList')}
                 >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="15 18 9 12 15 6"/>
-                    </svg>
+                    <img src="/figma-assets/mobile-diagnosis/arrow_back.png" width="24" height="24" alt="" />
                 </button>
-                <span className="m-diagres-topbar-title">시민 진단 결과</span>
-                <button
-                    type="button"
-                    className="m-diagres-iconbtn"
-                    aria-label="홈"
-                    onClick={() => onNavigate?.('home')}
-                >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#242424" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                        <polyline points="9 22 9 12 15 12 15 22"/>
-                    </svg>
-                </button>
+                <span className="m-diagres-topbar-title">{isExpert ? '전문가 진단 결과' : '시민 진단 결과'}</span>
             </header>
 
             <main className="m-diagres-body">
-                {/* 테이블 스타일 정보 행 — Figma 진단결과1_시민 */}
+                {/* 테이블 — Figma Frame 494 */}
                 <div className="m-diagres-table">
                     <div className="m-diagres-table-row">
                         <div className="m-diagres-table-label">위치</div>
@@ -304,56 +322,52 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         <div className="m-diagres-table-value">{displayMid}</div>
                     </div>
 
-                    {/* 전체 평균 레이더 차트 */}
-                    <RadarSection
-                        title="전체 평균"
-                        radarData={radarData}
-                        avg={radarAvg}
-                        count={stats.count}
-                        color={RADAR_COLORS.total}
-                    />
-
-                    {/* 시설물별 세부 정보 */}
-                    <BreakdownSection
-                        label="시설물별"
-                        title={`시설물별 ${breakdown?.facility?.label || '전체'} 세부 정보`}
-                        data={(breakdown?.facility?.radar?.length ? breakdown.facility.radar : FALLBACK_RADAR_DATA)}
-                        empty={!breakdown}
-                        color={RADAR_COLORS.facility}
-                    />
-
-                    {/* 구역별 세부 정보 */}
-                    <BreakdownSection
-                        label="구역별"
-                        title={`구역별 ${breakdown?.zone?.label || '전체'} 세부 정보`}
-                        data={(breakdown?.zone?.radar?.length ? breakdown.zone.radar : FALLBACK_RADAR_DATA)}
-                        empty={!breakdown}
-                        color={RADAR_COLORS.zone}
-                    />
-
-                    {/* 인원별 세부 정보 */}
-                    <BreakdownSection
-                        label="인원별"
-                        title={`인원별 ${breakdown?.person?.label || '전체'} 세부 정보`}
-                        data={(breakdown?.person?.radar?.length ? breakdown.person.radar : FALLBACK_RADAR_DATA)}
-                        empty={!breakdown}
-                        color={RADAR_COLORS.person}
-                    />
+                    {isExpert ? (
+                        <>
+                            <ExpertCard label="전체 평균" title="전체 결과" tint={TILE_TINTS.total} stats={expertStats} />
+                            <ExpertCard label="시설물별" title={`시설물별 ${facilityLabel} 세부 정보`} tint={TILE_TINTS.facility} stats={expertStats} />
+                            <ExpertCard label="구역별" title={`구역별 ${zoneLabel} 세부 정보`} tint={TILE_TINTS.zone} stats={expertStats} />
+                            <ExpertCard label="인원별" title={`인원별 ${personLabel} 세부 정보`} tint={TILE_TINTS.person} stats={expertStats} />
+                        </>
+                    ) : (
+                        <>
+                            <RadarCard
+                                label="전체 평균"
+                                title={`${radarAvg} 전체 평균 (${stats.count})`}
+                                data={radarData}
+                                color={RADAR_COLORS.total}
+                            />
+                            <RadarCard
+                                label="시설물별"
+                                title={`시설물별 ${facilityLabel} 세부 정보`}
+                                data={(breakdown?.facility?.radar?.length ? breakdown.facility.radar : FALLBACK_RADAR_DATA)}
+                                color={RADAR_COLORS.facility}
+                            />
+                            <RadarCard
+                                label="구역별"
+                                title={`구역별 ${zoneLabel} 세부 정보`}
+                                data={(breakdown?.zone?.radar?.length ? breakdown.zone.radar : FALLBACK_RADAR_DATA)}
+                                color={RADAR_COLORS.zone}
+                            />
+                            <RadarCard
+                                label="인원별"
+                                title={`인원별 ${personLabel} 세부 정보`}
+                                data={(breakdown?.person?.radar?.length ? breakdown.person.radar : FALLBACK_RADAR_DATA)}
+                                color={RADAR_COLORS.person}
+                            />
+                        </>
+                    )}
                 </div>
 
-                {/* 좋아요·댓글 섹션 — Figma 22:6387 */}
+                {/* 좋아요·댓글 — Figma Frame 502 */}
                 <div className="m-diagres-reactions">
                     <div className="m-diagres-reaction-bar">
                         <span className="m-diagres-reaction-item">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                            </svg>
+                            <img src="/figma-assets/mobile-diagnosis/favorite_filled.png" width="16" height="16" alt="좋아요" />
                             <span>13</span>
                         </span>
                         <span className="m-diagres-reaction-item">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                            </svg>
+                            <img src="/figma-assets/mobile-diagnosis/comment_filled.png" width="16" height="16" alt="댓글" />
                             <span>2</span>
                         </span>
                     </div>
@@ -369,12 +383,7 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                                         aria-label="댓글 삭제"
                                         onClick={() => setComments((prev) => prev.filter((x) => x.id !== c.id))}
                                     >
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <polyline points="3 6 5 6 21 6"/>
-                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                            <path d="M10 11v6M14 11v6"/>
-                                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                                        </svg>
+                                        <img src="/figma-assets/mobile-diagnosis/icon_delete.png" width="16" height="16" alt="" />
                                     </button>
                                 </div>
                                 <p className="m-diagres-comment-text">{c.text}</p>
@@ -410,6 +419,8 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                     />
                 </div>
             )}
+
+            <MobileBottomNav currentView="mDiagnosisResult" onNavigate={onNavigate} />
         </div>
     );
 }

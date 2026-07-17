@@ -1,33 +1,31 @@
-/* Figma 1005:15469 진단결과1_시민 — 테이블 스타일 레이아웃 */
+/* Figma 302:19985 진단결과1_시민 / 302:20225 진단결과2_전문가 */
 
 .m-diagres-page {
     min-height: 100vh;
     background: #fff;
-    padding-bottom: 92px;
+    padding-bottom: 100px;
     color: #242424;
     font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
 }
 
-/* ───── 상단 네비 바 ───── */
+/* ───── 상단 바 — Figma: back(16,24) + 타이틀(52,23) 20px/700 teal ───── */
 .m-diagres-topbar {
-    height: 48px;
+    height: 71px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 12px;
-    border-bottom: 1px solid #e6e6e6;
+    gap: 12px;
+    padding: 0 16px;
 }
 
-.m-diagres-iconbtn {
-    width: 40px;
-    height: 40px;
+.m-diagres-back {
     background: none;
     border: none;
-    border-radius: 50%;
+    padding: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .m-diagres-topbar-title {
@@ -45,33 +43,35 @@
     padding: 0;
 }
 
-/* ───── 테이블 스타일 레이아웃 (Figma Frame 494 구조) ───── */
+/* ───── 테이블 — Figma Frame 494 ───── */
 .m-diagres-table {
     display: flex;
     flex-direction: column;
+    border-top: 1px solid #e6e6e6;
 }
 
 .m-diagres-table-row {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     min-height: 32px;
     border-bottom: 1px solid #e6e6e6;
 }
 
+/* 사진 행 — Figma h106 */
 .m-diagres-table-row--photo {
-    align-items: flex-start;
     min-height: 106px;
 }
 
+/* 라벨 컬럼 — Figma 100px, #e6e6e6 bg, 12px/600 #000 중앙 */
 .m-diagres-table-label {
     flex-shrink: 0;
     width: 100px;
     padding: 8px 12px;
     font-size: 12px;
-    color: #242424;
+    color: #000;
     font-weight: 600;
     line-height: 1.35;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     align-self: stretch;
     display: flex;
     align-items: center;
@@ -79,25 +79,32 @@
     text-align: center;
     border-right: 1px solid #f2f2f2;
     background: #e6e6e6;
+    box-sizing: border-box;
 }
 
+/* 값 — Figma 12px/400 #1e1e1e */
 .m-diagres-table-value {
     flex: 1;
     padding: 8px 16px;
     font-size: 12px;
-    color: #737373;
+    color: #1e1e1e;
     font-weight: 400;
     line-height: 1.35;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
 }
 
-/* ───── 썸네일 사진 (Figma 22:8368 — 200x215px) ───── */
+/* ───── 썸네일 — Figma 83x90 r8 ───── */
 .m-diagres-thumb {
-    width: 200px;
-    height: 215px;
+    width: 83px;
+    height: 90px;
     border-radius: 8px;
     overflow: hidden;
     background: #f1f2f4;
+    flex-shrink: 0;
 }
 
 .m-diagres-thumb img {
@@ -177,107 +184,154 @@
     background: rgba(0, 0, 0, 0.75);
 }
 
-/* ───── 섹션 행 (레이더차트 포함 행) ───── */
+/* ───── 차트 섹션 행 — Figma h291 ───── */
 .m-diagres-section-row {
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
     border-bottom: 1px solid #e6e6e6;
-    min-height: 290px;
+    min-height: 291px;
 }
 
-.m-diagres-section-label {
-    flex-shrink: 0;
-    width: 100px;
-    padding: 12px;
-    font-size: 12px;
-    color: #242424;
-    font-weight: 600;
-    line-height: 1.35;
-    letter-spacing: -0.02em;
-    border-right: 1px solid #f2f2f2;
-    background: #e6e6e6;
-    align-self: stretch;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+/* 전문가 타일 행 — Figma h162 */
+.m-diagres-section-row--expert {
+    min-height: 162px;
 }
 
 .m-diagres-section-content {
     flex: 1;
     padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    min-width: 0;
 }
 
-/* ───── 레이더 카드 ───── */
+/* ───── 레이더 카드 — Figma 250x275 r6 border #e6e6e6 ───── */
 .m-diagres-radar-card {
-    width: 100%;
+    width: 250px;
+    max-width: 100%;
+    border: 1px solid #e6e6e6;
+    border-radius: 6px;
+    /* Figma inside-stroke 1px: 콘텐츠 오프셋 12/9, 내부폭 226 유지 */
+    padding: 8px 11px 9px;
+    box-sizing: border-box;
 }
 
-.m-diagres-radar-card--disabled {
-    opacity: 0.6;
-}
-
+/* 카드 타이틀 — Figma: Gmarket Sans Medium 11.65px ls-0.04em #242424 */
 .m-diagres-radar-card-title {
-    margin: 0 0 4px;
-    font-size: 13px;
-    color: #555;
-    letter-spacing: -0.02em;
-}
-
-.m-diagres-card-head {
-    margin: 0 0 4px;
-    text-align: center;
-    font-size: 14px;
-    color: #555;
-    letter-spacing: -0.02em;
-}
-
-.m-diagres-avg {
-    font-size: 18px;
-    font-weight: 800;
+    margin: 0;
+    font-family: 'GmarketSans', 'Pretendard Variable', sans-serif;
+    font-weight: 500;
+    font-size: 11.65px;
     color: #242424;
-    margin-right: 4px;
+    letter-spacing: -0.04em;
+    line-height: 1.4;
 }
 
+/* 차트 — Figma 226x226 */
 .m-diagres-chart {
-    width: 100%;
-    height: 250px;
+    width: 226px;
+    max-width: 100%;
+    height: 226px;
+    margin-top: 14px;
 }
 
+/* 축 라벨 — Figma 8.74px/400, 값 10.2px/700 */
 .m-diagres-tick-label {
-    fill: #555;
-    font-size: 10px;
+    fill: #242424;
+    font-size: 8.74px;
+    font-weight: 400;
     font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
 }
 
 .m-diagres-tick-value {
     fill: #242424;
-    font-size: 11px;
+    font-size: 10.2px;
     font-weight: 700;
     font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif;
 }
 
-/* ───── 좋아요·댓글 섹션 — Figma 22:6387 ───── */
+/* ───── 전문가 결과 카드 — Figma 243x146 r8 border #e6e6e6 ───── */
+.m-diagres-expert-card {
+    width: 243px;
+    max-width: 100%;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    padding: 12px 16px 17px;
+    box-sizing: border-box;
+}
+
+/* 타이틀 — Figma 16px/500 #242424 ls-0.04em */
+.m-diagres-expert-card-title {
+    margin: 0 0 20px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #242424;
+    letter-spacing: -0.04em;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* 타일 3개 — Figma 65x80 r8 gap 8 */
+.m-diagres-expert-tiles {
+    display: flex;
+    gap: 8px;
+}
+
+.m-diagres-expert-tile {
+    flex: 1;
+    height: 80px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    padding-top: 17px;
+}
+
+/* 타일 라벨 — Figma 14px/400 #000 */
+.m-diagres-expert-tile-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #000;
+    line-height: 1.35;
+    white-space: nowrap;
+}
+
+/* 타일 값 — Figma 14px/700 #000, 라벨과 gap 8 */
+.m-diagres-expert-tile-value {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #000;
+    letter-spacing: -0.04em;
+    line-height: 1.35;
+}
+
+/* ───── 좋아요·댓글 — Figma Frame 502 ───── */
 .m-diagres-reactions {
-    padding: 16px 16px 32px;
-    border-top: 1px solid #e6e6e6;
+    padding: 12px 12px 24px;
 }
 
 .m-diagres-reaction-bar {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
 .m-diagres-reaction-item {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     font-size: 14px;
-    color: #555;
-    font-weight: 500;
-    letter-spacing: -0.02em;
+    font-weight: 400;
+    color: #1e1e1e;
+    letter-spacing: 0;
+    line-height: 1.35;
+}
+
+.m-diagres-reaction-item img {
+    display: block;
 }
 
 .m-diagres-comments {
@@ -286,41 +340,46 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
-/* Figma 22:6387 — 연회색 둥근 말풍선 카드 */
+/* 댓글 카드 — Figma #f2f2f2 r8 p12 */
 .m-diagres-comment {
-    background: #f4f4f6;
-    border-radius: 14px;
-    padding: 12px 14px;
+    background: #f2f2f2;
+    border-radius: 8px;
+    padding: 12px;
 }
 
 .m-diagres-comment-head {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 6px;
+    margin-bottom: 16px;
 }
 
+/* 작성자 — Figma 14px/600 #242424 */
 .m-diagres-comment-user {
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     color: #242424;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
+    line-height: 1.35;
 }
 
+/* 날짜 — Figma 14px/400 */
 .m-diagres-comment-date {
     margin-left: auto;
-    font-size: 12px;
-    color: #aaa;
-    letter-spacing: -0.01em;
+    font-size: 14px;
+    font-weight: 400;
+    color: #767676;
+    letter-spacing: 0;
+    line-height: 1.35;
 }
 
 .m-diagres-comment-del {
     background: none;
     border: none;
-    padding: 2px;
+    padding: 0;
     margin-left: 4px;
     cursor: pointer;
     display: inline-flex;
@@ -329,10 +388,12 @@
     line-height: 0;
 }
 
+/* 본문 — Figma 14px/400 #1e1e1e lh1.35 */
 .m-diagres-comment-text {
     margin: 0;
-    font-size: 13px;
-    color: #555;
-    line-height: 1.55;
-    letter-spacing: -0.02em;
+    font-size: 14px;
+    font-weight: 400;
+    color: #1e1e1e;
+    line-height: 1.35;
+    letter-spacing: 0;
 }

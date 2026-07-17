@@ -1,0 +1,28 @@
+/* Figma 302:20369 — 일반 진단 완료 (M진단 전용 오버라이드, 공유 CheckDone은 수정하지 않음) */
+
+/* 본문 설명 — Figma 14px/400 #1e1e1e */
+.m-diagdone-wrap .done-description {
+    color: #1e1e1e;
+}
+
+/* 하단 버튼 — Figma 103x59 / 230x59 (공유 CheckDone은 56, 진단 화면만 오버라이드) */
+.m-diagdone-wrap .btn-close,
+.m-diagdone-wrap .btn-home {
+    height: 59px;
+}
+
+/* Figma 302:20369: 버튼 y=772 (프레임 850 기준 하단 여백 19) */
+.m-diagdone-wrap .check-done-footer {
+    padding-bottom: 19px;
+}
+
+/* Figma 302:20369: 콘텐츠 블록 중심 y≈407/850 — 공유 flex 센터링 대비 아래로 보정 */
+.m-diagdone-wrap .check-done-content {
+    margin-top: 43px;
+    margin-bottom: 0;
+}
+
+/* Figma 302:20369: 아이콘(y360)↔타이틀(y380) 간격 20 (공유 24 오버라이드) */
+.m-diagdone-wrap .check-icon-wrapper {
+    margin-bottom: 20px;
+}

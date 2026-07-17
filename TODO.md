@@ -90,9 +90,11 @@
 
 ### 진단하기 (모바일 — `MDiagnosisList.jsx`/`MDiagnosisMap.jsx`)
 - [x] 카테고리 pill 통일 — 사용자 결정: 3개 도메인(제보/제안/진단) 모두 pill. CategoryRail `variant="pill"` 추가·적용 (`0a13672`, verify 검증). 지도뷰는 이미 pill
+- [x] **M진단 전 화면 Figma `302:19673` 섹션 정합 (2026-07-17)** — 프레임 매핑(최신=아래행 기준): 지도 `302:21087`(목록5)/`302:20880`(목록6), 리스트 `302:21370`(목록4), 폼 시민 `302:19676`/전문가 `302:19840`, 결과 시민 `302:19985`/전문가 `302:20225`, 완료 `302:20369`. List/Map/Form/Result/Done/FilterModal jsx+css 재작업, 에셋 21종 Figma export(`/figma-assets/mobile-diagnosis/`). 라디오/체크/핀/얼굴/화살표 전부 노드 export, 손 SVG 없음. 폰트 Pretendard Variable 통일 + 결과 레이더카드 소형 라벨만 GmarketSans 11.65px(Figma 실측). Playwright getComputedStyle 92항목 ±1px 전수 패스(뷰포트 393x852=Figma 프레임 기준), 콘솔 에러 0, 4xx/5xx 0, vite build 통과. 완료 화면은 공유 CheckDone 유지 + `MDiagnosisDone.css` 스코프 오버라이드(버튼 59px, y좌표 321/381/774 Figma 일치). 결과 카드 타이틀 "전체(All)" 표기 정규화
 
 ### 공공데이터 (모바일)
-- [~] **스킵 (사용자 결정)** — 모바일 전용 Figma 부재로 디자인 대기. 나오면 착수(추측 제작 안 함)
+- [x] **신규 구현 (2026-07-17)** — WDC Figma 섹션 `302:21475` 공개로 `MPublicData.jsx/.css` 신규 개발. 프레임 매핑: `302:21809`(기본) / `302:22500`(칩+버블) / `302:22863`(구 선택 줌) / `302:23424`(카테고리+상세) / `302:23586`(풀시트) / `302:23194`(전체 그리드 56지표 원본). BusanMap 재사용(수정 없음, 페이지 스코프 CSS만) + 줌/포커스 래퍼 + 구별 값 버블. 시트 top438/r30, 칩 57·104·89px 고정폭, 카드 105x97 그리드, 와이드카드 175px — Playwright getComputedStyle ±1px 검증, 콘솔/4xx 0. 아이콘 56종 Figma 노드 개별 export(`/figma-assets/mobile-publicdata/kpi/`). 값은 overview 실데이터(공공도서관·교통사고 구별, CCTV·미세먼지 시단위)만 표시, 나머지 '준비중' — 45%/4위 mock 수치 미사용. view `mPublicData`, 홈 공공데이터 카드 진입, verify routes 등록.
+  - 잔여: 지표 연도별 추이(Figma 2023~2025 3행)는 시계열 백엔드 부재로 단일 연도 행만 표시. 주거 카테고리는 모바일 Figma 그리드 부재 → PC 주거 9종 재사용. 하단 네비는 확정 잠금 사양 유지(Figma mock의 제보/제안 분리 5탭 미적용)
 
 ### 제보/제안 (모바일 — `MReportMap.jsx`/`MProposalMap.jsx`)
 - [x] 뒤로가기 버튼 누락 — `MProposalMap`이 `showBack={false}`였음(제보맵은 true). `showBack={true}` + onBack→mProposalList로 통일 (2026-07-15 verify 캡처 확인)
