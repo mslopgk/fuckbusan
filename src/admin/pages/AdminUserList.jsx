@@ -74,10 +74,28 @@ export default function AdminUserList({ onNavigate }) {
     const totalPages = Math.max(1, Math.ceil(users.length / itemsPerPage));
     const visible = users.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
+    // 슈퍼관리자(admin 계정) 열람 여부 — 타이틀 왕관 배지 (Figma 슈퍼관리자01 프레임)
+    const isSuperViewer = (() => {
+        try {
+            return JSON.parse(localStorage.getItem('user_info') || '{}').loginId === 'admin';
+        } catch {
+            return false;
+        }
+    })();
+
     return (
         <AdminLayout onNavigate={onNavigate} currentView="adminUserList">
+            <div className="admin-fixed-1300">
             <div className="content-header-new">
-                <h2 className="content-title-new">회원관리 - 관리자</h2>
+                <h2 className="content-title-new">
+                    회원관리 - 관리자
+                    {isSuperViewer && (
+                        /* 슈퍼관리자 열람 시 왕관 배지 (Figma 302:27285/27286) */
+                        <span className="title-crown-badge" title="슈퍼관리자">
+                            <img src="/figma-assets/admin/crown_glyph.png" alt="슈퍼관리자" />
+                        </span>
+                    )}
+                </h2>
                 <div className="total-count-text">전체 회원 <span>{users.length}명</span></div>
             </div>
 
@@ -92,6 +110,8 @@ export default function AdminUserList({ onNavigate }) {
                         onChange={(e) => setInputVal(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     />
+                    {/* Figma export 검색 아이콘 (302:27293, #aaa) */}
+                    <img className="search-icon-img" src="/figma-assets/admin/rp_search.png" alt="" />
                 </div>
                 <button className="btn-search-new" onClick={handleSearch}>검색</button>
             </div>
@@ -100,14 +120,15 @@ export default function AdminUserList({ onNavigate }) {
                 <table className="admin-table-new">
                     <thead>
                         <tr>
-                            <th>회원이름</th>
-                            <th>아이디</th>
-                            <th>닉네임</th>
-                            <th>연락처</th>
-                            <th>주소</th>
-                            <th>이메일</th>
-                            <th>승인상태</th>
-                            <th>메뉴</th>
+                            {/* Figma 302:26971/27144 컬럼 배분 (아이디 컬럼은 문서요구 추가분) */}
+                            <th style={{ width: 110 }}>회원이름</th>
+                            <th style={{ width: 110 }}>아이디</th>
+                            <th style={{ width: 115 }}>닉네임</th>
+                            <th style={{ width: 150 }}>연락처</th>
+                            <th style={{ width: 300 }}>주소</th>
+                            <th style={{ width: 175 }}>이메일</th>
+                            <th style={{ width: 180 }}>승인상태</th>
+                            <th style={{ width: 160 }}>메뉴</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -152,7 +173,6 @@ export default function AdminUserList({ onNavigate }) {
                                             {' | '}
                                             <span
                                                 className="btn-action-text"
-                                                style={{ color: '#e53e3e' }}
                                                 onClick={() => handleDelete(item)}
                                             >
                                                 삭제
@@ -166,14 +186,13 @@ export default function AdminUserList({ onNavigate }) {
                 </table>
 
                 <div className="pagination-new">
-                    <svg
-                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        style={{ transform: 'rotate(180deg)', cursor: 'pointer', opacity: page === 1 ? 0.3 : 1 }}
+                    <button
+                        type="button"
+                        className={`page-arrow-new ${page === 1 ? 'disabled' : ''}`}
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                     >
-                        <polyline points="9 18 15 12 9 6" />
-                    </svg>
+                        <img src="/figma-assets/admin/rp_page_prev.png" alt="이전" />
+                    </button>
                     {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => {
                         const start = Math.max(1, Math.min(page - 4, totalPages - 9));
                         return start + i;
@@ -186,15 +205,15 @@ export default function AdminUserList({ onNavigate }) {
                             {n}
                         </span>
                     ))}
-                    <svg
-                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        style={{ cursor: 'pointer', opacity: page === totalPages ? 0.3 : 1 }}
+                    <button
+                        type="button"
+                        className={`page-arrow-new ${page === totalPages ? 'disabled' : ''}`}
                         onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     >
-                        <polyline points="9 18 15 12 9 6" />
-                    </svg>
+                        <img src="/figma-assets/admin/rp_page_next.png" alt="다음" />
+                    </button>
                 </div>
+            </div>
             </div>
         </AdminLayout>
     );

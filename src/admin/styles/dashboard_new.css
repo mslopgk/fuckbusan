@@ -1,3 +1,4 @@
+/* 관리자 셸 + 회원관리 리스트 공통 — Figma 302:27449/26797/27144 실측 (1920 기준) */
 .admin-dashboard-new {
     display: flex;
     height: 100vh;
@@ -6,241 +7,291 @@
     font-family: 'Pretendard Variable', sans-serif;
 }
 
-/* Sidebar Styling */
-.admin-sidebar-new {
-    width: 260px;
-    background-color: #1a1a1b; /* Very dark gray/black */
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    padding: 30px 0;
-}
-
-.sidebar-logo-new {
-    font-size: 24px;
-    font-weight: 700;
-    padding: 0 30px;
-    margin-bottom: 50px;
-}
-
-.sidebar-menu-new {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.menu-item-new {
-    padding: 15px 30px;
-    cursor: pointer;
-    font-size: 16px;
-    color: #999;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: color 0.2s;
-}
-
-.menu-item-new:hover {
-    color: #fff;
-}
-
-.menu-item-new.active {
-    color: #23BDBB; /* Teal for active main menu */
-}
-
-.submenu-item-new {
-    padding: 10px 30px 10px 45px;
-    cursor: pointer;
-    font-size: 15px;
-    color: #999;
-    transition: color 0.2s;
-}
-
-.submenu-item-new.active {
-    color: #23BDBB;
-}
-
-.submenu-item-new:hover {
-    color: #fff;
-}
-
 /* Main Layout */
 .admin-main-new {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-width: 0;
 }
 
-/* Header Styling */
+/* Header — 높이 100, 하단 보더 #ddd (Figma Vector y=100) */
 .admin-header-new {
-    height: 80px;
+    height: 100px;
+    flex-shrink: 0;
     background-color: #fff;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding: 0 40px;
-    border-bottom: 1px solid #eee;
+    padding: 8px 47px 0; /* 우측 x1873(1920-47), 컨텐츠 중심 y54 (Figma 버튼 29..79) */
+    border-bottom: 1px solid #ddd;
+    box-sizing: border-box;
 }
 
 .header-user-info {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-right: 20px;
-    font-size: 15px;
-    font-weight: 500;
+    gap: 12px; /* 아바타(1630)→이름(1642) */
+    margin-right: 24px; /* 이름끝(1698)→버튼(1722) */
+    font-size: 16px;
+    font-weight: 400;
+    color: #333;
 }
 
+/* 아바타: 32px teal 원 + 흰 인물 글리프(26x33, 좌3 상5 오프셋, 원형 클리핑) */
 .user-avatar-circle {
     width: 32px;
     height: 32px;
-    background-color: #e0e0e0;
+    background-color: #23BDBB;
     border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.user-avatar-circle img {
+    position: absolute;
+    left: 3px;
+    top: 5px;
+    width: 26px;
+    height: 33px;
+}
+
+/* 로그아웃 버튼: 151x50 r10 #ddd 보더, 아이콘 21 + 텍스트 16 #777 */
+.btn-logout-new {
+    width: 151px;
+    height: 50px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+    color: #777;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: inherit;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #23BDBB;
+    gap: 10px; /* 아이콘끝(1774)→텍스트(1784) */
+    cursor: pointer;
+    box-sizing: border-box;
 }
 
-.btn-logout-new {
-    padding: 8px 16px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background: none;
-    color: #666;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
+.btn-logout-new img {
+    width: 21px;
+    height: 21px;
 }
 
 .btn-logout-new:hover {
     background-color: #f9f9f9;
 }
 
-/* Content Layout */
+/* Content — 흰 배경, 좌 50px (콘텐츠 시작 x=350) */
 .admin-content-new {
     flex: 1;
-    padding: 40px;
+    padding: 40px 40px 40px 50px;
     overflow-y: auto;
-    background: #f6f6f6;
+    background: #fff;
+}
+
+/* 회원관리 계열 페이지: Figma 고정폭 1300 */
+.admin-fixed-1300 {
+    width: 1300px;
 }
 
 .content-header-new {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 30px;
+    margin-bottom: 20px; /* 타이틀 bottom(176)→검색박스(196) */
 }
 
 .content-title-new {
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 700;
+    line-height: 36px;
+    color: #333;
     margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* 슈퍼관리자 왕관 배지 (Figma 302:27285/27286) */
+.title-crown-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #ffdb00;
+    margin-left: 17px; /* 타이틀끝(559)→배지(576) */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.title-crown-badge img {
+    width: 16px;
+    height: 10px;
+    display: block;
 }
 
 .total-count-text {
-    font-size: 15px;
-    color: #666;
+    font-size: 18px;
+    line-height: 21px;
+    color: #111;
+    padding-bottom: 1px; /* 텍스트 bottom 175 vs 타이틀 bottom 176 */
 }
 
 .total-count-text span {
     font-weight: 700;
-    color: #333;
 }
 
-/* Search Box */
+/* Search Box — 한 줄형 (전문가/관리자, Figma 302:26938: 1300x91 #f4f4f4 r10) */
 .search-box-new {
-    background-color: #f9f9f9;
-    padding: 24px 30px;
-    border-radius: 12px;
+    background-color: #f4f4f4;
+    height: 91px;
+    padding: 0 30px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
-    gap: 30px;
-    margin-bottom: 40px;
+    margin-bottom: 23px; /* 박스 bottom(288)→표 상단보더(311) */
     border: none;
+    box-sizing: border-box;
 }
 
+/* 2줄형 (시민, Figma 302:27452: 1300x150) */
 .search-box-new-col {
-    background-color: #f9f9f9;
-    padding: 24px 30px;
-    border-radius: 12px;
+    background-color: #f4f4f4;
+    padding: 20px 30px;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 40px;
+    gap: 10px; /* 행간 (216+50→276) */
+    margin-bottom: 30px; /* 박스 bottom(346)→표 상단보더(376) */
     border: none;
+    box-sizing: border-box;
 }
 
 .search-row {
     display: flex;
     align-items: center;
-    gap: 12px;
 }
 
+/* 라벨: x+30 시작, 인풋 x+149 시작 → 라벨 칸 119px, 16px w400 #333 */
 .search-label-new {
-    font-weight: 700;
-    font-size: 15px;
+    width: 119px;
+    flex-shrink: 0;
+    font-weight: 400;
+    font-size: 16px;
+    color: #333;
 }
 
 .search-input-wrapper-new {
     position: relative;
-    flex: 1;
-    max-width: 300px;
+    width: 290px;
+    flex-shrink: 0;
+}
+
+.search-input-wrapper-new .search-icon-img {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
 }
 
 .search-input-new {
     width: 100%;
-    height: 48px;
-    padding: 0 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
+    height: 50px;
+    padding: 0 40px 0 20px;
+    border: none;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 16px;
+    color: #333;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.search-input-new::placeholder {
+    color: #777;
+}
+
+/* 시민 카테고리 셀렉트: 290x50 흰 박스, 검정 chevron 20x10 우측 20 */
+.mgr-select {
+    width: 290px;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+    background-color: #fff;
+    font-size: 16px;
+    font-family: inherit;
+    color: #333;
+    padding: 0 40px 0 20px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url('/figma-assets/admin/select_chevron.png');
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 20px 10px;
+    outline: none;
+    box-sizing: border-box;
 }
 
 .btn-search-new {
     background-color: #23BDBB;
-    color: white;
-    padding: 0 30px;
-    height: 48px;
+    color: #fff;
+    width: 100px;
+    height: 50px;
+    margin-left: 13px; /* 인풋끝(786/789)→버튼(799/802) */
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
+    font-size: 16px;
     font-weight: 700;
+    font-family: inherit;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
-/* 카테고리 선택 드롭다운 (제보/제안/설문 관리 검색 통일) */
+/* 시민 프레임 검색 버튼은 #43C1C1 (Figma 302:27458) */
+.btn-search-new--cyan {
+    background-color: #43C1C1;
+}
+
+/* 카테고리 선택 드롭다운 (제보/제안/설문 관리 검색 통일 — 기존 페이지 유지용) */
 .search-select-new {
-    height: 48px;
+    height: 50px;
     min-width: 220px;
-    padding: 0 40px 0 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 0 40px 0 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
     color: #333;
     background-color: #fff;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-image: url('/figma-assets/admin/select_chevron.png');
     background-repeat: no-repeat;
-    background-position: right 14px center;
+    background-position: right 20px center;
+    background-size: 20px 10px;
 }
 
 .search-select-new:focus {
     outline: none;
-    border-color: #23BDBB;
 }
 
-/* 검색 통일 레이아웃: 라벨 고정폭으로 드롭다운·검색박스 좌측 정렬 */
+/* 검색 통일 레이아웃: 라벨 고정폭 */
 .search-label-fixed {
-    width: 90px;
+    width: 119px;
     flex-shrink: 0;
 }
 
-/* Table Styling */
+/* Table — 상단/헤더하단 #aaa 1px, 행 구분 #ddd 1px (Figma Vector 실측) */
 .table-container-new {
     background-color: transparent;
     overflow: hidden;
@@ -253,23 +304,30 @@
 }
 
 .admin-table-new th {
-    height: 54px;
-    border-top: 2px solid #ccc;
-    border-bottom: 2px solid #ccc;
+    height: 49px; /* 376→425 */
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
     text-align: center;
-    padding: 0 15px;
-    font-size: 14px;
+    padding: 0 12px;
+    font-size: 16px;
     font-weight: 700;
     color: #333;
 }
 
 .admin-table-new td {
-    height: 60px;
-    border-bottom: 1px solid #f2f2f2;
-    padding: 0 15px;
-    font-size: 14px;
-    color: #666;
+    height: 50px;
+    border-bottom: 1px solid #ddd;
+    padding: 0 12px;
+    font-size: 16px;
+    color: #777;
     text-align: center;
+}
+
+/* 첫 컬럼(회원이름)은 좌측 정렬 + 24px 인셋 (Figma x374 = 표 350+24) */
+.admin-table-new th:first-child,
+.admin-table-new td:first-child {
+    text-align: left;
+    padding-left: 24px;
 }
 
 .admin-table-new tr:hover {
@@ -278,10 +336,10 @@
 
 .nickname-cell {
     font-weight: 700;
-    color: #333 !important;
+    color: #111 !important;
 }
 
-/* 슈퍼관리자(로그인 ID=admin) 왕관 표시 */
+/* 슈퍼관리자(로그인 ID=admin) 행 왕관 표시 — 사용자 확정 유지 */
 .super-admin-crown {
     margin-left: 6px;
     font-size: 14px;
@@ -293,39 +351,61 @@
 .action-btns-new {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    font-size: 13px;
-    color: #999;
+    align-items: center;
+    gap: 10px; /* 수정(1568)|(1578)삭제 */
+    font-size: 14px;
+    color: #111;
 }
 
 .btn-action-text {
     cursor: pointer;
+    color: #111;
 }
 
 .btn-action-text:hover {
-    color: #333;
+    color: #23BDBB;
 }
 
-/* Pagination */
+/* Pagination — 30px pitch, active teal 700, 화살표 5x10 #ddd */
 .pagination-new {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 4px;
-    padding: 30px 0;
+    padding: 26px 0 30px; /* 표 하단(925)→숫자(955) 30px, 숫자 상단 패딩 4 감안 */
     font-size: 16px;
-    color: #999;
+    color: #777;
 }
 
-/* 숫자 글자 폭(6~9px)만 클릭 가능하고 나머지는 gap(dead zone)이라 실제 클릭이
-   잘 안 먹는 문제(버튼처럼 보이지만 히트영역이 지나치게 좁음) — 패딩으로 히트영역 확장 */
+.page-arrow-new {
+    width: 25px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+}
+
+.page-arrow-new img {
+    width: 5px;
+    height: 10px;
+    display: block;
+}
+
+.page-arrow-new.disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
 .page-num-new {
     cursor: pointer;
-    padding: 8px 10px;
-    min-width: 16px;
+    min-width: 30px;
     text-align: center;
+    line-height: 19px;
+    padding: 4px 0;
     border-radius: 6px;
-    line-height: 1;
     transition: background-color 0.15s, color 0.15s;
 }
 

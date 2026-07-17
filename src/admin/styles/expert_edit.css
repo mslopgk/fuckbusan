@@ -1,183 +1,122 @@
-/* ExpertEdit CSS - Based on MemberEdit but with separate classes */
-.expert-edit-container {
-    display: flex;
-    height: 100vh;
-    background-color: #fff;
-    color: #333;
-    font-family: 'Pretendard Variable', sans-serif;
-}
+/* ExpertEdit 전용 — 승인상태 토글 + 승인 확인 모달 (Figma 302:26663 / 302:27637 실측) */
 
-.expert-edit-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.expert-edit-content {
-    flex: 1;
-    padding: 40px;
-    overflow-y: auto;
-}
-
-.ex-edit-header {
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 20px;
-    margin-bottom: 40px;
-}
-
-.ex-edit-title {
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0;
-}
-
-.ex-edit-form-box {
-    background-color: transparent;
-    padding: 0 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-top: 20px;
-}
-
-.ex-edit-row {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-}
-
-.ex-edit-label {
-    width: 120px;
-    font-weight: 700;
-    font-size: 15px;
-    color: #333;
-}
-
-.ex-edit-input {
-    flex: 1;
-    max-width: 400px;
-    height: 48px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 0 16px;
-    font-size: 14px;
-    color: #666;
-    background-color: #fff;
-    outline: none;
-}
-
-.ex-edit-input:focus {
-    border-color: #23BDBB;
-}
-
-.ex-edit-input.wide {
-    max-width: 600px;
-}
-
-/* Status Label Style from ExpertManagement */
-.ex-status-display {
-    display: inline-block;
-    padding: 6px 16px;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.ex-status-display.approved-orange {
-    background-color: #ffe0b2;
-    color: #e65100;
-}
-
-.ex-status-display.approved-green {
-    background-color: #c8e6c9;
-    color: #2e7d32;
-}
-
-.ex-status-display.pending-gray {
-    background-color: #e0e0e0;
-    color: #757575;
-}
-
-.ex-edit-text-only {
-    font-size: 14px;
-    color: #333;
-}
-
-.ex-edit-text-only span {
-    font-weight: 700;
-}
-
-/* 승인상태 토글 뱃지 */
+/* 승인상태 토글: 승인 48x28 r10 teal / 미승인 56x28 r10 #ddd, 텍스트 14px #111, gap 10 */
 .approval-toggle {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 10px;
 }
 
 .approval-toggle-btn {
-    height: 30px;
-    padding: 0 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 15px;
-    background: #f5f5f5;
-    color: #aaa;
-    font-size: 13px;
-    font-weight: 700;
+    width: 48px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    background: #ddd;
+    color: #111;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: inherit;
     cursor: pointer;
-    transition: all .12s;
+    transition: background 0.12s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.approval-toggle-btn.pending {
+    width: 56px;
 }
 
 .approval-toggle-btn.on {
-    background: #dcf6da;
-    border-color: #b7e6b3;
-    color: #2b8a3e;
+    background: #23BDBB;
 }
 
-.approval-toggle-btn.pending.on {
-    background: #ececec;
-    border-color: #ddd;
-    color: #666;
-}
-
-/* collapsible 참여현황 헤더 */
-.participation-caption-toggle {
+/* 승인 확인 모달 — 오버레이 #000 70%, 박스 500x242 r10 */
+.apv-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    color: #333;
-    user-select: none;
+    justify-content: center;
+    z-index: 1000;
 }
 
-/* Footer Buttons */
-.ex-edit-footer {
+.apv-modal {
+    position: relative;
+    width: 500px;
+    height: 242px;
+    background: #fff;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.apv-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.apv-modal-close img {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+/* 타이틀: 박스 상단 +49, 20px/700 #111 */
+.apv-modal-title {
+    margin-top: 49px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+    color: #111;
+}
+
+/* 설명: y864 (타이틀 하단 +20), 16px #111 */
+.apv-modal-desc {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 16px;
+    line-height: 19px;
+    color: #111;
+}
+
+/* 버튼 행: 박스 상단 +152, 좌우 40 인셋, 버튼 200x50 r5, gap 20 */
+.apv-modal-actions {
+    position: absolute;
+    left: 40px;
+    right: 40px;
+    top: 152px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 60px;
-    padding-top: 40px;
-    border-top: 2px solid #ccc;
+    gap: 20px;
 }
 
-.btn-ex-delete {
-    background-color: #f0f0f0;
-    color: #999;
+.apv-btn-cancel,
+.apv-btn-ok {
+    width: 200px;
+    height: 50px;
     border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.btn-ex-confirm {
-    background-color: #23BDBB;
-    color: white;
-    border: none;
-    padding: 0 60px;
-    height: 56px;
-    border-radius: 8px;
+    border-radius: 5px;
+    color: #fff;
     font-size: 18px;
     font-weight: 700;
+    font-family: inherit;
     cursor: pointer;
+}
+
+.apv-btn-cancel {
+    background: #aaa;
+}
+
+.apv-btn-ok {
+    background: #23BDBB;
 }

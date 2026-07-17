@@ -26,7 +26,7 @@ export default function LoginNew({ onNavigate }) {
                 return;
             }
             localStorage.setItem('access_token', data.access_token);
-            localStorage.setItem('user_info', JSON.stringify({ username: data.user_name || '관리자' }));
+            localStorage.setItem('user_info', JSON.stringify({ username: data.user_name || '관리자', loginId: email }));
             if (onNavigate) onNavigate('adminMain');
         } catch (err) {
             console.error("Login Error:", err);

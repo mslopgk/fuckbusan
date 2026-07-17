@@ -1,71 +1,60 @@
-/* MemberEdit CSS - Matches Image */
-.member-edit-container {
-    display: flex;
-    height: 100vh;
-    background-color: #fff;
-    color: #333;
-    font-family: 'Pretendard Variable', sans-serif;
-}
+/* MemberEdit/ExpertEdit 공용 — Figma 302:27320(시민02)/302:26663(관리2) 실측 (1920 기준) */
 
-.member-edit-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.member-edit-content {
-    flex: 1;
-    padding: 40px;
-    overflow-y: auto;
-}
-
+/* 타이틀 + 구분선: 타이틀 30px, 아래 29px 지점에 #aaa 1px (y205), 콘텐츠 폭 1184 */
 .edit-form-header {
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 20px;
-    margin-bottom: 40px;
+    width: 1184px;
+    border-bottom: 1px solid #aaa;
+    padding-bottom: 29px;
+    margin-bottom: 23px; /* 구분선(205) → 첫 인풋(228) */
 }
 
 .edit-form-title {
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 700;
+    line-height: 36px;
+    color: #333;
     margin: 0;
 }
 
 .edit-form-box {
     background-color: transparent;
-    padding: 0 40px;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px; /* 행 pitch 70 = 인풋 50 + 20 */
     border: none;
-    margin-top: 20px;
+    margin-top: 0;
 }
 
 .edit-form-row {
     display: flex;
     align-items: center;
-    gap: 30px;
 }
 
+/* 라벨: x+30 시작, 값 x+157 시작 (Figma 380/507) */
 .edit-form-label {
-    width: 120px;
+    width: 157px;
+    padding-left: 30px;
+    box-sizing: border-box;
+    flex-shrink: 0;
     font-weight: 700;
-    font-size: 15px;
+    font-size: 16px;
     color: #333;
 }
 
+/* 인풋: 300x50, #ddd 1px, r10, 텍스트 16px #777 (readonly 포함 동일 — Figma) */
 .edit-form-input {
-    flex: 1;
-    max-width: 400px;
-    height: 48px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 0 16px;
-    font-size: 14px;
-    color: #666;
+    width: 300px;
+    height: 50px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 0 19px; /* 텍스트 x527 = 507+20(보더포함) */
+    font-size: 16px;
+    color: #777;
     background-color: #fff;
+    font-family: inherit;
     outline: none;
+    box-sizing: border-box;
 }
 
 .edit-form-input:focus {
@@ -73,11 +62,11 @@
 }
 
 .edit-form-input.wide {
-    max-width: 600px;
+    width: 624px;
 }
 
 .edit-form-text-only {
-    font-size: 14px;
+    font-size: 16px;
     color: #333;
 }
 
@@ -85,24 +74,44 @@
     font-weight: 700;
 }
 
-/* 참여현황 리스트 */
+/* 비밀번호 초기화 (사용자 확정 추가 기능) */
+.btn-pw-reset {
+    margin-left: 10px;
+    height: 50px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #333;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-pw-reset:hover {
+    background: #f9f9f9;
+}
+
+/* 참여현황 리스트 — 표 727px, 섹션 타이틀 아래 20, 섹션 간 30 */
 .participation-wrap {
-    flex: 1;
-    max-width: 620px;
+    width: 727px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 30px;
 }
 
 .participation-block {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 20px;
 }
 
 .participation-caption {
-    font-size: 14px;
-    color: #333;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22px;
+    color: #111;
 }
 
 .participation-caption strong {
@@ -110,78 +119,127 @@
     color: #23BDBB;
 }
 
-/* collapsible 참여현황 헤더 (펼침/접힘) */
+/* 접기 헤더: 셰브론은 Figma x968 (표 좌측 507 기준 +461) */
 .participation-caption-toggle {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     cursor: pointer;
-    color: #333;
     user-select: none;
-    max-width: 620px;
 }
 
-.participation-table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #eee;
-    border-radius: 8px;
+.participation-caption-toggle .section-chevron {
+    position: absolute;
+    left: 461px;
+    top: 6px;
+    width: 16px;
+    height: 9px;
+    transition: transform 0.15s;
+}
+
+.participation-caption-toggle .section-chevron.closed {
+    transform: rotate(-90deg);
+}
+
+/* div 기반 참여현황 표 (구분선 인셋 재현: 헤더밑 #aaa, 행간 #ddd, 좌우 20px 인셋) */
+.ptable {
+    border: 1px solid #ddd;
+    border-radius: 10px;
     overflow: hidden;
+    background: #fff;
 }
 
-.participation-table th {
-    height: 40px;
-    background: #fafafa;
-    border-bottom: 1px solid #eee;
-    padding: 0 12px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #999;
-    text-align: left;
+.ptable-row {
+    display: grid;
+    height: 50px;
+    align-items: center;
+    font-size: 16px;
+    color: #111;
+    letter-spacing: -0.04em; /* Figma ls -0.64/16px */
 }
 
-.participation-table td {
-    height: 44px;
-    border-bottom: 1px solid #f4f4f4;
-    padding: 0 12px;
-    font-size: 13px;
-    color: #333;
-    text-align: left;
+/* 제안/제보: 제목 393 / 작성자 127 / 유형 104 / 위치 나머지 */
+.ptable-row.cols-activity {
+    grid-template-columns: 393px 127px 104px 1fr;
 }
 
-.participation-table tbody tr:last-child td {
-    border-bottom: none;
+/* 설문: 제목 290 / 작성자 86 / 상태 70 / 답변 50 / 수정 170 / 메뉴 나머지 */
+.ptable-row.cols-survey {
+    grid-template-columns: 290px 86px 70px 50px 170px 1fr;
 }
 
-.participation-table td:first-child {
-    font-weight: 600;
+.ptable-row > div {
+    padding-left: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.participation-empty {
-    color: #bbb !important;
-    font-weight: 400 !important;
-    text-align: center !important;
+.ptable-row > div:first-child {
+    padding-left: 23px; /* 텍스트 x530 = 507+23 */
 }
 
-/* Footer Buttons */
+.ptable-row.head {
+    color: #777;
+    font-weight: 400;
+}
+
+.ptable-row .ptable-title {
+    font-weight: 700;
+}
+
+/* 설문 표 헤더는 볼드 (Figma 302:27420~) */
+.ptable-row.head.cols-survey {
+    color: #111;
+    font-weight: 700;
+}
+
+.ptable-sep {
+    height: 1px;
+    background: #ddd;
+    margin: 0 20px; /* 제안/제보 라인 x527..1214 (인셋 20) */
+}
+
+.ptable-sep.strong {
+    background: #aaa; /* 헤더 아래 라인 */
+}
+
+.ptable-sep.full {
+    margin: 0; /* 설문 표 라인은 풀폭 (Figma 507..1234) */
+}
+
+.ptable-empty {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+    font-size: 14px;
+}
+
+/* Footer — 구분선(#aaa, 마지막 표에서 50) 아래 20에 버튼 */
 .edit-form-footer {
+    width: 1184px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 60px;
-    padding-top: 40px;
-    border-top: 2px solid #ccc; /* Match the header line thickness/color from dashboard th */
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #aaa;
+    box-sizing: border-box;
 }
 
 .btn-delete-member {
-    background-color: #f0f0f0;
-    color: #999;
+    width: 100px;
+    height: 50px;
+    background-color: #f4f4f4;
+    color: #777;
     border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: inherit;
     cursor: pointer;
-    font-weight: 600;
 }
 
 .btn-delete-member:hover {
@@ -190,17 +248,18 @@
 }
 
 .btn-confirm-edit {
+    width: 200px;
+    height: 50px;
     background-color: #23BDBB;
-    color: white;
+    color: #fff;
     border: none;
-    padding: 0 60px;
-    height: 56px;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 18px;
     font-weight: 700;
+    font-family: inherit;
     cursor: pointer;
 }
 
 .btn-confirm-edit:hover {
-    background-color: #139a96;
+    background-color: #1faead;
 }

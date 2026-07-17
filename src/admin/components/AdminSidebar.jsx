@@ -158,19 +158,8 @@ export default function AdminSidebar({ onNavigate, currentView }) {
                             >
                                 <span>{menu.label}</span>
                                 {hasChildren && !disabled && (
-                                    <svg
-                                        width="12"
-                                        height="12"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="3"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        style={{ transform: isOpen ? 'rotate(0deg)' : 'rotate(180deg)' }}
-                                    >
-                                        <polyline points="18 15 12 9 6 15"></polyline>
-                                    </svg>
+                                    /* Figma export 셰브론 (302:27909) — currentColor 착색 mask */
+                                    <span className="menu-chevron-new" aria-hidden="true" />
                                 )}
                             </div>
                             {isOpen && hasChildren && (

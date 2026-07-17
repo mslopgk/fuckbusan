@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import { ParticipationTable } from './MemberEdit';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import '../styles/member_edit.css';
@@ -14,6 +15,7 @@ export default function ExpertEdit({ member, onNavigate }) {
     const [activity, setActivity] = useState({ proposals: [], reports: [], surveys: [] });
     const [open, setOpen] = useState({ proposals: true, reports: true, surveys: true });
     const [saving, setSaving] = useState(false);
+    const [approveModal, setApproveModal] = useState(false); // 승인 확인 모달 (Figma 302:27772)
 
     const set = (key, val) => setFormData((prev) => ({ ...prev, [key]: val }));
     const toggle = (key) => setOpen((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -105,6 +107,12 @@ export default function ExpertEdit({ member, onNavigate }) {
         }
     };
 
+    // 승인 클릭 시 확인 모달 (Figma 302:27637), 미승인은 즉시 반영
+    const handleApproveClick = () => {
+        if (formData.isApproved) return;
+        setApproveModal(true);
+    };
+
     const proposals = activity.proposals || [];
     const reports = activity.reports || [];
     const surveys = activity.surveys || [];
@@ -118,13 +126,11 @@ export default function ExpertEdit({ member, onNavigate }) {
             <div className="edit-form-box">
                 <div className="edit-form-row">
                     <label className="edit-form-label">회원이름</label>
-                    <input type="text" className="edit-form-input" value={formData.name || ''} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                    <input type="text" className="edit-form-input" value={formData.name || ''} readOnly />
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">회원아이디</label>
-                    <input type="text" className="edit-form-input" value={formData.loginId || ''} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                    <input type="text" className="edit-form-input" value={formData.loginId || ''} readOnly />
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">닉네임</label>
@@ -152,7 +158,7 @@ export default function ExpertEdit({ member, onNavigate }) {
                         <button
                             type="button"
                             className={`approval-toggle-btn ${formData.isApproved ? 'on' : ''}`}
-                            onClick={() => set('isApproved', true)}
+                            onClick={handleApproveClick}
                         >승인</button>
                         <button
                             type="button"
@@ -163,33 +169,32 @@ export default function ExpertEdit({ member, onNavigate }) {
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">가입일</label>
-                    <input type="text" className="edit-form-input" value={formData.joinDate || '-'} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                    <input type="text" className="edit-form-input" value={formData.joinDate || '-'} readOnly />
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">최근 접속일</label>
-                    <input type="text" className="edit-form-input" value={formData.lastLogin || '-'} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                    <input type="text" className="edit-form-input" value={formData.lastLogin || '-'} readOnly />
                 </div>
 
                 {/* 참여현황 리스트 (collapsible) */}
                 <div className="edit-form-row" style={{ alignItems: 'flex-start' }}>
-                    <label className="edit-form-label" style={{ paddingTop: 4 }}>참여현황 리스트</label>
+                    <label className="edit-form-label">참여현황 리스트</label>
                     <div className="participation-wrap">
-                        <CollapsibleTable
+                        <ParticipationTable
                             title="제안" count={proposals.length} open={open.proposals} onToggle={() => toggle('proposals')}
                             head={['제안제목', '작성자 ID', '유형', '위치']}
                             rows={proposals.map((p) => [p.title, p.author_id, p.category, p.region])}
                         />
-                        <CollapsibleTable
+                        <ParticipationTable
                             title="제보" count={reports.length} open={open.reports} onToggle={() => toggle('reports')}
                             head={['제보제목', '작성자 ID', '유형', '위치']}
                             rows={reports.map((r) => [r.title, r.author_id, r.category, r.region])}
                         />
-                        <CollapsibleTable
+                        <ParticipationTable
+                            variant="survey"
                             title="설문" count={surveys.length} open={open.surveys} onToggle={() => toggle('surveys')}
-                            head={['설문제목', '작성자 ID', '상태', '답변', '수정']}
-                            rows={surveys.map((s) => [s.title, s.author_id, s.status, s.answer_count, fmtDateTime(s.updated_at)])}
+                            head={['설문제목', '작성자 ID', '상태', '답변', '수정', '메뉴']}
+                            rows={surveys.map((s) => [s.title, s.author_id, s.status, s.answer_count, fmtDateTime(s.updated_at), '결과'])}
                         />
                     </div>
                 </div>
@@ -201,35 +206,27 @@ export default function ExpertEdit({ member, onNavigate }) {
                     {saving ? '저장 중...' : '확인'}
                 </button>
             </div>
-        </AdminLayout>
-    );
-}
 
-function CollapsibleTable({ title, count, head, rows, open, onToggle }) {
-    return (
-        <div className="participation-block">
-            <div className="participation-caption participation-caption-toggle" onClick={onToggle}>
-                <span>{title} <strong>{count}건</strong></span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                    style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform .15s' }}>
-                    <polyline points="6 9 12 15 18 9" />
-                </svg>
-            </div>
-            {open && (
-                <table className="participation-table">
-                    <thead>
-                        <tr>{head.map((h) => <th key={h}>{h}</th>)}</tr>
-                    </thead>
-                    <tbody>
-                        {rows.length === 0 ? (
-                            <tr><td colSpan={head.length} className="participation-empty">내역이 없습니다.</td></tr>
-                        ) : rows.map((cells, i) => (
-                            <tr key={i}>{cells.map((c, j) => <td key={j}>{c ?? '-'}</td>)}</tr>
-                        ))}
-                    </tbody>
-                </table>
+            {/* 승인 확인 모달 — Figma 302:27772 (500x242 r10, 오버레이 70% 블랙) */}
+            {approveModal && (
+                <div className="apv-modal-overlay" onClick={() => setApproveModal(false)}>
+                    <div className="apv-modal" onClick={(e) => e.stopPropagation()}>
+                        <button type="button" className="apv-modal-close" onClick={() => setApproveModal(false)}>
+                            <img src="/figma-assets/admin/modal_close.png" alt="닫기" />
+                        </button>
+                        <div className="apv-modal-title">승인 확인</div>
+                        <div className="apv-modal-desc">승인하시겠습니까?</div>
+                        <div className="apv-modal-actions">
+                            <button type="button" className="apv-btn-cancel" onClick={() => setApproveModal(false)}>취소</button>
+                            <button
+                                type="button"
+                                className="apv-btn-ok"
+                                onClick={() => { set('isApproved', true); setApproveModal(false); }}
+                            >승인</button>
+                        </div>
+                    </div>
+                </div>
             )}
-        </div>
+        </AdminLayout>
     );
 }

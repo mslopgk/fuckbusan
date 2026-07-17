@@ -141,21 +141,16 @@ export default function MemberEdit({ member, onNavigate }) {
             <div className="edit-form-box">
                 <div className="edit-form-row">
                     <label className="edit-form-label">회원이름</label>
-                    <input type="text" className="edit-form-input" value={formData.name || ''} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                    <input type="text" className="edit-form-input" value={formData.name || ''} readOnly />
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">아이디</label>
-                    <input type="text" className="edit-form-input" value={formData.loginId || ''} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                    <input type="text" className="edit-form-input" value={formData.loginId || ''} readOnly />
                     <button
                         type="button"
+                        className="btn-pw-reset"
                         onClick={handleResetPassword}
                         disabled={resetting}
-                        style={{
-                            marginLeft: 10, padding: '8px 14px', borderRadius: 8, border: '1px solid #ddd',
-                            background: '#fff', color: '#333', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap',
-                        }}
                     >
                         {resetting ? '초기화 중...' : '비밀번호 초기화'}
                     </button>
@@ -182,23 +177,20 @@ export default function MemberEdit({ member, onNavigate }) {
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">생년월일</label>
-                    <input type="text" className="edit-form-input" value={formData.birth || ''} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                    <input type="text" className="edit-form-input" value={formData.birth || ''} readOnly />
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">가입일</label>
-                    <input type="text" className="edit-form-input" value={formData.joinDate || '-'} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                    <input type="text" className="edit-form-input" value={formData.joinDate || '-'} readOnly />
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">최근 접속일</label>
-                    <input type="text" className="edit-form-input" value={formData.lastLogin || '-'} readOnly
-                        style={{ background: '#f5f5f5', cursor: 'default' }} />
+                    <input type="text" className="edit-form-input" value={formData.lastLogin || '-'} readOnly />
                 </div>
 
                 {/* 참여현황 리스트 */}
                 <div className="edit-form-row" style={{ alignItems: 'flex-start' }}>
-                    <label className="edit-form-label" style={{ paddingTop: 4 }}>참여현황 리스트</label>
+                    <label className="edit-form-label">참여현황 리스트</label>
                     <div className="participation-wrap">
                         <ParticipationTable
                             title="제안" count={proposals.length} open={open.proposals} onToggle={() => toggle('proposals')}
@@ -211,9 +203,10 @@ export default function MemberEdit({ member, onNavigate }) {
                             rows={reports.map((r) => [r.title, r.author_id, r.category, r.region])}
                         />
                         <ParticipationTable
+                            variant="survey"
                             title="설문" count={surveys.length} open={open.surveys} onToggle={() => toggle('surveys')}
-                            head={['설문제목', '작성자 ID', '상태', '답변', '수정']}
-                            rows={surveys.map((s) => [s.title, s.author_id, s.status, s.answer_count, fmtDateTime(s.updated_at)])}
+                            head={['설문제목', '작성자 ID', '상태', '답변', '수정', '메뉴']}
+                            rows={surveys.map((s) => [s.title, s.author_id, s.status, s.answer_count, fmtDateTime(s.updated_at), '결과'])}
                         />
                     </div>
                 </div>
@@ -229,30 +222,40 @@ export default function MemberEdit({ member, onNavigate }) {
     );
 }
 
-function ParticipationTable({ title, count, head, rows, open, onToggle }) {
+/* 참여현황 표 — Figma 302:27376 구조 (구분선 인셋 재현 위해 div 그리드) */
+export function ParticipationTable({ title, count, head, rows, open, onToggle, variant }) {
+    const colsClass = variant === 'survey' ? 'cols-survey' : 'cols-activity';
+    const sepClass = variant === 'survey' ? 'ptable-sep full' : 'ptable-sep';
     return (
         <div className="participation-block">
             <div className="participation-caption participation-caption-toggle" onClick={onToggle}>
                 <span>{title} <strong>{count}건</strong></span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                    style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform .15s' }}>
-                    <polyline points="6 9 12 15 18 9" />
-                </svg>
+                {/* Figma export 섹션 셰브론 (302:26793) */}
+                <img
+                    className={`section-chevron ${open ? '' : 'closed'}`}
+                    src="/figma-assets/admin/section_chevron.png"
+                    alt=""
+                />
             </div>
             {open && (
-                <table className="participation-table">
-                    <thead>
-                        <tr>{head.map((h) => <th key={h}>{h}</th>)}</tr>
-                    </thead>
-                    <tbody>
-                        {rows.length === 0 ? (
-                            <tr><td colSpan={head.length} className="participation-empty">내역이 없습니다.</td></tr>
-                        ) : rows.map((cells, i) => (
-                            <tr key={i}>{cells.map((c, j) => <td key={j}>{c ?? '-'}</td>)}</tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div className="ptable">
+                    <div className={`ptable-row head ${colsClass}`}>
+                        {head.map((h) => <div key={h}>{h}</div>)}
+                    </div>
+                    <div className={`${sepClass} strong`} />
+                    {rows.length === 0 ? (
+                        <div className="ptable-empty">내역이 없습니다.</div>
+                    ) : rows.map((cells, i) => (
+                        <div key={i}>
+                            {i > 0 && <div className={sepClass} />}
+                            <div className={`ptable-row ${colsClass}`}>
+                                {cells.map((c, j) => (
+                                    <div key={j} className={j === 0 ? 'ptable-title' : ''}>{c ?? '-'}</div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             )}
         </div>
     );

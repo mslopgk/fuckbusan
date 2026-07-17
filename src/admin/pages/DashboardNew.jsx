@@ -72,6 +72,7 @@ export default function DashboardNew({ onNavigate }) {
 
     return (
         <AdminLayout onNavigate={onNavigate} currentView="adminDashboardNew">
+            <div className="admin-fixed-1300">
             <div className="content-header-new">
                 <h2 className="content-title-new">회원관리 - 시민</h2>
                 <div className="total-count-text">전체 회원 <span>{filtered.length}명</span></div>
@@ -79,10 +80,9 @@ export default function DashboardNew({ onNavigate }) {
 
             <div className="search-box-new-col">
                 <div className="search-row">
-                    <div className="search-label-new" style={{ minWidth: 92 }}>카테고리 선택</div>
+                    <div className="search-label-new">카테고리 선택</div>
                     <select
-                        className="search-input-new"
-                        style={{ maxWidth: 300, color: region ? '#242424' : '#999' }}
+                        className="mgr-select"
                         value={region}
                         onChange={(e) => { setRegion(e.target.value); setPage(1); }}
                     >
@@ -91,7 +91,7 @@ export default function DashboardNew({ onNavigate }) {
                     </select>
                 </div>
                 <div className="search-row">
-                    <div className="search-label-new" style={{ minWidth: 92 }}>검색</div>
+                    <div className="search-label-new">검색</div>
                     <div className="search-input-wrapper-new">
                         <input
                             type="text"
@@ -101,15 +101,10 @@ export default function DashboardNew({ onNavigate }) {
                             onChange={(e) => setSearch(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') setPage(1); }}
                         />
-                        <svg
-                            style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#ccc' }}
-                            width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        >
-                            <circle cx="11" cy="11" r="8" />
-                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                        </svg>
+                        {/* Figma export 검색 아이콘 (302:27483, #bbb) */}
+                        <img className="search-icon-img" src="/figma-assets/admin/search_glyph.png" alt="" />
                     </div>
-                    <button className="btn-search-new" onClick={() => setPage(1)}>검색</button>
+                    <button className="btn-search-new btn-search-new--cyan" onClick={() => setPage(1)}>검색</button>
                 </div>
             </div>
 
@@ -117,14 +112,15 @@ export default function DashboardNew({ onNavigate }) {
                 <table className="admin-table-new">
                     <thead>
                         <tr>
-                            <th>회원이름</th>
-                            <th>아이디</th>
-                            <th>닉네임</th>
-                            <th>연락처</th>
-                            <th>주소</th>
-                            <th>이메일</th>
-                            <th>생년월일</th>
-                            <th>메뉴</th>
+                            {/* Figma 302:27449 컬럼 배분 (아이디 컬럼은 문서요구 추가분) */}
+                            <th style={{ width: 110 }}>회원이름</th>
+                            <th style={{ width: 115 }}>아이디</th>
+                            <th style={{ width: 120 }}>닉네임</th>
+                            <th style={{ width: 160 }}>연락처</th>
+                            <th style={{ width: 315 }}>주소</th>
+                            <th style={{ width: 180 }}>이메일</th>
+                            <th style={{ width: 140 }}>생년월일</th>
+                            <th style={{ width: 160 }}>메뉴</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -159,14 +155,13 @@ export default function DashboardNew({ onNavigate }) {
                 </table>
 
                 <div className="pagination-new">
-                    <svg
-                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        style={{ transform: 'rotate(180deg)', cursor: 'pointer', opacity: page === 1 ? 0.3 : 1 }}
+                    <button
+                        type="button"
+                        className={`page-arrow-new ${page === 1 ? 'disabled' : ''}`}
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                     >
-                        <polyline points="9 18 15 12 9 6" />
-                    </svg>
+                        <img src="/figma-assets/admin/rp_page_prev.png" alt="이전" />
+                    </button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
                         <span
                             key={n}
@@ -176,15 +171,15 @@ export default function DashboardNew({ onNavigate }) {
                             {n}
                         </span>
                     ))}
-                    <svg
-                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        style={{ cursor: 'pointer', opacity: page === totalPages ? 0.3 : 1 }}
+                    <button
+                        type="button"
+                        className={`page-arrow-new ${page === totalPages ? 'disabled' : ''}`}
                         onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     >
-                        <polyline points="9 18 15 12 9 6" />
-                    </svg>
+                        <img src="/figma-assets/admin/rp_page_next.png" alt="다음" />
+                    </button>
                 </div>
+            </div>
             </div>
         </AdminLayout>
     );

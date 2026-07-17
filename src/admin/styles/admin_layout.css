@@ -1,54 +1,81 @@
 /* Shared admin layout styles. Builds on top of dashboard_new.css. */
 
+/* Figma 302:27902 실측: 300px / #111111 / 메뉴 20px 400 #fff / 서브 18px #dddddd / active #23bdbb */
 .admin-sidebar-new {
     width: 300px;
-    background-color: #1a1a1b;
+    background-color: #111111;
     color: #fff;
     display: flex;
     flex-direction: column;
-    padding: 30px 0 20px;
+    padding: 60px 0 20px;
     overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.sidebar-logo-new {
+    font-size: 24px;
+    font-weight: 700;
+    padding: 0 32px;
+    margin-bottom: 40px; /* 로고 하단(92) → 첫 메뉴 텍스트 y152 (패딩 20 포함) */
 }
 
 .sidebar-menu-new {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 0;
     padding: 0 0 30px;
 }
 
+/* 메뉴 셰브론 (Figma export rp_side_chevron.png, 24x12) — currentColor 착색 mask */
+.menu-chevron-new {
+    width: 24px;
+    height: 12px;
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask: url('/figma-assets/admin/rp_side_chevron.png') center / contain no-repeat;
+    mask: url('/figma-assets/admin/rp_side_chevron.png') center / contain no-repeat;
+    transition: transform 0.15s;
+}
+
+/* 열린 메뉴는 위 방향 (Figma 302:27500: 열림=teal ∧, 닫힘=white ∨) */
+.menu-item-new.active .menu-chevron-new {
+    transform: rotate(180deg);
+}
+
 .menu-item-new {
-    padding: 14px 32px;
+    padding: 20px 36px 20px 32px;
     cursor: pointer;
-    font-size: 15px;
-    color: #cfcfcf;
+    font-size: 20px;
+    line-height: 24px;
+    color: #ffffff;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: color 0.2s, background-color 0.2s;
+    transition: color 0.2s;
     user-select: none;
 }
 
 .menu-item-new:hover {
     color: #fff;
-    background-color: rgba(255, 255, 255, 0.04);
 }
 
 .menu-item-new.active {
-    color: #fff;
+    color: #23bdbb;
+    font-weight: 700;
 }
 
 .submenu-list-new {
     display: flex;
     flex-direction: column;
-    padding: 4px 0 8px;
+    padding: 0;
 }
 
 .submenu-item-new {
-    padding: 10px 32px 10px 48px;
+    padding: 0 32px 20px;
     cursor: pointer;
-    font-size: 14px;
-    color: #8d8d8d;
+    font-size: 18px;
+    line-height: 21px;
+    color: #dddddd;
     transition: color 0.15s;
     user-select: none;
 }
@@ -58,52 +85,47 @@
 }
 
 .submenu-item-new.active {
-    color: #23BDBB;
-    font-weight: 600;
+    color: #23bdbb;
 }
 
-/* Card grid for AdminMain — matches Figma 833:12080 */
+/* Card grid for AdminMain — Figma 302:26530: 카드 373x224 r20, gap 40x41, 시작 (499,213) */
 .admin-card-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
-    max-width: 1280px;
-    margin: 40px auto 0;
+    grid-template-columns: repeat(3, 373px);
+    grid-auto-rows: 224px;
+    gap: 41px 40px;
+    width: 1199px;
+    margin: 73px 0 0 149px; /* 콘텐츠 패딩(40상/50좌) 기준 → 절대 (499,213) */
 }
 
 .admin-card {
     position: relative;
-    background: #f3f4f5;
-    border: 1px solid transparent;
-    border-radius: 18px;
-    height: 224px;
-    padding: 28px 32px;
+    background: #f4f4f4;
+    border: none;
+    border-radius: 20px;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
     overflow: hidden;
 }
 
 .admin-card:hover:not(.empty):not(.disabled) {
     background: #23BDBB;
-    border-color: #23BDBB;
     box-shadow: 0 10px 24px rgba(22, 181, 176, 0.25);
-    transform: translateY(-2px);
 }
 
-.admin-card:hover:not(.empty):not(.disabled) .admin-card-icon,
 .admin-card:hover:not(.empty):not(.disabled) .admin-card-label {
     color: #fff;
 }
 
+/* 아이콘: 카드별 크기·오프셋 인라인(Figma 실측), 기본 검정 → hover 흰색 */
 .admin-card-icon {
-    color: #1a1a1b;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    transition: color 0.15s ease;
+    position: absolute;
 }
 
 .admin-card-icon img {
+    width: 100%;
+    height: 100%;
+    display: block;
     filter: brightness(0);
     transition: filter 0.15s ease;
 }
@@ -114,23 +136,24 @@
 
 .admin-card-label {
     position: absolute;
-    right: 32px;
-    bottom: 28px;
-    font-size: 22px;
+    right: 36px;
+    bottom: 30px;
+    font-size: 26px;
     font-weight: 700;
-    color: #1a1a1b;
-    letter-spacing: -0.01em;
+    line-height: 31px;
+    color: #111;
     transition: color 0.15s ease;
 }
 
+/* 통계 수치 — 사용자 확정 추가분(2026-07-16 데모 피드백) 유지 */
 .admin-card-stat {
     position: absolute;
-    left: 32px;
-    bottom: 28px;
-    font-size: 28px;
-    font-weight: 800;
-    color: #1a1a1b;
-    letter-spacing: -0.02em;
+    left: 36px;
+    bottom: 30px;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 31px;
+    color: #111;
     transition: color 0.15s ease;
 }
 
@@ -140,12 +163,12 @@
 
 .admin-card.empty {
     background: #fff;
-    border: 1px solid #e5e7eb;
+    border: none;
     cursor: pointer;
 }
 
 .admin-card.empty .admin-card-label {
-    color: #1a1a1b;
+    color: #111;
 }
 
 .admin-card.empty:hover {
@@ -259,25 +282,27 @@
     color: #666;
 }
 
-/* Approval badges (admin list 승인상태) */
+/* Approval badges (승인상태) — Figma 302:26950/26955: 48x28 r10, 텍스트 14px #111 */
 .approval-badge {
     display: inline-flex;
     align-items: center;
-    height: 24px;
-    padding: 0 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 700;
+    justify-content: center;
+    min-width: 48px;
+    height: 28px;
+    padding: 0 5px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #111;
+    box-sizing: border-box;
 }
 
 .approval-badge.approved {
-    background: #dcf6da;
-    color: #2b8a3e;
+    background: #23BDBB;
 }
 
 .approval-badge.pending {
-    background: #ececec;
-    color: #777;
+    background: #ddd;
 }
 
 /* Tag pills (report list - 유형) */
