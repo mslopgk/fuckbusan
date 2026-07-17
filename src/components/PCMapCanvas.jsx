@@ -360,7 +360,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                         xAnchor={0.5}
                     >
                         {pinVariant === 'diagnosis' ? (
-                            /* ── 진단 핀: 시민=회색 teardrop / 전문가=청록 테두리 teardrop + 카테고리 아이콘 ── */
+                            /* ── 진단 핀 (Figma 302:5562/4773 실측): 시민=teal fill / 전문가=회색 fill + 흰 카테고리 아이콘 ── */
                             isCluster ? (
                                 <button
                                     type="button"
@@ -391,14 +391,14 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                                 >
                                     <svg width="40" height="47" viewBox="0 0 54 64" fill="none">
                                         {pin.targetType === '전문가' ? (
-                                            <path d={DIAG_TEAL_PATH} fill="#fff" stroke="#23BDBB" strokeWidth="3" />
-                                        ) : (
                                             <path d={DIAG_GRAY_PATH} fill="#777" />
+                                        ) : (
+                                            <path d={DIAG_TEAL_PATH} fill="#23BDBB" />
                                         )}
                                     </svg>
                                     <span
                                         className="pc-diag-tdrop-icon"
-                                        style={{ color: pin.targetType === '전문가' ? '#23BDBB' : '#fff' }}
+                                        style={{ color: '#fff' }}
                                     >
                                         <CategoryIcon kind={BIG_TO_ICON[pin.big] || 'grid'} />
                                     </span>
