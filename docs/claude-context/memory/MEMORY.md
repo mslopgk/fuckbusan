@@ -1,0 +1,30 @@
+- [Figma MCP 한도 초과 시 작업 중단](feedback_figma_rate_limit.md) — 스크린샷 못 가져오면 추측 작업 금지, 사용자에게 알리고 중단
+- [작업 끝 = 실제 검증 필수](feedback_verify_not_just_build.md) — 빌드 통과만 보고 금지, verify/Playwright로 실 동작 확인 후 보고
+- [부산 공공디자인 진단 플랫폼 개요](project_overview.md) — React+Vite/FastAPI/MariaDB, App.jsx view state 라우팅
+- [컴포넌트 네이밍 컨벤션](component_naming.md) — M*/PC* prefix는 모바일/PC 전용, prefix 없는 건 공유
+- [Figma 디자인-투-코드 워크플로](figma_workflow.md) — 큰 노드는 토큰 초과, 청크 처리 패턴
+- [동료 개발자 분담](collaboration_split.md) — 다른 개발자가 설문/제안/제보 담당, 충돌 방지
+- [진단 04/23 디자인 토큰](diagnosis_design_tokens.md) — 그린 #06AB69 새 테마, 모바일 하단 네비 슬롯 차이
+- [dev 서버 종료 금지](feedback_keep_servers_running.md) — 작업 끝났다고 uvicorn/vite를 임의로 kill하지 말 것
+- [dev 서버 기동 노트](dev_servers.md) — uvicorn PATH 미등록(python3 -m uvicorn), boto3/mangum 누락 가능, admin 단축 로그인 admin/admin1234
+- [헤더 로고 WDC가 정답](header_logo_wdc.md) — Figma의 "PDDP(가안)"는 outdated, 코드 WDC 유지
+- [구현 후 검증 루프 자동화](feedback_implement_verify_loop.md) — 사용자 자리비움/오래 걸려도 됨 신호 시 verify 클린할 때까지 자동 반복
+- [백엔드 라우터/모델 인벤토리](backend_modules.md) — backend/ 도메인 모델·라우터 매핑. 새 화면 작업 전 endpoint 존재 여부 확인용
+- [Figma 프레임 버전 규칙](figma_frame_version.md) — 위쪽 프레임=구버전, 아래쪽 프레임=최신. 화면 찾을 때 반드시 가장 아래쪽(최신) 프레임 기준으로 작업. 찾은 노드가 위쪽에 있으면 더 아래쪽 버전 추가 탐색 필수.
+- [MobileBottomNav 탭 구성 확정·잠금](bottom_nav_locked.md) — 홈/설문/제보·제안/진단/나의활동 순서·아이콘·색상 고정. 절대 변경 금지.
+- [WDC 파일이 모바일 스펙 원본](wdc_mobile_spec.md) — TCuOzEqNhoLKjhF0reBDks page 0:1 사용자 확정, 테스트 계정 ktp1122, 전수 diff는 FIGMA_DIFF_SPEC.md
+- [PC Figma 스펙 별도 파일](pc_figma_spec.md) — hJCPXp7YcYUL60u2NHiYrS page 0:1, 전수 diff는 FIGMA_DIFF_SPEC_PC.md, verify pc뷰는 viewport 1280 필요
+- [PC 공용 헤더는 PCHeader 하나](pc_global_header.md) — PC 페이지에 자체 헤더 만들면 WDC 2줄 중복. 본문만 작성
+- [Talk to Figma 브리지 사용법](talk_to_figma_bridge.md) — bun socket 포트3055 + 플러그인 채널 join_channel
+- [SVG 직접 만들지 말 것](feedback_no_handmade_svg.md) — 아이콘은 무조건 Figma에서 export, 손으로 path 그리기 금지
+- [Firebase Phone Auth(SMS)](firebase_phone_auth.md) — 회원가입/찾기 SMS는 Firebase 프로젝트 busan-design-wdc, .env VITE_FIREBASE_*, 테스트번호로 검증
+- [Firebase SMS reCAPTCHA 근본원인/수정](firebase_sms_recaptcha.md) — visible→invisible reCAPTCHA + 재전송 토큰리셋. DEV 테스트번호 010-0000-0000/123456
+- [제보=보라/제안=핑크 (WDC)](report_propose_theme_colors.md) — 제보 #542aa3, 제안 #f74e7e. CLAUDE.md #E6235A는 outdated
+- [AI 대화형 설문 백엔드](project_survey_chat_backend.md) — test4 인터뷰 엔진 이식. backend/survey_chat + /api/survey-chat, 키 없으면 폴백
+- [PC 공공데이터 대시보드](project_public_data_page.md) — PCPublicData.jsx 프론트 완성, 데이터는 mock(추후 RAG 백엔드 교체)
+- [AI 가상시민 페르소나 챗봇](project_persona_chat.md) — PersonaChat 프론트 완성, 백엔드는 RAG(아래), API 계약 명시
+- [AI 가상시민 RAG 백엔드/어드민](project_rag_ai_citizen.md) — runway 이식, backend/rag + /api/admin/rag + AdminRAGDashboard. Qdrant 6333+ANTHROPIC 키 필요
+- [회원개편 회귀 패턴](project_membership_overhaul_regressions.md) — 소유자판정은 user_id로(이름≠닉네임), 진단대상/카운트 회귀 의심 포인트
+- [AI 가상시민 모바일 대시보드](project_aic_mobile_dashboard.md) — 269:26854는 60여 지표 대형화면, 상단 섹션만 구현·나머지는 백엔드 대기, 값은 '데이터 준비중'
+- [문서 요청 백로그](project_docs_backlog.md) — 모바일 QA·문의사항 답변서 미반영 요청 + admin Figma 전수조사 진행상황(AI가상시민 미완)
+- [2026-07 전수 정합+검증 완료 상태](project_full_figma_sweep_202607.md) — 모바일8+어드민5 커밋 해시, 잔여 P2 백로그
