@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis } from 'recharts';
 import MobileBottomNav from './MobileBottomNav';
 import './MDiagnosisResult.css';
 import { API_URL, authHeaders } from '../utils/api';
@@ -80,23 +80,23 @@ function RadarCard({ label, title, data, color }) {
                 <div className="m-diagres-radar-card">
                     <p className="m-diagres-radar-card-title">{title}</p>
                     <div className="m-diagres-chart">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart cx="50%" cy="50%" outerRadius="65%" data={data}>
-                                <PolarGrid stroke="#dadde2" />
-                                <PolarAngleAxis
-                                    dataKey="subject"
-                                    tick={(props) => <CustomTick {...props} radarData={data} />}
-                                />
-                                <Radar
-                                    name="Score"
-                                    dataKey="A"
-                                    stroke={color}
-                                    strokeWidth={2}
-                                    fill={color}
-                                    fillOpacity={0.25}
-                                />
-                            </RadarChart>
-                        </ResponsiveContainer>
+                        {/* 컨테이너가 226px 고정이므로 ResponsiveContainer 불필요 —
+                            측정 기반 렌더는 숨김/초기 0-size 마운트에서 recharts 음수 크기 경고를 유발 */}
+                        <RadarChart width={226} height={226} cx="50%" cy="50%" outerRadius="65%" data={data}>
+                            <PolarGrid stroke="#dadde2" />
+                            <PolarAngleAxis
+                                dataKey="subject"
+                                tick={(props) => <CustomTick {...props} radarData={data} />}
+                            />
+                            <Radar
+                                name="Score"
+                                dataKey="A"
+                                stroke={color}
+                                strokeWidth={2}
+                                fill={color}
+                                fillOpacity={0.25}
+                            />
+                        </RadarChart>
                     </div>
                 </div>
             </div>

@@ -255,6 +255,8 @@ function App() {
 
     // Fetch diagnosis catalog (general/expert) from backend; fallback to static JSON for offline dev.
     useEffect(() => {
+        // 어드민 영역(/admin)에서는 진단 카탈로그가 쓰이지 않음 — 불필요 요청 방지 (QA P2)
+        if (window.location.pathname.startsWith('/admin')) return;
         const ctrl = new AbortController();
         const fetchData = async () => {
             setLoading(true);

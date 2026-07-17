@@ -48,6 +48,7 @@ const MENU_TREE = [
         children: [
             { key: 'citizenData', label: '가상시민데이터 관리', view: 'adminCitizenData' },
             { key: 'citizenPersonas', label: '가상시민 생성 관리', view: 'adminCitizenPersonas' },
+            { key: 'citizenRag', label: 'RAG 대시보드', view: 'adminRAG' },
         ],
     },
     {
@@ -85,7 +86,7 @@ const VIEW_TO_PATH = {
     surveyCreated: ['survey', 'surveyList'],
     surveyResults: ['survey', 'surveyList'],
     adminProposalDetail: ['reportSuggest', 'proposals'],
-    adminRAG: ['aiCitizen', 'citizenData'],
+    adminRAG: ['aiCitizen', 'citizenRag'],
     adminCitizenData: ['aiCitizen', 'citizenData'],
     adminCitizenPersonas: ['aiCitizen', 'citizenPersonas'],
     adminDiagnosis: ['diagnosis', 'diagList'],

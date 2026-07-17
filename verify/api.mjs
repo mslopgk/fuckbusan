@@ -29,6 +29,15 @@ export async function runApi({ checks } = {}) {
       if (ct.includes('json')) {
         try { result.body = await res.json(); } catch { /* ignore */ }
       }
+      // expectBody 어설션 평가 (기존엔 선언만 있고 미평가였음): isArray / minItems / hasKeys 지원
+      if (result.ok && c.expectBody && result.body !== undefined) {
+        const b = result.body;
+        const failures = [];
+        if (c.expectBody.isArray && !Array.isArray(b)) failures.push('isArray');
+        if (c.expectBody.minItems != null && (!Array.isArray(b) || b.length < c.expectBody.minItems)) failures.push(`minItems>=${c.expectBody.minItems}`);
+        if (c.expectBody.hasKeys && (typeof b !== 'object' || b === null || c.expectBody.hasKeys.some((k) => !(k in b)))) failures.push(`hasKeys:${c.expectBody.hasKeys.join(',')}`);
+        if (failures.length) { result.ok = false; result.bodyAssertFailed = failures; }
+      }
     } catch (e) {
       result.error = String(e);
       result.ok = false;

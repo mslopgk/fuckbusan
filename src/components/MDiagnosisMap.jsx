@@ -194,18 +194,30 @@ export default function MDiagnosisMap({ onNavigate }) {
         }
     }, [districtCenter]);
 
-    // 진입 시(구 미선택) 진단 데이터가 화면에 보이도록 핀 가중 중심으로 1회 이동
+    // 진입 시(구 미선택) 전체 핀이 화면에 들어오도록 bounds 맞춤 1회 수행.
+    // (기존 가중 평균 중심 이동은 산포된 핀에서 정작 핀이 화면 밖으로 나가는 문제)
+    // 하단 시트(≈343px)에 가리지 않게 아래쪽 패딩을 크게 준다. 지도 ref가 늦게 준비되는
+    // 경우가 있어 짧은 재시도 루프 사용.
     const didAutoCenterRef = useRef(false);
     useEffect(() => {
         if (didAutoCenterRef.current || district || !DIAG_PINS.length) return;
-        let wLat = 0, wLng = 0;
-        for (const p of DIAG_PINS) { wLat += p.lat; wLng += p.lng; }
-        const center = { lat: wLat / DIAG_PINS.length, lng: wLng / DIAG_PINS.length };
         didAutoCenterRef.current = true;
-        setCurrentCenter(center);
-        if (mapRef.current && window.kakao) {
-            mapRef.current.panTo(new window.kakao.maps.LatLng(center.lat, center.lng));
-        }
+        let tries = 0;
+        const timer = setInterval(() => {
+            tries += 1;
+            const m = mapRef.current;
+            if (m && window.kakao) {
+                clearInterval(timer);
+                const bounds = new window.kakao.maps.LatLngBounds();
+                for (const p of DIAG_PINS) bounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng));
+                m.setBounds(bounds, 40, 40, 360, 40);
+                const c = m.getCenter();
+                setCurrentCenter({ lat: c.getLat(), lng: c.getLng() });
+            } else if (tries >= 20) {
+                clearInterval(timer);
+            }
+        }, 200);
+        return () => clearInterval(timer);
     }, [DIAG_PINS, district]);
 
     // 진단하기 — 지도 중심 좌표를 역지오코딩해 폼으로 이동

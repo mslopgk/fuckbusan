@@ -110,8 +110,17 @@
     margin-bottom: 20px;
 }
 
+/* 사진 없음 placeholder — 짙은 남색 단색은 깨진 이미지처럼 보임(QA P2) → 밝은 중립 + 안내문구 */
 .pcmpd-image--empty {
-    background: #1f2540;
+    background: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pcmpd-image--empty::after {
+    content: '등록된 사진이 없습니다';
+    font-size: 14px;
+    color: #aaa;
 }
 
 /* ── 지도 ── */
