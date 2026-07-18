@@ -4,7 +4,23 @@
 /* 중앙 지도 */
 .pubd-map { position: absolute; left: 180px; right: 560px; top: 0; bottom: 0;
     display: flex; align-items: center; justify-content: center; }
-.pubd-map .busanmap { width: 100%; max-width: 760px; }
+.pubd-map-stack { position: relative; width: 100%; max-width: 760px; height: 100%; }
+.pubd-map-stack .busanmap { width: 100%; }
+
+/* 지도 값 버블 (Figma 302:9132/9670) — BusanMap stage와 동일 박스/transform 으로 정합.
+   선택 구 = 흰 100px 버블(값 20/700 #23bdbb), 그 외 구 = 회색 #d9d9d9 64px 버블(값 20/500 #000) */
+.pubd-bubbles { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    pointer-events: none; z-index: 4; }
+.pubd-bubbles-stage { position: relative; width: 100%; aspect-ratio: 750.48 / 572.98; max-height: 100%;
+    transform-origin: center center; transition: transform 0.25s ease; }
+.pubd-bubble { position: absolute; transform: translate(-50%, -50%);
+    display: flex; align-items: center; justify-content: center;
+    width: 64px; height: 64px; border-radius: 50%; background: #d9d9d9;
+    font-size: 20px; font-weight: 500; color: #000; letter-spacing: -0.02em; white-space: nowrap; }
+.pubd-bubble.is-sel { width: 100px; height: 100px; background: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18); font-weight: 700; color: #23bdbb; }
+.pubd-bubble.is-long { font-size: 13px; }
+.pubd-bubble.is-sel.is-long { font-size: 15px; }
 
 /* 지도 컨트롤 툴바 — 우측 KPI 패널(right:88px)보다 더 오른쪽, 화면 맨 끝에 고정 (사용자 확정).
    .pubd(페이지 컨테이너) 기준으로 배치되며 패널 top(24px)과 상단 정렬 */

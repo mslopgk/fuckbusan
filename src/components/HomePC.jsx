@@ -1,15 +1,10 @@
 import { useState, useEffect } from 'react';
 import './HomePC.css';
 import BusanMap from './BusanMap';
+import PCFooter from './PCFooter';
 import { API_URL } from '../utils/api';
 
-/* PC 홈 리뉴얼 — Figma 269:7671 (참여 현황 + 지도 + TOP5 + 빠른 액션 + 소식/가상시민) */
-
-const Arrow = ({ size = 20, color = 'currentColor' }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M5 12h13" /><path d="M12 6l6 6-6 6" />
-    </svg>
-);
+/* PC 홈 리뉴얼 — Figma 302:2526 "USER: 홈" (참여 현황 + 지도 + TOP5 + 빠른 액션 + 소식/가상시민) */
 
 const FALLBACK_NEWS = [
     { created_at: '2025-05-16', title: '시민 참여 결과 리포트가 업데이트되었습니다.' },
@@ -21,10 +16,9 @@ const FALLBACK_NEWS = [
 // Figma 302:2574 — TOP5 카드는 3행 노출, 랭크 배지/게이지 모두 teal
 const TOP5_VISIBLE = 3;
 
-const Chevron = ({ size = 13, color = '#111111' }) => (
-    <svg width={Math.round(size * 6 / 13)} height={size} viewBox="0 0 6 13" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M0.75 0.75L5.25 6.5L0.75 12.25" />
-    </svg>
+/* Figma 에셋 (302:2608, 7.25x13.75) — 손그림 SVG 금지 규칙에 따라 export 사용 */
+const Chevron = () => (
+    <img src="/figma-assets/icons/stats_chevron.png" alt="" style={{ width: 7.25, height: 13.75, display: 'block' }} />
 );
 
 const HomePC = ({ onNavigate }) => {
@@ -182,24 +176,8 @@ const HomePC = ({ onNavigate }) => {
                 </button>
             </section>
 
-            {/* ===== Footer ===== */}
-            <footer className="pch2-footer">
-                <div className="pch2-footer-inner">
-                    <div className="pch2-footer-left">
-                        <div className="pch2-footer-brand">WDC</div>
-                        <div className="pch2-footer-lines">
-                            <span>이메일 &nbsp;|&nbsp; support@busan-design.kr</span>
-                            <span>전화 &nbsp;|&nbsp; 051-XXX-XXXX</span>
-                            <span>운영시간 &nbsp;|&nbsp; 평일 09:00 ~ 18:00</span>
-                        </div>
-                        <div className="pch2-footer-copy">© 2025 Busan Public Design Platform. All rights reserved.</div>
-                    </div>
-                    <div className="pch2-footer-right">
-                        <div className="pch2-footer-links"><a>이용약관</a><span>·</span><a>개인정보처리방침</a><span>·</span><a>문의하기</a></div>
-                        <button className="pch2-faq" onClick={() => go('pcAICitizen')}>자주 묻는 질문(FAQ) <Arrow size={20} color="#fff" /></button>
-                    </div>
-                </div>
-            </footer>
+            {/* ===== Footer (공용 PCFooter — Figma 302:2652) ===== */}
+            <PCFooter onFaq={() => go('pcAICitizen')} />
         </div>
     );
 };

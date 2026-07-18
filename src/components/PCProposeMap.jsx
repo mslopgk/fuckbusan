@@ -147,7 +147,8 @@ export default function PCProposeMap({ onNavigate }) {
                                     aria-label="닫기"
                                     onClick={(e) => { e.stopPropagation(); setPolicyItem(null); setPolicyDismissed(true); }}
                                 >
-                                    ×
+                                    {/* Figma 302:12780 Icons/close — export PNG를 마스크로 사용해 도메인 컬러 적용 */}
+                                    <span className="pc-policy-close-icon" aria-hidden="true" />
                                 </button>
                             </div>
                             <div className="pc-map3-policy-scroll">
@@ -191,7 +192,8 @@ export default function PCProposeMap({ onNavigate }) {
                     <div className="pc-map3-list-head">
                         <div className="pc-map3-list-count">
                             <strong>{filtered.length}건</strong>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="9 18 15 12 9 6"/></svg>
+                            {/* Figma 302:12763: 건수 화살표 (export PNG) */}
+                            <img src="/figma-assets/icons/report-propose/count_chevron.png" alt="" width="10" height="19" />
                         </div>
                         <div className="pc-map3-sort">
                             <button className={sort === 'views' ? 'active' : ''} onClick={() => setSort('views')}>조회수</button>
@@ -221,11 +223,13 @@ export default function PCProposeMap({ onNavigate }) {
                                     />
                                     <div className="pc-map3-list-stats">
                                         <span>
-                                            <img src="/figma-assets/icons/icon_vote_check.png" alt="" width="12" height="12" style={{ opacity: 0.3 }} />
+                                            {/* Figma 302:12652: 체크 12x12 */}
+                                            <img src="/figma-assets/icons/report-propose/stat_check.png" alt="" width="12" height="12" />
                                             {it.votes}
                                         </span>
                                         <span>
-                                            <img src="/figma-assets/icons/icon_comment.svg" alt="" width="14" height="12" />
+                                            {/* Figma 302:12648: 말풍선 16x11 */}
+                                            <img src="/figma-assets/icons/report-propose/stat_bubble.png" alt="" width="16" height="11" />
                                             {it.views}
                                         </span>
                                     </div>

@@ -3,7 +3,7 @@ import UserPCLayout from './UserPCLayout';
 import './PCMyActivity.css';
 import { API_URL } from '../utils/api';
 
-/* PC 나의 활동 — Figma 269:15666 (PC_나의활동) */
+/* PC 나의 활동 — Figma 302:10147 (PC_나의활동, 나의 활동 섹션 302:10143) 실측 정합 */
 
 const DISTRICTS = ['전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구'];
 const CATEGORIES = ['전체', '주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
@@ -116,10 +116,8 @@ const PCMyActivity = ({ onNavigate }) => {
                         </div>
                         <button className="pcma-profile-edit-btn" onClick={() => onNavigate && onNavigate('myPage')}>
                             프로필 수정
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#777" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                            </svg>
+                            {/* Figma 302:10252 image 283 export (27x27) */}
+                            <img src="/figma-assets/pc-myactivity/profile_edit.png" alt="" aria-hidden="true" />
                         </button>
                     </div>
 
@@ -143,7 +141,7 @@ const PCMyActivity = ({ onNavigate }) => {
                                         <div className="pcma-act-link">
                                             {s.linkLabel}
                                             <svg className="pcma-act-arrow" width="7" height="14" viewBox="0 0 7 14" fill="none">
-                                                <path d="M1 1l5 6-5 6" stroke="#111" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="M1 1l5 6-5 6" stroke="#767676" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                             </svg>
                                         </div>
                                     </button>

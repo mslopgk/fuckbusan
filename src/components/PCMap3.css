@@ -589,6 +589,9 @@
     letter-spacing: -0.04em;
     gap: 4px;
 }
+/* 건수 색 — 도메인 컬러 (Figma 302:12762: 제안 #f74e7e / 제보 보라) */
+.pc-map3-page.report .pc-map3-list-count { color: #542aa3; }
+.pc-map3-page.propose .pc-map3-list-count { color: #f74e7e; }
 .pc-map3-page.report .pc-map3-sort,
 .pc-map3-page.propose .pc-map3-sort { gap: 16px; }
 .pc-map3-page.report .pc-map3-sort button,
@@ -598,6 +601,19 @@
     color: #777777;
     letter-spacing: -0.04em;
     padding: 0;
+    position: relative;
+}
+/* 정렬 구분선 — Figma 렌더 실측: 항목 사이 1px #eee */
+.pc-map3-page.report .pc-map3-sort button + button::before,
+.pc-map3-page.propose .pc-map3-sort button + button::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 14px;
+    background: #eeeeee;
 }
 .pc-map3-page.report .pc-map3-sort button.active,
 .pc-map3-page.propose .pc-map3-sort button.active {
@@ -679,10 +695,22 @@
 .pc-map3-page.report .pc-map3-policy-close { color: #542aa3; }
 .pc-map3-page.propose .pc-map3-policy-close { color: #f74e7e; }
 
+/* 닫기 아이콘 — Figma 302:12780 export PNG를 마스크로 도메인 컬러 채움 (17x17) */
+.pc-map3-page.report .pc-policy-close-icon,
+.pc-map3-page.propose .pc-policy-close-icon {
+    width: 17px;
+    height: 17px;
+    display: block;
+    background: currentColor;
+    -webkit-mask: url('/figma-assets/icons/report-propose/policy_close.png') center / contain no-repeat;
+    mask: url('/figma-assets/icons/report-propose/policy_close.png') center / contain no-repeat;
+}
+
 .pc-map3-policy-scroll {
     max-height: 205px;
     overflow-y: auto;
     margin: 0 11px 0 10px;
+    border: 1px solid #e6e6e6; /* Figma Frame 494: r4 stroke #e6e6e6 */
     border-radius: 4px;
     scrollbar-width: thin;
     scrollbar-color: #737373 #f2f2f2;
@@ -697,9 +725,9 @@
     background: #e6e6e6;
     color: #242424;
     font-weight: 600;
-    text-align: center;
+    text-align: left; /* Figma: 라벨 텍스트 좌측 정렬 (x+12) */
     padding: 8px 12px;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid #f2f2f2; /* Figma Frame 475 stroke #f2f2f2 */
 }
 .pc-map3-page.report .pc-map3-policy-table td,
 .pc-map3-page.propose .pc-map3-policy-table td {

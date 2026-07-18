@@ -119,6 +119,7 @@ export default function PCProposeForm({ onNavigate }) {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const [location, setLocation] = useState(null); // { lat, lng }
+    const [detailAddress, setDetailAddress] = useState(''); // 상세주소 (위치 선택 후 노출)
     const [files, setFiles] = useState([]); // [{ name, url, type, size, serverUrl }]
     const [uploading, setUploading] = useState(false);
 
@@ -155,6 +156,7 @@ export default function PCProposeForm({ onNavigate }) {
             region: extractDistrict(location?.address),
             lat: location?.lat,
             lng: location?.lng,
+            detailed_address: detailAddress.trim() || undefined,
             files: uploadedUrls,
             image_url: uploadedUrls[0] || undefined,
         };
@@ -199,12 +201,13 @@ export default function PCProposeForm({ onNavigate }) {
                 if (saved.title) setTitle(saved.title);
                 if (saved.body) setBody(saved.body);
                 if (saved.location) setLocation(saved.location);
+                if (saved.detailAddress) setDetailAddress(saved.detailAddress);
             }
         } catch { /* ignore */ }
     }, []);
 
     const handleDraft = () => {
-        const draft = { type, title, body, location, savedAt: new Date().toISOString() };
+        const draft = { type, title, body, location, detailAddress, savedAt: new Date().toISOString() };
         try {
             localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
             alert('임시저장되었습니다. 다음에 이어서 작성할 수 있어요.');
@@ -324,15 +327,27 @@ export default function PCProposeForm({ onNavigate }) {
 
                     <div className="pc-form-section">
                         <label className="pc-form-label">위치정보</label>
-                        <button className={`pc-form-input pc-form-clickable${errors.location ? ' error' : ''}`} onClick={() => setShowMap(true)}>
-                            <span className={location ? '' : 'placeholder'}>{locationLabel}</span>
-                            <img src="/figma-assets/icons/locate-modal/field_locate_gray.png" alt="" width="24" height="24" />
-                        </button>
+                        {/* Figma 302:12980: 위치 입력 470x55, 선택 후 상세주소 노출 (302:13006) */}
+                        <div className="pc-form-loc-row">
+                            <button className={`pc-form-input pc-form-clickable pcf-loc-field${errors.location ? ' error' : ''}`} onClick={() => setShowMap(true)}>
+                                <span className="placeholder">{locationLabel}</span>
+                                <img src="/figma-assets/icons/locate-modal/field_locate_gray.png" alt="" width="24" height="24" />
+                            </button>
+                            {location && (
+                                <input
+                                    type="text"
+                                    className="pc-form-input pc-form-loc-detail"
+                                    placeholder="예: 1층 오른쪽 표지판 앞"
+                                    value={detailAddress}
+                                    onChange={(e) => setDetailAddress(e.target.value)}
+                                />
+                            )}
+                        </div>
                         {errors.location && <p className="pc-form-error-msg">{errors.location}</p>}
                     </div>
 
                     <div className="pc-form-section">
-                        <label className="pc-form-label">첨부자료 (선택)</label>
+                        <label className="pc-form-label">첨부자료 <span className="pcf-label-opt">(선택)</span></label>
                         <input
                             ref={fileInputRef}
                             type="file"
@@ -354,7 +369,10 @@ export default function PCProposeForm({ onNavigate }) {
                                     <button className="pc-attach-remove" onClick={() => removeFile(i)} aria-label="삭제">×</button>
                                 </div>
                             ))}
-                            <button className="pc-attach-add" onClick={() => fileInputRef.current?.click()}>＋</button>
+                            <button className="pc-attach-add" onClick={() => fileInputRef.current?.click()}>
+                                {/* Figma 815:9467 Group 275: + 아이콘 22x22 */}
+                                <img src="/figma-assets/icons/report-propose/plus.png" alt="" width="22" height="22" />
+                            </button>
                         </div>
                         <p className="pc-form-hint">* 사진 또는 동영상 첨부해주세요</p>
                     </div>

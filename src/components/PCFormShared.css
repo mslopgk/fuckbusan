@@ -7,15 +7,17 @@
 }
 
 .pc-form-inner {
+    /* Figma 302:12140: 콘텐츠 폭 960 (x480~1440 @1920) */
     max-width: 960px;
     margin: 0 auto;
-    padding: 0 40px;
+    padding: 0;
 }
 
 .pc-form-title {
+    /* Figma: 30/700 #000, 제목 y120 → 히어로 y176 (20px 여백; 제목높이 36) */
     font-size: 30px;
-    font-weight: 800;
-    color: #1a1a1b;
+    font-weight: 700;
+    color: #000;
     margin: 0 0 20px;
 }
 
@@ -24,8 +26,11 @@
     align-items: center;
     justify-content: space-between;
     border-radius: 30px;
-    padding: 28px 36px;
-    margin-bottom: 36px;
+    /* Figma: 960x162, 텍스트 좌 43 / 이미지 우 39 */
+    height: 162px;
+    padding: 0 39px 0 43px;
+    margin-bottom: 60px; /* 히어로끝 338 → 사진등록 라벨 398 */
+    box-sizing: border-box;
 }
 
 .pc-hero-yellow {
@@ -37,27 +42,38 @@
     font-weight: 700; /* Figma 302:12140: 24/700 #242424 */
     color: #242424;
     margin: 0;
-    line-height: 1.5;
+    line-height: 34px;
+    letter-spacing: -0.02em;
 }
 
 .pc-form-hero-img {
-    height: 140px;
+    height: 158px; /* Figma: 253x158 */
     width: auto;
     object-fit: contain;
     flex-shrink: 0;
+    align-self: flex-end;
 }
 
 .pc-form-section {
-    margin-bottom: 26px;
+    margin-bottom: 50px; /* Figma: 섹션 간 50 (사진→위치, 위치→불편사항) */
 }
+
+/* Figma 세부 간격: 칩 섹션끝 777 → 드롭다운 796 (19), 드롭다운끝 850 → 상세설명 870 (20) */
+.pcf-sec-chips { margin-bottom: 19px; }
+.pcf-sec-dd { margin-bottom: 20px; }
+.pcf-sec-desc { margin-bottom: 0; }
 
 .pc-form-label {
     display: block;
-    font-size: 14px;
-    font-weight: 700;
-    color: #1a1a1b;
-    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #242424;
+    letter-spacing: -0.72px;
+    margin-bottom: 10px; /* Figma: 라벨 하단 → 입력칸 10 */
 }
+
+/* 첨부자료 "(선택)" — Figma 302:12986: 18/400 */
+.pcf-label-opt { font-weight: 400; }
 
 .pc-radio-flex {
     display: grid;
@@ -84,9 +100,11 @@
     width: 100%;
     border: 1px solid #dcdcdc; /* Figma: stroke #dcdcdc */
     border-radius: 15px;
-    padding: 12px 18px;
-    font-size: 13px;
-    color: #1a1a1b;
+    height: 54px; /* Figma: 드롭다운/상세설명 54 */
+    padding: 0 20px; /* 텍스트 x=+21 (보더 1px 포함) */
+    font-size: 16px;
+    letter-spacing: -0.64px;
+    color: #242424;
     outline: none;
     background: #fff;
     box-sizing: border-box;
@@ -116,10 +134,12 @@
     width: 100%;
     border: 1px solid #dcdcdc;
     border-radius: 15px; /* Figma: r15 */
-    padding: 14px 18px;
-    font-size: 13px;
-    line-height: 1.6;
-    color: #1a1a1b;
+    height: 155px; /* Figma 302:12978: 960x155 */
+    padding: 16px 20px; /* placeholder (501,742) = +21/+17 */
+    font-size: 16px;
+    letter-spacing: -0.64px;
+    line-height: 22px;
+    color: #242424;
     outline: none;
     resize: vertical;
     box-sizing: border-box;
@@ -166,26 +186,30 @@
     font-size: 14px;
 }
 
+/* 첨부 추가 버튼 — Figma 302:12986: 80x80 r15 stroke #dcdcdc, + 아이콘 22 중앙 */
 .pc-attach-add {
     width: 80px;
     height: 80px;
-    border: 1px solid #c8c8c8;
+    border: 1px solid #dcdcdc;
     border-radius: 15px;
     background: #fff;
-    color: #999;
-    font-size: 22px;
     cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: border-color 0.15s;
+    flex-shrink: 0;
 }
 
-.pc-attach-add:hover { border-color: #E6235A; color: #E6235A; }
+.pc-attach-add:hover { border-color: #b9b9b9; }
 
-/* 첨부파일 썸네일 (실제 파일 업로드용) */
+/* 첨부파일 썸네일 — Figma 302:11686: 80x80 r10 */
 .pc-attach-item-thumb {
     position: relative;
     width: 80px;
     height: 80px;
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
     background: #f3f4f5;
     flex-shrink: 0;
@@ -226,18 +250,84 @@
     justify-content: center;
 }
 
-/* 위치 선택 + 상세위치 한 줄 */
+/* 위치 선택 + 상세주소 한 줄 — Figma: 470 + 20 + 470, 높이 55 */
 .pc-form-loc-row {
     display: flex;
-    gap: 8px;
+    gap: 20px;
 }
-.pc-form-loc-row .pc-form-clickable {
-    flex: 0 0 60%;
+.pc-form-loc-row .pcf-loc-field {
+    flex: 0 0 calc(50% - 10px);
+    height: 55px;
 }
 .pc-form-loc-row .pc-form-loc-detail {
-    flex: 1;
+    flex: 0 0 calc(50% - 10px);
     min-width: 0;
+    height: 55px;
+    /* Figma 302:11748: 입력값 16/500 #777 (blur), 포커스 시 보더 도메인색 + #242424 */
+    color: #777777;
+    font-weight: 500;
+    border-color: #dddddd;
 }
+.pc-form-loc-row .pc-form-loc-detail:focus { color: #242424; }
+
+/* 상세설명 placeholder — Figma 302:12169: #737373 */
+.pcf-desc-input::placeholder { color: #737373; }
+
+/* 드롭다운 필드 — Figma: 430x54, 텍스트 x=+17 */
+.pcf-dd-field { padding: 0 16px; }
+.pcf-dd-field .pcf-dd-value { color: #777777; } /* Figma 302:11903: 선택값 16/400 #777 */
+
+/* 드롭다운 확장 패널 — Figma 302:11748: 필드+옵션 한 박스(r15, 도메인색 스트로크),
+   필드행 42, 옵션행 40, 하단 패딩 11, hover 행 #f4f4f4 r15 (좌우 인셋 7) */
+.pcf-dd-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #542aa3;
+    border-radius: 15px;
+    z-index: 30;
+    padding-bottom: 11px;
+    overflow: hidden;
+}
+.pcf-dd-panel-field {
+    width: 100%;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: none;
+    background: none;
+    padding: 12px 16px 0 20px;
+    font-size: 16px;
+    letter-spacing: -0.64px;
+    color: #111111; /* Figma: 열림 상태 필드 텍스트 #111 */
+    font-family: inherit;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+.pcf-dd-options { padding: 0 7px; }
+.pcf-dd-item {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-radius: 15px;
+    font-size: 16px;
+    letter-spacing: -0.64px;
+    color: #242424;
+    cursor: pointer;
+}
+.pcf-dd-item:hover { background: #f4f4f4; }
+
+/* 액션 위 구분선 — Figma: 1px #eee, 상세설명끝 924 → 953 */
+.pc-form-divider {
+    width: 100%;
+    height: 1px;
+    background: #eeeeee;
+}
+.pcf-divider-report { margin-top: 29px; }
 
 /* 위치 선택 모달 — Figma 302:12046 실측 (393x852, 모서리 r0):
    닫기 14x14 @(21,27) / 타이틀 24/700 @(22,78) 행간34 / 검색 353x55 r15 @(21,166), 아이콘 24, 클리어 14
@@ -410,8 +500,8 @@
 .pc-form-actions {
     display: flex;
     justify-content: center;
-    gap: 12px;
-    margin-top: 36px;
+    gap: 12px; /* Figma: 임시저장 121 + 12 + 작성완료 301, 중앙 정렬 */
+    margin-top: 50px; /* 구분선 953 → 버튼 1004 */
 }
 
 .pc-btn-light {
@@ -547,7 +637,7 @@
     flex-wrap: wrap;
 }
 
-/* Figma 302:12140: 칩 h33 r20, 16/400 #242424, bg #e6e6e6, 간격 8 */
+/* Figma 302:12140: 칩 h33 r20, 16/400 #242424, bg #e6e6e6, 간격 8, 좌우 패딩 14 */
 .pc-form-chip {
     border: none;
     background: #e6e6e6;
@@ -555,7 +645,7 @@
     font-size: 16px;
     font-weight: 400;
     height: 33px;
-    padding: 0 15px;
+    padding: 0 14px;
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.15s;
@@ -615,25 +705,20 @@
 
 .pc-dropdown-item:hover { background: #fff5f8; color: #E6235A; }
 
+/* 사진 등록/추가 버튼 — Figma 302:12155: 80x80 r15 stroke #dcdcdc, 아이콘 중앙 */
 .pc-photo-btn {
-    width: 76px;
-    height: 76px;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
+    width: 80px;
+    height: 80px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
     background: #fff;
     cursor: pointer;
-    color: #888;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: border-color 0.15s, color 0.15s;
+    padding: 0;
+    transition: border-color 0.15s;
+    flex-shrink: 0;
 }
 
-.pc-photo-btn:hover { border-color: #E6235A; color: #E6235A; }
-
-.pc-photo-btn img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 12px;
-}
+.pc-photo-btn:hover { border-color: #b9b9b9; }

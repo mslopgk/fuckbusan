@@ -5,39 +5,6 @@
 .pc-loc-picker-confirm--report:disabled { background: #c3b3e0; }
 .pc-loc-picker-confirm--report:not(:disabled):hover { background: #47238c; }
 
-/* ── Form label: Figma shows 18px semibold (not shared 14px bold) ── */
-.pc-form-page .pc-form-label {
-    font-size: 18px;
-    font-weight: 600;
-    color: #242424;
-    letter-spacing: -0.72px;
-    margin-bottom: 14px;
-}
-
-/* ── Photo upload button: Figma = 80×80, border-radius 15px ── */
-.pc-form-page .pc-photo-btn {
-    width: 80px;
-    height: 80px;
-    border-radius: 15px;
-}
-
-/* ── Form input/dropdown height: Figma = 54px ── */
-.pc-form-page .pc-form-input {
-    height: 54px;
-    padding: 0 18px;
-    font-size: 16px;
-    border-radius: 15px;
-}
-
-/* ── Form title: Figma = 30px bold black ── */
-.pc-form-page .pc-form-title {
-    font-size: 30px;
-    font-weight: 700;
-    color: #000;
-    letter-spacing: 0;
-}
-
-
 /* Category chips: active = purple (#542aa3) instead of shared pink */
 .pcrf-chip.active {
     background: #542aa3;
@@ -82,9 +49,10 @@
 .pcrf-btn-purple:hover:not(.disabled):not(:disabled) {
     background: #3e1f8a;
 }
+/* Figma 302:12140: 미입력 상태에서도 작성완료는 진한 보라(#542aa3) 그대로 */
 .pcrf-btn-purple.disabled,
 .pcrf-btn-purple:disabled {
-    background: #a98dd6;
+    background: #542aa3;
     cursor: not-allowed;
 }
 
@@ -106,17 +74,20 @@
     background: rgba(84, 42, 163, 0.28);
 }
 
-/* Done modal (제보 작성 완료) — Figma: 491×587, rounded-40, shadow */
+/* Done modal (제보 작성 완료) — Figma 302:12257: 491×587 r40,
+   아이콘 y+118, 아이콘→타이틀 27, 타이틀→버튼 17, 버튼 간 8, 하단 99 */
 .pcrf-done-modal {
     background: #fff;
     border-radius: 40px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
     width: 491px;
+    height: 587px;
     max-width: 94vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 52px 40px 48px;
+    padding: 118px 100px 99px;
+    box-sizing: border-box;
     gap: 0;
     text-align: center;
 }
@@ -126,7 +97,7 @@
     position: relative;
     width: 132px;
     height: 132px;
-    margin-bottom: 24px;
+    margin-bottom: 27px;
 }
 
 .pcrf-done-scroll {
@@ -152,8 +123,8 @@
     font-weight: 700;
     color: #242424;
     letter-spacing: -0.96px;
-    line-height: 1.4;
-    margin: 0 0 32px;
+    line-height: 34px;
+    margin: 0 0 17px;
 }
 
 .pcrf-done-cta {

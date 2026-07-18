@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import './PCAuth.css';
 import { API_URL, safeJson } from '../utils/api';
 import PhoneVerify from './PhoneVerify';
+import PCFooter from './PCFooter';
 
-/* Figma: TCuOzEqNhoLKjhF0reBDks 215:3447 (로그인/회원가입 섹션)
-   로그인 + 아이디찾기 + 비밀번호찾기(재설정). 본인인증은 페이지 내 SMS(OTP) 1회. */
+/* Figma: hJCPXp7YcYUL60u2NHiYrS 302:3010 (로그인/회원가입 섹션)
+   로그인(302:3491) + 아이디찾기(302:3015~3066) + 비밀번호찾기/재설정(302:3094~3145).
+   본인인증은 페이지 내 SMS(OTP) 1회. */
 
 const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,20}$/;
 /* 완료 화면 카드 (아이디/비밀번호 재설정 완료) — Figma 302:3357 / 302:3386 */
@@ -25,16 +27,19 @@ const AuthDoneCard = ({ title, lead, onGo }) => (
 const PCLogin = ({ onBack, onSignup }) => {
     const [mode, setMode] = useState('login'); // login | findChoose | findId | findPw
     return (
-        <div className="pcauth">
-            {mode === 'login' && <LoginCard onBack={onBack} onSignup={onSignup} setMode={setMode} />}
-            {mode === 'findChoose' && <FindChoose setMode={setMode} onClose={() => setMode('login')} />}
-            {mode === 'findId' && <FindIdFlow onClose={() => setMode('login')} />}
-            {mode === 'findPw' && <FindPwFlow onClose={() => setMode('login')} />}
+        <div className="pcauth-page-wrap">
+            <div className={`pcauth${mode === 'login' ? ' login-page' : ''}`}>
+                {mode === 'login' && <LoginCard onBack={onBack} onSignup={onSignup} setMode={setMode} />}
+                {mode === 'findChoose' && <FindChoose setMode={setMode} onClose={() => setMode('login')} />}
+                {mode === 'findId' && <FindIdFlow onClose={() => setMode('login')} />}
+                {mode === 'findPw' && <FindPwFlow onClose={() => setMode('login')} />}
+            </div>
+            <PCFooter tall />
         </div>
     );
 };
 
-/* ===== 로그인 ===== */
+/* ===== 로그인 (Figma 302:3491) ===== */
 const LoginCard = ({ onBack, onSignup, setMode }) => {
     const [id, setId] = useState('');
     const [pw, setPw] = useState('');
@@ -65,13 +70,13 @@ const LoginCard = ({ onBack, onSignup, setMode }) => {
 
     return (
         <>
-            <div className="pcauth-title">
+            <div className="pcauth-title login">
                 <h1 className="accent">로그인</h1>
                 <p className="hero">시민과 기술이 함께 만드는 더 나은 부산</p>
                 <p>공공디자인 참여를 위해 로그인해주세요.</p>
             </div>
             <div className="pcauth-card compact">
-                <div className="pcauth-form">
+                <div className="pcauth-form login">
                     <div className="pcauth-field">
                         <label className="pcauth-label">아이디</label>
                         <input className="pcauth-input" placeholder="아이디를 입력해 주세요." value={id} onChange={(e) => setId(e.target.value)} onKeyDown={onKey} />
@@ -81,7 +86,7 @@ const LoginCard = ({ onBack, onSignup, setMode }) => {
                         <input type="password" className="pcauth-input" placeholder="비밀번호를 입력해 주세요." value={pw} onChange={(e) => setPw(e.target.value)} onKeyDown={onKey} />
                     </div>
                     {error && <div className="pcauth-error" style={{ width: '100%', textAlign: 'left' }}>{error}</div>}
-                    <button className="pcauth-submit" style={{ width: '100%', marginTop: 8 }} disabled={!valid || loading} onClick={login}>
+                    <button className="pcauth-submit" style={{ width: '100%' }} disabled={!valid || loading} onClick={login}>
                         {loading ? '로그인 중...' : '로그인'}
                     </button>
                     <div className="pcauth-loginlinks">
@@ -101,8 +106,8 @@ const LoginCard = ({ onBack, onSignup, setMode }) => {
 /* ===== 아이디/비밀번호 찾기 선택 ===== */
 const FindChoose = ({ setMode, onClose }) => (
     <>
-        <div className="pcauth-title"><h1>아이디 / 비밀번호 찾기</h1><p>찾으실 항목을 선택해주세요.</p></div>
-        <div className="pcauth-card compact">
+        <div className="pcauth-title find"><h1 className="accent signup-accent">아이디 / 비밀번호 찾기</h1><p className="find-sub">찾으실 항목을 선택해주세요.</p></div>
+        <div className="pcauth-card find">
             <div className="pcauth-form" style={{ width: 380 }}>
                 <div className="pcauth-method-row">
                     <button className="pcauth-method-btn" onClick={() => setMode('findId')}>아이디 찾기</button>
@@ -114,7 +119,7 @@ const FindChoose = ({ setMode, onClose }) => (
     </>
 );
 
-/* ===== 아이디 찾기 (이름 + SMS 인증) ===== */
+/* ===== 아이디 찾기 (Figma 302:3015 선택 → 이름+SMS → 302:3066 결과) ===== */
 const FindIdFlow = ({ onClose }) => {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
@@ -140,26 +145,22 @@ const FindIdFlow = ({ onClose }) => {
 
     if (foundId) return (
         <>
-            <div className="pcauth-title"><h1>아이디 찾기</h1></div>
-            <div className="pcauth-card compact">
-                <div className="pcauth-form">
-                    <div className="pcauth-result">가입하신 회원님의 아이디는<br /><strong>{foundId}</strong> 입니다</div>
-                    <button className="pcauth-submit" style={{ width: '100%', marginTop: 0 }} onClick={onClose}>로그인하기</button>
-                </div>
+            <div className="pcauth-title find-result"><h1 className="accent signup-accent">아이디 찾기</h1></div>
+            <div className="pcauth-card find-result">
+                <div className="pcauth-result">가입하신 회원님의 아이디는 <strong>{foundId}</strong>입니다</div>
+                <button className="pcauth-result-btn" onClick={onClose}>로그인하기</button>
             </div>
         </>
     );
 
     if (!method) return (
         <>
-            <div className="pcauth-title"><h1 className="accent">아이디 찾기</h1><p>회원정보 확인을 위한 본인인증 단계입니다.<br />인증방법을 선택해주세요.</p></div>
-            <div className="pcauth-card compact">
-                <div className="pcauth-form">
-                    <p className="pcauth-center-text">휴대폰 인증 또는 아이핀 인증을 이용해서<br />아이디를 찾을 수 있습니다.</p>
-                    <div className="pcauth-method-row">
-                        <button type="button" className="pcauth-method-btn" onClick={() => setMethod('phone')}>휴대폰 인증하기</button>
-                        <button type="button" className="pcauth-method-btn ghost" onClick={() => alert('아이핀 인증은 준비 중입니다. 휴대폰 인증을 이용해주세요.')}>아이핀 인증</button>
-                    </div>
+            <div className="pcauth-title find"><h1 className="accent signup-accent">아이디 찾기</h1><p className="find-sub">회원정보 확인을 위한 본인인증 단계입니다.<br />인증방법을 선택해주세요.</p></div>
+            <div className="pcauth-card find">
+                <p className="pcauth-center-text">휴대폰 인증 또는 아이핀 인증을 이용해서<br />아이디를 찾을 수 있습니다.</p>
+                <div className="pcauth-method-row">
+                    <button type="button" className="pcauth-method-btn" onClick={() => setMethod('phone')}>휴대폰 인증하기</button>
+                    <button type="button" className="pcauth-method-btn ghost" onClick={() => alert('아이핀 인증은 준비 중입니다. 휴대폰 인증을 이용해주세요.')}>아이핀 인증</button>
                 </div>
             </div>
             <div className="pcauth-links"><button className="pcauth-link" onClick={onClose}>로그인으로 돌아가기</button></div>
@@ -168,8 +169,8 @@ const FindIdFlow = ({ onClose }) => {
 
     return (
         <>
-            <div className="pcauth-title"><h1>아이디 찾기</h1><p>이름과 휴대폰 인증으로 아이디를 찾을 수 있습니다.</p></div>
-            <div className="pcauth-card compact">
+            <div className="pcauth-title find"><h1 className="accent signup-accent">아이디 찾기</h1><p className="find-sub">이름과 휴대폰 인증으로 아이디를 찾을 수 있습니다.</p></div>
+            <div className="pcauth-card find">
                 <div className="pcauth-form">
                     <div className="pcauth-field">
                         <label className="pcauth-label">이름</label>
@@ -177,7 +178,7 @@ const FindIdFlow = ({ onClose }) => {
                     </div>
                     <PhoneVerify phone={phone} setPhone={setPhone} verified={verified} setVerified={setVerified} />
                     {error && <div className="pcauth-error" style={{ width: '100%', textAlign: 'left' }}>{error}</div>}
-                    <button className="pcauth-submit" style={{ width: '100%', marginTop: 8 }} disabled={!name || !verified || loading} onClick={submit}>
+                    <button className="pcauth-submit" style={{ width: '100%' }} disabled={!name || !verified || loading} onClick={submit}>
                         {loading ? '확인 중...' : '아이디 찾기'}
                     </button>
                 </div>
@@ -187,14 +188,14 @@ const FindIdFlow = ({ onClose }) => {
     );
 };
 
-/* ===== 비밀번호 찾기 (아이디 + SMS 인증 → 재설정) ===== */
+/* ===== 비밀번호 찾기 (Figma 302:3094 선택 → 아이디+SMS → 302:3145 재설정 → 302:3386 완료) ===== */
 const FindPwFlow = ({ onClose }) => {
     const [id, setId] = useState('');
     const [phone, setPhone] = useState('');
     const [verified, setVerified] = useState(false);
     const [stepReset, setStepReset] = useState(false);
     const [done, setDone] = useState(false);
-    const [method, setMethod] = useState(null); // 본인인증 방법 선택 (Figma 302:3015)
+    const [method, setMethod] = useState(null); // 본인인증 방법 선택 (Figma 302:3094)
     const [pw, setPw] = useState('');
     const [pwConfirm, setPwConfirm] = useState('');
     const [loading, setLoading] = useState(false);
@@ -234,8 +235,11 @@ const FindPwFlow = ({ onClose }) => {
 
     if (stepReset) return (
         <>
-            <div className="pcauth-title"><h1>인증되었습니다</h1><p>비밀번호를 재설정 해주세요.</p></div>
-            <div className="pcauth-card compact">
+            <div className="pcauth-title reset">
+                <h1 className="accent signup-accent">비밀번호 재설정</h1>
+                <p className="reset-sub">인증되었습니다<br />비밀번호 재설정 해주세요</p>
+            </div>
+            <div className="pcauth-card reset">
                 <div className="pcauth-form">
                     <div className="pcauth-field">
                         <label className="pcauth-label">비밀번호<span className="req">*</span></label>
@@ -245,27 +249,28 @@ const FindPwFlow = ({ onClose }) => {
                     <div className="pcauth-field">
                         <label className="pcauth-label">비밀번호 확인<span className="req">*</span></label>
                         <input type="password" className="pcauth-input" placeholder="새 비밀번호 확인" autoComplete="new-password" value={pwConfirm} onChange={(e) => setPwConfirm(e.target.value)} />
-                        {pwConfirm.length > 0 && <div className={`pcauth-helper ${pwMatch ? 'ok' : 'err'}`}>{pwMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.'}</div>}
+                        {/* Figma 302:3159: 확인 칸에도 안내문구 상시 노출 (입력 시 일치 여부로 대체) */}
+                        <div className={`pcauth-helper ${pwConfirm.length === 0 ? '' : pwMatch ? 'ok' : 'err'}`}>
+                            {pwConfirm.length === 0 ? '*영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요.' : pwMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.'}
+                        </div>
                     </div>
                     {error && <div className="pcauth-error" style={{ width: '100%', textAlign: 'left' }}>{error}</div>}
-                    <button className="pcauth-submit" style={{ width: '100%', marginTop: 8 }} disabled={!pwValid || !pwMatch || loading} onClick={reset}>
-                        {loading ? '처리 중...' : '재설정 하기'}
-                    </button>
                 </div>
             </div>
+            <button className="pcauth-submit reset-submit" disabled={!pwValid || !pwMatch || loading} onClick={reset}>
+                {loading ? '처리 중...' : '재설정 하기'}
+            </button>
         </>
     );
 
     if (!method) return (
         <>
-            <div className="pcauth-title"><h1 className="accent">비밀번호 찾기</h1><p>회원정보 확인을 위한 본인인증 단계입니다.<br />인증방법을 선택해주세요.</p></div>
-            <div className="pcauth-card compact">
-                <div className="pcauth-form">
-                    <p className="pcauth-center-text">휴대폰 인증 또는 아이핀 인증을 이용해서<br />비밀번호를 재설정할 수 있습니다.</p>
-                    <div className="pcauth-method-row">
-                        <button type="button" className="pcauth-method-btn" onClick={() => setMethod('phone')}>휴대폰 인증하기</button>
-                        <button type="button" className="pcauth-method-btn ghost" onClick={() => alert('아이핀 인증은 준비 중입니다. 휴대폰 인증을 이용해주세요.')}>아이핀 인증</button>
-                    </div>
+            <div className="pcauth-title find"><h1 className="accent signup-accent">비밀번호 재설정</h1><p className="find-sub">회원정보 확인을 위한 본인인증 단계입니다.<br />인증방법을 선택해주세요.</p></div>
+            <div className="pcauth-card find">
+                <p className="pcauth-center-text">휴대폰 인증 또는 아이핀 인증을 이용해서<br />비밀번호를 재설정할 수 있습니다.</p>
+                <div className="pcauth-method-row">
+                    <button type="button" className="pcauth-method-btn" onClick={() => setMethod('phone')}>휴대폰 인증하기</button>
+                    <button type="button" className="pcauth-method-btn ghost" onClick={() => alert('아이핀 인증은 준비 중입니다. 휴대폰 인증을 이용해주세요.')}>아이핀 인증</button>
                 </div>
             </div>
             <div className="pcauth-links"><button className="pcauth-link" onClick={onClose}>로그인으로 돌아가기</button></div>
@@ -274,8 +279,8 @@ const FindPwFlow = ({ onClose }) => {
 
     return (
         <>
-            <div className="pcauth-title"><h1>비밀번호 찾기</h1><p>아이디와 휴대폰 인증으로 비밀번호를 재설정할 수 있습니다.</p></div>
-            <div className="pcauth-card compact">
+            <div className="pcauth-title find"><h1 className="accent signup-accent">비밀번호 재설정</h1><p className="find-sub">아이디와 휴대폰 인증으로 비밀번호를 재설정할 수 있습니다.</p></div>
+            <div className="pcauth-card find">
                 <div className="pcauth-form">
                     <div className="pcauth-field">
                         <label className="pcauth-label">아이디</label>
@@ -283,7 +288,7 @@ const FindPwFlow = ({ onClose }) => {
                     </div>
                     <PhoneVerify phone={phone} setPhone={setPhone} verified={verified} setVerified={setVerified} />
                     {error && <div className="pcauth-error" style={{ width: '100%', textAlign: 'left' }}>{error}</div>}
-                    <button className="pcauth-submit" style={{ width: '100%', marginTop: 8 }} disabled={!id || !verified || loading} onClick={goReset}>
+                    <button className="pcauth-submit" style={{ width: '100%' }} disabled={!id || !verified || loading} onClick={goReset}>
                         {loading ? '확인 중...' : '다음'}
                     </button>
                 </div>

@@ -4,9 +4,10 @@ import { API_URL } from '../utils/api';
 import { PHONE_RE, isValidBirth } from '../utils/phoneAuth';
 import { TERMS_SERVICE, TERMS_PRIVACY } from './authTerms';
 import PhoneVerify from './PhoneVerify';
+import PCFooter from './PCFooter';
 
-/* Figma: TCuOzEqNhoLKjhF0reBDks node 215:3548 (PC/USER: 회원가입)
-   + 약관동의/권한선택(215:3451) + Firebase SMS 인증 */
+/* Figma: hJCPXp7YcYUL60u2NHiYrS — PC/USER: 회원가입 302:3184(입력전)·302:3272(입력후)
+   + 약관동의/권한선택 302:3415 + Firebase SMS 인증 */
 
 const DAUM_POSTCODE_SRC = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
 const loadDaumPostcode = () =>
@@ -21,18 +22,20 @@ const loadDaumPostcode = () =>
 
 const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,20}$/;
 
-/* ===== 약관동의 / 가입유형(권한선택) ===== Figma 회원가입>약관동의 */
-/* 체크 인디케이터 — Figma 에셋 (302:3425). checked=에셋, unchecked=동일 형태의 빈 라운드 사각형 */
-const Check = ({ on }) => (
+/* ===== 약관동의 / 가입유형(권한선택) ===== Figma 회원가입>약관동의 302:3415 */
+/* 체크 인디케이터 — Figma 에셋.
+   바(동의 줄): 흰 바탕+teal 체크(terms_check.svg) / 전체동의: teal 바탕+흰 체크(terms_check_fill.png, 302:3422)
+   unchecked = 흰 바탕 + #aaa 테두리 r5 (302:3446) */
+const Check = ({ on, fill = false }) => (
     on
-        ? <img className="pcauth-check on" src="/figma-assets/icons/terms_check.svg" alt="" width={20} height={20} aria-hidden="true" />
+        ? <img className="pcauth-check on" src={fill ? '/figma-assets/icons/terms_check_fill.png' : '/figma-assets/icons/terms_check.svg'} alt="" width={20} height={20} aria-hidden="true" />
         : <span className="pcauth-check" aria-hidden="true" />
 );
 
-// Figma export 아이콘 (직접 그리지 않음)
+// Figma export 아이콘 (직접 그리지 않음) — 관리자/전문가 302:3460·3461(4x), 시민 302:3462
 const TYPE_ICON = {
-    admin: '/assets/auth/type_admin.png',
-    expert: '/assets/auth/type_expert.png',
+    admin: '/figma-assets/icons/auth_type_admin.png',
+    expert: '/figma-assets/icons/auth_type_expert.png',
     citizen: '/assets/auth/type_citizen.svg',
 };
 
@@ -61,41 +64,44 @@ const ConsentStep = ({ onNext }) => {
     const requiredOk = service && privacy && !!userType;
 
     return (
-        <div className="pcauth">
-            <div className="pcauth-title">
-                <h1 className="accent">약관 동의</h1>
-            </div>
+        <div className="pcauth-page-wrap">
+            <div className="pcauth">
+                <div className="pcauth-title consent-title">
+                    <h1 className="accent signup-accent">약관 동의</h1>
+                </div>
 
-            {/* 권한선택 (Figma 302:3453) */}
-            <div className="pcauth-card consent">
-                <div className="pcauth-consent-inner">
-                    <div className="pcauth-section-label">권한선택</div>
-                    <div className="pcauth-typecards">
-                        {USER_TYPES.map((t) => (
-                            <button key={t.key} type="button" className={`pcauth-typecard${userType === t.key ? ' selected' : ''}`} onClick={() => setUserType(t.key)}>
-                                <img className="pcauth-typeicon" src={TYPE_ICON[t.key]} alt="" />
-                                <span>{t.label}</span>
+                {/* 권한선택 (Figma 302:3417·3453) */}
+                <div className="pcauth-card consent roles">
+                    <div className="pcauth-consent-inner">
+                        <div className="pcauth-section-label">권한선택</div>
+                        <div className="pcauth-typecards">
+                            {USER_TYPES.map((t) => (
+                                <button key={t.key} type="button" className={`pcauth-typecard${userType === t.key ? ' selected' : ''}`} onClick={() => setUserType(t.key)}>
+                                    <img className="pcauth-typeicon" src={TYPE_ICON[t.key]} alt="" />
+                                    <span>{t.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* 약관 동의 (Figma 302:3416·3425·3437) */}
+                <div className="pcauth-card consent terms">
+                    <div className="pcauth-consent-inner">
+                        <TermsBox title="이용약관" body={TERMS_SERVICE} agreed={service} onToggle={() => setService((v) => !v)} />
+                        <TermsBox title="개인정보처리방침" body={TERMS_PRIVACY} agreed={privacy} onToggle={() => setPrivacy((v) => !v)} />
+                        <div className="pcauth-agree-all-box">
+                            <button type="button" className={`pcauth-agree-all${allOn ? ' on' : ''}`} onClick={toggleAll}>
+                                <Check on={allOn} fill /> <span>모든 약관에 동의합니다</span>
                             </button>
-                        ))}
+                            <p className="pcauth-agree-all-sub">전체 약관에 동의해야 서비스를 이용할 수 있습니다.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* 약관 동의 */}
-            <div className="pcauth-card consent">
-                <div className="pcauth-consent-inner">
-                    <TermsBox title="이용약관" body={TERMS_SERVICE} agreed={service} onToggle={() => setService((v) => !v)} />
-                    <TermsBox title="개인정보처리방침" body={TERMS_PRIVACY} agreed={privacy} onToggle={() => setPrivacy((v) => !v)} />
-                    <div className="pcauth-agree-all-box">
-                        <button type="button" className={`pcauth-agree-all${allOn ? ' on' : ''}`} onClick={toggleAll}>
-                            <Check on={allOn} /> <span>모든 약관에 동의합니다</span>
-                        </button>
-                        <p className="pcauth-agree-all-sub">전체 약관에 동의해야 서비스를 이용할 수 있습니다.</p>
-                    </div>
-                </div>
+                <button className="pcauth-submit consent-next" disabled={!requiredOk} onClick={() => onNext({ service, privacy, userType })}>다음</button>
             </div>
-
-            <button className="pcauth-submit consent-next" disabled={!requiredOk} onClick={() => onNext({ service, privacy, userType })}>다음</button>
+            <PCFooter tall />
         </div>
     );
 };
@@ -149,6 +155,7 @@ const SignupForm = ({ onNavigate, onBack, consent }) => {
     const birthHelperClass = form.birth.length === 0 ? '' : birthValid ? 'ok' : 'err';
 
     return (
+        <div className="pcauth-page-wrap">
         <div className="pcauth">
             <div className="pcauth-title">
                 <h1 className="accent signup-accent">회원가입</h1>
@@ -187,9 +194,12 @@ const SignupForm = ({ onNavigate, onBack, consent }) => {
                         <label className="pcauth-label">생년월일<span className="req">*</span></label>
                         <input className="pcauth-input" placeholder="8자리 예시(19951202)" inputMode="numeric" maxLength={8}
                             value={form.birth} onChange={(e) => set('birth', e.target.value.replace(/\D/g, ''))} />
-                        <div className={`pcauth-helper ${birthHelperClass}`}>
-                            {form.birth.length > 0 && !birthValid ? '올바른 생년월일 8자리를 입력해주세요.' : '*예시처럼 8자리로 입력해주세요. (YYYYMMDD)'}
-                        </div>
+                        {/* 유효한 8자리 입력 시 안내문구 숨김 — 빈 값: 안내 / 형식 오류: 에러 */}
+                        {!(form.birth.length > 0 && birthValid) && (
+                            <div className={`pcauth-helper ${birthHelperClass}`}>
+                                {form.birth.length > 0 && !birthValid ? '올바른 생년월일 8자리를 입력해주세요.' : '*예시처럼 8자리로 입력해주세요. (YYYYMMDD)'}
+                            </div>
+                        )}
                     </div>
                     {/* 주소 */}
                     <div className="pcauth-field">
@@ -198,17 +208,19 @@ const SignupForm = ({ onNavigate, onBack, consent }) => {
                             <input className="pcauth-input clickable" placeholder="주소 검색" value={form.address} readOnly onClick={openPostcode} />
                             <button type="button" className="pcauth-inline-btn" onClick={openPostcode}>검색</button>
                         </div>
-                        <div className="pcauth-row" style={{ marginTop: 6 }}>
+                        <div className="pcauth-row" style={{ marginTop: 20 }}>
                             <input className="pcauth-input" placeholder="상세주소를 입력" value={form.detailAddress} onChange={(e) => set('detailAddress', e.target.value)} />
                         </div>
                     </div>
-                    {/* 휴대폰번호 (SMS 인증 — 재전송 30초 / 인증번호 5분) */}
+                    {/* 휴대폰번호 (SMS 인증 — 재전송 30초 / 인증번호 5분)
+                        Figma 302:3247: 인증번호 행은 발송 전에도 비활성 표시 */}
                     <PhoneVerify
                         phone={form.phone}
                         setPhone={(v) => set('phone', v)}
                         verified={phoneVerified}
                         setVerified={setPhoneVerified}
                         required
+                        showOtpBeforeSend
                     />
                 </div>
             </div>
@@ -218,6 +230,8 @@ const SignupForm = ({ onNavigate, onBack, consent }) => {
             <button className="pcauth-submit" disabled={!isValid || loading} onClick={handleSignup}>
                 {loading ? '처리 중...' : '회원가입'}
             </button>
+        </div>
+        <PCFooter tall />
         </div>
     );
 };

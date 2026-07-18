@@ -33,25 +33,26 @@
 }
 .pch2-hero-inner > * { pointer-events: auto; }
 
-/* ===== 좌측 시민 참여 현황 카드 (302:2598: 331x626, r20, y197) ===== */
+/* ===== 좌측 시민 참여 현황 카드 (302:2598: 331x626, r20, y197 — TOP5와 하단 823 정렬) ===== */
 .pch2-stats {
     position: absolute; left: 0; top: 138px; width: 331px; z-index: 4;
-    background: #fff; border-radius: 20px; padding: 35px 27px 30px;
+    background: #fff; border-radius: 20px; padding: 35px 27px 39px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
     box-sizing: border-box;
 }
 .pch2-stats-region { display: block; color: #23bdbb; font-size: 22px; font-weight: 700; line-height: 31px; }
 .pch2-stats-head h2 { margin: 0; font-size: 16px; font-weight: 700; line-height: 24px; color: #111111; }
 .pch2-stats-head p { margin: 10px 0 0; font-size: 14px; font-weight: 400; line-height: 19px; color: #777777; }
-/* 총 참여건수 박스 (302:2600: 276x98 teal r20) */
+/* 총 참여건수 박스 (302:2600: 276x98 teal r20 — 텍스트 인셋 상29/좌29, 숫자 32px 실측) */
 .pch2-stats-total {
     margin: 13px 0 0; background: #23bdbb; border-radius: 20px;
-    padding: 26px 28px 24px; color: #fff; display: flex; flex-direction: column; gap: 2px;
+    padding: 29px 28px 18px 29px; color: #fff; display: flex; flex-direction: column; gap: 0;
 }
 .pch2-stats-total span { font-size: 16px; font-weight: 500; line-height: 19px; }
-.pch2-stats-total strong { font-size: 40px; font-weight: 700; letter-spacing: -0.04em; line-height: 48px; }
-/* 카테고리 행 (302:2605: 276x70, r20, stroke #ddd) */
+.pch2-stats-total strong { font-size: 32px; font-weight: 700; letter-spacing: -0.04em; line-height: 32px; }
+/* 카테고리 행 (302:2605: 276x70, r20, stroke #ddd — 행간 17, 단 3행째 앞만 22(Figma 실측)) */
 .pch2-stats-rows { display: flex; flex-direction: column; gap: 17px; margin-top: 21px; }
+.pch2-stats-rows .pch2-stats-row:nth-child(3) { margin-top: 5px; }
 .pch2-stats-row {
     display: flex; align-items: center; width: 100%; height: 70px;
     border: 1px solid #dddddd; background: #fff; border-radius: 20px;
@@ -145,7 +146,9 @@
 
 .pch2-aic {
     position: relative; overflow: hidden; border: none; cursor: pointer; text-align: left;
-    border-radius: 20px; padding: 60px 0 0 40px; min-height: 247px; display: block;
+    border-radius: 20px; padding: 60px 0 0 40px; min-height: 247px;
+    /* button 기본 세로중앙 정렬 무력화 — Figma 302:2633: 타이틀 top 60 고정 */
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
     background: #e2f1fd; box-sizing: border-box; transition: transform .15s, box-shadow .15s;
 }
 .pch2-aic:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
@@ -155,20 +158,7 @@
 .pch2-aic-text p { margin: 20px 0 0; font-size: 16px; font-weight: 400; letter-spacing: -0.04em; color: #111111; line-height: 19px; }
 .pch2-aic-img { position: absolute; right: 0; bottom: 0; height: 215px; width: auto; object-fit: contain; object-position: bottom right; }
 
-/* ===== Footer (302:2652: h216 #111, inner 1440) ===== */
-.pch2-footer { background: #111111; color: #dddddd; padding: 40px 0; }
-.pch2-footer-inner { max-width: 1440px; margin: 0 auto; padding: 0 24px;
-    display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
-.pch2-footer-brand { font-size: 24px; font-weight: 700; color: #dddddd; line-height: 32px; }
-.pch2-footer-lines { display: flex; flex-direction: column; gap: 4px; margin: 4px 0 0; font-size: 14px; font-weight: 400; line-height: 19px; color: #dddddd; }
-.pch2-footer-copy { margin-top: 16px; font-size: 14px; font-weight: 400; line-height: 19px; color: #777777; }
-.pch2-footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 28px; margin-top: 22px; }
-.pch2-footer-links { display: flex; gap: 12px; font-size: 14px; font-weight: 700; line-height: 19px; color: #dddddd; }
-.pch2-footer-links a { cursor: pointer; }
-.pch2-footer-links span { color: #dddddd; }
-.pch2-faq { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #777777; background: transparent;
-    color: #fff; border-radius: 99px; height: 44px; padding: 0 28px; font-size: 14px; font-weight: 400; letter-spacing: -0.04em; cursor: pointer; }
-.pch2-faq:hover { background: #2b2b2b; }
+/* Footer는 공용 PCFooter 컴포넌트로 이동 (PCFooter.css) */
 
 /* 컨테이너 여백 (1316 + 24*2 이하 뷰포트) */
 @media (max-width: 1380px) {

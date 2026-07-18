@@ -195,12 +195,10 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                                 className={`pcd-vote-circle${voted ? ' voted' : ''}`}
                                 onClick={submitVote}
                             >
+                                {/* Figma 302:11577: 체크 아이콘 19x20 (#f74e7e) — voted 시 흰색 반전 */}
                                 <span className="pcd-vote-icon">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill={voted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z" />
-                                    </svg>
+                                    <img src="/figma-assets/icons/report-propose/vote_check.png" alt="" width="19" height="20" className="pcd-vote-icon-img" />
                                 </span>
-                                <span className="pcd-vote-count">{likeCount}</span>
                                 <span className="pcd-vote-label">{voted ? '투표완료' : '투표하기'}</span>
                             </button>
                         )}
@@ -218,10 +216,8 @@ export default function PCProposeDetail({ onNavigate, proposal }) {
                                 onKeyDown={(e) => { if (e.key === 'Enter') submitComment(); }}
                             />
                             <button className="pcd-comment-send" onClick={submitComment}>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M22 2L11 13" />
-                                    <path d="M22 2l-7 20-4-9-9-4 20-7z" />
-                                </svg>
+                                {/* Figma 302:11493: 종이비행기 21x19 */}
+                                <img src="/figma-assets/icons/report-propose/send.png" alt="" width="21" height="19" />
                             </button>
                         </div>
 

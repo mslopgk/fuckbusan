@@ -23,14 +23,46 @@ def _admin(user=Depends(get_current_user)):
     return user
 
 
+_BUSAN_WIDE = ("부산", "부산광역시")
+
+
+def _select_stats_for_region(all_stats, region: str):
+    """(theme, metric) 그룹별로 요청 region 행 우선, 없으면 부산 전체값 폴백, 그것도 없으면
+    보유한 아무 지역 행(기존 부산진구 시드 등)을 반환. 같은 그룹의 다년도 행은 최신 연도가
+    먼저 오도록 정렬(프론트 find()가 최신값을 집도록)."""
+    groups: dict = {}
+    order: list = []
+    for s in all_stats:
+        key = (s.theme, s.metric)
+        if key not in groups:
+            groups[key] = []
+            order.append(key)
+        groups[key].append(s)
+
+    picked = []
+    for key in order:
+        rows = groups[key]
+        exact = [r for r in rows if r.region == region]
+        busan = [r for r in rows if r.region in _BUSAN_WIDE]
+        chosen = exact or busan or rows
+        chosen = sorted(chosen, key=lambda r: (r.year or ""), reverse=True)
+        picked.extend(chosen)
+    return picked
+
+
 @router.get("/overview")
-def overview(region: str = "부산진구", db: Session = Depends(get_db)):
-    """대시보드 1회 로드용 통합 페이로드."""
+def overview(region: str = "부산", db: Session = Depends(get_db)):
+    """대시보드 1회 로드용 통합 페이로드.
+
+    region 미지정(전체 보기) 시 부산 전체값. 구·군 지정 시 해당 구 행 우선 + 부산 폴백.
+    응답 필드 구조는 기존과 동일(하위호환)."""
     districts = db.query(models.PublicDistrict).all()
     trend = (db.query(models.PublicPopTrend)
              .order_by(models.PublicPopTrend.year.asc()).all())
-    stats = (db.query(models.PublicThemeStat)
-             .order_by(models.PublicThemeStat.sort_order.asc()).all())
+    all_stats = (db.query(models.PublicThemeStat)
+                 .order_by(models.PublicThemeStat.sort_order.asc(),
+                           models.PublicThemeStat.id.asc()).all())
+    stats = _select_stats_for_region(all_stats, region)
     layers = (db.query(models.PublicLayer)
               .order_by(models.PublicLayer.sort_order.asc()).all())
 

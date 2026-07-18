@@ -1,0 +1,33 @@
+/* PC 공용 다크 푸터 — Figma 302:2652 (1920 기준 실측)
+   bg #111111, 상단패딩 40, 내부폭 1440(x240~1680), 홈 h216 / 로그인(tall) h236 */
+.pcfooter { background: #111111; color: #dddddd; padding: 40px 0; }
+.pcfooter.tall { padding-bottom: 60px; }
+.pcfooter-inner {
+    width: 1440px; max-width: 100%; margin: 0 auto; box-sizing: border-box;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap;
+}
+/* 브랜드 24/700 lh32 #ddd */
+.pcfooter-brand { font-size: 24px; font-weight: 700; color: #dddddd; line-height: 32px; }
+/* 연락처 3줄 14/400 lh19, 줄간 4, 브랜드와 4 */
+.pcfooter-lines { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; font-size: 14px; font-weight: 400; line-height: 19px; color: #dddddd; }
+/* copy 14/400 #777, 위 16 */
+.pcfooter-copy { margin-top: 16px; font-size: 14px; font-weight: 400; line-height: 19px; color: #777777; }
+/* 우측: 링크(위 23) + FAQ(간격 28) */
+.pcfooter-right { display: flex; flex-direction: column; align-items: flex-end; gap: 28px; margin-top: 23px; }
+.pcfooter-links { display: flex; gap: 12px; font-size: 14px; font-weight: 700; line-height: 19px; color: #dddddd; }
+.pcfooter-links a { cursor: pointer; }
+.pcfooter-links span { color: #dddddd; }
+/* FAQ 알약 버튼 184x44 r999 stroke #777 — 좌패딩 28 / 텍스트 108 / 갭 8 / 아이콘 20 / 우패딩 20 */
+.pcfooter-faq {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: 1px solid #777777; background: transparent; color: #ffffff;
+    border-radius: 99999px; height: 44px; padding: 0 20px 0 28px;
+    font-family: inherit; font-size: 14px; font-weight: 400; letter-spacing: -0.04em; cursor: pointer;
+}
+.pcfooter-faq:hover { background: #2b2b2b; }
+.pcfooter-faq img { display: block; }
+
+/* 1440 + 여백보다 좁은 뷰포트에서는 좌우 24 패딩 */
+@media (max-width: 1487px) {
+    .pcfooter-inner { padding: 0 24px; }
+}

@@ -1,5 +1,13 @@
 /* PCAuth — PC 로그인/회원가입/찾기 공용 스타일
-   Figma: TCuOzEqNhoLKjhF0reBDks 215:3447 (로그인/회원가입 섹션) */
+   Figma: hJCPXp7YcYUL60u2NHiYrS 302:3010 (로그인/회원가입 섹션) 실측 반영
+   - 로그인 302:3491 / 회원가입 302:3184·3272 / 약관동의 302:3415
+   - 아이디찾기 302:3015·3066 / 비밀번호찾기 302:3094·3145 / 완료 302:3357·3386
+   주의: .pcauth-input 등 무접두 기본 규칙은 모바일(M*) 화면의 PhoneVerify가 공유 —
+   PC 전용 수치는 반드시 `.pcauth` 하위로 스코프해서 변경한다. */
+
+/* 페이지 래퍼: 본문 + 푸터. 짧은 화면에서 푸터를 바닥에 고정 */
+.pcauth-page-wrap { min-height: calc(100vh - 60px); display: flex; flex-direction: column; background: #fff; }
+.pcauth-page-wrap .pcfooter { margin-top: auto; }
 
 .pcauth {
     --black: #242424;
@@ -11,15 +19,17 @@
     font-family: 'Pretendard Variable', sans-serif;
     color: var(--black);
     background: #fff;
-    min-height: calc(100vh - 60px);
-    padding: 60px 24px 100px;
+    /* Figma: gnb(60) 아래 ~ 타이틀 y204 → 상단 144 (로그인만 y200 → .login-page 140)
+       하단: 로그인 카드(880) ~ 푸터(980) = 100 */
+    padding: 144px 24px 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+.pcauth.login-page { padding-top: 140px; }
 
-/* 타이틀 */
-.pcauth-title { text-align: center; margin-bottom: 24px; }
+/* ===== 타이틀 ===== */
+.pcauth-title { text-align: center; }
 .pcauth-title h1 {
     font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
@@ -29,58 +39,102 @@
     margin: 0;
     line-height: 1.4;
 }
-/* Figma 269:8621: 로그인 title = #23bdbb, 32px, centered */
-.pcauth-title h1.accent { color: var(--teal); font-size: 32px; letter-spacing: -1.28px; }
-/* Figma 269:8314: 회원가입 title = #23bdbb, 28px */
-.pcauth-title h1.signup-accent { font-size: 28px; letter-spacing: -1.12px; }
+/* 로그인 타이틀 — Figma 302:3512: 32/700 teal, h38 */
+.pcauth-title h1.accent { color: var(--teal); font-size: 32px; line-height: 38px; letter-spacing: -1.28px; }
+/* 회원가입/약관동의/찾기 타이틀 — Figma 302:3192 등: 28/700 teal, h39 */
+.pcauth-title h1.signup-accent { font-size: 28px; line-height: 39px; letter-spacing: -1.12px; }
 .pcauth-title p {
     margin: 10px 0 0;
     font-size: 14px;
-    line-height: 1.35;
-    color: var(--sub);
+    line-height: 19px;
+    color: #111111;
 }
+/* 히어로 문구 20/700 — 로그인 gap 30(302:3513), 회원가입 gap 20(302:3186) */
 .pcauth-title p.hero {
     font-family: 'Pretendard Variable', sans-serif;
     font-weight: 700;
     font-size: 20px;
+    line-height: 28px;
     letter-spacing: -0.8px;
-    color: #111;
-    margin-top: 14px;
+    color: #111111;
+    margin-top: 20px;
 }
-.pcauth-title p.hero + p { margin-top: 6px; color: #111; font-size: 14px; }
+.pcauth-title.login p.hero { margin-top: 30px; }
+.pcauth-title p.hero + p { margin-top: 10px; color: #111111; font-size: 14px; }
 
-/* 카드 */
+/* 타이틀 ↔ 카드 간격: 로그인 50 / 회원가입 30 / 약관동의 6 */
+.pcauth-title { margin-bottom: 30px; }
+.pcauth-title.login { margin-bottom: 50px; }
+.pcauth-title.consent-title { margin-bottom: 6px; }
+/* 찾기(인증방법 선택) — Figma 302:3016: 18/400 #111 lh27, 타이틀과 61, 카드와 49 */
+.pcauth-title.find { margin-bottom: 49px; }
+.pcauth-title.find p.find-sub { margin-top: 61px; font-size: 18px; font-weight: 400; line-height: 27px; color: #111111; }
+/* 아이디찾기 결과 — 타이틀 ↔ 카드 40 (302:3071) */
+.pcauth-title.find-result { margin-bottom: 40px; }
+/* 비밀번호 재설정 — 서브 20/400 lh30 gap 25, 카드와 28 (302:3147) */
+.pcauth-title.reset { margin-bottom: 28px; }
+.pcauth-title.reset p.reset-sub { margin-top: 25px; font-size: 20px; font-weight: 400; line-height: 30px; color: #111111; }
+
+/* ===== 카드 ===== */
+/* 기본 = 회원가입 카드 (302:3188: 635 x r20 stroke#ddd, 상하 29 + 테두리) */
 .pcauth-card {
     width: 635px;
     max-width: 100%;
-    border: 1px solid #ddd;
+    border: 1px solid #dddddd;
     border-radius: 20px;
-    padding: 50px 0;
+    padding: 29px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-sizing: border-box;
 }
-.pcauth-card.compact { padding: 48px 0; }
+/* 로그인 카드 (302:3535: 635x505, 상하 49 + 테두리) */
+.pcauth .pcauth-card.compact { padding: 49px 0; }
+/* 찾기 카드 (302:3018: 644x207, 상43 하47 + 테두리) */
+.pcauth .pcauth-card.find { width: 644px; padding: 43px 0 47px; }
+/* 찾기 결과 카드 (302:3071: 644x207, 상56 하59 + 테두리) */
+.pcauth .pcauth-card.find-result { width: 644px; padding: 56px 0 59px; }
+/* 비밀번호 재설정 카드 (302:3146: 644x376, 상38 하71 + 테두리, 블록 간 37) */
+.pcauth .pcauth-card.reset { width: 644px; padding: 38px 0 71px; }
+.pcauth .pcauth-card.reset .pcauth-field { margin-bottom: 37px; }
+.pcauth .pcauth-card.reset .pcauth-form > .pcauth-field:last-child { margin-bottom: 0; }
 
 /* 폼 (카드 내부 343 고정폭) */
 .pcauth-form { width: 343px; max-width: 100%; }
 
-/* 필드 */
+/* ===== 필드 ===== */
 .pcauth-field {
     /* .pcauth 밖(모바일 찾기 등)에서도 PhoneVerify가 동작하도록 변수 자체 정의 */
     --black: #242424; --teal: #23bdbb; --red: #e6235a; --ok: #16b5b0; --line: #bfbfbf; --sub: #1e1e1e;
     margin-bottom: 20px;
 }
+/* PC: 필드 블록 간격 40 (302:3193 실측), 마지막 블록은 카드 패딩만 */
+.pcauth .pcauth-field { margin-bottom: 40px; }
+.pcauth .pcauth-form > .pcauth-field:last-child { margin-bottom: 0; }
+/* 로그인: 블록 간격 28 (302:3515), 마지막 필드(비밀번호) 뒤는 버튼 마진(40)만 */
+.pcauth .pcauth-form.login .pcauth-field { margin-bottom: 28px; }
+.pcauth .pcauth-form.login .pcauth-field:nth-of-type(2) { margin-bottom: 0; }
+
 .pcauth-label {
     display: flex;
     align-items: flex-start;
     gap: 2px;
     font-size: 14px;
-    line-height: 1.35;
+    line-height: 19px;
     color: var(--sub);
     margin-bottom: 8px;
 }
+/* PC: 라벨 #737373, 라벨↔입력 20 (302:3195) / 로그인은 #111, 6 (302:3517) */
+.pcauth .pcauth-label { color: #737373; margin-bottom: 20px; }
+.pcauth .pcauth-form.login .pcauth-label { color: #111111; margin-bottom: 6px; }
+/* 필수 표기 — Figma 302:3197: 4x4 원형 도트 #f74e7e (별표 아님) */
 .pcauth-label .req { color: var(--red); font-size: 14px; line-height: 1; }
+.pcauth .pcauth-label .req {
+    display: inline-block; width: 4px; height: 4px; border-radius: 50%;
+    background: #f74e7e; overflow: hidden; color: transparent; font-size: 0; line-height: 0;
+    margin-top: 2px;
+}
+
 .pcauth-input {
     width: 100%;
     height: 48px;
@@ -97,21 +151,34 @@
 .pcauth-input::placeholder { color: #aaa; }
 .pcauth-input:focus { border-color: #111; }
 .pcauth-input:disabled { background: #f5f5f5; color: #999; }
+/* PC: 입력 높이 46 (302:3198), 포커스 teal (302:3296) / 로그인 48 (302:3518) */
+.pcauth .pcauth-input { height: 46px; color: #111111; }
+.pcauth .pcauth-input:focus { border-color: var(--teal); }
+.pcauth .pcauth-form.login .pcauth-input { height: 48px; }
 
-.pcauth-helper { margin-top: 8px; font-size: 14px; line-height: 1.35; color: var(--sub); }
+.pcauth-helper { margin-top: 8px; font-size: 14px; line-height: 19px; color: var(--sub); }
 .pcauth-helper.err { color: var(--red); }
 .pcauth-helper.ok { color: var(--ok); }
+/* PC: 헬퍼 #737373, 입력과 10 (302:3206) */
+.pcauth .pcauth-helper { margin-top: 10px; color: #737373; }
+.pcauth .pcauth-helper.err { color: var(--red); }
+.pcauth .pcauth-helper.ok { color: var(--ok); }
 
 /* 주소 검색창: 클릭하면 우편번호 팝업 */
 .pcauth-input.clickable { cursor: pointer; caret-color: transparent; }
 
-/* input + 버튼 가로 결합 (주소검색/휴대폰인증) */
+/* input + 버튼 가로 결합 (주소검색/휴대폰인증) — Figma 갭 6 */
 .pcauth-row { display: flex; gap: 6px; align-items: stretch; }
 .pcauth-otp-row { margin-top: 6px; }
+/* PC: 2번째 행(상세주소/인증번호) 간격 20 (302:3232·3247) */
+.pcauth .pcauth-otp-row { margin-top: 20px; }
 .pcauth-row .pcauth-input { flex: 1 0 0; min-width: 0; }
-/* 인증번호 칸은 짧게 */
+/* 인증번호 칸 (모바일 기본: 고정폭) */
 .pcauth-row .pcauth-input.otp { flex: 0 0 170px; }
 .pcauth-row .pcauth-otp-wrap.otp { flex: 0 0 200px; position: relative; }
+/* PC: 인증번호 입력은 휴대폰 입력과 동일 폭 (302:3248: 276 ≒ 휴대폰 277), bg #f4f4f4 무테두리 */
+.pcauth .pcauth-row .pcauth-otp-wrap.otp { flex: 1 0 0; min-width: 0; }
+.pcauth .pcauth-otp-wrap .pcauth-input { background: #f4f4f4; border: none; }
 .pcauth-otp-wrap .pcauth-input { width: 100%; padding-right: 52px; box-sizing: border-box; }
 .pcauth-otp-timer {
     position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
@@ -135,6 +202,11 @@
 .pcauth-inline-btn.active { background: var(--teal); }
 .pcauth-inline-btn.active:hover { background: #1aa9a7; }
 .pcauth-inline-btn:disabled { cursor: default; opacity: 0.7; }
+/* PC: 버튼 60x46 고정, bg #aaaaaa (302:3230·3242·3250) — 확인(OTP행)만 16/700 (302:3251) */
+.pcauth .pcauth-inline-btn { width: 60px; min-width: 60px; padding: 0; background: #aaaaaa; font-weight: 400; }
+.pcauth .pcauth-otp-row .pcauth-inline-btn { font-weight: 700; }
+.pcauth .pcauth-inline-btn:hover { background: var(--teal); }
+.pcauth .pcauth-inline-btn.active { background: var(--teal); }
 
 /* reCAPTCHA(보이는 체크박스) */
 .pcauth-recaptcha { margin-top: 10px; }
@@ -146,12 +218,12 @@
 /* 구분선 */
 .pcauth-divider { height: 1px; background: #eee; margin: 28px 0; width: 100%; }
 
-/* 제출 버튼 (카드 아래) — Figma: Pretendard Bold, 18px, -0.72px */
+/* 제출 버튼 (카드 아래) — Figma 343x56 r8, 18/700, 카드와 39 (302:3189) */
 .pcauth-submit {
     width: 343px;
     max-width: 100%;
     height: 56px;
-    margin-top: 40px;
+    margin-top: 39px;
     border: none;
     border-radius: 8px;
     background: var(--teal);
@@ -166,10 +238,16 @@
 .pcauth-submit:hover { background: #1aa9a7; }
 .pcauth-submit:disabled { background: #d9d9d9; cursor: default; }
 
-/* 카드 내부 제출(로그인) */
-.pcauth-form .pcauth-submit { margin-top: 8px; }
+/* 카드 내부 제출(로그인) — 필드와 40 (302:3525) */
+.pcauth-form .pcauth-submit { margin-top: 40px; }
 
-/* 보조 링크 (회원가입 / 아이디·비번 찾기) */
+/* 재설정 하기 — Figma 302:3160: 343x52 r10, 16/700, 카드와 28 */
+.pcauth-submit.reset-submit { height: 52px; border-radius: 10px; font-size: 16px; letter-spacing: -0.64px; margin-top: 28px; }
+
+/* 완료 화면 버튼 — 카드와 153 (302:3363) */
+.pcauth-card.done + .pcauth-submit { margin-top: 153px; }
+
+/* 보조 링크 (로그인으로 돌아가기 등) */
 .pcauth-links {
     display: flex;
     align-items: center;
@@ -191,15 +269,16 @@
 .pcauth-link:hover { color: var(--black); }
 .pcauth-link-sep { width: 1px; height: 12px; background: #ddd; }
 
-/* 로그인 카드 내부 링크 (회원가입 | 아이디 찾기 | 비밀번호 찾기) */
-.pcauth-loginlinks { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 18px; }
+/* 로그인 카드 내부 링크 (회원가입 | 아이디 찾기 | 비밀번호 찾기) — 버튼과 20 (302:3527), 14/400 #111 lh19 */
+.pcauth-loginlinks { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 20px; }
+.pcauth-loginlinks .pcauth-link { color: #111111; line-height: 19px; }
 .pcauth-loginlinks .pcauth-link-sep { width: 1px; height: 12px; background: #ddd; flex: none; }
 
-/* 간편 회원가입 (검정 버튼) — Figma: #111, 18px, Pretendard Bold */
+/* 간편 회원가입 (검정 버튼) — 링크와 40 (302:3533), #111 18/700 */
 .pcauth-simple {
     width: 100%;
     height: 56px;
-    margin-top: 16px;
+    margin-top: 40px;
     border: none;
     border-radius: 8px;
     background: #111;
@@ -212,101 +291,127 @@
 }
 .pcauth-simple:hover { background: #000; }
 
-/* 본인인증 방법 선택 (찾기 1단계) */
-.pcauth-center-text { text-align: center; font-size: 14px; line-height: 1.5; color: var(--sub); margin-bottom: 16px; }
-.pcauth-method-row { display: flex; gap: 10px; justify-content: center; }
+/* 본인인증 방법 선택 (찾기 1단계) — Figma 302:3017: 16/400 #777 lh24, 버튼과 25 */
+.pcauth-center-text { text-align: center; font-size: 16px; line-height: 24px; color: #777777; margin: 0 0 25px; }
+.pcauth-method-row { display: flex; gap: 20px; justify-content: center; }
+/* 버튼 157x42 r10 teal, 16/400 (302:3019·3020 — 두 버튼 동일 색) */
 .pcauth-method-btn {
-    padding: 10px 22px;
+    width: 157px;
+    height: 42px;
+    padding: 0;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     background: var(--teal);
     color: #fff;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 16px;
     cursor: pointer;
 }
-.pcauth-method-btn.ghost { background: #5fcfcd; }
+.pcauth-method-btn.ghost { background: var(--teal); }
 .pcauth-method-btn:hover { background: #1aa9a7; }
 
-/* 결과 강조 박스 */
+/* 찾기 결과 — Figma 302:3067: 18/400 #111, 버튼과 21 */
 .pcauth-result {
     text-align: center;
-    font-size: 16px;
-    color: var(--black);
-    line-height: 1.6;
-    margin: 8px 0 24px;
+    font-size: 18px;
+    font-weight: 400;
+    color: #111111;
+    line-height: 27px;
+    margin: 0 0 21px;
 }
 .pcauth-result strong { color: var(--teal); font-weight: 700; }
+/* 결과 화면 버튼 — 157x42 r10, 16/400 */
+.pcauth-result-btn {
+    display: block; margin: 0 auto;
+    width: 157px; height: 42px; padding: 0;
+    border: none; border-radius: 10px;
+    background: var(--teal); color: #fff;
+    font-family: inherit; font-size: 16px; cursor: pointer;
+}
+.pcauth-result-btn:hover { background: #1aa9a7; }
 
 /* 에러 메시지 */
 .pcauth-error { color: var(--red); font-size: 14px; text-align: center; margin-top: 12px; width: 343px; max-width: 100%; }
 
-/* 약관 동의 화면 — 권한선택 / 약관 2-카드 (Figma 302:3415) */
-.pcauth-card.consent { width: 719px; padding: 30px; align-items: stretch; }
-.pcauth-card.consent + .pcauth-card.consent { margin-top: 28px; }
+/* ===== 약관 동의 화면 (Figma 302:3415) ===== */
+/* 카드 719 폭, 직각 모서리, stroke #ddd — 권한선택(302:3417 h282) / 약관(302:3416 h674), 카드 간 45 */
+.pcauth .pcauth-card.consent { width: 719px; border-radius: 0; align-items: stretch; }
+.pcauth .pcauth-card.consent.roles { padding: 19px 32px 18px; }
+.pcauth .pcauth-card.consent.terms { padding: 9px 31px 17px; }
+.pcauth-card.consent + .pcauth-card.consent { margin-top: 45px; }
 .pcauth-consent-inner { width: 100%; }
-.pcauth-section-label { font-weight: 700; font-size: 14px; color: var(--black); margin-bottom: 16px; }
+/* 권한선택 라벨 14/700, 카드와 19 (302:3436) */
+.pcauth-section-label { font-weight: 700; font-size: 14px; line-height: 20px; color: #111111; margin-bottom: 19px; }
 .pcauth-consent-inner .pcauth-terms:first-child { margin-top: 0; }
 .pcauth-form.wide { width: 480px; max-width: 100%; }
 
-/* 체크 인디케이터 — Figma 에셋 terms_check.svg (20px 라운드 사각형) */
+/* 체크 인디케이터 — Figma 에셋 20x20 r5
+   바 체크: terms_check.svg(흰 바탕+teal 체크) / 전체동의 체크: terms_check_fill.png(teal 바탕+흰 체크, 302:3422) */
 .pcauth-check { width: 20px; height: 20px; flex: none; }
 img.pcauth-check { display: block; }
 span.pcauth-check {
     display: inline-flex; box-sizing: border-box;
-    background: #fff; border: 1px solid #ddd; border-radius: 5px;
+    background: #fff; border: 1px solid #aaaaaa; border-radius: 5px;
 }
 
-/* 전체 동의 박스 (약관 카드 하단) — Figma 302:3418 */
-.pcauth-agree-all-box { background: #f4f4f4; border-radius: 10px; padding: 16px 18px; margin-top: 22px; }
+/* 전체 동의 박스 (302:3418: 663x105 r10 #f4f4f4, 약관과 33, 내부 인셋 30) */
+.pcauth-agree-all-box { background: #f4f4f4; border-radius: 10px; padding: 30px 30px 24px; margin-top: 33px; }
 .pcauth-agree-all {
     display: flex; align-items: center; gap: 10px; width: 100%;
     background: none; border: none; cursor: pointer; padding: 0;
-    font-weight: 700; font-size: 15px; letter-spacing: -0.04em; color: #111;
+    font-family: inherit; font-weight: 700; font-size: 18px; line-height: 25px; letter-spacing: -0.04em; color: #111111;
 }
-.pcauth-agree-all-sub { margin: 6px 0 0 30px; font-size: 13px; line-height: 1.4; letter-spacing: -0.04em; color: #8a8a8a; }
+/* 서브 16/400 #111, 타이틀과 4, 좌 30(체크 20+갭 10) (302:3421) */
+.pcauth-agree-all-sub { margin: 4px 0 0 30px; font-size: 16px; line-height: 22px; letter-spacing: -0.04em; color: #111111; }
 
-/* 약관 박스 — Figma 302:3425 */
-.pcauth-terms { margin-top: 22px; }
-.pcauth-terms-title { font-weight: 700; font-size: 14px; letter-spacing: -0.04em; color: #111; margin-bottom: 8px; }
+/* 약관 박스 (302:3425·3437) — 그룹 간 40, 제목 14/700 ↔ 본문 9 */
+.pcauth-terms { margin-top: 40px; }
+.pcauth-terms-title { font-weight: 700; font-size: 14px; line-height: 20px; letter-spacing: -0.04em; color: #111111; margin-bottom: 9px; }
 .pcauth-terms-req { color: #999; font-weight: 500; }
+/* 본문: 직각, stroke #ddd — 이용약관 h174 / 개인정보 h153 */
 .pcauth-terms-body {
-    border: 1px solid #ddd; border-radius: 10px 10px 0 0;
-    height: 174px; overflow-y: auto; padding: 14px 16px; box-sizing: border-box;
-    font-size: 14px; line-height: 1.4; letter-spacing: -0.04em; color: #111; white-space: pre-line;
+    border: 1px solid #dddddd; border-radius: 0;
+    height: 174px; overflow-y: auto; padding: 12px 16px 12px 10px; box-sizing: border-box;
+    font-size: 14px; line-height: 1.4; letter-spacing: -0.04em; color: #111111; white-space: pre-line;
     background: #fff;
 }
-/* 동의 바 — 박스 하단에 밀착, 좌측 정렬 (체크 26px / 텍스트 56px 오프셋) */
+.pcauth-terms + .pcauth-terms .pcauth-terms-body { height: 153px; }
+/* 동의 바 — h42 직각, 본문에 밀착. 체크 인셋 26/텍스트 갭 10 (302:3430~3434)
+   미동의: #dddddd + #111 텍스트 / 동의: teal + 흰 텍스트 */
 .pcauth-terms-agree {
     display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%;
-    margin-top: 0; height: 42px; padding: 0 16px 0 26px; border: none; border-radius: 0 0 10px 10px; cursor: pointer;
-    background: #f4f4f4; color: #555; font-size: 14px; letter-spacing: -0.04em; transition: all 0.12s ease;
+    margin-top: 0; height: 42px; padding: 0 16px 0 26px; border: none; border-radius: 0; cursor: pointer;
+    font-family: inherit;
+    background: #dddddd; color: #111111; font-size: 14px; line-height: 20px; letter-spacing: -0.04em; transition: all 0.12s ease;
 }
 .pcauth-terms-agree.on { background: var(--teal); color: #fff; }
 
-/* 가입유형 카드 (관리자/전문가/시민) — Figma 302:3453 (195×204, 아이콘 66) */
-.pcauth-typecards { display: flex; gap: 20px; }
+/* 가입유형 카드 (302:3453: 195x204 r20 stroke #ddd, 간격 34.5, 아이콘 71, 갭 19, 라벨 16/700) */
+.pcauth-typecards { display: flex; justify-content: space-between; }
 .pcauth-typecard {
-    flex: 1 1 0; min-width: 0; height: 204px;
-    border: 1px solid #e2e2e2; border-radius: 12px;
-    background: #fff; color: #444; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
-    font-size: 16px; transition: all 0.12s ease;
+    flex: 0 0 195px; width: 195px; height: 204px;
+    border: 1px solid #dddddd; border-radius: 20px;
+    background: #fff; color: #111111; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 19px;
+    font-family: inherit; font-size: 16px; font-weight: 700; line-height: 22px; transition: all 0.12s ease;
 }
 .pcauth-typecard.selected { background: var(--teal); border-color: var(--teal); color: #fff; }
-.pcauth-typeicon { width: 66px; height: 66px; object-fit: contain; }
+.pcauth-typeicon { height: 71px; width: auto; object-fit: contain; }
 .pcauth-typecard.selected .pcauth-typeicon { filter: brightness(0) invert(1); }
 
-/* 완료 화면 (회원가입 302:3357 / 비밀번호 재설정 302:3386) */
+/* 완료 화면 (회원가입 302:3357 / 비밀번호 재설정 302:3386) — 635x426, 콘텐츠 세로 중앙
+   카드 top: gnb 아래 187 (= 기본 패딩 144 + 43) */
 .pcauth-card.done {
-    width: 635px; min-height: 360px; padding: 70px 24px;
+    width: 635px; min-height: 426px; padding: 24px;
+    margin-top: 43px;
     text-align: center; justify-content: center; gap: 0;
 }
-.pcauth-done-title { color: var(--teal); font-weight: 700; font-size: 28px; letter-spacing: -1.12px; margin: 0 0 28px; }
-.pcauth-done-lead { font-size: 18px; font-weight: 700; color: var(--black); }
-.pcauth-done-desc { margin-top: 12px; font-size: 15px; line-height: 1.6; color: #8a8a8a; }
-/* 약관동의 '다음' 버튼 폭 (Figma 197) */
-.pcauth-submit.consent-next { width: 197px; }
+/* 타이틀 28/700 teal ↔ 리드 40 / 리드 20/700 ↔ 설명 10 (14/400 #737373) */
+.pcauth-done-title { color: var(--teal); font-weight: 700; font-size: 28px; line-height: 39px; letter-spacing: -1.12px; margin: 0 0 40px; }
+.pcauth-done-lead { font-size: 20px; font-weight: 700; line-height: 28px; color: #111111; }
+.pcauth-done-desc { margin: 10px 0 0; font-size: 14px; font-weight: 400; line-height: 19px; color: #737373; }
+/* 약관동의 '다음' 버튼 — 197x56, 카드와 21 (302:3450) */
+.pcauth-submit.consent-next { width: 197px; margin-top: 21px; }
 
 /* 뒤로가기 */
 .pcauth-back {

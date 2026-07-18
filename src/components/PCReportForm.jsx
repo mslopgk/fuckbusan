@@ -8,8 +8,10 @@ import { compressImage } from '../utils/imageCompress';
 
 
 const TYPES = ['주거', '환경', '교통', '안전', '교육', '산업·일자리', '문화·여가', '보건·복지'];
-const FACILITIES = ['공공/시설물', '도로/보도', '하수/배수', '가로등/조명', '벤치/쉼터', '쓰레기/청소', '안내판/표지판'];
-const ISSUES = ['파손', '오염', '고장', '미흡', '안전위험', '기타'];
+// Figma 302:11748 드롭다운 실측 옵션 (거리/골목쓰레기통/공원하수구/공공장소)
+const FACILITIES = ['거리', '골목쓰레기통', '공원하수구', '공공장소'];
+// Figma 302:11825 문제사항 옵션
+const ISSUES = ['미끄러워요', '파손됐어요', '안전조치가 부족해요', '위험이 있어요', '어려워요'];
 const BUSAN_CENTER = { lat: 35.158, lng: 129.06 };
 
 function LocationPickerModal({ onCancel, onConfirm }) {
@@ -119,8 +121,8 @@ export default function PCReportForm({ onNavigate }) {
     const [location, setLocation] = useState(null); // { lat, lng, address }
     const [detailAddress, setDetailAddress] = useState(''); // 상세주소 (detailed_address)
     const [type, setType] = useState('');
-    const [facility, setFacility] = useState('공공/시설물');
-    const [issue, setIssue] = useState('문제사항');
+    const [facility, setFacility] = useState(''); // 미선택 시 placeholder '공공/시설물'
+    const [issue, setIssue] = useState('');       // 미선택 시 placeholder '문제사항'
     const [description, setDescription] = useState('');
 
     const [showMap, setShowMap] = useState(false);
@@ -140,8 +142,8 @@ export default function PCReportForm({ onNavigate }) {
         if (!photos.length) e.photos = '문제 상황이 보이도록 사진을 등록해 주세요.';
         if (!type) e.type = '제보 카테고리를 선택해주세요.';
         if (!location) e.location = '어디에서 발생한 문제인지 위치를 선택해 주세요.';
-        if (facility === '공공/시설물') e.facility = '공공/시설물을 선택해주세요.';
-        if (issue === '문제사항') e.issue = '문제사항을 선택해주세요.';
+        if (!facility) e.facility = '공공/시설물을 선택해주세요.';
+        if (!issue) e.issue = '문제사항을 선택해주세요.';
         if (description.trim().length < 20) e.description = '내용을 조금 더 자세히 작성해 주세요. (20자 이상)';
         return e;
     };
@@ -164,7 +166,7 @@ export default function PCReportForm({ onNavigate }) {
     }, []);
 
     const valid = photos.length > 0 && location && type
-        && facility !== '공공/시설물' && issue !== '문제사항'
+        && facility && issue
         && description.trim().length >= 20 && !submitting && !uploading;
 
     const handleSubmit = async () => {
@@ -287,7 +289,7 @@ export default function PCReportForm({ onNavigate }) {
                         <img className="pc-form-hero-img" src="/figma-assets/propose-hero.png" alt="" />
                     </div>
 
-                    <div className="pc-form-section">
+                    <div className="pc-form-section pcf-sec-photo">
                         <label className="pc-form-label">사진 등록</label>
                         <input
                             ref={fileInputRef}
@@ -307,34 +309,40 @@ export default function PCReportForm({ onNavigate }) {
                             ))}
                             <button className={`pc-photo-btn${errors.photos ? ' error' : ''}`} onClick={() => fileInputRef.current?.click()} type="button">
                                 {photos.length > 0 ? (
-                                    <span style={{ fontSize: '22px' }}>＋</span>
+                                    /* Figma 302:11697 Group 275: + 아이콘 22x22 */
+                                    <img src="/figma-assets/icons/report-propose/plus.png" alt="" width="22" height="22" />
                                 ) : (
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                    /* Figma 302:12157 image 69: 카메라 30x30 */
+                                    <img src="/figma-assets/icons/report-propose/camera.png" alt="" width="30" height="30" />
                                 )}
                             </button>
                         </div>
                         {errors.photos && <p className="pc-form-error-msg">{errors.photos}</p>}
                     </div>
 
-                    <div className="pc-form-section">
+                    <div className="pc-form-section pcf-sec-loc">
                         <label className="pc-form-label">위치정보</label>
                         <div className="pc-form-loc-row">
-                            <button className={`pc-form-input pc-form-clickable${errors.location ? ' error' : ''}`} onClick={() => setShowMap(true)}>
-                                <span className={location ? '' : 'placeholder'}>{locationLabel}</span>
+                            <button className={`pc-form-input pc-form-clickable pcf-loc-field${errors.location ? ' error' : ''}`} onClick={() => setShowMap(true)}>
+                                {/* Figma 302:11673: 선택된 주소도 #a6a6a6 16/400 */}
+                                <span className="placeholder">{locationLabel}</span>
                                 <img src="/figma-assets/icons/locate-modal/field_locate_gray.png" alt="" width="24" height="24" />
                             </button>
-                            <input
-                                type="text"
-                                className="pc-form-input pc-form-loc-detail"
-                                placeholder="예: 1층 오른쪽 표지판 앞"
-                                value={detailAddress}
-                                onChange={(e) => setDetailAddress(e.target.value)}
-                            />
+                            {/* Figma 302:12140→11673: 상세주소 입력은 위치 선택 후 노출 */}
+                            {location && (
+                                <input
+                                    type="text"
+                                    className="pc-form-input pc-form-loc-detail"
+                                    placeholder="예: 1층 오른쪽 표지판 앞"
+                                    value={detailAddress}
+                                    onChange={(e) => setDetailAddress(e.target.value)}
+                                />
+                            )}
                         </div>
                         {errors.location && <p className="pc-form-error-msg">{errors.location}</p>}
                     </div>
 
-                    <div className="pc-form-section">
+                    <div className="pc-form-section pcf-sec-chips">
                         <label className="pc-form-label">우리동네 불편사항을 제보해주세요</label>
                         <div className="pc-chip-row">
                             {TYPES.map((t) => (
@@ -350,32 +358,45 @@ export default function PCReportForm({ onNavigate }) {
                         {errors.type && <p className="pc-form-error-msg">{errors.type}</p>}
                     </div>
 
-                    <div className="pc-form-section">
+                    <div className="pc-form-section pcf-sec-dd">
                         <div className="pc-form-row-flex">
+                            {/* Figma 302:11748: 열리면 필드+옵션이 한 박스(보라 스트로크 r15)로 확장 */}
                             <div className="pc-form-dropdown">
-                                <button className={`pc-form-input pc-form-clickable${errors.facility ? ' error' : ''}`} onClick={() => setShowFacilityDrop(!showFacilityDrop)}>
-                                    <span>{facility}</span>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="6 9 12 15 18 9"/></svg>
+                                <button className={`pc-form-input pc-form-clickable pcf-dd-field${errors.facility ? ' error' : ''}`} onClick={() => { setShowFacilityDrop(!showFacilityDrop); setShowIssueDrop(false); }}>
+                                    <span className={facility ? 'pcf-dd-value' : 'placeholder'}>{facility || '공공/시설물'}</span>
+                                    <img src="/figma-assets/icons/report-propose/dd_chevron.png" alt="" width="18" height="9" />
                                 </button>
                                 {showFacilityDrop && (
-                                    <div className="pc-dropdown-list">
-                                        {FACILITIES.map((f) => (
-                                            <div key={f} className="pc-dropdown-item" onClick={() => { setFacility(f); setShowFacilityDrop(false); clearError('facility'); }}>{f}</div>
-                                        ))}
+                                    <div className="pcf-dd-panel">
+                                        <button className="pcf-dd-panel-field" onClick={() => setShowFacilityDrop(false)}>
+                                            <span className={facility ? 'pcf-dd-open-label' : 'pcf-dd-open-label'}>{facility || '공공/시설물'}</span>
+                                            <img src="/figma-assets/icons/report-propose/dd_chevron.png" alt="" width="18" height="9" />
+                                        </button>
+                                        <div className="pcf-dd-options">
+                                            {FACILITIES.map((f) => (
+                                                <div key={f} className="pcf-dd-item" onClick={() => { setFacility(f); setShowFacilityDrop(false); clearError('facility'); }}>{f}</div>
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
                             </div>
                             <span className="pc-form-conjunction">에</span>
                             <div className="pc-form-dropdown">
-                                <button className={`pc-form-input pc-form-clickable${errors.issue ? ' error' : ''}`} onClick={() => setShowIssueDrop(!showIssueDrop)}>
-                                    <span>{issue}</span>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="6 9 12 15 18 9"/></svg>
+                                <button className={`pc-form-input pc-form-clickable pcf-dd-field${errors.issue ? ' error' : ''}`} onClick={() => { setShowIssueDrop(!showIssueDrop); setShowFacilityDrop(false); }}>
+                                    <span className={issue ? 'pcf-dd-value' : 'placeholder'}>{issue || '문제사항'}</span>
+                                    <img src="/figma-assets/icons/report-propose/dd_chevron.png" alt="" width="18" height="9" />
                                 </button>
                                 {showIssueDrop && (
-                                    <div className="pc-dropdown-list">
-                                        {ISSUES.map((it) => (
-                                            <div key={it} className="pc-dropdown-item" onClick={() => { setIssue(it); setShowIssueDrop(false); clearError('issue'); }}>{it}</div>
-                                        ))}
+                                    <div className="pcf-dd-panel">
+                                        <button className="pcf-dd-panel-field" onClick={() => setShowIssueDrop(false)}>
+                                            <span className="pcf-dd-open-label">{issue || '문제사항'}</span>
+                                            <img src="/figma-assets/icons/report-propose/dd_chevron.png" alt="" width="18" height="9" />
+                                        </button>
+                                        <div className="pcf-dd-options">
+                                            {ISSUES.map((it) => (
+                                                <div key={it} className="pcf-dd-item" onClick={() => { setIssue(it); setShowIssueDrop(false); clearError('issue'); }}>{it}</div>
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -384,10 +405,10 @@ export default function PCReportForm({ onNavigate }) {
                         {(errors.facility || errors.issue) && <p className="pc-form-error-msg">{errors.facility || errors.issue}</p>}
                     </div>
 
-                    <div className="pc-form-section">
+                    <div className="pc-form-section pcf-sec-desc">
                         <input
                             type="text"
-                            className={`pc-form-input${errors.description ? ' error' : ''}`}
+                            className={`pc-form-input pcf-desc-input${errors.description ? ' error' : ''}`}
                             placeholder="상세설명을 작성해주세요"
                             value={description}
                             onChange={(e) => { setDescription(e.target.value); clearError('description'); }}
@@ -395,6 +416,8 @@ export default function PCReportForm({ onNavigate }) {
                         {errors.description && <p className="pc-form-error-msg">{errors.description}</p>}
                     </div>
 
+                    {/* Figma 302:12140: 상세설명 아래 29px 지점 1px #eee 구분선 */}
+                    <div className="pc-form-divider pcf-divider-report" />
                     <div className="pc-form-actions">
                         <button className="pc-btn-light" type="button" onClick={handleSaveDraft}>임시저장</button>
                         <button
