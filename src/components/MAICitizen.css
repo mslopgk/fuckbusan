@@ -180,13 +180,19 @@
 }
 .maic-search--label button img { width: 20px; height: 20px; display: block; }
 
+/* 하단 네비(MobileBottomNav, position:fixed / h76 / z-index:100) 영역.
+   시트류가 네비를 덮지 않도록 bottom 오프셋으로 사용한다. */
+.m-ai-citizen { --maic-nav-h: 76px; }
+
 /* ── 인트로 카드 (Figma 302:15131~15138) ── */
 .maic-intro {
     position: absolute;
     left: 0;
     right: 0;
     top: 533px;
-    bottom: 0;
+    /* Figma 시트는 533~852지만 네비(781~857)가 그 위에 보이는 상태.
+       네비는 확정 잠금 컴포넌트(z-index:100)이므로 시트 하단을 네비 높이만큼 띄운다. */
+    bottom: var(--maic-nav-h);
     background: #ffffff;
     z-index: 620;
     padding: 20px;
@@ -260,7 +266,7 @@
     left: 0;
     right: 0;
     top: 440px;
-    bottom: 0;
+    bottom: var(--maic-nav-h); /* 하단 네비 노출 (인트로 시트와 동일 규칙) */
     background: #ffffff;
     z-index: 610;
     display: flex;
@@ -344,7 +350,8 @@
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 18px 20px calc(76px + 20px);
+    /* 시트 자체가 네비 위에서 끝나므로 네비 높이만큼의 추가 여백은 불필요 */
+    padding: 18px 20px 20px;
     display: flex;
     flex-direction: column;
     gap: 17px;

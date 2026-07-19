@@ -555,7 +555,11 @@
 /* Body + Vote */
 .pcd-body-wrap {
     display: flex;
-    align-items: flex-start;
+    /* Figma: 원형 버튼은 본문 블록 하단 정렬
+       - pcReportDetail(302:12293): 본문 480,1011 806×552(하단 1563) / 버튼 1336,1460 97×97(하단 1557)
+       - pcProposeDetail: 본문 480,995 806×552(하단 1547) / 버튼 1337,1444 97×97(하단 1541)
+       두 화면 모두 동일 기준(하단 정렬) → flex-end */
+    align-items: flex-end;
     gap: 57px;
     margin-bottom: 32px;
 }

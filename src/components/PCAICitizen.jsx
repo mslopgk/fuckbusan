@@ -250,9 +250,6 @@ function FilterPanel({ region, setRegion, cat, setCat, onChat }) {
 }
 
 /* ── 우측 페르소나 리스트 ── */
-// 8개 생활영역 — [2-5] 안내문구용
-const LIFE_AREAS = ['안전', '교통', '주거', '산업·일자리', '교육', '환경', '문화·여가', '보건·복지'];
-
 /* 기본(부산대표) 상태 대형 카드 — Figma 302:3635 (351x383, 159px 원형 포트레이트 중앙배치).
    구/군 선택 상태의 컴팩트 카드(302:4360)와 별개 레이아웃. 카드 크기가 px 고정이라 내부는 절대좌표. */
 function DefaultCard({ citizen, avatarUrl, onClick, active }) {
@@ -286,14 +283,6 @@ function PersonaList({ region, citizens, avatars, sort, setSort, loaded, onSelec
     // 지역/필터가 바뀌면 캐러셀 처음(0번)으로
     useEffect(() => { setCarouselIndex(0); }, [region, citizens.length]);
 
-    // [2-5] 가장 문제로 꼽힌 영역 = 가상시민 카테고리 최빈값
-    const topArea = useMemo(() => {
-        const tally = {};
-        citizens.forEach((c) => (c.categories || []).forEach((k) => { tally[k] = (tally[k] || 0) + 1; }));
-        const sorted = Object.entries(tally).sort((a, b) => b[1] - a[1]);
-        return sorted.length ? sorted[0][0] : null;
-    }, [citizens]);
-
     // 캐러셀은 기본(부산대표) 상태 전용 — Figma 302:3635 (대형 카드 + peek + 화살표).
     // 구/군 선택 상태는 컴팩트 세로 리스트라 캐러셀 인덱스를 쓰지 않는다.
     const safeIndex = citizens.length ? Math.min(carouselIndex, citizens.length - 1) : 0;
@@ -306,13 +295,7 @@ function PersonaList({ region, citizens, avatars, sort, setSort, loaded, onSelec
         <aside className={`pubdata-panel aic-list${region ? '' : ' aic-list--default'}`}>
             <h2 className="aic-list-title"><span>{region || '부산대표'}</span> AI 가상시민</h2>
             <p className="aic-list-sub">{region || '부산'} 시민 의견과 데이터를 바탕으로 만든 AI 가상시민입니다. 서로 다른 삶과 시선을 통해 우리 동네의 고민과 바람을 한눈에 볼 수 있어요.</p>
-            {citizens.length > 0 && (
-                <p className="aic-list-guide">
-                    {region || '부산'}에서 {LIFE_AREAS.length}개 생활영역 중
-                    {topArea ? <> 가장 문제로 꼽힌 <b>‘{topArea}’</b> 등을</> : ' 주요 이슈를'} 대표하는
-                    가상시민 <b>{citizens.length}명</b>이에요.
-                </p>
-            )}
+            {/* 민트 안내 박스(aic-list-guide)는 Figma 302:3635 에 없음 — 제거됨(제목/설명 → 카드 순서) */}
             {/* 총N명/정렬 바: 기본(부산대표) 상태의 Figma 302:3635 에는 없음 — 구/군 선택 상태에서만 렌더 */}
             {region && (
                 <div className="aic-list-bar">

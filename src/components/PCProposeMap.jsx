@@ -17,7 +17,7 @@ export default function PCProposeMap({ onNavigate }) {
     const [livingCats, setLivingCats] = useState(() => new Set(['all']));
     const [sort, setSort] = useState('latest');
     const [policyItem, setPolicyItem] = useState(null);
-    const [policyDismissed, setPolicyDismissed] = useState(true);
+    const [policyDismissed, setPolicyDismissed] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const mapRef = useRef(null);
 
@@ -58,7 +58,8 @@ export default function PCProposeMap({ onNavigate }) {
         return proposalItems;
     }, [proposals]);
 
-    // 정책정보 카드: 데이터 들어오면 첫 항목으로 시드. X로 닫은 뒤(policyDismissed=true)는 다시 안 열림.
+    // 정책정보 카드: Figma 302:12589 기본 상태 = 팝업 노출. 데이터 들어오면 첫 항목으로 시드.
+    // X로 닫은 뒤(policyDismissed=true)는 자동 재오픈 안 함(핀 클릭으로만 다시 열림).
     useEffect(() => {
         if (!policyDismissed && !policyItem && ITEMS.length > 0) {
             setPolicyItem(ITEMS[0]);

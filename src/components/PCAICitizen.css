@@ -895,7 +895,6 @@
 }
 .aic-list:not(.aic-list--default) .aic-list-title,
 .aic-list:not(.aic-list--default) .aic-list-sub { margin-left: 12px; margin-right: 12px; }
-.aic-list:not(.aic-list--default) .aic-list-guide { margin-left: 12px; margin-right: 12px; }
 .aic-list:not(.aic-list--default) .aic-list-bar { padding-left: 12px; padding-right: 12px; }
 /* 진입 인트로 — Figma 302:3561 실측 (1920x1080 기준):
    캐릭터 302:3602 @(117, bottom0) 300x480 / 말풍선 302:3628 @(466, bottom45) 945x168 r20
@@ -994,10 +993,7 @@
 .aic-list-title { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: #242424; letter-spacing: -0.04em; }
 .aic-list-title span { color: #23bdbb; }
 .aic-list-sub { margin: 0 0 16px; font-size: 14px; color: #737373; line-height: 1.35; letter-spacing: 0; }
-/* [2-5] 구별 대표 가상시민 안내문구 */
-.aic-list-guide { margin: 0 0 16px; padding: 11px 14px; background: #e6f7f7; border-radius: 10px;
-    font-size: 13px; color: #14807e; line-height: 1.45; }
-.aic-list-guide b { font-weight: 800; color: #0f6b69; }
+/* (제거) .aic-list-guide 민트 안내 박스 — Figma 302:3635 에 없는 요소라 삭제 */
 /* [1-5] 대표 배지 + 더보기 */
 .aic-card-rep { display: inline-block; margin-right: 6px; padding: 1px 7px; border-radius: 6px;
     background: #f0a500; color: #fff; font-size: 11px; font-weight: 800; vertical-align: middle; }

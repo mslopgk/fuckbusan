@@ -26,22 +26,25 @@ function ReportCard({ it, onNavigate }) {
                     {it.sub && <span className="m-report-sub-tag">{it.sub}</span>}
                 </div>
                 <h3 className="m-prop-title">{it.title}</h3>
-                <p className="m-prop-author">{it.author}</p>
-                <div className="m-prop-stats">
-                    <span>
-                        {/* Figma heart icon */}
-                        <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}>
-                            <path d="M9.0568 1.0811C10.4983 -0.360439 12.8359 -0.360292 14.2775 1.0811C15.7191 2.52272 15.7191 4.86019 14.2775 6.30181L8.78141 11.7989C8.47833 12.102 8.07586 12.2441 7.67887 12.2286C7.2822 12.2438 6.88013 12.1017 6.57731 11.7989L1.08121 6.30181C-0.360404 4.86019 -0.360404 2.52272 1.08121 1.0811C2.52285 -0.360296 4.86037 -0.36044 6.30192 1.0811L7.67887 2.45806L9.0568 1.0811Z"/>
-                        </svg>
-                        {it.likes ?? 0}
-                    </span>
-                    <span>
-                        {/* Figma comment bubble icon */}
-                        <svg width="14" height="12" viewBox="0 0 14 11.8457" fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}>
-                            <path d="M9.1543 0C11.8305 0.000244114 14 2.1694 14 4.8457C14 7.52201 11.8305 9.69116 9.1543 9.69141H6.5127L3.23047 11.8457V9.41406C1.34871 8.74853 4.44368e-08 6.95541 0 4.8457C0 2.1694 2.16945 0.000244114 4.8457 0H9.1543Z"/>
-                        </svg>
-                        {it.comments ?? 0}
-                    </span>
+                {/* Figma 302:15671 §4 — 작성자(x32)와 카운터(우측 정렬)는 같은 줄 */}
+                <div className="m-report-author-stat-row">
+                    <p className="m-prop-author">{it.author}</p>
+                    <div className="m-prop-stats">
+                        <span>
+                            {/* Figma heart icon */}
+                            <svg width="16" height="13" viewBox="0 0 15.3587 12.2297" fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}>
+                                <path d="M9.0568 1.0811C10.4983 -0.360439 12.8359 -0.360292 14.2775 1.0811C15.7191 2.52272 15.7191 4.86019 14.2775 6.30181L8.78141 11.7989C8.47833 12.102 8.07586 12.2441 7.67887 12.2286C7.2822 12.2438 6.88013 12.1017 6.57731 11.7989L1.08121 6.30181C-0.360404 4.86019 -0.360404 2.52272 1.08121 1.0811C2.52285 -0.360296 4.86037 -0.36044 6.30192 1.0811L7.67887 2.45806L9.0568 1.0811Z"/>
+                            </svg>
+                            {it.likes ?? 0}
+                        </span>
+                        <span>
+                            {/* Figma comment bubble icon */}
+                            <svg width="14" height="12" viewBox="0 0 14 11.8457" fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 2 }}>
+                                <path d="M9.1543 0C11.8305 0.000244114 14 2.1694 14 4.8457C14 7.52201 11.8305 9.69116 9.1543 9.69141H6.5127L3.23047 11.8457V9.41406C1.34871 8.74853 4.44368e-08 6.95541 0 4.8457C0 2.1694 2.16945 0.000244114 4.8457 0H9.1543Z"/>
+                            </svg>
+                            {it.comments ?? 0}
+                        </span>
+                    </div>
                 </div>
             </div>
             {it.image && <div ref={imgRef} className="m-prop-card-img" style={bgStyle} />}
@@ -220,11 +223,13 @@ export default function MReportMap({ onNavigate }) {
 
     return (
         <div className={`m-prop-map-page m-rmap-page sheet-${sheetMode}`}>
+            {/* Figma 302:15674 — 바 안 텍스트는 선택 지역명("동구") 16/W400/#242424.
+                검색은 실제 동작 기능(ITEMS 필터)이라 input을 유지하고, 빈 상태 표시를 지역명으로 노출 */}
             <MMapSearchBar
                 value={search}
                 onChange={setSearch}
                 onBack={() => onNavigate?.('mReportList')}
-                placeholder="검색"
+                placeholder={region}
                 showBack={true}
             />
 

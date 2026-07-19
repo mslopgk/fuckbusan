@@ -4,7 +4,12 @@
 /* 중앙 지도 */
 .pubd-map { position: absolute; left: 180px; right: 560px; top: 0; bottom: 0;
     display: flex; align-items: center; justify-content: center; }
-.pubd-map-stack { position: relative; width: 100%; max-width: 760px; height: 100%; }
+/* Figma 302:8774 §지도 Group 실측: 메인 지도 1133×873 @ x200 y125 (1920 기준 프레임).
+   .pubd-map(가용폭 1180) 안에서 중앙정렬되므로 max-width 1133 이면 좌측 시작 x≈203 으로 정합.
+   화면이 낮을 때는 aspect(750.48/572.98 = 1.3098)로 환산한 높이 상한을 함께 걸어
+   .busanmap-stage 의 max-height:100% 클램프로 지도가 세로로 눌리는 것을 막는다. */
+.pubd-map-stack { position: relative; width: 100%;
+    max-width: min(1133px, calc((100vh - 64px) * 1.3098)); height: 100%; }
 .pubd-map-stack .busanmap { width: 100%; }
 
 /* 지도 값 버블 (Figma 302:9132/9670) — BusanMap stage와 동일 박스/transform 으로 정합.
