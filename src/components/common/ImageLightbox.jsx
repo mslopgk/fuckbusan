@@ -14,21 +14,27 @@ import { createPortal } from 'react-dom';
  * 사용하는 쪽에서는 open/close state만 들고, 열려있을 때만 마운트하면 됨:
  *   {lightbox && <ImageLightbox images={images} onClose={() => setLightbox(false)} />}
  */
+// 확대 배율 상한 — 이 이상 늘리면 저해상도 원본이 눈에 띄게 뭉개진다.
+const MAX_UPSCALE = 2.5;
+
 export default function ImageLightbox({ images, index = 0, onClose, alt = '첨부 사진' }) {
     const list = (Array.isArray(images) ? images : [images]).filter(Boolean);
     const [i, setI] = useState(Math.min(Math.max(index, 0), Math.max(list.length - 1, 0)));
     const hasMulti = list.length > 1;
     const imgRef = useRef(null);
 
-    // 뷰포트(92%)에 꽉 차도록 비율 유지하며 맞춘다.
-    // maxWidth/maxHeight만 쓰면 원본이 작은 이미지가 그대로 작게 떠서, 확대까지 허용하도록 실제 크기를 계산한다.
+    // 뷰포트(92%)에 비율 유지하며 맞춘다.
+    // maxWidth/maxHeight만 쓰면 원본이 작은 이미지가 그대로 작게 떠서, 확대도 허용하도록 실제 크기를 계산한다.
+    // 단, 저해상도 원본(운영 업로드는 240x180 수준도 있음)을 화면 가득 늘리면 뭉개지므로 확대 배율에 상한을 둔다.
     const fitToViewport = useCallback(() => {
         const img = imgRef.current;
         if (!img || !img.naturalWidth || !img.naturalHeight) return;
-        const scale = Math.min(
+        const fit = Math.min(
             (window.innerWidth * 0.92) / img.naturalWidth,
             (window.innerHeight * 0.92) / img.naturalHeight,
         );
+        // 축소는 제한 없음(큰 사진은 화면에 꽉 참). 확대는 MAX_UPSCALE 배까지만.
+        const scale = Math.min(fit, MAX_UPSCALE);
         img.style.width = `${Math.round(img.naturalWidth * scale)}px`;
         img.style.height = `${Math.round(img.naturalHeight * scale)}px`;
     }, []);
