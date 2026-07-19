@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import ImageLightbox from '../../components/common/ImageLightbox';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import '../styles/report_propose_admin.css';
@@ -27,6 +28,7 @@ export default function ReportDetail({ report, onNavigate }) {
     const [saving, setSaving] = useState(false);
     const [resultImage, setResultImage] = useState('');   // 개선 결과사진 (업로드된 URL)
     const [uploadingImg, setUploadingImg] = useState(false);
+    const [lightboxSrc, setLightboxSrc] = useState(null);   // 확대해서 볼 이미지 URL (null이면 닫힘)
     const fileRef = useRef(null);
 
     useEffect(() => {
@@ -208,7 +210,13 @@ export default function ReportDetail({ report, onNavigate }) {
                     <div className="rpa-drow rpa-drow--top rpa-drow--attach">
                         <span className="rpa-dlabel">첨부이미지파일</span>
                         {data.image ? (
-                            <img src={data.image} alt="첨부" className="rpa-dthumb" />
+                            <img
+                                src={data.image}
+                                alt="첨부"
+                                className="rpa-dthumb rpa-dthumb--zoom"
+                                onClick={() => setLightboxSrc(data.image)}
+                                title="클릭하면 크게 볼 수 있습니다"
+                            />
                         ) : (
                             <div className="rpa-dthumb-empty" />
                         )}
@@ -285,7 +293,13 @@ export default function ReportDetail({ report, onNavigate }) {
                     <div className="rpa-review-photos">
                         {resultImage && (
                             <div className="rpa-photo-tile">
-                                <img src={resultImage} alt="개선 결과" className="rpa-photo" />
+                                <img
+                                    src={resultImage}
+                                    alt="개선 결과"
+                                    className="rpa-photo rpa-dthumb--zoom"
+                                    onClick={() => setLightboxSrc(resultImage)}
+                                    title="클릭하면 크게 볼 수 있습니다"
+                                />
                                 <button
                                     type="button"
                                     className="rpa-photo-remove"
@@ -315,6 +329,10 @@ export default function ReportDetail({ report, onNavigate }) {
                     </button>
                 </div>
             </div>
+
+            {lightboxSrc && (
+                <ImageLightbox images={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+            )}
         </AdminLayout>
     );
 }

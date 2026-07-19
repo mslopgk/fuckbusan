@@ -347,6 +347,17 @@ textarea.rpa-ddesc:focus { border-color: #23bdbb; }
     border-radius: 10px;
 }
 
+/* 클릭 시 라이트박스로 확대되는 이미지 (첨부 이미지 / 개선 결과사진) */
+.rpa-dthumb--zoom {
+    cursor: zoom-in;
+    transition: opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rpa-dthumb--zoom:hover {
+    opacity: 0.85;
+    box-shadow: 0 0 0 2px #23bdbb;
+}
+
 /* ── 제보현황 상태 pill (118x31 r30, active #f74e7e) ── */
 .rpa-pills { display: flex; gap: 15px; }
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import ImageLightbox from '../../components/common/ImageLightbox';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import '../styles/report_propose_admin.css';
@@ -10,6 +11,7 @@ export default function AdminProposalDetail({ proposal, onNavigate }) {
     const [data, setData] = useState(null);
     const [form, setForm] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [lightboxSrc, setLightboxSrc] = useState(null);   // 확대해서 볼 이미지 URL (null이면 닫힘)
 
     useEffect(() => {
         if (!proposal?.id) return;
@@ -186,7 +188,13 @@ export default function AdminProposalDetail({ proposal, onNavigate }) {
                     <div className="rpa-drow rpa-drow--top rpa-drow--attach">
                         <span className="rpa-dlabel">첨부이미지파일</span>
                         {form.image ? (
-                            <img src={form.image} alt="첨부" className="rpa-dthumb" />
+                            <img
+                                src={form.image}
+                                alt="첨부"
+                                className="rpa-dthumb rpa-dthumb--zoom"
+                                onClick={() => setLightboxSrc(form.image)}
+                                title="클릭하면 크게 볼 수 있습니다"
+                            />
                         ) : (
                             <div className="rpa-dthumb-empty" />
                         )}
@@ -226,6 +234,10 @@ export default function AdminProposalDetail({ proposal, onNavigate }) {
                     </button>
                 </div>
             </div>
+
+            {lightboxSrc && (
+                <ImageLightbox images={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+            )}
         </AdminLayout>
     );
 }

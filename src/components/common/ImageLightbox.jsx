@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 /**
@@ -18,6 +18,25 @@ export default function ImageLightbox({ images, index = 0, onClose, alt = '첨�
     const list = (Array.isArray(images) ? images : [images]).filter(Boolean);
     const [i, setI] = useState(Math.min(Math.max(index, 0), Math.max(list.length - 1, 0)));
     const hasMulti = list.length > 1;
+    const imgRef = useRef(null);
+
+    // 뷰포트(92%)에 꽉 차도록 비율 유지하며 맞춘다.
+    // maxWidth/maxHeight만 쓰면 원본이 작은 이미지가 그대로 작게 떠서, 확대까지 허용하도록 실제 크기를 계산한다.
+    const fitToViewport = useCallback(() => {
+        const img = imgRef.current;
+        if (!img || !img.naturalWidth || !img.naturalHeight) return;
+        const scale = Math.min(
+            (window.innerWidth * 0.92) / img.naturalWidth,
+            (window.innerHeight * 0.92) / img.naturalHeight,
+        );
+        img.style.width = `${Math.round(img.naturalWidth * scale)}px`;
+        img.style.height = `${Math.round(img.naturalHeight * scale)}px`;
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener('resize', fitToViewport);
+        return () => window.removeEventListener('resize', fitToViewport);
+    }, [fitToViewport]);
 
     useEffect(() => {
         const onKey = (e) => {
@@ -77,9 +96,12 @@ export default function ImageLightbox({ images, index = 0, onClose, alt = '첨�
             )}
 
             <img
+                key={src}
+                ref={imgRef}
                 src={src}
                 alt={hasMulti ? `${alt} ${i + 1}` : alt}
                 onClick={(e) => e.stopPropagation()}
+                onLoad={fitToViewport}
                 style={{
                     maxWidth: '92vw', maxHeight: '92vh',
                     borderRadius: 10, boxShadow: '0 8px 48px rgba(0,0,0,0.6)',
