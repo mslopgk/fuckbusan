@@ -189,9 +189,13 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
     };
     const goDone = () => { setPanel('done'); setRefreshKey((k) => k + 1); };
 
+    // 우측 패널이 실제로 렌더되는지. 목록이 비면 패널 자체가 없으므로(아래 렌더 조건과 동일),
+    // 그때는 지도 툴바가 패널 자리(431px 안쪽)에 떠 있지 않고 화면 오른쪽 끝에 붙어야 한다.
+    const hasRightPanel = panel !== 'list' || (!loading && filtered.length > 0);
+
     return (
         <UserPCLayout currentView="pcDiagnosisMap" onNavigate={onNavigate}>
-            <div className={`pc-diag-page${sidebarOpen ? '' : ' pc-diag-sidebar-closed'}`}>
+            <div className={`pc-diag-page${sidebarOpen ? '' : ' pc-diag-sidebar-closed'}${hasRightPanel ? '' : ' pc-diag-no-panel'}`}>
                 {/* LEFT FILTER STACK — 1행: 구역별(전체폭) / 2행: 생활정보 rail | 진단대상+공공시설물 (2열) */}
                 <div className="pc-diag-filter-stack pc-diag-filter-stack--rail">
                     {/* 1. 구역별 */}
@@ -349,7 +353,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
 
                 {/* RIGHT PANEL — content varies by `panel` state.
                     Figma 302:5843: 목록이 비어 있으면(진단대상 선택 전 포함) 우측 패널 자체가 없음 */}
-                {(panel !== 'list' || (!loading && filtered.length > 0)) && (
+                {hasRightPanel && (
                 <aside className={`pc-diag-right pc-diag-right-${panel}`}>
                     {panel === 'list' && (
                         <>

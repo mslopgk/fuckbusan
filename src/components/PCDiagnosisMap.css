@@ -322,6 +322,11 @@
 .pc-diag-sidebar-closed .pc-map3-toolbar {
     right: 16px;
 }
+/* 우측 패널이 아예 렌더되지 않는 상태(목록 0건)에서는 툴바가 허공에 뜨지 않도록
+   패널과 같은 인셋(16px)으로 화면 오른쪽 끝에 붙인다. */
+.pc-diag-no-panel .pc-map3-toolbar {
+    right: 16px;
+}
 
 /* ───── 중앙 지도 ───── */
 .pc-diag-canvas {
