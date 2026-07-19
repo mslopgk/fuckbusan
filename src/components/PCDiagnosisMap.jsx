@@ -59,9 +59,11 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
     const [bigSel, setBigSel] = useState(() => new Set());
     const [facilityMid, setFacilityMid] = useState('');
     const [facilitySub, setFacilitySub] = useState('');
-    // Figma 302:5843(초기 상태): 진단대상 미선택 — 선택 전에는 핀/우측 목록 패널이 없다.
-    // 302:5562(전체)/302:4773·4977(시민)/302:5178·5370(전문가) 모두 선택 후 상태.
-    const [target, setTarget] = useState('');
+    // 진단대상 기본값 = '전체'. 첫 진입부터 핀/우측 목록이 보이도록 한다(사용자 확정).
+    // 참고: Figma 302:5843 은 진단대상 미선택(빈 화면) 상태를 그리고 있고 75f5105 에서 그에 맞춰
+    // useState('') 로 두었으나, 빈 화면으로 진입하는 UX 문제로 '전체' 기본 선택으로 되돌린다.
+    // 302:5562(전체)/302:4773·4977(시민)/302:5178·5370(전문가) 는 선택 후 상태.
+    const [target, setTarget] = useState('all');
     const [sort, setSort] = useState('latest');
     const mapRef = useRef(null);
     const geocodeReqRef = useRef(0);
