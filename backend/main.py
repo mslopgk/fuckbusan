@@ -172,15 +172,21 @@ def read_root():
 
 
 if not IS_LAMBDA:
+    # dist 디렉토리 실제경로 — SPA 정적 서빙의 경계. 이 밖의 파일은 절대 서빙하지 않는다.
+    _DIST_ROOT = os.path.realpath(os.path.join(current_dir, "../dist"))
+
     @app.get("/{full_path:path}")
     async def serve_react_app(full_path: str):
-        dist_dir = os.path.join(current_dir, "../dist")
-        file_path = os.path.join(dist_dir, full_path)
-        if os.path.exists(file_path) and os.path.isfile(file_path):
-            return FileResponse(file_path)
+        index_file = os.path.join(_DIST_ROOT, "index.html")
+        # 요청 경로를 정규화해 dist 경계 안에 있는 실제 파일일 때만 그대로 서빙한다.
+        # (../ 경로순회로 backend/.env·소스 등 dist 밖 파일이 유출되던 결함 차단)
+        requested = os.path.realpath(os.path.join(_DIST_ROOT, full_path))
+        within_dist = requested == _DIST_ROOT or requested.startswith(_DIST_ROOT + os.sep)
+        if within_dist and os.path.isfile(requested):
+            return FileResponse(requested)
         if full_path in ["favicon.ico", "favicon.svg", "apple-touch-icon.png"]:
             raise HTTPException(status_code=404, detail="Icon not found")
-        index_file = os.path.join(dist_dir, "index.html")
+        # 그 외(존재하지 않거나 경계 밖)는 SPA 라우팅용 index.html 폴백
         if os.path.exists(index_file):
             return FileResponse(index_file)
         return {"error": "Frontend build not found. Please run 'npm run build'."}
