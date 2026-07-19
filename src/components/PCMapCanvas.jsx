@@ -13,6 +13,22 @@ const featureToPaths = (feature) => {
 
 const BUSAN_CENTER = { lat: 35.158, lng: 129.06 };
 
+// 선택(focus) 핀 헤일로/글로우 색 — 도메인 색(제보 #542aa3 / 제안 #f74e7e / 진단 #23bdbb)을 그대로 따라간다.
+// 하드코딩 청록 금지 (코드코리아 260719 항목4)
+function hexToRgba(hex, alpha) {
+    if (typeof hex !== 'string') return `rgba(84,42,163,${alpha})`;
+    let h = hex.trim().replace('#', '');
+    if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+    if (h.length !== 6 || /[^0-9a-fA-F]/.test(h)) return hex;
+    const n = parseInt(h, 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
+}
+// 핀 요소에 붙일 헤일로/글로우 CSS 변수 (image6: 큰 원형 핀 + 크고 반투명한 링)
+const focusVars = (color) => ({
+    '--pin-focus-ring': hexToRgba(color, 0.32),
+    '--pin-focus-glow': hexToRgba(color, 0.55),
+});
+
 let _geoCache = null;
 let _geoPromise = null;
 function loadGeo() {
@@ -77,6 +93,8 @@ function buildClusters(pins, level) {
                 lng,
                 count: b.items.length,
                 color,
+                // 선택된 항목이 클러스터에 묶여 있으면 클러스터(숫자 핀)도 focus 상태를 갖는다.
+                focus: b.items.some((p) => p.focus),
                 _items: b.items,
                 _isCluster: true,
             });
@@ -102,6 +120,9 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
     const [geo, setGeo] = useState(null);
     const [internalShowRegions, setInternalShowRegions] = useState(showRegions);
     const [internalMapType, setInternalMapType] = useState(mapType);
+    // useImperativeHandle([] deps)에서 최신 값을 읽기 위한 미러
+    const mapTypeRef = useRef(mapType);
+    mapTypeRef.current = internalMapType;
     const [center, setCenter] = useState(initialCenter || BUSAN_CENTER);
     const [level, setLevel] = useState(initialLevel ?? BUSAN_DEFAULT_LEVEL);
     const [myLocation, setMyLocation] = useState(null);
@@ -215,6 +236,9 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
         locateMe: handleLocateMe,
         toggleRegions: () => setInternalShowRegions((v) => !v),
         toggleMapType: () => setInternalMapType((t) => t === 'roadmap' ? 'hybrid' : 'roadmap'),
+        // 툴바가 현재 지도 타입을 알고, 특정 타입으로 직접 전환할 수 있도록 노출 (코드코리아 260719 항목9-2)
+        setMapType: (t) => setInternalMapType(t === 'hybrid' || t === 'satellite' ? 'hybrid' : 'roadmap'),
+        getMapType: () => mapTypeRef.current,
         getMap: () => mapInstance.current,
     }), []);
 
@@ -387,6 +411,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                                     onTouchEnd={(e) => e.stopPropagation()}
                                     onClick={(e) => { e.stopPropagation(); suppressNextMapClick(); onPinClick && onPinClick(pin); }}
                                     className={`pc-diag-tdrop-btn${pin.focus ? ' pc-diag-tdrop-btn--focus' : ''}`}
+                                    style={focusVars(pin.color || accentColor)}
                                     aria-label={pin.title || '진단'}
                                 >
                                     <svg width="40" height="47" viewBox="0 0 54 64" fill="none">
@@ -410,7 +435,8 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                                 type="button"
                                 onMouseDown={suppressNextMapClick}
                                 onClick={(e) => { e.stopPropagation(); handleClusterClick(pin); }}
-                                className="pc-kakao-cluster-balloon"
+                                className={`pc-kakao-cluster-balloon${pin.focus ? ' pc-kakao-cluster-balloon--focus' : ''}`}
+                                style={focusVars(pin.color || accentColor)}
                                 aria-label={`${pin.count}건`}
                             >
                                 <svg width="45" height="32" viewBox="0 0 45 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -426,8 +452,8 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                                 type="button"
                                 onMouseDown={suppressNextMapClick}
                                 onClick={(e) => { e.stopPropagation(); suppressNextMapClick(); onPinClick && onPinClick(pin); }}
-                                className="pc-kakao-pin pc-kakao-pin-count"
-                                style={{ background: pin.color || accentColor, '--pin-bg': pin.color || accentColor }}
+                                className={`pc-kakao-pin pc-kakao-pin-count${pin.focus ? ' pc-kakao-pin--focus' : ''}`}
+                                style={{ background: pin.color || accentColor, '--pin-bg': pin.color || accentColor, ...focusVars(pin.color || accentColor) }}
                                 aria-label={pin.title || `${pin.count}건`}
                             >
                                 {pin.count}
@@ -439,6 +465,7 @@ const PCMapCanvas = forwardRef(function PCMapCanvas({ pins = [], onPinClick, onM
                                     onMouseDown={suppressNextMapClick}
                                     onClick={(e) => { e.stopPropagation(); suppressNextMapClick(); onPinClick && onPinClick(pin); }}
                                     className={`pc-kakao-pin${pin.focus ? ' pc-kakao-pin--focus' : ''}`}
+                                    style={focusVars(pin.color || accentColor)}
                                     aria-label={pin.title}
                                 >
                                     <svg width="27" height="32" viewBox="0 0 27 32" fill="none" xmlns="http://www.w3.org/2000/svg">

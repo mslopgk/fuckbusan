@@ -26,7 +26,55 @@
 }
 
 .pc-kakao-pin--focus {
-    filter: drop-shadow(0 0 6px rgba(35,189,187,0.5)) drop-shadow(0 3px 8px rgba(0,0,0,0.35));
+    filter: drop-shadow(0 0 6px var(--pin-focus-glow, rgba(84,42,163,0.55))) drop-shadow(0 3px 8px rgba(0,0,0,0.35));
+}
+
+/* ── 선택(focus) 핀 헤일로 — 큰 원형 핀을 감싸는 크고 반투명한 링 (코드코리아 260719 항목4 / image6)
+   색은 도메인 색을 --pin-focus-ring 인라인 변수로 받는다 (제보 #542aa3 / 제안 #f74e7e / 진단 #23bdbb). ── */
+.pc-kakao-pin--focus::before,
+.pc-kakao-cluster-balloon--focus::before,
+.pc-diag-tdrop-btn--focus::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: var(--pin-halo-top, 42%);
+    width: var(--pin-halo-size, 60px);
+    height: var(--pin-halo-size, 60px);
+    margin: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--pin-focus-ring, rgba(84,42,163,0.32));
+    pointer-events: none;
+    z-index: -1;
+    animation: pc-pin-halo-pop 0.18s ease-out;
+}
+
+@keyframes pc-pin-halo-pop {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.55); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* 숫자(카운트) 핀도 선택 시 확대 + 헤일로 — 기존엔 focus 클래스 자체가 안 붙었음 */
+.pc-kakao-pin-count.pc-kakao-pin--focus {
+    --pin-halo-size: 58px;
+    --pin-halo-top: 50%;
+    transform: scale(1.25);
+    transform-origin: bottom center;
+}
+
+.pc-kakao-cluster-balloon--focus {
+    --pin-halo-size: 68px;
+    filter: drop-shadow(0 0 6px var(--pin-focus-glow, rgba(84,42,163,0.55))) drop-shadow(0 3px 8px rgba(0,0,0,0.35));
+}
+
+.pc-kakao-cluster-balloon--focus svg {
+    transform: scale(1.2);
+    transform-origin: bottom center;
+}
+
+.pc-kakao-cluster-balloon--focus .pc-kakao-balloon-count {
+    font-size: 15px;
+    top: 37%;
 }
 
 .pc-kakao-pin span { display: none; }
@@ -117,7 +165,9 @@
 }
 
 .pc-diag-tdrop-btn--focus {
-    filter: drop-shadow(0 0 6px rgba(35,189,187,0.55)) drop-shadow(0 3px 8px rgba(0,0,0,0.35));
+    --pin-halo-size: 66px;
+    --pin-halo-top: 41%;
+    filter: drop-shadow(0 0 6px var(--pin-focus-glow, rgba(35,189,187,0.55))) drop-shadow(0 3px 8px rgba(0,0,0,0.35));
     transform: scale(1.1);
     transform-origin: bottom center;
 }

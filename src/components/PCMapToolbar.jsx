@@ -4,6 +4,8 @@
                      진단 302:4871/5845 (person 없음, analytics 열림=teal/닫힘=흰)
                      공공데이터 302:8820 (PCPublicData 자체 렌더 — 동일 에셋 사용)
    accent: 지도(항상 활성)·analytics(사이드바 열림 시) 버튼 배경색. */
+import { useState } from 'react';
+
 const TB = '/figma-assets/icons/pubd-toolbar';
 
 export default function PCMapToolbar({
@@ -16,6 +18,24 @@ export default function PCMapToolbar({
     accent = '#23bdbb',
 }) {
     const call = (fn) => () => mapRef.current && mapRef.current[fn] && mapRef.current[fn]();
+
+    // 지도 타입(일반/위성) 활성 상태 — PCMapCanvas 내부 상태를 setMapType/getMapType 으로 제어.
+    // (코드코리아 260719 항목9-2: 위성 눌러도 아이콘이 안 바뀌고, 「일반 지도」로 복귀 불가하던 문제)
+    const [mapTypeState, setMapTypeState] = useState(() => {
+        const api = mapRef?.current;
+        return (api && typeof api.getMapType === 'function' && api.getMapType()) || 'roadmap';
+    });
+    const selectMapType = (t) => () => {
+        const api = mapRef?.current;
+        if (!api) return;
+        if (typeof api.setMapType === 'function') api.setMapType(t);
+        else if (typeof api.toggleMapType === 'function') {
+            if (t === mapTypeState) return;
+            api.toggleMapType();
+        } else return; // 지도 타입 미지원(PCAICitizen 자체 SVG 지도) — 무동작 유지
+        setMapTypeState(t);
+    };
+    const isRoad = mapTypeState !== 'hybrid';
 
     return (
         <div className="pc-map3-toolbar">
@@ -43,11 +63,27 @@ export default function PCMapToolbar({
                 <button className="pc-map3-tool" aria-label="축소" title="축소" onClick={call('zoomOut')}>
                     <img src={`${TB}/tb_remove.png`} alt="" width="24" height="24" />
                 </button>
-                <button className="pc-map3-tool pc-map3-tool--sep" style={{ background: accent }} aria-label="일반 지도" title="일반 지도">
-                    <img src={`${TB}/tb_map.png`} alt="" width="24" height="24" />
+                {/* 활성 버튼만 accent 배경. 아이콘 PNG는 글리프 색이 baked(map=흰색 / satellite=다크)라
+                    비활성/활성이 뒤집힐 때만 invert(1) 필터로 대비를 맞춘다. */}
+                <button
+                    className="pc-map3-tool pc-map3-tool--sep"
+                    style={isRoad ? { background: accent } : undefined}
+                    aria-label="일반 지도" title="일반 지도"
+                    aria-pressed={isRoad}
+                    onClick={selectMapType('roadmap')}
+                >
+                    <img src={`${TB}/tb_map.png`} alt="" width="24" height="24"
+                        style={isRoad ? undefined : { filter: 'invert(1)' }} />
                 </button>
-                <button className="pc-map3-tool pc-map3-tool--sep" aria-label="위성 지도" title="위성 지도" onClick={call('toggleMapType')}>
-                    <img src={`${TB}/tb_satellite.png`} alt="" width="24" height="24" />
+                <button
+                    className="pc-map3-tool pc-map3-tool--sep"
+                    style={!isRoad ? { background: accent } : undefined}
+                    aria-label="위성 지도" title="위성 지도"
+                    aria-pressed={!isRoad}
+                    onClick={selectMapType('hybrid')}
+                >
+                    <img src={`${TB}/tb_satellite.png`} alt="" width="24" height="24"
+                        style={!isRoad ? { filter: 'invert(1)' } : undefined} />
                 </button>
             </div>
 

@@ -72,7 +72,10 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: 438px; /* Figma Rectangle 11 y=438 */
+    /* Figma Rectangle 11 y=438 (393x852 기준 ≈ 51.4vh).
+       뷰포트 높이에 비례 — 852 이상에서는 Figma 실측 438 유지, 낮은 화면에선 비율로 축소.
+       하한 260px: 지도가 완전히 눌리지 않도록 방어. */
+    top: clamp(260px, 52vh, 438px);
     bottom: 0;
     background: #fff;
     border-radius: 30px 30px 0 0; /* f01b 렌더 실측 r≈30 */
@@ -156,26 +159,34 @@
 }
 .mpubd-chip-row {
     display: flex;
+    flex-wrap: wrap; /* 폭이 모자라면 잘리지 말고 다음 줄로 (320px 대응) */
     gap: 8px;
 }
-/* 칩 폭 — Figma 실측 고정 (전체~안전·교육 57 / 산업·일자리 104 / 문화·여가·보건·복지 89)
-   row2 총폭 363: Figma도 우측 여백 10px까지 침범 — shrink 금지로 실측 유지 */
-.mpubd-chip-row .mpubd-chip { flex: none; width: 57px; padding: 0; text-align: center; }
-.mpubd-chip-row:nth-child(2) .mpubd-chip:nth-child(2) { width: 104px; }
-.mpubd-chip-row:nth-child(2) .mpubd-chip:nth-child(3),
-.mpubd-chip-row:nth-child(2) .mpubd-chip:nth-child(4) { width: 89px; }
+/* 칩 폭 — Figma 실측(전체~안전·교육 57 / 산업·일자리 104 / 문화·여가·보건·복지 89)은
+   393px 고정폭 전제라 360 이하에서 마지막 칩이 잘렸다.
+   → 좌우 패딩 기반 유동폭 + min-width 로 Figma 실측폭을 "최소한" 재현하되 축소 허용. */
+.mpubd-chip-row .mpubd-chip {
+    flex: 0 1 auto;
+    min-width: 57px;
+    max-width: 100%;
+    padding: 0 var(--mpubd-chip-pad, 12px);
+    text-align: center;
+}
 .mpubd-chip {
-    height: 33px;
+    height: var(--mpubd-chip-h, 33px);
+    box-sizing: border-box;
     border: none;
     border-radius: 20px;
     background: #e6e6e6;
     color: #242424;
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--mpubd-chip-fs, 16px);
     font-weight: 400;
     line-height: 22.4px;
     letter-spacing: -0.64px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     cursor: pointer;
 }
 .mpubd-chip.active {
@@ -233,8 +244,9 @@
 .mpubd-card {
     position: relative;
     min-width: 0;
-    height: 97px;
-    padding: 9px 2px 5px;
+    min-height: 97px;
+    height: auto; /* 값이 2줄이 되어도 카드 밖으로 넘치지 않게 */
+    padding: 9px 6px 5px;
     border: 1px solid #ddd;
     border-radius: 20px;
     background: #fff;
@@ -251,10 +263,11 @@
 .mpubd-card.wide {
     grid-column: span 2;
     width: 175px;
+    max-width: 100%;
     justify-self: start;
 }
 .mpubd-card-label {
-    font-size: 14px;
+    font-size: var(--mpubd-card-label-fs, 14px);
     font-weight: 400;
     line-height: 19.6px;
     letter-spacing: -0.56px;
@@ -273,11 +286,16 @@
 }
 .mpubd-card-icon img { display: block; }
 .mpubd-card-val {
-    font-size: 16px;
+    /* "100~200만원 미만 17.7%" 같은 긴 값이 카드 밖으로 넘치던 문제 → 폭 제한 + 줄바꿈 */
+    max-width: 100%;
+    font-size: var(--mpubd-card-val-fs, 16px);
     font-weight: 700;
-    line-height: 22.4px;
+    line-height: 1.25;
     letter-spacing: -0.64px;
     color: #23bdbb;
+    text-align: center;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
 }
 .mpubd-card-val.na {
     font-size: 12px;
@@ -418,6 +436,51 @@
 .mpubd.has-bubbles .busanmap-label {
     font-weight: 700;
     color: #242424;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   반응형 — 기준 뷰포트 393x852(Figma) 밖에서 잘림/가림이 없도록.
+   검증 대상: 320x568 / 360x640 / 390x844 / 412x915 / 430x932
+   ══════════════════════════════════════════════════════════════ */
+
+/* 하단 네비(76px) 위로 스크롤 콘텐츠가 확실히 빠져나오도록 */
+.mpubd-body { min-height: 0; padding-bottom: calc(76px + 30px); }
+
+/* ── 좁은 폭 (≤ 412): 칩 패딩·폰트, 카드 텍스트 축소 ── */
+@media (max-width: 412px) {
+    .mpubd-chip-row .mpubd-chip { --mpubd-chip-pad: 10px; } /* min-width 57 유지 = Figma 짧은 칩 실측폭 */
+    .mpubd-grid { gap: 14px; }
+}
+@media (max-width: 380px) {
+    .mpubd-chips { padding-left: 16px; padding-right: 16px; }
+    .mpubd-chip-row { gap: 6px; }
+    .mpubd-chip-row .mpubd-chip { --mpubd-chip-pad: 9px; --mpubd-chip-fs: 15px; }
+    .mpubd-body { padding-left: 16px; padding-right: 16px; }
+    .mpubd-divider { margin-left: -16px; margin-right: -16px; }
+    .mpubd-grid { gap: 11px; }
+    .mpubd-card { --mpubd-card-label-fs: 12.5px; --mpubd-card-val-fs: 14px; min-height: 90px; padding: 8px 4px 5px; }
+    .mpubd-card-label { line-height: 17px; }
+}
+@media (max-width: 340px) {
+    .mpubd-chip-row .mpubd-chip { --mpubd-chip-pad: 8px; --mpubd-chip-fs: 14px; --mpubd-chip-h: 30px; min-width: 44px; }
+    .mpubd-title { font-size: 20px; line-height: 28px; }
+    .mpubd-grid { gap: 9px; }
+    .mpubd-card { --mpubd-card-label-fs: 11.5px; --mpubd-card-val-fs: 13px; min-height: 84px; }
+    .mpubd-section-head h2 { font-size: 18px; }
+}
+
+/* ── 낮은 높이 (≤ 700): 시트가 짧아지므로 헤더/칩 여백 압축 → 칩이 네비에 가리지 않게 ── */
+@media (max-height: 700px) {
+    .mpubd-chips { padding-top: 12px; gap: 8px; }
+    .mpubd-chip-row .mpubd-chip { --mpubd-chip-h: 30px; }
+    .mpubd-body { padding-top: 18px; }
+}
+@media (max-height: 600px) {
+    .mpubd-head .mpubd-title-row { margin-top: 2px; }
+    .mpubd-title { font-size: 19px; line-height: 26px; }
+    .mpubd-chips { padding-top: 8px; gap: 6px; }
+    .mpubd-chip-row .mpubd-chip { --mpubd-chip-h: 28px; }
+    .mpubd-body { padding-top: 14px; }
 }
 
 /* PC 진입 차단 없음 — 모바일 전용 뷰지만 데스크탑 검증 시에도 그대로 렌더 */
