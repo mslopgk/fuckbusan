@@ -47,10 +47,7 @@ export default function AdminUserList({ onNavigate }) {
 
     useEffect(() => { fetchUsers(''); }, [fetchUsers]);
 
-    const handleSearch = () => {
-        setSearch(inputVal);
-        fetchUsers(inputVal);
-    };
+    const handleSearch = () => setPage(1);
 
     const handleDelete = async (user) => {
         if (!window.confirm(`"${user.name}" 회원을 삭제하시겠습니까?`)) return;
@@ -71,8 +68,14 @@ export default function AdminUserList({ onNavigate }) {
         }
     };
 
-    const totalPages = Math.max(1, Math.ceil(users.length / itemsPerPage));
-    const visible = users.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+    // 시민/전문가 목록과 동일하게 입력 즉시 클라이언트 필터(이름/닉네임/아이디, 대소문자 무시)
+    const sq = inputVal.trim().toLowerCase();
+    const filtered = users.filter((u) =>
+        !sq || u.name.toLowerCase().includes(sq)
+        || (u.nickname || '').toLowerCase().includes(sq)
+        || (u.loginId || '').toLowerCase().includes(sq));
+    const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+    const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
     // 슈퍼관리자(admin 계정) 열람 여부 — 타이틀 왕관 배지 (Figma 슈퍼관리자01 프레임)
     const isSuperViewer = (() => {
@@ -96,7 +99,7 @@ export default function AdminUserList({ onNavigate }) {
                         </span>
                     )}
                 </h2>
-                <div className="total-count-text">전체 회원 <span>{users.length}명</span></div>
+                <div className="total-count-text">전체 회원 <span>{filtered.length}명</span></div>
             </div>
 
             <div className="search-box-new">
@@ -105,9 +108,9 @@ export default function AdminUserList({ onNavigate }) {
                     <input
                         type="text"
                         className="search-input-new"
-                        placeholder="이름을 입력해 주세요"
+                        placeholder="이름 또는 아이디를 입력해 주세요"
                         value={inputVal}
-                        onChange={(e) => setInputVal(e.target.value)}
+                        onChange={(e) => { setInputVal(e.target.value); setPage(1); }}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     />
                     {/* Figma export 검색 아이콘 (302:27293, #aaa) */}
