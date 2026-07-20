@@ -141,6 +141,20 @@ export default function PCSurveyResults({ onNavigate, survey }) {
         };
     }).filter(section => section.data.length > 0);
 
+    // 주관식(text) 문항 — 응답 목록
+    const textSections = (resultsData?.questions || [])
+        .filter(q => q.qtype === 'text')
+        .map((q) => {
+            const qIdx = resultsData.questions.indexOf(q);
+            const samples = (Array.isArray(q.samples) ? q.samples : [])
+                .filter(s => s != null && String(s).trim() !== '');
+            return {
+                title: `Q${qIdx + 1}. ${q.text}`,
+                samples,
+                total: q.total ?? samples.length,
+            };
+        });
+
     const derivedBarData = (() => {
         const multiQ = (resultsData?.questions || []).find(q => q.qtype === 'multi');
         if (!multiQ?.distribution?.length) return [];
@@ -351,6 +365,25 @@ export default function PCSurveyResults({ onNavigate, survey }) {
                             </div>
                         </div>
                     )}
+
+                    {/* 주관식(text) 응답 목록 */}
+                    {textSections.map((section) => (
+                        <div key={section.title} className="pc-results-block">
+                            <h4 className="pc-results-q-title">{section.title}</h4>
+                            <div className="pc-text-answer-head">
+                                주관식 응답 <strong>{section.total}</strong>건
+                            </div>
+                            {section.samples.length > 0 ? (
+                                <ul className="pc-text-answer-list">
+                                    {section.samples.map((s, i) => (
+                                        <li key={i} className="pc-text-answer-item">{s}</li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <div className="pc-text-answer-empty">응답 없음</div>
+                            )}
+                        </div>
+                    ))}
 
                     {/* 단일선택 응답 분포 세로 바 차트 */}
                     {colData.length > 0 && (

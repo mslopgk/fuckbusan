@@ -135,6 +135,7 @@ export default function MDiagnosisList({ onNavigate }) {
                 author: r.작성자 || r.author || '',
                 target: r.진단대상 ?? r.target ?? null,
                 thumb: r.이미지경로 || null,
+                answers: r.answers ?? null,
             }));
     }, [allRows, district, category, filter]);
 

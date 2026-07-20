@@ -25,6 +25,16 @@ const STAT_KEY_BY_CARD = {
     survey: 'surveys_count',
 };
 
+// 카드 표시값 계산. '제보/제안' 카드는 라벨대로 제보+제안 합산.
+function cardStat(cardKey, stats) {
+    if (!stats) return null;
+    if (cardKey === 'reportSuggest') {
+        return (stats.reports_count ?? 0) + (stats.proposals_count ?? 0);
+    }
+    const key = STAT_KEY_BY_CARD[cardKey];
+    return key ? stats[key] : null;
+}
+
 export default function AdminMain({ onNavigate }) {
     const [stats, setStats] = useState(null);
 
@@ -74,7 +84,7 @@ export default function AdminMain({ onNavigate }) {
                             )}
                             {STAT_KEY_BY_CARD[card.key] && (
                                 <div className="admin-card-stat">
-                                    {stats?.[STAT_KEY_BY_CARD[card.key]]?.toLocaleString?.() ?? '—'}
+                                    {cardStat(card.key, stats)?.toLocaleString?.() ?? '—'}
                                 </div>
                             )}
                             <div className="admin-card-label">{card.label}</div>

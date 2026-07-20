@@ -344,3 +344,44 @@
     flex: 1;
     padding-bottom: 24px;
 }
+
+/* ── 주관식(text) 응답 목록 ── */
+.pc-text-answer-head {
+    font-size: 14px;
+    color: #777;
+    margin: -8px 0 14px;
+    letter-spacing: -0.56px;
+}
+
+.pc-text-answer-head strong {
+    color: #5B2EAB;
+    font-weight: 700;
+}
+
+.pc-text-answer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pc-text-answer-item {
+    background: #f7f5fc;
+    border: 1px solid #ece7f7;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 15px;
+    color: #222;
+    line-height: 1.5;
+    letter-spacing: -0.3px;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.pc-text-answer-empty {
+    color: #aaa;
+    font-size: 14px;
+    padding: 8px 0;
+}

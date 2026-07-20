@@ -147,6 +147,7 @@ export default function MDiagnosisMap({ onNavigate }) {
                 author: r.작성자 || r.author || '',
                 target: r.진단대상 ?? r.target ?? null,
                 thumb: r.이미지경로 || null,
+                answers: r.answers ?? null,
                 lat: r.위도 != null ? Number(r.위도) : null,
                 lng: r.경도 != null ? Number(r.경도) : null,
             }));

@@ -1558,6 +1558,7 @@ function App() {
                         big={selectedReport?.big || null}
                         mid={selectedReport?.mid || null}
                         target={selectedReport?.target || null}
+                        answers={selectedReport?.answers ?? null}
                     />
                 )}
                 {view === 'mDiagnosisDone' && (

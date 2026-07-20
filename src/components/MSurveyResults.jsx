@@ -355,11 +355,27 @@ export default function MSurveyResults({ onNavigate, survey }) {
         return `Q${resultsData.questions.indexOf(columnQuestion) + 1}. ${columnQuestion.text}`;
     })();
 
+    // 주관식(text) 문항 — 응답 목록
+    const textSections = (resultsData?.questions || [])
+        .filter(q => q.qtype === 'text')
+        .map((q) => {
+            const qIdx = resultsData.questions.indexOf(q);
+            const samples = (Array.isArray(q.samples) ? q.samples : [])
+                .filter(s => s != null && String(s).trim() !== '');
+            return {
+                key: `text-${qIdx}`,
+                title: `Q${qIdx + 1}. ${q.text}`,
+                samples,
+                total: q.total ?? samples.length,
+            };
+        });
+
     const hasSections =
         compositeData.length > 0 ||
         donutSections.some(d => d.slices.length > 0) ||
         derivedBars.length > 0 ||
-        columnData.length > 0;
+        columnData.length > 0 ||
+        textSections.length > 0;
 
     return (
         <div className="m-survey-results-page">
@@ -477,6 +493,28 @@ export default function MSurveyResults({ onNavigate, survey }) {
                         </section>
                     </>
                 )}
+
+                {/* 주관식(text) 응답 목록 */}
+                {textSections.map((t) => (
+                    <Fragment key={t.key}>
+                        <div className="m-section-divider" />
+                        <section className="m-results-section">
+                            <h3 className="m-q-result-title">{t.title}</h3>
+                            <div className="m-text-answer-head">
+                                주관식 응답 <strong>{t.total}</strong>건
+                            </div>
+                            {t.samples.length > 0 ? (
+                                <ul className="m-text-answer-list">
+                                    {t.samples.map((s, i) => (
+                                        <li key={i} className="m-text-answer-item">{s}</li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <div className="m-text-answer-empty">응답 없음</div>
+                            )}
+                        </section>
+                    </Fragment>
+                ))}
 
                 {/* 빈 상태 — 데이터 있는데 차트 섹션 없을 때만 */}
                 {resultsData && !hasSections && (

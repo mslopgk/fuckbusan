@@ -132,7 +132,7 @@ function ExpertCard({ label, title, tint, stats }) {
     );
 }
 
-export default function MDiagnosisResult({ onNavigate, address = '부산 부산진구 초연로 6', date = null, photo = null, resultId = null, big = null, mid = null, target = null }) {
+export default function MDiagnosisResult({ onNavigate, address = '부산 부산진구 초연로 6', date = null, photo = null, resultId = null, big = null, mid = null, target = null, answers = null }) {
     const [stats, setStats] = useState({ avg: FALLBACK_TOTAL_AVG, count: FALLBACK_RESPONSES });
     const [resultDetail, setResultDetail] = useState(null);
     const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
@@ -158,28 +158,32 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
             .catch(() => {});
     }, [resultId]);
 
-    // Fetch individual result for radar data and date
+    // Fetch individual result for radar data and date.
+    // 익명은 이 엔드포인트가 401 이고, answers 는 목록(public)에서 prop 으로 이미 받았으므로
+    // 불필요한 401 요청을 생략한다. 로그인 사용자는 created_at 등 추가 필드를 위해 계속 조회.
     useEffect(() => {
         if (!resultId) return;
+        if (answers && !localStorage.getItem('access_token')) return;
         fetch(`${API_URL}/checklist/${resultId}`, { headers: authHeaders() })
             .then((r) => (r.ok ? r.json() : null))
             .then((data) => {
                 if (data) setResultDetail(data);
             })
             .catch(() => {});
-    }, [resultId]);
+    }, [resultId, answers]);
 
-    // Parse answers once (radar + expert tiles)
+    // Parse answers once (radar + expert tiles).
+    // 익명(비로그인)은 GET /checklist/{id} 가 401 이라 resultDetail.answers 를 못 받는다.
+    // 이때는 목록(/checklist/list, public)에서 이미 로드해 넘겨준 answers prop 을 사용한다.
     const parsedAnswers = useMemo(() => {
-        if (!resultDetail?.answers) return null;
+        const raw = resultDetail?.answers ?? answers;
+        if (!raw) return null;
         try {
-            return typeof resultDetail.answers === 'string'
-                ? JSON.parse(resultDetail.answers)
-                : resultDetail.answers;
+            return typeof raw === 'string' ? JSON.parse(raw) : raw;
         } catch {
             return null;
         }
-    }, [resultDetail]);
+    }, [resultDetail, answers]);
 
     const radarData = useMemo(
         () => (parsedAnswers && buildRadarFromAnswers(parsedAnswers)) || FALLBACK_RADAR_DATA,
