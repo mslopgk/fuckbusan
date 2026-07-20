@@ -58,7 +58,11 @@ export default function ExpertManagement({ onNavigate }) {
         }
     };
 
-    const filtered = experts.filter((e) => !search || e.name.includes(search));
+    const sq = search.trim().toLowerCase();
+    const filtered = experts.filter((e) => !sq
+        || e.name.toLowerCase().includes(sq)
+        || (e.loginId || '').toLowerCase().includes(sq)
+        || (e.nickname || '').toLowerCase().includes(sq));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 

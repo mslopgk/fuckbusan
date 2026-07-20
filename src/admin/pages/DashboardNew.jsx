@@ -64,8 +64,9 @@ export default function DashboardNew({ onNavigate }) {
         }
     };
 
+    const sq = search.trim().toLowerCase();
     const filtered = memberData.filter((m) =>
-        (!search || m.name.includes(search) || m.nickname.includes(search))
+        (!sq || m.name.toLowerCase().includes(sq) || (m.nickname || '').toLowerCase().includes(sq) || (m.loginId || '').toLowerCase().includes(sq))
         && (!region || (m.district || '').includes(region) || (m.address || '').includes(region)));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
