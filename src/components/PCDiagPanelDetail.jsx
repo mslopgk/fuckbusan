@@ -1,11 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
+import { API_URL } from '../utils/api';
 
 const RADAR_AXES = ['접근성', '이동성', '안전성', '정보제공성', '포용성', '심미성'];
 
-function chartData(values) {
-    return RADAR_AXES.map((axis) => ({ subject: axis, A: values[axis] ?? 0, fullMark: 5 }));
+// /checklist/criteria-summary 한 스코프(radar:[{subject,A,count}]) → 6축. 데이터 있는 축만(0 날조 금지).
+function scopeToRadar(scope) {
+    if (!scope || !Array.isArray(scope.radar)) return [];
+    const byAxis = new Map(
+        scope.radar.filter((d) => d && Number.isFinite(Number(d.A))).map((d) => [d.subject, Number(d.A)]),
+    );
+    return RADAR_AXES.filter((ax) => byAxis.has(ax)).map((ax) => ({ subject: ax, A: byAxis.get(ax), fullMark: 5 }));
 }
 
 function CustomTick({ payload, x, y, textAnchor, data }) {
@@ -42,25 +48,21 @@ export default function PCDiagPanelDetail({ item, onAddDiagnosis, onBack, mode =
     const midTag = data.midTag || data.mid || null;
 
     const isExpert = mode === 'expert';
-
-    // 실제 sessionPeers에서 기준별 평균 점수 집계
     const peers = item?.sessionPeers || [];
-    const criteriaScores = {};
-    RADAR_AXES.forEach((ax) => {
-        const matches = peers.filter((p) => p.criteria === ax && p.score != null);
-        if (matches.length > 0) {
-            criteriaScores[ax] = matches.reduce((s, p) => s + p.score, 0) / matches.length;
-        }
-    });
-    const hasRealData = Object.keys(criteriaScores).length > 0;
-    const avgScore = hasRealData
-        ? (Object.values(criteriaScores).reduce((a, b) => a + b, 0) / Object.values(criteriaScores).length).toFixed(2)
-        : null;
-    const citizenChartValues = RADAR_AXES.reduce((acc, ax) => {
-        acc[ax] = criteriaScores[ax] ?? 0;
-        return acc;
-    }, {});
-    const citizenChart = chartData(citizenChartValues);
+
+    // 시민 6각형 — 모바일 진단결과와 동일하게 질문기준별 실집계(/checklist/criteria-summary) 사용.
+    const [criteria, setCriteria] = useState(null);
+    useEffect(() => {
+        const rid = item?.id ?? item?.result_id;
+        const url = rid
+            ? `${API_URL}/checklist/criteria-summary?result_id=${rid}`
+            : `${API_URL}/checklist/criteria-summary`;
+        fetch(url).then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) setCriteria(d); }).catch(() => {});
+    }, [item?.id, item?.result_id]);
+
+    const citizenChart = scopeToRadar(criteria?.total);
+    const citizenAvg = criteria?.total?.avg != null ? Number(criteria.total.avg).toFixed(2) : null;
+    const citizenCount = criteria?.total?.count ?? 0;
 
     // 전문가: sessionPeers 실점수로 적합/부적합/만족도 집계 (점수 3 이상=적합, 만족도=평균)
     const expScored = peers.filter((p) => p.score != null);
@@ -136,29 +138,35 @@ export default function PCDiagPanelDetail({ item, onAddDiagnosis, onBack, mode =
                             <td>
                                 <div className="pc-diagpanel-chart-card">
                                     <p className="pc-diagpanel-chart-title">
-                                        {avgScore
-                                            ? <><strong>{avgScore}</strong> 전체 평균 ({peers.length})</>
+                                        {citizenAvg
+                                            ? <><strong>{citizenAvg}</strong> 전체 평균 ({citizenCount})</>
                                             : '전체 평균'}
                                     </p>
-                                    <div className="pc-diagpanel-chart-canvas">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <RadarChart cx="50%" cy="50%" outerRadius="58%" data={citizenChart}>
-                                                <PolarGrid stroke="#e6e6e6" />
-                                                <PolarAngleAxis
-                                                    dataKey="subject"
-                                                    tick={(p) => <CustomTick {...p} data={citizenChart} />}
-                                                />
-                                                <Radar
-                                                    name="Score"
-                                                    dataKey="A"
-                                                    stroke="#f4879e"
-                                                    strokeWidth={1.5}
-                                                    fill="#FFC1C1"
-                                                    fillOpacity={0.5}
-                                                />
-                                            </RadarChart>
-                                        </ResponsiveContainer>
-                                    </div>
+                                    {citizenChart.length >= 3 ? (
+                                        <div className="pc-diagpanel-chart-canvas">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <RadarChart cx="50%" cy="50%" outerRadius="58%" data={citizenChart}>
+                                                    <PolarGrid stroke="#e6e6e6" />
+                                                    <PolarAngleAxis
+                                                        dataKey="subject"
+                                                        tick={(p) => <CustomTick {...p} data={citizenChart} />}
+                                                    />
+                                                    <Radar
+                                                        name="Score"
+                                                        dataKey="A"
+                                                        stroke="#f4879e"
+                                                        strokeWidth={1.5}
+                                                        fill="#FFC1C1"
+                                                        fillOpacity={0.5}
+                                                    />
+                                                </RadarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    ) : (
+                                        <div className="pc-diagpanel-chart-canvas" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 13 }}>
+                                            데이터 준비중
+                                        </div>
+                                    )}
                                 </div>
                             </td>
                         </tr>
