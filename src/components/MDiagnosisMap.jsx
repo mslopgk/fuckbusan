@@ -5,14 +5,18 @@ const MAX_PINS = 300;
 import { Map, MapMarker, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
 import { useLazyImage } from '../hooks/useLazyImage';
 import MobileBottomNav from './MobileBottomNav';
-import {
-    DISTRICT_CENTERS,
-    CATEGORIES_WITH_ALL as CATEGORIES,
-} from '../constants/diagnosis';
+import { DISTRICT_CENTERS } from '../constants/diagnosis';
 import './MDiagnosisList.css';
 import './MDiagnosisMap.css';
 import MDiagnosisFilterModal from './MDiagnosisFilterModal';
 import { API_URL } from '../utils/api';
+
+// 진단대상 필터 판정 (모달/리스트/지도 공통 규칙)
+function matchTarget(rowTarget, ft) {
+    if (ft === 'all') return true;
+    if (ft === 'expert') return rowTarget === '전문가' || rowTarget === 'expert';
+    return rowTarget !== '전문가' && rowTarget !== 'expert';
+}
 
 // Figma 302:21087 (진단 목록5) — 카테고리 → 핀 아이콘 매핑 (building/park/info 3종)
 const PIN_ICON_BY_CAT = {
@@ -147,6 +151,26 @@ export default function MDiagnosisMap({ onNavigate }) {
                 lng: r.경도 != null ? Number(r.경도) : null,
             }));
     }, [allRows, district, category, filter]);
+
+    // 필터 모달에 넘길 정규화 rows (대분류/중분류/진단대상)
+    const optionRows = useMemo(
+        () => allRows.map((r) => ({ big: r.대분류, mid: r.중분류, target: r.진단대상 ?? r.target ?? null })),
+        [allRows],
+    );
+
+    // 카테고리 칩 = 실제 데이터의 대분류 (현재 진단대상 기준), 앞에 '전체'
+    const bigOptions = useMemo(
+        () => [...new Set(
+            optionRows.filter((r) => matchTarget(r.target, filter.target)).map((r) => r.big).filter(Boolean),
+        )].sort(),
+        [optionRows, filter.target],
+    );
+    const chips = useMemo(() => ['전체', ...bigOptions], [bigOptions]);
+
+    // 진단대상 전환 등으로 현재 선택 카테고리가 옵션에 없으면 '전체'로 복귀
+    useEffect(() => {
+        if (category !== '전체' && !bigOptions.includes(category)) setCategory('전체');
+    }, [bigOptions, category]);
 
     // 지도 핀 — Figma 진단 목록5: 개별 진단 teardrop 핀 (카테고리 아이콘 + 시민 teal/전문가 gray)
     const DIAG_PINS = useMemo(
@@ -360,7 +384,7 @@ export default function MDiagnosisMap({ onNavigate }) {
 
                 {/* 카테고리 칩 — Figma: 시트 내부 2행 wrap */}
                 <div className="m-diag-sheet-cats">
-                    {CATEGORIES.map((c) => (
+                    {chips.map((c) => (
                         <button
                             key={c}
                             type="button"
@@ -433,6 +457,7 @@ export default function MDiagnosisMap({ onNavigate }) {
             <MDiagnosisFilterModal
                 open={filterOpen}
                 value={filter}
+                rows={optionRows}
                 onClose={() => setFilterOpen(false)}
                 onApply={setFilter}
             />

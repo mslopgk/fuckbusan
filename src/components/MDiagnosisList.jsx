@@ -1,16 +1,20 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import MobileBottomNav from './MobileBottomNav';
 import { useLazyImage } from '../hooks/useLazyImage';
-import {
-    DISTRICT_CENTERS,
-    CATEGORIES_WITH_ALL as CATEGORIES,
-} from '../constants/diagnosis';
+import { DISTRICT_CENTERS } from '../constants/diagnosis';
 import { API_URL } from '../utils/api';
 import { matchDistrict } from '../utils/format';
 import MDiagnosisFilterModal from './MDiagnosisFilterModal';
 import './MDiagnosisList.css';
 
 const DIAG_PAGE_SIZE = 50;
+
+// 진단대상 필터 판정 (모달/리스트/지도 공통 규칙)
+function matchTarget(rowTarget, ft) {
+    if (ft === 'all') return true;
+    if (ft === 'expert') return rowTarget === '전문가' || rowTarget === 'expert';
+    return rowTarget !== '전문가' && rowTarget !== 'expert';
+}
 
 // Figma 302:21392 (진단 목록4 카드) — 시민=점수, 전문가=적합/부적합
 const DiagCard = memo(function DiagCard({ it, onNavigate }) {
@@ -134,6 +138,26 @@ export default function MDiagnosisList({ onNavigate }) {
             }));
     }, [allRows, district, category, filter]);
 
+    // 필터 모달에 넘길 정규화 rows (대분류/중분류/진단대상)
+    const optionRows = useMemo(
+        () => allRows.map((r) => ({ big: r.대분류, mid: r.중분류, target: r.진단대상 ?? r.target ?? null })),
+        [allRows],
+    );
+
+    // 상단 카테고리 칩 = 실제 데이터의 대분류 (현재 진단대상 기준), 앞에 '전체'
+    const bigOptions = useMemo(
+        () => [...new Set(
+            optionRows.filter((r) => matchTarget(r.target, filter.target)).map((r) => r.big).filter(Boolean),
+        )].sort(),
+        [optionRows, filter.target],
+    );
+    const chips = useMemo(() => ['전체', ...bigOptions], [bigOptions]);
+
+    // 진단대상 전환 등으로 현재 선택 카테고리가 더 이상 옵션에 없으면 '전체'로 복귀
+    useEffect(() => {
+        if (category !== '전체' && !bigOptions.includes(category)) setCategory('전체');
+    }, [bigOptions, category]);
+
     return (
         <div className="m-diag-list-only-page">
             {/* 헤더 — Figma 302:21448~21453: back + 타이틀 + expand_circle_down */}
@@ -174,7 +198,7 @@ export default function MDiagnosisList({ onNavigate }) {
 
             {/* 카테고리 칩 2행 wrap — Figma rows y=131/175 */}
             <div className="m-diag-list-cats">
-                {CATEGORIES.map((c) => (
+                {chips.map((c) => (
                     <button
                         key={c}
                         type="button"
@@ -245,6 +269,7 @@ export default function MDiagnosisList({ onNavigate }) {
             <MDiagnosisFilterModal
                 open={filterOpen}
                 value={filter}
+                rows={optionRows}
                 onClose={() => setFilterOpen(false)}
                 onApply={setFilter}
             />

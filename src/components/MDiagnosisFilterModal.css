@@ -157,6 +157,12 @@
     gap: 4px;
 }
 
+.mdf-check-empty {
+    font-size: 12px;
+    color: #9e9e9e;
+    padding: 4px 0;
+}
+
 .mdf-check-item {
     display: flex;
     align-items: center;
