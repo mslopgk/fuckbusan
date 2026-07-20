@@ -39,7 +39,7 @@ const BIG_TO_KEY = {
     '교통': 'traffic',
     '안전': 'safety',
     '산업·일자리': 'work',
-    '문화·여가': 'culture',
+    '문화·여가': 'leisure',
     '보건·복지': 'health',
 };
 
