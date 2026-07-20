@@ -301,6 +301,77 @@ def get_diagnosis_breakdown(
     }
 
 
+# 진단 6대 질문기준 축 (checklist_result.질문기준 컬럼 실제 값)
+CRITERIA_AXES = ["접근성", "이동성", "안전성", "정보제공성", "포용성", "심미성"]
+
+
+@router.get("/criteria-summary")
+def get_criteria_summary(
+    result_id: Optional[int] = None,
+    db: Session = Depends(get_db),
+):
+    """진단 결과 6각형 레이더 — 질문기준(접근성/이동성/안전성/정보제공성/포용성/심미성)별
+    실제 점수 평균 집계.
+
+    - total    : 전체 진단의 질문기준별 평균 (전체 평균 6각형)
+    - facility : 이 진단의 대분류 안에서 질문기준별 평균
+    - zone     : 이 진단의 진단지역(구역) 안에서 질문기준별 평균
+    - person   : 이 진단의 진단대상(시민/전문가) 안에서 질문기준별 평균
+
+    각 스코프의 radar 는 6축 중 데이터가 있는 축만 담는다(빈 축 0.0 날조 금지).
+    count 는 그 평균을 구성한 실제 응답(점수) 표본 수.
+    result_id 컨텍스트가 없으면 해당 스코프는 빈 radar 로 반환한다.
+    """
+    from sqlalchemy import func
+
+    ctx_big = ctx_region = ctx_target = None
+    if result_id:
+        r = db.query(ChecklistResult).filter(ChecklistResult.result_id == result_id).first()
+        if r:
+            ctx_big = r.대분류
+            ctx_region = r.진단지역 or r.district_code
+            ctx_target = r.진단대상
+
+    def _agg(*filters):
+        q = (
+            db.query(
+                ChecklistResult.질문기준.label("k"),
+                func.avg(ChecklistResult.점수).label("avg"),
+                func.count(ChecklistResult.result_id).label("c"),
+            )
+            .filter(
+                ChecklistResult.질문기준.in_(CRITERIA_AXES),
+                ChecklistResult.점수.isnot(None),
+            )
+        )
+        for f in filters:
+            q = q.filter(f)
+        rows = q.group_by(ChecklistResult.질문기준).all()
+        by = {row.k: (float(row.avg), int(row.c)) for row in rows if row.avg is not None}
+        radar = []
+        total_c = 0
+        for ax in CRITERIA_AXES:
+            if ax in by:
+                a, c = by[ax]
+                radar.append({"subject": ax, "A": round(a, 2), "count": c})
+                total_c += c
+        avg = round(sum(x["A"] for x in radar) / len(radar), 2) if radar else None
+        return {"count": total_c, "avg": avg, "radar": radar}
+
+    empty = {"count": 0, "avg": None, "radar": []}
+    total = _agg()
+    facility = _agg(ChecklistResult.대분류 == ctx_big) if ctx_big else dict(empty)
+    zone = _agg(ChecklistResult.진단지역 == ctx_region) if ctx_region else dict(empty)
+    person = _agg(ChecklistResult.진단대상 == ctx_target) if ctx_target else dict(empty)
+
+    return {
+        "total": {"label": "전체", **total},
+        "facility": {"label": ctx_big or "전체", **facility},
+        "zone": {"label": ctx_region or "전체", **zone},
+        "person": {"label": ctx_target or "전체", **person},
+    }
+
+
 @router.get("/templates")
 def get_checklist_templates(
     mode: Optional[str] = "general",

@@ -4,46 +4,25 @@ import MobileBottomNav from './MobileBottomNav';
 import './MDiagnosisResult.css';
 import { API_URL, authHeaders } from '../utils/api';
 
-const FALLBACK_RADAR_DATA = [
-    { subject: '접근성',     A: 2.0, fullMark: 5 },
-    { subject: '이동성',     A: 2.0, fullMark: 5 },
-    { subject: '안전성',     A: 1.8, fullMark: 5 },
-    { subject: '정보제공성', A: 1.9, fullMark: 5 },
-    { subject: '포용성',     A: 1.8, fullMark: 5 },
-    { subject: '심미성',     A: 1.7, fullMark: 5 },
-];
-
-const FALLBACK_TOTAL_AVG = (FALLBACK_RADAR_DATA.reduce((sum, d) => sum + d.A, 0) / FALLBACK_RADAR_DATA.length).toFixed(2);
-const FALLBACK_RESPONSES = 36;
-
+// 진단 6대 질문기준 축 — checklist_result.질문기준 컬럼 실제 값과 동일 순서
 const RADAR_AXES = ['접근성', '이동성', '안전성', '정보제공성', '포용성', '심미성'];
 
-function buildRadarFromAnswers(answers) {
-    if (!answers || typeof answers !== 'object') return null;
-    const entries = Object.entries(answers);
-    if (entries.length === 0) return null;
-
-    const axisScores = RADAR_AXES.map(() => ({ sum: 0, count: 0 }));
-    entries.forEach(([idx, score]) => {
-        const numScore = Number(score);
-        if (!Number.isFinite(numScore)) return;
-        const axisIdx = Number(idx) % RADAR_AXES.length;
-        axisScores[axisIdx].sum += numScore;
-        axisScores[axisIdx].count += 1;
-    });
-
-    const totalAvg = entries.reduce((s, [, v]) => s + Number(v), 0) / entries.length;
-    return RADAR_AXES.map((subject, i) => ({
-        subject,
-        A: axisScores[i].count > 0
-            ? Number((axisScores[i].sum / axisScores[i].count).toFixed(2))
-            : Number(totalAvg.toFixed(2)),
-        fullMark: 5,
-    }));
+// /checklist/criteria-summary 의 한 스코프(radar: [{subject, A, count}]) → recharts 6축 데이터.
+// 데이터가 없는 축은 제외한다(0.0 날조 금지). 축 순서는 RADAR_AXES 로 고정해 6각형 방향 일관.
+function scopeToRadar(scope) {
+    if (!scope || !Array.isArray(scope.radar) || scope.radar.length === 0) return [];
+    const byAxis = new Map(
+        scope.radar
+            .filter((d) => d && Number.isFinite(Number(d.A)))
+            .map((d) => [d.subject, Number(d.A)]),
+    );
+    return RADAR_AXES
+        .filter((ax) => byAxis.has(ax))
+        .map((ax) => ({ subject: ax, A: byAxis.get(ax), fullMark: 5 }));
 }
 
 function CustomTick({ payload, x, y, textAnchor, radarData }) {
-    const point = (radarData || FALLBACK_RADAR_DATA).find((d) => d.subject === payload.value);
+    const point = (radarData || []).find((d) => d.subject === payload.value);
     return (
         <g>
             <text x={x} y={y - 4} textAnchor={textAnchor} className="m-diagres-tick-label">
@@ -73,31 +52,39 @@ const TILE_TINTS = {
 };
 
 function RadarCard({ label, title, data, color }) {
+    // recharts 레이더는 최소 3축 이상이어야 도형이 성립. 그 미만이면 빈상태 표기(빈 도형 노출 금지).
+    const hasData = Array.isArray(data) && data.length >= 3;
     return (
         <div className="m-diagres-section-row">
             <div className="m-diagres-table-label">{label}</div>
             <div className="m-diagres-section-content">
                 <div className="m-diagres-radar-card">
                     <p className="m-diagres-radar-card-title">{title}</p>
-                    <div className="m-diagres-chart">
-                        {/* 컨테이너가 226px 고정이므로 ResponsiveContainer 불필요 —
-                            측정 기반 렌더는 숨김/초기 0-size 마운트에서 recharts 음수 크기 경고를 유발 */}
-                        <RadarChart width={226} height={226} cx="50%" cy="50%" outerRadius="65%" data={data}>
-                            <PolarGrid stroke="#dadde2" />
-                            <PolarAngleAxis
-                                dataKey="subject"
-                                tick={(props) => <CustomTick {...props} radarData={data} />}
-                            />
-                            <Radar
-                                name="Score"
-                                dataKey="A"
-                                stroke={color}
-                                strokeWidth={2}
-                                fill={color}
-                                fillOpacity={0.25}
-                            />
-                        </RadarChart>
-                    </div>
+                    {hasData ? (
+                        <div className="m-diagres-chart">
+                            {/* 컨테이너가 226px 고정이므로 ResponsiveContainer 불필요 —
+                                측정 기반 렌더는 숨김/초기 0-size 마운트에서 recharts 음수 크기 경고를 유발 */}
+                            <RadarChart width={226} height={226} cx="50%" cy="50%" outerRadius="65%" data={data}>
+                                <PolarGrid stroke="#dadde2" />
+                                <PolarAngleAxis
+                                    dataKey="subject"
+                                    tick={(props) => <CustomTick {...props} radarData={data} />}
+                                />
+                                <Radar
+                                    name="Score"
+                                    dataKey="A"
+                                    stroke={color}
+                                    strokeWidth={2}
+                                    fill={color}
+                                    fillOpacity={0.25}
+                                />
+                            </RadarChart>
+                        </div>
+                    ) : (
+                        <div className="m-diagres-chart m-diagres-chart--empty">
+                            <span className="m-diagres-empty-text">데이터 준비중</span>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -105,7 +92,11 @@ function RadarCard({ label, title, data, color }) {
 }
 
 // 전문가 결과 — 적합/부적합/만족도 타일 카드 (Figma Frame 47 243x146)
+// stats 가 null 이면 실데이터 없음 → 값 자리에 "—" (날조 금지)
 function ExpertCard({ label, title, tint, stats }) {
+    const passV = stats ? `${stats.pass}/${stats.total}` : '—';
+    const failV = stats ? `${stats.fail}/${stats.total}` : '—';
+    const avgV = stats ? stats.avg : '—';
     return (
         <div className="m-diagres-section-row m-diagres-section-row--expert">
             <div className="m-diagres-table-label">{label}</div>
@@ -115,15 +106,15 @@ function ExpertCard({ label, title, tint, stats }) {
                     <div className="m-diagres-expert-tiles">
                         <div className="m-diagres-expert-tile" style={{ background: tint }}>
                             <span className="m-diagres-expert-tile-label">적합</span>
-                            <span className="m-diagres-expert-tile-value">{stats.pass}/{stats.total}</span>
+                            <span className="m-diagres-expert-tile-value">{passV}</span>
                         </div>
                         <div className="m-diagres-expert-tile" style={{ background: tint }}>
                             <span className="m-diagres-expert-tile-label">부적합</span>
-                            <span className="m-diagres-expert-tile-value">{stats.fail}/{stats.total}</span>
+                            <span className="m-diagres-expert-tile-value">{failV}</span>
                         </div>
                         <div className="m-diagres-expert-tile" style={{ background: tint }}>
                             <span className="m-diagres-expert-tile-label">만족도 평가</span>
-                            <span className="m-diagres-expert-tile-value">{stats.avg}</span>
+                            <span className="m-diagres-expert-tile-value">{avgV}</span>
                         </div>
                     </div>
                 </div>
@@ -133,43 +124,41 @@ function ExpertCard({ label, title, tint, stats }) {
 }
 
 export default function MDiagnosisResult({ onNavigate, address = '부산 부산진구 초연로 6', date = null, photo = null, resultId = null, big = null, mid = null, target = null, answers = null }) {
-    const [stats, setStats] = useState({ avg: FALLBACK_TOTAL_AVG, count: FALLBACK_RESPONSES });
     const [resultDetail, setResultDetail] = useState(null);
     const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
-    const [breakdown, setBreakdown] = useState(null);
+    // 질문기준별 실집계 (전체/시설물별/구역별/인원별) — /checklist/criteria-summary
+    const [criteria, setCriteria] = useState(null);
     const isExpert = useMemo(() => {
         const t = resultDetail?.진단대상 ?? resultDetail?.target ?? target;
         return t === '전문가' || t === 'expert';
     }, [resultDetail, target]);
 
-    // Fetch 3-axis breakdown (facility/zone/person) — depends on resultId for scope
+    // 6각형 레이더 데이터 — 질문기준(접근성/이동성/안전성/정보제공성/포용성/심미성)별 실점수 평균.
+    // public 엔드포인트라 익명도 호출 가능. result_id 컨텍스트로 시설물/구역/인원 스코프 집계.
     useEffect(() => {
         const url = resultId
-            ? `${API_URL}/checklist/breakdown?result_id=${resultId}`
-            : `${API_URL}/checklist/breakdown`;
+            ? `${API_URL}/checklist/criteria-summary?result_id=${resultId}`
+            : `${API_URL}/checklist/criteria-summary`;
         fetch(url)
             .then((r) => (r.ok ? r.json() : null))
-            .then((data) => { if (data) setBreakdown(data); })
+            .then((data) => { if (data) setCriteria(data); })
             .catch(() => {});
     }, [resultId]);
 
-    // Fetch individual result for radar data and date.
-    // 익명은 이 엔드포인트가 401 이고, answers 는 목록(public)에서 prop 으로 이미 받았으므로
-    // 불필요한 401 요청을 생략한다. 로그인 사용자는 created_at 등 추가 필드를 위해 계속 조회.
+    // Fetch individual result for date/photo (로그인 사용자만; 익명은 401).
     useEffect(() => {
         if (!resultId) return;
-        if (answers && !localStorage.getItem('access_token')) return;
+        if (!localStorage.getItem('access_token')) return;
         fetch(`${API_URL}/checklist/${resultId}`, { headers: authHeaders() })
             .then((r) => (r.ok ? r.json() : null))
             .then((data) => {
                 if (data) setResultDetail(data);
             })
             .catch(() => {});
-    }, [resultId, answers]);
+    }, [resultId]);
 
-    // Parse answers once (radar + expert tiles).
-    // 익명(비로그인)은 GET /checklist/{id} 가 401 이라 resultDetail.answers 를 못 받는다.
-    // 이때는 목록(/checklist/list, public)에서 이미 로드해 넘겨준 answers prop 을 사용한다.
+    // 전문가 타일용 answers 파싱 — 전문가 제출은 answers 가 {"1":5,...} 형태의 점수 맵.
+    // 익명은 목록(public)에서 넘어온 answers prop, 로그인은 resultDetail.answers.
     const parsedAnswers = useMemo(() => {
         const raw = resultDetail?.answers ?? answers;
         if (!raw) return null;
@@ -180,17 +169,18 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
         }
     }, [resultDetail, answers]);
 
-    const radarData = useMemo(
-        () => (parsedAnswers && buildRadarFromAnswers(parsedAnswers)) || FALLBACK_RADAR_DATA,
-        [parsedAnswers],
-    );
+    // 스코프별 6축 레이더 데이터 (실데이터 없으면 빈 배열 → 카드가 "데이터 준비중" 표기)
+    const totalRadar = useMemo(() => scopeToRadar(criteria?.total), [criteria]);
+    const facilityRadar = useMemo(() => scopeToRadar(criteria?.facility), [criteria]);
+    const zoneRadar = useMemo(() => scopeToRadar(criteria?.zone), [criteria]);
+    const personRadar = useMemo(() => scopeToRadar(criteria?.person), [criteria]);
 
-    // 전문가 타일 값 — 적합=5, 부적합=3(또는 2 미만 제외), 분모=전체 응답 수
+    // 전문가 타일 값 — 적합=4점 이상, 부적합=2~3점, 만족도=평균. 실데이터 없으면 null(→ "—").
     const expertStats = useMemo(() => {
         const values = parsedAnswers
             ? Object.values(parsedAnswers).map(Number).filter(Number.isFinite)
             : [];
-        if (!values.length) return { pass: 14, fail: 14, total: 40, avg: '2.1' };
+        if (!values.length) return null;
         const pass = values.filter((v) => v >= 4).length;
         const fail = values.filter((v) => v >= 2 && v < 4).length;
         const avg = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
@@ -210,38 +200,13 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
         return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     }, [date, resultDetail]);
 
-    // Radar total avg from actual data
-    const radarAvg = useMemo(() => {
-        if (!radarData || radarData === FALLBACK_RADAR_DATA) return stats.avg;
-        const avg = radarData.reduce((s, d) => s + d.A, 0) / radarData.length;
-        return avg.toFixed(2);
-    }, [radarData, stats.avg]);
+    // 전체 평균 — 6축 평균 점수 및 실제 표본수 (엔드포인트 집계값)
+    const totalAvg = criteria?.total?.avg;      // number | null
+    const totalCount = criteria?.total?.count ?? 0;
 
     const displayBig = big || resultDetail?.대분류 || '보도';
     const displayMid = mid || resultDetail?.중분류 || '보행공간';
     const displayPhoto = photo || resultDetail?.이미지경로 || null;
-
-    useEffect(() => {
-        fetch(`${API_URL}/checklist/clusters`)
-            .then((r) => (r.ok ? r.json() : []))
-            .then((rows) => {
-                if (!Array.isArray(rows) || rows.length === 0) return;
-                let totalScore = 0, totalCount = 0;
-                for (const r of rows) {
-                    if (r.avg_score && r.count) {
-                        totalScore += r.avg_score * r.count;
-                        totalCount += r.count;
-                    }
-                }
-                if (totalCount > 0) {
-                    setStats({
-                        avg: (totalScore / totalCount).toFixed(2),
-                        count: totalCount,
-                    });
-                }
-            })
-            .catch(() => {});
-    }, []);
 
     useEffect(() => {
         if (!photoZoomOpen) return;
@@ -257,9 +222,9 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
 
     // Figma 302:19985: 전체 상태 라벨 표기는 "전체(All)" (백엔드는 "전체"로 반환)
     const asAllLabel = (l) => (!l || l === '전체' ? '전체(All)' : l);
-    const facilityLabel = asAllLabel(breakdown?.facility?.label);
-    const zoneLabel = asAllLabel(breakdown?.zone?.label);
-    const personLabel = asAllLabel(breakdown?.person?.label);
+    const facilityLabel = asAllLabel(criteria?.facility?.label);
+    const zoneLabel = asAllLabel(criteria?.zone?.label);
+    const personLabel = asAllLabel(criteria?.person?.label);
 
     return (
         <div className="m-diagres-page">
@@ -332,26 +297,28 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         <>
                             <RadarCard
                                 label="전체 평균"
-                                title={`${radarAvg} 전체 평균 (${stats.count})`}
-                                data={radarData}
+                                title={totalAvg != null
+                                    ? `${totalAvg.toFixed(2)} 전체 평균 (${totalCount})`
+                                    : '전체 평균'}
+                                data={totalRadar}
                                 color={RADAR_COLORS.total}
                             />
                             <RadarCard
                                 label="시설물별"
                                 title={`시설물별 ${facilityLabel} 세부 정보`}
-                                data={(breakdown?.facility?.radar?.length ? breakdown.facility.radar : FALLBACK_RADAR_DATA)}
+                                data={facilityRadar}
                                 color={RADAR_COLORS.facility}
                             />
                             <RadarCard
                                 label="구역별"
                                 title={`구역별 ${zoneLabel} 세부 정보`}
-                                data={(breakdown?.zone?.radar?.length ? breakdown.zone.radar : FALLBACK_RADAR_DATA)}
+                                data={zoneRadar}
                                 color={RADAR_COLORS.zone}
                             />
                             <RadarCard
                                 label="인원별"
                                 title={`인원별 ${personLabel} 세부 정보`}
-                                data={(breakdown?.person?.radar?.length ? breakdown.person.radar : FALLBACK_RADAR_DATA)}
+                                data={personRadar}
                                 color={RADAR_COLORS.person}
                             />
                         </>

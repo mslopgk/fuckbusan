@@ -145,7 +145,12 @@ const SignupForm = ({ onNavigate, onBack, consent }) => {
             const res = await fetch(`${API_URL}/users/signup`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
             });
-            if (!res.ok) throw new Error((await res.json()).detail || '회원가입에 실패했습니다.');
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.detail || '회원가입에 실패했습니다.');
+            // 전문가 승인제(B): 전문가 가입은 관리자 승인 전까지 로그인 불가 — 안내
+            if (data?.requires_approval || consent?.userType === 'expert') {
+                alert('전문가 회원가입이 완료되었습니다.\n관리자 승인 후 로그인하실 수 있습니다.');
+            }
             // 자동 로그인하지 않음 — 완료 화면에서 로그인 페이지로 이동해 직접 로그인
             if (onNavigate) onNavigate('signupDone'); else if (onBack) onBack();
         } catch (e) { setError(e.message); } finally { setLoading(false); }

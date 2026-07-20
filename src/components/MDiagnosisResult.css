@@ -235,6 +235,24 @@
     margin-top: 14px;
 }
 
+/* 데이터 없는 스코프 — 빈 도형 대신 정직한 빈상태 */
+.m-diagres-chart--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #e0e0e0;
+    border-radius: 6px;
+    background: #fafafa;
+    box-sizing: border-box;
+}
+
+.m-diagres-empty-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: #9a9a9a;
+    letter-spacing: -0.02em;
+}
+
 /* 축 라벨 — Figma 8.74px/400, 값 10.2px/700 */
 .m-diagres-tick-label {
     fill: #242424;

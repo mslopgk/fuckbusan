@@ -145,15 +145,24 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=400, detail="이미 존재하는 아이디입니다.")
     hashed_password = get_password_hash(user.PW)
+    # 전문가 승인제(B): district_code == 'expert' 로 가입하면 관리자 승인 전까지 미승인(False).
+    # 일반 시민(general/구·군명) 및 관리자(admin)는 기존처럼 자동승인(True).
+    is_expert = (user.district_code == "expert")
     new_user = User(
         ID=user.ID, PW=hashed_password, name=user.name,
         nickname=user.nickname, email=user.email, phone_num=user.phone_num,
         district_code=user.district_code, birth_date=user.birth_date,
-        address=user.address, detailed_address=user.detailed_address
+        address=user.address, detailed_address=user.detailed_address,
+        is_approved=(not is_expert)
     )
     db.add(new_user)
     db.commit()
-    return {"message": "회원가입 성공"}
+    return {
+        "message": "회원가입 성공",
+        "is_approved": (not is_expert),
+        # 전문가는 관리자 승인 후 로그인 가능 — 프론트 안내용
+        "requires_approval": is_expert,
+    }
 
 @router.post("/users/login", response_model=Token)
 def login(user_input: UserLogin, db: Session = Depends(get_db)):
@@ -163,6 +172,13 @@ def login(user_input: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.ID == user_input.ID).first()
     if not user or not verify_password(user_input.PW, user.PW):
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 틀렸습니다.")
+    # 전문가 승인제(B): 미승인 전문가는 로그인 차단. (일반 시민·관리자는 district_code가 'expert'가
+    # 아니므로 영향 없음. 기존 전문가는 is_approved=1 이라 그대로 로그인됨.)
+    if user.district_code == "expert" and not user.is_approved:
+        raise HTTPException(
+            status_code=403,
+            detail="관리자 승인 대기 중입니다. 승인 완료 후 로그인하실 수 있습니다.",
+        )
     # 접속 시각 갱신: 직전 로그인(prev_login)을 "마지막 접속 일시"로 표시 → 이번 로그인 전 값 보존
     user.prev_login = user.last_login or user.created_at
     user.last_login = datetime.now()
