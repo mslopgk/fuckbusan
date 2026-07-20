@@ -137,11 +137,6 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
     const [resultDetail, setResultDetail] = useState(null);
     const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
     const [breakdown, setBreakdown] = useState(null);
-    const [comments, setComments] = useState([
-        { id: 1, user: 'citizen1024', date: '2025.01.15', text: '횡단보도 주변에 불법 주정차 차량이 많아 보행 시 시야 확보가 어렵습니다. 특히 출퇴근 시간대에 위험하다고 느꼈습니다.' },
-        { id: 2, user: 'busan_walk', date: '2025.01.15', text: '야간에 가로등 밝기가 부족해 보행 안전이 우려됩니다. 조명 추가 설치나 점검이 필요해 보입니다.' },
-    ]);
-
     const isExpert = useMemo(() => {
         const t = resultDetail?.진단대상 ?? resultDetail?.target ?? target;
         return t === '전문가' || t === 'expert';
@@ -363,38 +358,6 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                     )}
                 </div>
 
-                {/* 좋아요·댓글 — Figma Frame 502 */}
-                <div className="m-diagres-reactions">
-                    <div className="m-diagres-reaction-bar">
-                        <span className="m-diagres-reaction-item">
-                            <img src="/figma-assets/mobile-diagnosis/favorite_filled.png" width="16" height="16" alt="좋아요" />
-                            <span>13</span>
-                        </span>
-                        <span className="m-diagres-reaction-item">
-                            <img src="/figma-assets/mobile-diagnosis/comment_filled.png" width="16" height="16" alt="댓글" />
-                            <span>2</span>
-                        </span>
-                    </div>
-                    <ul className="m-diagres-comments">
-                        {comments.map((c) => (
-                            <li key={c.id} className="m-diagres-comment">
-                                <div className="m-diagres-comment-head">
-                                    <span className="m-diagres-comment-user">{c.user}</span>
-                                    <span className="m-diagres-comment-date">{c.date}</span>
-                                    <button
-                                        type="button"
-                                        className="m-diagres-comment-del"
-                                        aria-label="댓글 삭제"
-                                        onClick={() => setComments((prev) => prev.filter((x) => x.id !== c.id))}
-                                    >
-                                        <img src="/figma-assets/mobile-diagnosis/icon_delete.png" width="16" height="16" alt="" />
-                                    </button>
-                                </div>
-                                <p className="m-diagres-comment-text">{c.text}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
             </main>
 
             {photoZoomOpen && displayPhoto && (

@@ -53,34 +53,6 @@ function getPeriodStartDate(period) {
     return new Date(0);
 }
 
-/* ── 모의 데이터 (백엔드 미구현 시 폴백) ── */
-const MOCK_DATA = [
-    {
-        id: 1,
-        title: '일상생활 관련 조사(동래구)',
-        participated_at: '2026-01-18T22:56:00',
-        status: '완료',
-        approval_status: '승인',
-        survey_id: 1,
-    },
-    {
-        id: 2,
-        title: '1인가구 인식 조사(해운대구)',
-        participated_at: '2026-01-10T09:13:00',
-        status: '스크린아웃',
-        approval_status: '승인',
-        survey_id: 2,
-    },
-    {
-        id: 3,
-        title: '기본 조사',
-        participated_at: '2026-01-09T10:55:00',
-        status: '응답중',
-        approval_status: '승인',
-        survey_id: 3,
-    },
-];
-
 const MySurveys = ({ onBack, onNavigate }) => {
     const [isPC, setIsPC] = useState(
         () => typeof window !== 'undefined' && window.innerWidth >= 1024
@@ -100,7 +72,7 @@ const MySurveys = ({ onBack, onNavigate }) => {
             setLoading(true);
             const token = localStorage.getItem('access_token');
             if (!token) {
-                setItems(MOCK_DATA);
+                setItems([]);
                 setLoading(false);
                 return;
             }
@@ -111,12 +83,12 @@ const MySurveys = ({ onBack, onNavigate }) => {
                 });
                 if (res.ok) {
                     const data = await res.json();
-                    setItems(Array.isArray(data) ? data : MOCK_DATA);
+                    setItems(Array.isArray(data) ? data : []);
                 } else {
-                    setItems(MOCK_DATA);
+                    setItems([]);
                 }
             } catch {
-                setItems(MOCK_DATA);
+                setItems([]);
             } finally {
                 setLoading(false);
             }

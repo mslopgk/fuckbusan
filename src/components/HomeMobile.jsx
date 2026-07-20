@@ -9,11 +9,6 @@ import { API_URL } from '../utils/api';
  * 에셋: public/figma-assets/mobile-home/ (Figma 노드 export)
  * 로고는 WDC가 정답 (Figma의 PDDP는 outdated) */
 
-const FALLBACK_NEWS = [
-    { created_at: '2025-05-16', title: '시민 참여 결과 리포트가 업데이트되었습니다.' },
-    { created_at: '2025-05-16', title: '도로•보행 환경 개선 의견 점수 기간 안내' },
-];
-
 const HomeMobile = ({ onNavigate }) => {
     const [region, setRegion] = useState(null);   // null = 부산전체 (기본 선택 없음)
     const [stats, setStats] = useState(null);
@@ -26,7 +21,7 @@ const HomeMobile = ({ onNavigate }) => {
 
     useEffect(() => {
         fetch(`${API_URL}/api/announcements?kind=notice&size=3`).then((r) => r.ok ? r.json() : null)
-            .then((d) => setNews(d?.items?.length ? d.items : FALLBACK_NEWS)).catch(() => setNews(FALLBACK_NEWS));
+            .then((d) => setNews(Array.isArray(d?.items) ? d.items : [])).catch(() => setNews([]));
         // 지역별 참여는 항상 구·군 랭킹(전체 기준)
         fetch(`${API_URL}/api/home/district-ranking?limit=5`)
             .then((r) => r.ok ? r.json() : []).then((d) => setRanking(Array.isArray(d) ? d : [])).catch(() => {});

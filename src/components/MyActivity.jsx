@@ -12,7 +12,6 @@ const MyActivity = ({ onBack, onNavigate, onEdit }) => {
     const user = {
         name: localStorage.getItem('user_name') || '사용자',
         email: userEmail,
-        title: '열정적인 공간개척자',
         count: myDiagnoses.length
     };
 
@@ -118,14 +117,6 @@ const MyActivity = ({ onBack, onNavigate, onEdit }) => {
                     </svg>
                 </div>
                 <div className="profile-info">
-                    <div className="user-types">
-                        <span className="user-badge">{user.title}</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="16" x2="12" y2="12"></line>
-                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                        </svg>
-                    </div>
                     <div className="user-name">
                         <span className="name-bold">{user.name}</span> <span className="name-suffix">님</span>
                     </div>

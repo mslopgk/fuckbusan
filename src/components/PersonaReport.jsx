@@ -227,7 +227,7 @@ export default function PersonaReport({ citizen, avatarUrl, onNext }) {
                     <div className="aic-part-labels">
                         {partItems.map(([label]) => <span key={label}>{label}</span>)}
                     </div>
-                    <div className="aic-part-cap">제보와 설문 참여 비율이 높아 생활 불편 체감이 높은 유형입니다.</div>
+                    {d.participation_note && <div className="aic-part-cap">{d.participation_note}</div>}
                 </div>
                 <div className="aic-rp-card">
                     <div className="aic-cat-head">

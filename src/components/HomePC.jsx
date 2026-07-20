@@ -6,12 +6,6 @@ import { API_URL } from '../utils/api';
 
 /* PC 홈 리뉴얼 — Figma 302:2526 "USER: 홈" (참여 현황 + 지도 + TOP5 + 빠른 액션 + 소식/가상시민) */
 
-const FALLBACK_NEWS = [
-    { created_at: '2025-05-16', title: '시민 참여 결과 리포트가 업데이트되었습니다.' },
-    { created_at: '2025-05-16', title: '도로·보행 환경 개선 의견 점수 기간 안내' },
-    { created_at: '2025-05-16', title: '서비스 정기 점검 일정 안내 (05/10 02:00~05:00)' },
-    { created_at: '2025-05-16', title: '제보된 안전 위험 요소의 조치 현황을 확인하세요.' },
-];
 
 // Figma 302:2574 — TOP5 카드는 3행 노출, 랭크 배지/게이지 모두 teal
 const TOP5_VISIBLE = 3;
@@ -33,7 +27,7 @@ const HomePC = ({ onNavigate }) => {
     useEffect(() => {
         setIsLoggedIn(!!localStorage.getItem('access_token'));
         fetch(`${API_URL}/api/announcements?kind=notice&size=4`).then((r) => r.ok ? r.json() : null)
-            .then((d) => setNews(d?.items?.length ? d.items : FALLBACK_NEWS)).catch(() => setNews(FALLBACK_NEWS));
+            .then((d) => setNews(Array.isArray(d?.items) ? d.items : [])).catch(() => setNews([]));
         // 지역별 참여는 항상 구·군 랭킹(전체 기준)
         fetch(`${API_URL}/api/home/district-ranking?limit=5`)
             .then((r) => r.ok ? r.json() : []).then((d) => setRanking(Array.isArray(d) ? d : []))

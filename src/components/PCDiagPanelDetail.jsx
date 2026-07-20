@@ -4,34 +4,6 @@ import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } fro
 
 const RADAR_AXES = ['접근성', '이동성', '안전성', '정보제공성', '포용성', '심미성'];
 
-// Figma 302:7186 전문가 진단정보 — 전체 평균/시설물별/구역별/인원별 4행
-const EXPERT_ROWS = [
-    {
-        id: 'all',
-        label: '전체 평균',
-        title: '전체 결과',
-        cards: [{ k: '적합', v: '14/40' }, { k: '부적합', v: '14/40' }, { k: '만족도 평가', v: '2.1' }],
-    },
-    {
-        id: 'facility',
-        label: '시설물별',
-        title: '시설물별 전체(All) 세부 정보',
-        cards: [{ k: '적합', v: '14/40' }, { k: '부적합', v: '14/40' }, { k: '만족도 평가', v: '2.1' }],
-    },
-    {
-        id: 'district',
-        label: '구역별',
-        title: '구역별 전체(All) 세부 정보',
-        cards: [{ k: '적합', v: '14/40' }, { k: '부적합', v: '14/40' }, { k: '만족도 평가', v: '2.1' }],
-    },
-    {
-        id: 'people',
-        label: '인원별',
-        title: '인원별 전체(All) 세부 정보',
-        cards: [{ k: '적합', v: '14/40' }, { k: '부적합', v: '14/40' }, { k: '만족도 평가', v: '2.1' }],
-    },
-];
-
 function chartData(values) {
     return RADAR_AXES.map((axis) => ({ subject: axis, A: values[axis] ?? 0, fullMark: 5 }));
 }
@@ -89,6 +61,25 @@ export default function PCDiagPanelDetail({ item, onAddDiagnosis, onBack, mode =
         return acc;
     }, {});
     const citizenChart = chartData(citizenChartValues);
+
+    // 전문가: sessionPeers 실점수로 적합/부적합/만족도 집계 (점수 3 이상=적합, 만족도=평균)
+    const expScored = peers.filter((p) => p.score != null);
+    const expTotal = expScored.length;
+    const expPass = expScored.filter((p) => p.score >= 3).length;
+    const expAvg = expTotal
+        ? (expScored.reduce((s, p) => s + p.score, 0) / expTotal).toFixed(1)
+        : null;
+    const expertCards = expTotal
+        ? [
+            { k: '적합', v: `${expPass}/${expTotal}` },
+            { k: '부적합', v: `${expTotal - expPass}/${expTotal}` },
+            { k: '만족도 평가', v: expAvg },
+        ]
+        : [
+            { k: '적합', v: '—' },
+            { k: '부적합', v: '—' },
+            { k: '만족도 평가', v: '—' },
+        ];
 
     return (
         <div className="pc-diagpanel-detail">
@@ -173,15 +164,17 @@ export default function PCDiagPanelDetail({ item, onAddDiagnosis, onBack, mode =
                         </tr>
                     )}
 
-                    {isExpert && EXPERT_ROWS.map((row) => (
-                        <tr key={row.id}>
-                            <th>{row.label}</th>
+                    {isExpert && (
+                        <tr>
+                            <th>전체 평균</th>
                             <td>
-                                {/* Figma 302:7220 — 218x146 r8 stroke #e6e6e6 카드 */}
+                                {/* Figma 302:7220 — 218x146 r8 stroke #e6e6e6 카드. sessionPeers 실집계. */}
                                 <div className="pc-diagpanel-expert-card">
-                                    <p className="pc-diagpanel-expert-title">{row.title}</p>
+                                    <p className="pc-diagpanel-expert-title">
+                                        전체 결과{expTotal ? ` (${expTotal})` : ''}
+                                    </p>
                                     <div className="pc-diagpanel-expert-cards">
-                                        {row.cards.map((c) => (
+                                        {expertCards.map((c) => (
                                             <div key={c.k} className="pc-diagpanel-score-card">
                                                 <div className="pc-diagpanel-score-key">{c.k}</div>
                                                 <div className="pc-diagpanel-score-val">{c.v}</div>
@@ -191,7 +184,7 @@ export default function PCDiagPanelDetail({ item, onAddDiagnosis, onBack, mode =
                                 </div>
                             </td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
 
