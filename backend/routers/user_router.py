@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
+import bcrypt
 from pydantic import BaseModel
 
 # 파일 경로에 맞게 import
@@ -21,6 +22,8 @@ ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin1234")
 
+# 신규 해시는 argon2. 기존 계정 대부분은 bcrypt($2...) 해시인데, passlib 1.7.4가
+# bcrypt 5.x 백엔드 초기화에 실패(ValueError)하므로 bcrypt 해시는 bcrypt 라이브러리로 직접 검증한다.
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/users/login", auto_error=False)
@@ -29,6 +32,18 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 def verify_password(plain_password, hashed_password):
+    if not hashed_password:
+        return False
+    # 기존 bcrypt 해시($2a/$2b/$2y) — bcrypt 라이브러리로 직접 검증 (passlib 우회)
+    if hashed_password.startswith("$2"):
+        try:
+            return bcrypt.checkpw(
+                plain_password.encode("utf-8")[:72],
+                hashed_password.encode("utf-8"),
+            )
+        except Exception:
+            return False
+    # argon2 등 그 외는 passlib
     return pwd_context.verify(plain_password, hashed_password)
 
 def create_access_token(data: dict):
