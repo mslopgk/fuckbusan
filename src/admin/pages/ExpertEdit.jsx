@@ -15,6 +15,7 @@ export default function ExpertEdit({ member, onNavigate }) {
     const [activity, setActivity] = useState({ proposals: [], reports: [], surveys: [] });
     const [open, setOpen] = useState({ proposals: true, reports: true, surveys: true });
     const [saving, setSaving] = useState(false);
+    const [resetting, setResetting] = useState(false);
     const [approveModal, setApproveModal] = useState(false); // 승인 확인 모달 (Figma 302:27772)
 
     const set = (key, val) => setFormData((prev) => ({ ...prev, [key]: val }));
@@ -107,6 +108,29 @@ export default function ExpertEdit({ member, onNavigate }) {
         }
     };
 
+    const handleResetPassword = async () => {
+        if (!formData.id) return;
+        if (!window.confirm(`"${formData.name}"(${formData.loginId}) 전문가의 비밀번호를 임시 비밀번호로 초기화할까요?`)) return;
+        setResetting(true);
+        try {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}/admin/users/${formData.id}/reset-password`, {
+                method: 'POST',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.temp_password) {
+                alert(`임시 비밀번호가 발급되었습니다.\n\n아이디: ${formData.loginId}\n임시 비밀번호: ${data.temp_password}\n\n회원에게 직접 전달해주세요. (다시 확인할 수 없으니 지금 기록해두세요)`);
+            } else {
+                alert(data.detail || '비밀번호 초기화에 실패했습니다.');
+            }
+        } catch (e) {
+            alert('에러가 발생했습니다.');
+        } finally {
+            setResetting(false);
+        }
+    };
+
     // 승인 클릭 시 확인 모달 (Figma 302:27637), 미승인은 즉시 반영
     const handleApproveClick = () => {
         if (formData.isApproved) return;
@@ -131,6 +155,14 @@ export default function ExpertEdit({ member, onNavigate }) {
                 <div className="edit-form-row">
                     <label className="edit-form-label">회원아이디</label>
                     <input type="text" className="edit-form-input" value={formData.loginId || ''} readOnly />
+                    <button
+                        type="button"
+                        className="btn-pw-reset"
+                        onClick={handleResetPassword}
+                        disabled={resetting}
+                    >
+                        {resetting ? '초기화 중...' : '비밀번호 초기화'}
+                    </button>
                 </div>
                 <div className="edit-form-row">
                     <label className="edit-form-label">닉네임</label>

@@ -381,13 +381,13 @@ function RegionDetail({
                         ) : diagData.items.length === 0 ? (
                             <tr className="adg-empty"><td colSpan={4}>이 지역에 등록된 진단 기록이 없습니다.</td></tr>
                         ) : diagData.items.map((d) => (
-                            <tr key={d.result_id}>
+                            <tr key={d.result_id} style={{ cursor: 'pointer' }} onClick={() => onRecordEdit(d)}>
                                 <td>{d.category || d.sub_category || '-'}</td>
                                 <td>{d.author}</td>
                                 <td>{fmtDateTime(d.created_at)}</td>
                                 <td>
                                     <div className="adg-actions">
-                                        <span onClick={() => onRecordEdit(d)}>수정</span><em>|</em><span onClick={(e) => onRecordDel(d, e)}>삭제</span>
+                                        <span onClick={(e) => { e.stopPropagation(); onRecordEdit(d); }}>보기</span><em>|</em><span onClick={(e) => { e.stopPropagation(); onRecordDel(d, e); }}>삭제</span>
                                     </div>
                                 </td>
                             </tr>
@@ -550,12 +550,7 @@ function RecordDetail({ record, onBack, onDelete }) {
             <hr className="adg-divider bottom" />
             <div className="adg-foot">
                 <button className="adg-btn-del" onClick={onDelete}>글 삭제</button>
-                <button
-                    className="adg-btn-edit wide"
-                    onClick={() => alert('진단 기록 수정 API는 아직 제공되지 않습니다. (조회 전용)')}
-                >
-                    수정하기
-                </button>
+                <button className="adg-btn-edit wide" onClick={onBack}>목록으로</button>
             </div>
         </div>
     );
