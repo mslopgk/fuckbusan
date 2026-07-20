@@ -41,6 +41,8 @@ export default function MemberEdit({ member, onNavigate }) {
                         birth: u.birth_date || '',
                         joinDate: fmtDate(u.created_at),
                         lastLogin: fmtDateTime(u.prev_login || u.last_login),
+                        district: u.district_code || '',
+                        isApproved: !!u.is_approved,
                     });
                 }
             } catch (e) { console.error('Failed to fetch member:', e); }
@@ -68,6 +70,7 @@ export default function MemberEdit({ member, onNavigate }) {
                     phone_num: formData.phone || null,
                     email: formData.email || null,
                     address: formData.address || null,
+                    is_approved: !!formData.isApproved,
                 }),
             });
             if (res.ok) {
@@ -155,6 +158,23 @@ export default function MemberEdit({ member, onNavigate }) {
                         {resetting ? '초기화 중...' : '비밀번호 초기화'}
                     </button>
                 </div>
+                {formData.district === 'admin' && (
+                    <div className="edit-form-row">
+                        <label className="edit-form-label">승인상태</label>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <button type="button" onClick={() => set('isApproved', true)}
+                                style={{ padding: '8px 22px', borderRadius: 6, cursor: 'pointer', fontWeight: 600,
+                                    border: `1px solid ${formData.isApproved ? '#23bdbb' : '#ddd'}`,
+                                    background: formData.isApproved ? '#23bdbb' : '#fff',
+                                    color: formData.isApproved ? '#fff' : '#666' }}>승인</button>
+                            <button type="button" onClick={() => set('isApproved', false)}
+                                style={{ padding: '8px 22px', borderRadius: 6, cursor: 'pointer', fontWeight: 600,
+                                    border: `1px solid ${!formData.isApproved ? '#e6235a' : '#ddd'}`,
+                                    background: !formData.isApproved ? '#e6235a' : '#fff',
+                                    color: !formData.isApproved ? '#fff' : '#666' }}>미승인</button>
+                        </div>
+                    </div>
+                )}
                 <div className="edit-form-row">
                     <label className="edit-form-label">닉네임</label>
                     <input type="text" className="edit-form-input" value={formData.nickname || ''}

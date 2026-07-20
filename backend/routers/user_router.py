@@ -160,23 +160,23 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=400, detail="이미 존재하는 아이디입니다.")
     hashed_password = get_password_hash(user.PW)
-    # 전문가 승인제(B): district_code == 'expert' 로 가입하면 관리자 승인 전까지 미승인(False).
-    # 일반 시민(general/구·군명) 및 관리자(admin)는 기존처럼 자동승인(True).
-    is_expert = (user.district_code == "expert")
+    # 승인제(B): 전문가/관리자 가입은 (슈퍼)관리자 승인 전까지 미승인(False)으로 시작.
+    # 일반 시민(general/구·군명)만 자동승인(True). 공개 가입으로 관리자 즉시권한 획득 방지(보안).
+    needs_approval = user.district_code in ("expert", "admin")
     new_user = User(
         ID=user.ID, PW=hashed_password, name=user.name,
         nickname=user.nickname, email=user.email, phone_num=user.phone_num,
         district_code=user.district_code, birth_date=user.birth_date,
         address=user.address, detailed_address=user.detailed_address,
-        is_approved=(not is_expert)
+        is_approved=(not needs_approval)
     )
     db.add(new_user)
     db.commit()
     return {
         "message": "회원가입 성공",
-        "is_approved": (not is_expert),
-        # 전문가는 관리자 승인 후 로그인 가능 — 프론트 안내용
-        "requires_approval": is_expert,
+        "is_approved": (not needs_approval),
+        # 전문가·관리자는 승인 후 로그인 가능 — 프론트 안내용
+        "requires_approval": needs_approval,
     }
 
 @router.post("/users/login", response_model=Token)
@@ -187,9 +187,9 @@ def login(user_input: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.ID == user_input.ID).first()
     if not user or not verify_password(user_input.PW, user.PW):
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 틀렸습니다.")
-    # 전문가 승인제(B): 미승인 전문가는 로그인 차단. (일반 시민·관리자는 district_code가 'expert'가
-    # 아니므로 영향 없음. 기존 전문가는 is_approved=1 이라 그대로 로그인됨.)
-    if user.district_code == "expert" and not user.is_approved:
+    # 승인제(B): 미승인 전문가·관리자는 로그인 차단. (슈퍼관리자 admin은 위에서 이미 통과,
+    # 일반 시민은 district_code가 expert/admin이 아니라 영향 없음. 기존 승인된 계정은 그대로.)
+    if user.district_code in ("expert", "admin") and not user.is_approved:
         raise HTTPException(
             status_code=403,
             detail="관리자 승인 대기 중입니다. 승인 완료 후 로그인하실 수 있습니다.",
