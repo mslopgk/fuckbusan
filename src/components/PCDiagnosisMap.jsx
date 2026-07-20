@@ -234,7 +234,6 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
 
                             {/* 4. 공공/시설물 */}
                             <aside className="pc-diag-filter-card">
-                                <div className="pc-diag-facility-title">공공/시설물</div>
                                 <div className="pc-diag-sub-title">대분류</div>
                                 <div className="pc-diag-check-col">
                                     {[...new Set(
