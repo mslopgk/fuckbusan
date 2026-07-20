@@ -7,6 +7,24 @@ import { API_URL, authHeaders } from '../utils/api';
 // 진단 6대 질문기준 축 — checklist_result.질문기준 컬럼 실제 값과 동일 순서
 const RADAR_AXES = ['접근성', '이동성', '안전성', '정보제공성', '포용성', '심미성'];
 
+// ⚠️ 임시(대표 지시 2026-07-21): 현재 진단폼 만족도 답변으로 6각형을 "억지" 산출.
+// answers(문항 순서)를 앞 축부터 그대로 채우고, 남는 축은 답변 평균으로 채운다.
+// 축 라벨(접근성 등)과 문항 의미가 정확히 일치하지 않는 보여주기용. 상세: docs/진단-육각형-임시산출.md
+function radarFromAnswers(parsed) {
+    if (!parsed || typeof parsed !== 'object') return [];
+    const vals = Object.keys(parsed)
+        .sort((a, b) => Number(a) - Number(b))
+        .map((k) => Number(parsed[k]))
+        .filter(Number.isFinite);
+    if (vals.length === 0) return [];
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    return RADAR_AXES.map((subject, i) => ({
+        subject,
+        A: i < vals.length ? vals[i] : Number(avg.toFixed(2)),
+        fullMark: 5,
+    }));
+}
+
 // /checklist/criteria-summary 의 한 스코프(radar: [{subject, A, count}]) → recharts 6축 데이터.
 // 데이터가 없는 축은 제외한다(0.0 날조 금지). 축 순서는 RADAR_AXES 로 고정해 6각형 방향 일관.
 function scopeToRadar(scope) {
@@ -169,6 +187,12 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
         }
     }, [resultDetail, answers]);
 
+    // 전체 평균 6각형 — 이 진단의 만족도 답변으로 산출(임시). 없으면 빈 배열 → "데이터 준비중".
+    const answerRadar = useMemo(() => radarFromAnswers(parsedAnswers), [parsedAnswers]);
+    const answerAvg = answerRadar.length
+        ? (answerRadar.reduce((s, d) => s + d.A, 0) / answerRadar.length).toFixed(2)
+        : null;
+
     // 스코프별 6축 레이더 데이터 (실데이터 없으면 빈 배열 → 카드가 "데이터 준비중" 표기)
     const totalRadar = useMemo(() => scopeToRadar(criteria?.total), [criteria]);
     const facilityRadar = useMemo(() => scopeToRadar(criteria?.facility), [criteria]);
@@ -297,10 +321,10 @@ export default function MDiagnosisResult({ onNavigate, address = '부산 부산�
                         <>
                             <RadarCard
                                 label="전체 평균"
-                                title={totalAvg != null
-                                    ? `${totalAvg.toFixed(2)} 전체 평균 (${totalCount})`
+                                title={answerAvg != null
+                                    ? `${answerAvg} 전체 평균`
                                     : '전체 평균'}
-                                data={totalRadar}
+                                data={answerRadar}
                                 color={RADAR_COLORS.total}
                             />
                             <RadarCard

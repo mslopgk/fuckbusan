@@ -113,6 +113,7 @@ export default function PCDiagnosisMap({ onNavigate, initialPanel = 'list', init
                     lng: r.경도 ? Number(r.경도) : null,
                     thumb: r.이미지경로 || null,
                     targetType: r.진단대상 || '',
+                    answers: r.answers ?? null,
                     _sessionKey: `${r.ID}_${Number(r.위도 || 0).toFixed(4)}_${Number(r.경도 || 0).toFixed(4)}_${String(r.created_at || '').slice(0, 10)}`,
                     _criteria: r.질문기준 || '',
                     _score: r.점수 != null ? Number(r.점수) : null,

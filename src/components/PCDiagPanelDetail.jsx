@@ -1,17 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
-import { API_URL } from '../utils/api';
 
 const RADAR_AXES = ['접근성', '이동성', '안전성', '정보제공성', '포용성', '심미성'];
 
-// /checklist/criteria-summary 한 스코프(radar:[{subject,A,count}]) → 6축. 데이터 있는 축만(0 날조 금지).
-function scopeToRadar(scope) {
-    if (!scope || !Array.isArray(scope.radar)) return [];
-    const byAxis = new Map(
-        scope.radar.filter((d) => d && Number.isFinite(Number(d.A))).map((d) => [d.subject, Number(d.A)]),
-    );
-    return RADAR_AXES.filter((ax) => byAxis.has(ax)).map((ax) => ({ subject: ax, A: byAxis.get(ax), fullMark: 5 }));
+// ⚠️ 임시(대표 지시 2026-07-21): 진단폼 만족도 답변으로 6각형 "억지" 산출.
+// answers(문항 순서)를 앞 축부터 채우고 남는 축은 답변 평균. 축 라벨=문항 의미 아님(보여주기용).
+// 상세: docs/진단-육각형-임시산출.md
+function radarFromAnswers(raw) {
+    let parsed = raw;
+    if (typeof raw === 'string') { try { parsed = JSON.parse(raw); } catch { return []; } }
+    if (!parsed || typeof parsed !== 'object') return [];
+    const vals = Object.keys(parsed)
+        .sort((a, b) => Number(a) - Number(b))
+        .map((k) => Number(parsed[k]))
+        .filter(Number.isFinite);
+    if (vals.length === 0) return [];
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    return RADAR_AXES.map((subject, i) => ({
+        subject,
+        A: i < vals.length ? vals[i] : Number(avg.toFixed(2)),
+        fullMark: 5,
+    }));
 }
 
 function CustomTick({ payload, x, y, textAnchor, data }) {
@@ -50,19 +60,11 @@ export default function PCDiagPanelDetail({ item, onAddDiagnosis, onBack, mode =
     const isExpert = mode === 'expert';
     const peers = item?.sessionPeers || [];
 
-    // 시민 6각형 — 모바일 진단결과와 동일하게 질문기준별 실집계(/checklist/criteria-summary) 사용.
-    const [criteria, setCriteria] = useState(null);
-    useEffect(() => {
-        const rid = item?.id ?? item?.result_id;
-        const url = rid
-            ? `${API_URL}/checklist/criteria-summary?result_id=${rid}`
-            : `${API_URL}/checklist/criteria-summary`;
-        fetch(url).then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) setCriteria(d); }).catch(() => {});
-    }, [item?.id, item?.result_id]);
-
-    const citizenChart = scopeToRadar(criteria?.total);
-    const citizenAvg = criteria?.total?.avg != null ? Number(criteria.total.avg).toFixed(2) : null;
-    const citizenCount = criteria?.total?.count ?? 0;
+    // 시민 6각형 — 이 진단의 만족도 답변으로 산출(임시). 답변 없으면 빈 배열 → "데이터 준비중".
+    const citizenChart = radarFromAnswers(item?.answers);
+    const citizenAvg = citizenChart.length
+        ? (citizenChart.reduce((s, d) => s + d.A, 0) / citizenChart.length).toFixed(2)
+        : null;
 
     // 전문가: sessionPeers 실점수로 적합/부적합/만족도 집계 (점수 3 이상=적합, 만족도=평균)
     const expScored = peers.filter((p) => p.score != null);
@@ -139,7 +141,7 @@ export default function PCDiagPanelDetail({ item, onAddDiagnosis, onBack, mode =
                                 <div className="pc-diagpanel-chart-card">
                                     <p className="pc-diagpanel-chart-title">
                                         {citizenAvg
-                                            ? <><strong>{citizenAvg}</strong> 전체 평균 ({citizenCount})</>
+                                            ? <><strong>{citizenAvg}</strong> 전체 평균</>
                                             : '전체 평균'}
                                     </p>
                                     {citizenChart.length >= 3 ? (
