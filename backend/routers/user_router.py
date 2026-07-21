@@ -90,7 +90,9 @@ def get_current_user_optional(token: Optional[str] = Depends(oauth2_scheme_optio
 
 
 def require_admin(user: Optional[User]):
-    if not user or user.ID != "admin":
+    # 슈퍼관리자(admin) + district_code='admin'로 지정된 관리자 계정 모두 인정.
+    # (미승인 관리자는 로그인 단계에서 이미 차단되므로 여기 도달 시 승인된 관리자임)
+    if not user or (user.ID != "admin" and getattr(user, "district_code", None) != "admin"):
         raise HTTPException(status_code=403, detail="관리자 권한이 필요합니다.")
 
 # =============================================================================
