@@ -64,9 +64,13 @@ export default function DashboardNew({ onNavigate }) {
         }
     };
 
+    // 통합검색: 등록된 모든 표시 필드로 매칭 (대소문자 무시) — 5개 목록 동일 방식
     const sq = search.trim().toLowerCase();
+    const matchesSearch = (m) => !sq
+        || [m.name, m.loginId, m.nickname, m.phone, m.address, m.email, m.birth]
+            .some((v) => (v || '').toString().toLowerCase().includes(sq));
     const filtered = memberData.filter((m) =>
-        (!sq || m.name.toLowerCase().includes(sq) || (m.nickname || '').toLowerCase().includes(sq) || (m.loginId || '').toLowerCase().includes(sq))
+        matchesSearch(m)
         && (!region || (m.district || '').includes(region) || (m.address || '').includes(region)));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
@@ -97,7 +101,7 @@ export default function DashboardNew({ onNavigate }) {
                         <input
                             type="text"
                             className="search-input-new"
-                            placeholder="이름 또는 닉네임을 입력해 주세요"
+                            placeholder="이름·아이디·닉네임·연락처·주소·이메일로 검색"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') setPage(1); }}

@@ -24,9 +24,12 @@ export default function ProposalManagement({ onNavigate }) {
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
 
-            // 회원검색(작성자)·제목 검색 (클라이언트)
-            const match = (p) => (!authorKw || (p.author || p.nickname || '').includes(authorKw))
-                && (!titleKw || (p.title || '').includes(titleKw));
+            // 회원검색(작성자)·제목 검색 (클라이언트, 대소문자 무시 — 5개 목록 동일 방식)
+            const aq = authorKw.trim().toLowerCase();
+            const tq = titleKw.trim().toLowerCase();
+            const match = (p) => (!aq || [p.author, p.author_name, p.nickname, p.author_id, p.loginId, p.email, p.phone]
+                .some((v) => (v || '').toString().toLowerCase().includes(aq)))
+                && (!tq || (p.title || '').toString().toLowerCase().includes(tq));
 
             if (res.ok) {
                 const data = await res.json();

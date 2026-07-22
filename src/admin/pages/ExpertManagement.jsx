@@ -58,11 +58,11 @@ export default function ExpertManagement({ onNavigate }) {
         }
     };
 
+    // 통합검색: 등록된 모든 표시 필드로 매칭 (대소문자 무시) — 5개 목록 동일 방식
     const sq = search.trim().toLowerCase();
     const filtered = experts.filter((e) => !sq
-        || e.name.toLowerCase().includes(sq)
-        || (e.loginId || '').toLowerCase().includes(sq)
-        || (e.nickname || '').toLowerCase().includes(sq));
+        || [e.name, e.loginId, e.nickname, e.phone, e.address, e.email]
+            .some((v) => (v || '').toString().toLowerCase().includes(sq)));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
@@ -80,7 +80,7 @@ export default function ExpertManagement({ onNavigate }) {
                     <input
                         type="text"
                         className="search-input-new"
-                        placeholder="이름을 입력해 주세요"
+                        placeholder="이름·아이디·닉네임·연락처·주소·이메일로 검색"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />

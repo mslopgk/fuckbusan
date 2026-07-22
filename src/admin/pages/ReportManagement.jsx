@@ -32,9 +32,12 @@ export default function ReportManagement({ onNavigate }) {
 
             if (res && res.ok) {
                 const data = await res.json();
-                // 회원검색(작성자)·제목 검색 (클라이언트)
-                const match = (r) => (!authorKw || (r.author || r.author_name || r.nickname || '').includes(authorKw))
-                    && (!titleKw || (r.title || '').includes(titleKw));
+                // 회원검색(작성자)·제목 검색 (클라이언트, 대소문자 무시 — 5개 목록 동일 방식)
+                const aq = authorKw.trim().toLowerCase();
+                const tq = titleKw.trim().toLowerCase();
+                const match = (r) => (!aq || [r.author, r.author_name, r.nickname, r.author_id, r.loginId, r.email, r.phone]
+                    .some((v) => (v || '').toString().toLowerCase().includes(aq)))
+                    && (!tq || (r.title || '').toString().toLowerCase().includes(tq));
                 if (Array.isArray(data)) {
                     const filtered = data.filter(match);
                     setTotal(filtered.length);

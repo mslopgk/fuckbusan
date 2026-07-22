@@ -137,6 +137,24 @@
 /* 이미지 등록 */
 .adg-imgrow { display: flex; align-items: flex-start; }
 .adg-img-thumb { width: 134px; height: 128px; border-radius: 10px; object-fit: cover; display: block; }
+/* 이미지 없음/로드 실패 시 대체 플레이스홀더 (엑박 방지) */
+.adg-img-ph {
+    box-sizing: border-box; display: flex; align-items: center; justify-content: center;
+    background: #f2f3f5; border: 1px solid #e5e5e5;
+}
+.adg-img-ph-icon {
+    width: 44px; height: 38px; border: 2px solid #c4c8ce; border-radius: 6px;
+    position: relative; background: #fff;
+}
+.adg-img-ph-icon::before {
+    content: ''; position: absolute; left: 8px; top: 8px; width: 9px; height: 9px;
+    border-radius: 50%; background: #c4c8ce;
+}
+.adg-img-ph-icon::after {
+    content: ''; position: absolute; left: 3px; right: 3px; bottom: 4px; height: 16px;
+    background: #c4c8ce;
+    clip-path: polygon(0 100%, 34% 34%, 55% 66%, 74% 20%, 100% 100%);
+}
 .adg-img-add {
     width: 130px; height: 130px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 10px;
     margin-left: 10px; display: flex; align-items: center; justify-content: center;

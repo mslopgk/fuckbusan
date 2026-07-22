@@ -186,7 +186,7 @@ function Avatar({ url, initial, size = 56 }) {
 }
 
 /* ── 좌측 필터 (구역별 카드 + 생활정보 세로 레일 + AI 챗봇) — Figma 302:3872 ── */
-function FilterPanel({ region, setRegion, cat, setCat, onChat }) {
+function FilterPanel({ region, setRegion, cat, setCat, onChat, chatDisabled }) {
     const [open, setOpen] = useState(false);
     return (
         <div className="aic-leftcol">
@@ -239,7 +239,9 @@ function FilterPanel({ region, setRegion, cat, setCat, onChat }) {
             </nav>
 
             {/* AI 챗봇 */}
-            <button type="button" className="aic-chatbot-btn aic-chatbot-btn--rail" onClick={onChat}>
+            <button type="button" className="aic-chatbot-btn aic-chatbot-btn--rail" onClick={onChat}
+                disabled={chatDisabled}
+                title={chatDisabled ? '해당 지역/조건에 가상시민이 없습니다' : undefined}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                 </svg>
@@ -496,13 +498,24 @@ export default function PCAICitizen({ onNavigate }) {
 
     const startChat = (c) => {
         setShowMapIntro(false);
-        // 시민 0명 구에서도 무반응 금지 — 부산 전체 대표(importance 0) → 전체 첫 시민 순 폴백
-        const fallback = citizens[0] || all.find((x) => (x.importance ?? 99) === 0) || all[0];
-        const base = c || detail || selected || fallback;
-        if (!base) {
+        // 아직 목록을 불러오는 중이면 데이터 준비 안내 (빈 목록과 구분)
+        if (!loaded) {
             alert('가상시민 데이터를 아직 불러오지 못했어요. 잠시 후 다시 시도해주세요.');
             return;
         }
+        // 현재 필터(region/cat)로 걸러진 리스트가 비어있으면 연결하지 않음.
+        // 엉뚱한 전체 첫 시민(박철수 등)으로 폴백하지 않는다.
+        if (citizens.length === 0) {
+            alert('해당 지역/조건에 가상시민이 없습니다.');
+            return;
+        }
+        // 카드에서 직접 지정(c) → 선택/상세 → 걸러진 리스트의 첫 시민 순.
+        // 폴백은 반드시 필터링된 citizens 안에서만 (all 폴백 금지).
+        const inList = (p) => p && citizens.some((x) => x.id === p.id);
+        const base = c
+            || (inList(detail) && detail)
+            || (inList(selected) && selected)
+            || citizens[0];
         setChatPersona({ ...base, avatarUrl: avatarSrc(avatars[base.id]) });
     };
 
@@ -534,7 +547,7 @@ export default function PCAICitizen({ onNavigate }) {
                     .pubdata 기준 absolute (top 16 / right 425 = 우측 페르소나 패널 좌측 21px 간격). */}
                 <MapToolbar mapRef={mapCtlRef} onAI={() => startChat()} aiTeal />
 
-                <FilterPanel region={region} setRegion={setRegion} cat={cat} setCat={setCat} onChat={() => startChat()} />
+                <FilterPanel region={region} setRegion={setRegion} cat={cat} setCat={setCat} onChat={() => startChat()} chatDisabled={loaded && citizens.length === 0} />
 
                 <PersonaList
                     region={region} citizens={citizens} avatars={avatars}

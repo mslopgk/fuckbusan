@@ -35,8 +35,10 @@ const adminId = () => {
     catch { return '관리자'; }
 };
 
-// 엑셀 업로드용 양식 다운로드 — 답변서 정의 컬럼(테마/지역/지표명/표시값/연도/비고/출처/정렬순서)
+// 컬럼 정의(테마/지역/지표명/표시값/연도/비고/출처/정렬순서) — 내보내기·업로드양식 공용
 const EXCEL_COLUMNS = ['테마', '지역', '지표명', '표시값', '연도', '비고', '출처', '정렬순서'];
+
+// 엑셀 업로드용 빈 양식 다운로드 (샘플 2행 포함)
 const downloadTemplate = async () => {
     const XLSX = await import('xlsx');
     const sample = [
@@ -48,6 +50,34 @@ const downloadTemplate = async () => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, '공공데이터');
     XLSX.writeFile(wb, '공공데이터_업로드양식.xlsx');
+};
+
+// 현재 등록된 공공데이터 전체를 실제 값으로 내보내기
+const downloadRegistered = async () => {
+    let rows = [];
+    try {
+        const p = new URLSearchParams({ page: '1', size: '100000' });
+        const d = await fetch(`${API}?${p}`, { headers: auth() }).then((r) => r.json());
+        rows = Array.isArray(d?.items) ? d.items : [];
+    } catch {
+        alert('공공데이터를 불러오지 못했습니다.');
+        return;
+    }
+    if (rows.length === 0) { alert('내보낼 공공데이터가 없습니다.'); return; }
+
+    const XLSX = await import('xlsx');
+    const body = rows.map((s) => [
+        s.theme ?? '', s.region ?? '', s.metric ?? '', s.value_text ?? '',
+        s.year ?? '', s.note ?? '', s.source ?? '', s.sort_order ?? 0,
+    ]);
+    const ws = XLSX.utils.aoa_to_sheet([EXCEL_COLUMNS, ...body]);
+    ws['!cols'] = EXCEL_COLUMNS.map((c, i) => {
+        const maxLen = body.reduce((m, r) => Math.max(m, String(r[i] ?? '').length), c.length);
+        return { wch: Math.min(60, Math.max(10, maxLen + 2)) };
+    });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '공공데이터');
+    XLSX.writeFile(wb, `공공데이터_${fmtDot()}.xlsx`);
 };
 
 const emptyDraft = () => ({ region: '전체', unit: '', entries: [], file: null });
@@ -273,7 +303,7 @@ function PublicDataMain({ isEdit, row, meta, setMeta, entryCount, hasFile, savin
             </div>
             <hr className="apm-hr" />
             <div className="apm-foot">
-                <button type="button" className="apm-download" onClick={downloadTemplate}>공공데이터 다운로드</button>
+                <button type="button" className="apm-download" onClick={downloadRegistered}>공공데이터 다운로드</button>
                 <div className="apm-foot-r">
                     <button type="button" className="apm-btn-del" disabled={saving} onClick={onDelete}>글 삭제</button>
                     <button type="button" className="apm-btn-submit" disabled={saving} onClick={onSubmit}>
@@ -350,6 +380,7 @@ function PublicDataAdd({ initial, onApply, onDiscard }) {
                             <button type="button" className="apd-excel-btn" onClick={() => fileRef.current?.click()}>
                                 <img src={`${ASSET}/pd_excel.png`} alt="" />엑셀 업로드
                             </button>
+                            <button type="button" className="apd-template-btn" onClick={downloadTemplate}>업로드 양식 다운로드</button>
                         </div>
                         {file && (
                             <div className="apd-file-chip">
@@ -360,7 +391,7 @@ function PublicDataAdd({ initial, onApply, onDiscard }) {
                                 </button>
                             </div>
                         )}
-                        <p className="apd-file-hint">양식 컬럼: {EXCEL_COLUMNS.join(' / ')} — ‘공공데이터 등록’ 화면의 ‘공공데이터 다운로드’로 양식을 받을 수 있습니다.</p>
+                        <p className="apd-file-hint">양식 컬럼: {EXCEL_COLUMNS.join(' / ')} — ‘업로드 양식 다운로드’ 버튼으로 빈 양식을 받을 수 있습니다.</p>
                     </div>
                 </div>
             </div>

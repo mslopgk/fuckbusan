@@ -31,6 +31,24 @@ const fmtDate = (s) => (s ? s.slice(0, 10).replaceAll('-', '.') : '-');
 
 const EMPTY = { name: '', district_code: '', latitude: '', longitude: '' };
 
+/* 진단 이미지 썸네일 — src 없음/로드 실패 시 회색 플레이스홀더로 대체 (엑박 방지) */
+function DiagThumb({ src }) {
+    const [failed, setFailed] = useState(false);
+    if (!src || failed) {
+        return (
+            <div className="adg-img-thumb adg-img-ph" role="img" aria-label="등록된 이미지 없음">
+                <span className="adg-img-ph-icon" aria-hidden="true" />
+            </div>
+        );
+    }
+    return (
+        <img
+            className="adg-img-thumb" src={src} alt="진단 이미지"
+            onError={() => setFailed(true)}
+        />
+    );
+}
+
 /* ── 페이지네이션 (Figma: < 1 2 3 4 5 > · 피치 30 · active teal) ── */
 function Pager({ page, totalPages, onChange }) {
     const nums = Array.from({ length: Math.min(Math.max(totalPages, 1), 10) }, (_, i) => i + 1);
@@ -329,7 +347,7 @@ function RegionDetail({
                 <div className="adg-frow top">
                     <span className="adg-flabel">이미지 등록</span>
                     <div className="adg-imgrow">
-                        {firstImage && <img className="adg-img-thumb" src={firstImage} alt="진단 이미지" />}
+                        <DiagThumb key={firstImage || 'ph'} src={firstImage} />
                         <div className="adg-img-add">+</div>
                     </div>
                 </div>
@@ -455,7 +473,7 @@ function RecordDetail({ record, onBack, onDelete }) {
                 <div className="adg-frow top">
                     <span className="adg-flabel">이미지 등록</span>
                     <div className="adg-imgrow">
-                        {record.image && <img className="adg-img-thumb" src={record.image} alt="진단 이미지" />}
+                        <DiagThumb key={record.image || 'ph'} src={record.image} />
                         <div className="adg-img-add">+</div>
                     </div>
                 </div>

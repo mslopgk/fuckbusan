@@ -863,8 +863,12 @@
     box-shadow: 0 4px 14px rgba(35,189,187,0.28);
     transition: background 0.15s, transform 0.1s;
 }
-.aic-chatbot-btn:hover { background: #1aa6a4; }
-.aic-chatbot-btn:active { transform: translateY(1px); }
+.aic-chatbot-btn:hover:not(:disabled) { background: #1aa6a4; }
+.aic-chatbot-btn:active:not(:disabled) { transform: translateY(1px); }
+.aic-chatbot-btn:disabled {
+    background: #c4ccce; color: #fff; cursor: not-allowed;
+    box-shadow: none;
+}
 .aic-chatbot-btn--rail {
     width: 122px;
     height: 44px;
