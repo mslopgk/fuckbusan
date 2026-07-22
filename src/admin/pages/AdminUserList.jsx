@@ -3,11 +3,13 @@ import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import { API_BASE } from '../api';
+import { MEMBER_FIELD_OPTIONS, MEMBER_FIELD_GET } from './DashboardNew';
 
 export default function AdminUserList({ onNavigate }) {
     const [users, setUsers] = useState([]);
     const [search, setSearch] = useState('');
     const [inputVal, setInputVal] = useState('');
+    const [field, setField] = useState('전체');
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const itemsPerPage = 10;
@@ -71,9 +73,9 @@ export default function AdminUserList({ onNavigate }) {
     // 시민/전문가 목록과 동일하게 입력 즉시 클라이언트 필터
     // 통합검색: 등록된 모든 표시 필드로 매칭 (대소문자 무시) — 5개 목록 동일 방식
     const sq = inputVal.trim().toLowerCase();
+    const getVals = MEMBER_FIELD_GET[field] || MEMBER_FIELD_GET['전체'];
     const filtered = users.filter((u) =>
-        !sq || [u.name, u.loginId, u.nickname, u.phone, u.address, u.email]
-            .some((v) => (v || '').toString().toLowerCase().includes(sq)));
+        !sq || getVals(u).some((v) => (v || '').toString().toLowerCase().includes(sq)));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
@@ -104,11 +106,14 @@ export default function AdminUserList({ onNavigate }) {
 
             <div className="search-box-new">
                 <div className="search-label-new">회원검색</div>
+                <select className="mgr-select" value={field} onChange={(e) => { setField(e.target.value); setPage(1); }}>
+                    {MEMBER_FIELD_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
+                </select>
                 <div className="search-input-wrapper-new">
                     <input
                         type="text"
                         className="search-input-new"
-                        placeholder="이름·아이디·닉네임·연락처·주소·이메일로 검색"
+                        placeholder={field === '전체' ? '이름·아이디·닉네임·연락처·주소·이메일로 검색' : `${field}(으)로 검색`}
                         value={inputVal}
                         onChange={(e) => { setInputVal(e.target.value); setPage(1); }}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}

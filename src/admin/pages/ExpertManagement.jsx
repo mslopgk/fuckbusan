@@ -3,10 +3,12 @@ import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import { API_BASE } from '../api';
+import { MEMBER_FIELD_OPTIONS, MEMBER_FIELD_GET } from './DashboardNew';
 
 export default function ExpertManagement({ onNavigate }) {
     const [experts, setExperts] = useState([]);
     const [search, setSearch] = useState('');
+    const [field, setField] = useState('전체');
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -58,11 +60,11 @@ export default function ExpertManagement({ onNavigate }) {
         }
     };
 
-    // 통합검색: 등록된 모든 표시 필드로 매칭 (대소문자 무시) — 5개 목록 동일 방식
+    // 카테고리 = 검색 대상 필드 (전체=모든 필드). 대소문자 무시.
     const sq = search.trim().toLowerCase();
+    const getVals = MEMBER_FIELD_GET[field] || MEMBER_FIELD_GET['전체'];
     const filtered = experts.filter((e) => !sq
-        || [e.name, e.loginId, e.nickname, e.phone, e.address, e.email]
-            .some((v) => (v || '').toString().toLowerCase().includes(sq)));
+        || getVals(e).some((v) => (v || '').toString().toLowerCase().includes(sq)));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
@@ -76,11 +78,14 @@ export default function ExpertManagement({ onNavigate }) {
 
             <div className="search-box-new">
                 <div className="search-label-new">회원검색</div>
+                <select className="mgr-select" value={field} onChange={(e) => { setField(e.target.value); setPage(1); }}>
+                    {MEMBER_FIELD_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
+                </select>
                 <div className="search-input-wrapper-new">
                     <input
                         type="text"
                         className="search-input-new"
-                        placeholder="이름·아이디·닉네임·연락처·주소·이메일로 검색"
+                        placeholder={field === '전체' ? '이름·아이디·닉네임·연락처·주소·이메일로 검색' : `${field}(으)로 검색`}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />

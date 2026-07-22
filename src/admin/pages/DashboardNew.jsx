@@ -4,13 +4,22 @@ import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import { API_BASE } from '../api';
 
-const GUGUN = ['부산진구', '해운대구', '사하구', '동래구', '북구', '남구', '연제구', '금정구',
-    '사상구', '기장군', '수영구', '강서구', '서구', '영도구', '동구', '중구'];
+// 회원 검색 카테고리 = 검색 대상 필드 (시민·전문가·관리자 목록 공통)
+export const MEMBER_FIELD_OPTIONS = ['전체', '이름', '아이디', '닉네임', '연락처', '주소', '이메일'];
+export const MEMBER_FIELD_GET = {
+    전체: (m) => [m.name, m.loginId, m.nickname, m.phone, m.address, m.email],
+    이름: (m) => [m.name],
+    아이디: (m) => [m.loginId],
+    닉네임: (m) => [m.nickname],
+    연락처: (m) => [m.phone],
+    주소: (m) => [m.address],
+    이메일: (m) => [m.email],
+};
 
 export default function DashboardNew({ onNavigate }) {
     const [memberData, setMemberData] = useState([]);
     const [search, setSearch] = useState('');
-    const [region, setRegion] = useState('');
+    const [field, setField] = useState('전체');
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -64,14 +73,11 @@ export default function DashboardNew({ onNavigate }) {
         }
     };
 
-    // 통합검색: 등록된 모든 표시 필드로 매칭 (대소문자 무시) — 5개 목록 동일 방식
+    // 카테고리 = 검색 대상 필드 (전체=모든 필드, 그 외=해당 필드만). 대소문자 무시.
     const sq = search.trim().toLowerCase();
-    const matchesSearch = (m) => !sq
-        || [m.name, m.loginId, m.nickname, m.phone, m.address, m.email, m.birth]
-            .some((v) => (v || '').toString().toLowerCase().includes(sq));
+    const getVals = (MEMBER_FIELD_GET[field] || MEMBER_FIELD_GET['전체']);
     const filtered = memberData.filter((m) =>
-        matchesSearch(m)
-        && (!region || (m.district || '').includes(region) || (m.address || '').includes(region)));
+        !sq || getVals(m).some((v) => (v || '').toString().toLowerCase().includes(sq)));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
@@ -88,11 +94,10 @@ export default function DashboardNew({ onNavigate }) {
                     <div className="search-label-new">카테고리 선택</div>
                     <select
                         className="mgr-select"
-                        value={region}
-                        onChange={(e) => { setRegion(e.target.value); setPage(1); }}
+                        value={field}
+                        onChange={(e) => { setField(e.target.value); setPage(1); }}
                     >
-                        <option value="">선택해주세요</option>
-                        {GUGUN.map((g) => <option key={g} value={g}>{g}</option>)}
+                        {MEMBER_FIELD_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
                     </select>
                 </div>
                 <div className="search-row">
