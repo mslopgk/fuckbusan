@@ -4,6 +4,9 @@ import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import { API_BASE } from '../api';
 
+// 검색 비교용 정규화 — 소문자 + 공백/하이픈 제거 (전화번호 010-1234-5678 ↔ 01012345678 매칭)
+export const norm = (s) => (s ?? '').toString().toLowerCase().replace(/[\s-]/g, '');
+
 // 회원 검색 카테고리 = 검색 대상 필드 (시민·전문가·관리자 목록 공통)
 export const MEMBER_FIELD_OPTIONS = ['전체', '이름', '아이디', '닉네임', '연락처', '주소', '이메일'];
 export const MEMBER_FIELD_GET = {
@@ -74,10 +77,10 @@ export default function DashboardNew({ onNavigate }) {
     };
 
     // 카테고리 = 검색 대상 필드 (전체=모든 필드, 그 외=해당 필드만). 대소문자 무시.
-    const sq = search.trim().toLowerCase();
+    const nq = norm(search);
     const getVals = (MEMBER_FIELD_GET[field] || MEMBER_FIELD_GET['전체']);
     const filtered = memberData.filter((m) =>
-        !sq || getVals(m).some((v) => (v || '').toString().toLowerCase().includes(sq)));
+        !nq || getVals(m).some((v) => norm(v).includes(nq)));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 

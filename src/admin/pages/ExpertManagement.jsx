@@ -3,7 +3,7 @@ import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import { API_BASE } from '../api';
-import { MEMBER_FIELD_OPTIONS, MEMBER_FIELD_GET } from './DashboardNew';
+import { MEMBER_FIELD_OPTIONS, MEMBER_FIELD_GET, norm } from './DashboardNew';
 
 export default function ExpertManagement({ onNavigate }) {
     const [experts, setExperts] = useState([]);
@@ -61,10 +61,10 @@ export default function ExpertManagement({ onNavigate }) {
     };
 
     // 카테고리 = 검색 대상 필드 (전체=모든 필드). 대소문자 무시.
-    const sq = search.trim().toLowerCase();
+    const nq = norm(search);
     const getVals = MEMBER_FIELD_GET[field] || MEMBER_FIELD_GET['전체'];
-    const filtered = experts.filter((e) => !sq
-        || getVals(e).some((v) => (v || '').toString().toLowerCase().includes(sq)));
+    const filtered = experts.filter((e) => !nq
+        || getVals(e).some((v) => norm(v).includes(nq)));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 

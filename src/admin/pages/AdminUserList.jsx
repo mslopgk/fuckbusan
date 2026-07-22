@@ -3,7 +3,7 @@ import AdminLayout from '../components/AdminLayout';
 import '../styles/dashboard_new.css';
 import '../styles/admin_layout.css';
 import { API_BASE } from '../api';
-import { MEMBER_FIELD_OPTIONS, MEMBER_FIELD_GET } from './DashboardNew';
+import { MEMBER_FIELD_OPTIONS, MEMBER_FIELD_GET, norm } from './DashboardNew';
 
 export default function AdminUserList({ onNavigate }) {
     const [users, setUsers] = useState([]);
@@ -72,10 +72,10 @@ export default function AdminUserList({ onNavigate }) {
 
     // 시민/전문가 목록과 동일하게 입력 즉시 클라이언트 필터
     // 통합검색: 등록된 모든 표시 필드로 매칭 (대소문자 무시) — 5개 목록 동일 방식
-    const sq = inputVal.trim().toLowerCase();
+    const nq = norm(inputVal);
     const getVals = MEMBER_FIELD_GET[field] || MEMBER_FIELD_GET['전체'];
     const filtered = users.filter((u) =>
-        !sq || getVals(u).some((v) => (v || '').toString().toLowerCase().includes(sq)));
+        !nq || getVals(u).some((v) => norm(v).includes(nq)));
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
     const visible = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
