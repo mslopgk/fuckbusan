@@ -104,24 +104,28 @@ export default function AdminUserList({ onNavigate }) {
                 <div className="total-count-text">전체 회원 <span>{filtered.length}명</span></div>
             </div>
 
-            <div className="search-box-new">
-                <div className="search-label-new">회원검색</div>
-                <select className="mgr-select" value={field} onChange={(e) => { setField(e.target.value); setPage(1); }}>
-                    {MEMBER_FIELD_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
-                </select>
-                <div className="search-input-wrapper-new">
-                    <input
-                        type="text"
-                        className="search-input-new"
-                        placeholder={field === '전체' ? '이름·아이디·닉네임·연락처·주소·이메일로 검색' : `${field}(으)로 검색`}
-                        value={inputVal}
-                        onChange={(e) => { setInputVal(e.target.value); setPage(1); }}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    />
-                    {/* Figma export 검색 아이콘 (302:27293, #aaa) */}
-                    <img className="search-icon-img" src="/figma-assets/admin/rp_search.png" alt="" />
+            <div className="search-box-new-col">
+                <div className="search-row">
+                    <div className="search-label-new">카테고리 선택</div>
+                    <select className="mgr-select" value={field} onChange={(e) => { setField(e.target.value); setPage(1); }}>
+                        {MEMBER_FIELD_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
+                    </select>
                 </div>
-                <button className="btn-search-new" onClick={handleSearch}>검색</button>
+                <div className="search-row">
+                    <div className="search-label-new">검색</div>
+                    <div className="search-input-wrapper-new">
+                        <input
+                            type="text"
+                            className="search-input-new"
+                            placeholder="이름·아이디·닉네임·연락처·주소·이메일로 검색"
+                            value={inputVal}
+                            onChange={(e) => { setInputVal(e.target.value); setPage(1); }}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                        />
+                        <img className="search-icon-img" src="/figma-assets/admin/search_glyph.png" alt="" />
+                    </div>
+                    <button className="btn-search-new btn-search-new--cyan" onClick={handleSearch}>검색</button>
+                </div>
             </div>
 
             <div className="table-container-new">
